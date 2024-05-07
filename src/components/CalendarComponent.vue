@@ -89,14 +89,33 @@
           color="primary"
           :events="events"
           :event-color="getEventColor"
+          event-height="0"
           :type="type"
+          event-more
           @click:event="showEvent"
           @click:more="viewDay"
           @click:date="viewDay"
           @change="updateRange"
-          interval-count="0"
         >
-          <template v-slot:interval> </template>
+          <template v-slot:event="{ event }">
+            <div style="width: 100px; height: 50px;">
+              <div class="font-weight-bold">
+                {{ event.name }} - {{ event.client }}
+              </div>
+            </div>
+            <!-- <v-container class="d-flex justify-center" style="max-width: 100%; max-height: 100%">
+              <v-row no-gutters>
+                <v-col cols="auto">
+                  <div class="font-weight-bold">
+                    {{ event.name }} - {{ event.client }}
+                  </div>
+                </v-col>
+              </v-row>
+            </v-container> -->
+          </template>
+          <template #day-header>
+            <div style="max-height: 100%"></div>
+          </template>
         </v-calendar>
         <v-menu
           v-model="selectedOpen"
@@ -195,9 +214,17 @@ export default {
       "Unallocated",
       "Ready for Occupancy",
     ],
+    clients: [
+      "John Doe",
+      "Jane Doe",
+      "Michael Doe",
+      "Theodore Doe",
+      "Teddy Doe",
+    ],
   }),
   mounted() {
     this.$refs.calendar.checkChange();
+    this.updateRange();
   },
   methods: {
     viewDay({ date }) {
@@ -246,27 +273,40 @@ export default {
 
       nativeEvent.stopPropagation();
     },
-    updateRange({ start, end }) {
+    updateRange() {
       const events = [];
 
-      const min = new Date(`${start.date}T00:00:00`);
-      const max = new Date(`${end.date}T23:59:59`);
-      const days = (max.getTime() - min.getTime()) / 86400000;
-      const eventCount = this.rnd(days, days + 20);
+      // Get today's date and set the time to the start of the day
+      let currentDate = new Date();
+      currentDate.setHours(0, 0, 0, 0); // Reset time to midnight for consistency
 
-      for (let i = 0; i < eventCount; i++) {
-        const allDay = this.rnd(0, 3) === 0;
-        const firstTimestamp = this.rnd(min.getTime(), max.getTime());
-        const first = new Date(firstTimestamp - (firstTimestamp % 900000));
-        const secondTimestamp = this.rnd(2, allDay ? 288 : 8) * 900000;
-        const second = new Date(first.getTime() + secondTimestamp);
+      // Create an endDate that is 31 days after the currentDate
+      const endDate = new Date(currentDate); // Clone currentDate
+      endDate.setDate(endDate.getDate() + 31); // Add 31 days
+
+      while (currentDate <= endDate) {
+        const startTime = new Date(currentDate);
+        startTime.setHours(14, 0, 0); // Set start time to 2:00 PM
+
+        const endTime = new Date(startTime);
+        endTime.setDate(endTime.getDate() + 1);
+        endTime.setHours(11, 0, 0); // Set end time to 11:00 AM next day
 
         events.push({
-          name: this.rooms[this.rnd(0, this.rooms.length - 1)],
-          start: first,
-          end: second,
-          status: this.statuses[this.rnd(0, this.statuses.length - 1)],
+          name: this.rooms[Math.floor(Math.random() * this.rooms.length)],
+          start: startTime,
+          end: endTime,
+          status:
+            this.statuses[Math.floor(Math.random() * this.statuses.length)],
+          client:
+            Math.random() > 0.5
+              ? this.clients[Math.floor(Math.random() * this.clients.length)]
+              : null,
+          timed: false,
         });
+
+        // Move to the next day
+        currentDate.setDate(currentDate.getDate() + 1);
       }
 
       this.events = events;
@@ -279,15 +319,8 @@ export default {
     selectedRoomType: {
       immediate: true,
       handler(newVal) {
-        if (newVal === "deluxe") {
-          this.rooms = this.roomNames.deluxe;
-        } else if (newVal === "regular") {
-          this.rooms = this.roomNames.regular;
-        } else if (newVal === "suite") {
-          this.rooms = this.roomNames.suite;
-        }
-        console.log(this.$refs.calendar.isEventForCategory().lastEnd.date)
-        // this.updateRange(this.$refs.calendar.)
+        this.rooms = this.roomNames[newVal];
+        this.updateRange();
       },
     },
   },
