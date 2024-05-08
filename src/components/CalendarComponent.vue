@@ -1,6 +1,6 @@
 <template>
   <v-row class="fill-height">
-    <v-col>
+    <v-col cols="12">
       <v-sheet height="64">
         <v-row dense align="center">
           <v-col cols="auto">
@@ -24,17 +24,41 @@
             </v-toolbar-title>
           </v-col>
           <v-divider vertical class="mx-4"></v-divider>
-          <v-col cols="auto">
-            <div class="d-flex justify-start align-center">
-              <div
-                class="d-flex justify-start align-center mr-5"
-                v-for="(data, index) in legendsData"
-                :key="index"
-              >
-                <div :class="`chips ${getEventColor(data)}`" class="mr-2"></div>
-                <div>{{ data }}</div>
+          <v-col cols="auto" class="d-flex align-center">
+            <v-tooltip bottom>
+              <template #activator="{ on, attrs }">
+                <v-btn
+                  v-on="on"
+                  v-bind="attrs"
+                  icon
+                  :color="showLegend ? 'primary' : 'grey darken-2'"
+                  class="mr-4"
+                  @click="triggerTransition"
+                >
+                  <v-icon>mdi-map-legend</v-icon>
+                </v-btn>
+              </template>
+
+              <span>Legends</span>
+            </v-tooltip>
+
+            <v-scroll-x-transition>
+              <div v-show="showLegend">
+                <div class="d-flex justify-start align-center">
+                  <div
+                    class="d-flex justify-start align-center mr-5"
+                    v-for="(data, index) in legendsData"
+                    :key="index"
+                  >
+                    <div
+                      :class="`chips ${getEventColor(data)}`"
+                      class="mr-2"
+                    ></div>
+                    <div>{{ data }}</div>
+                  </div>
+                </div>
               </div>
-            </div>
+            </v-scroll-x-transition>
           </v-col>
           <v-spacer></v-spacer>
           <v-col cols="auto">
@@ -90,16 +114,16 @@
           </v-col>
         </v-row>
       </v-sheet>
-      <v-sheet height="600">
+      <v-sheet :height="type === 'day' ? '100%' : '2000'">
         <v-calendar
           ref="calendar"
           v-model="focus"
           color="primary"
           :events="events"
           :event-color="getEventColor"
-          :event-height="viewedDay"
-          :type="type"
+          :event-height="sizeEvents"
           event-more
+          :type="type"
           @click:event="showEvent"
           @click:more="viewDay"
           @click:date="viewDay"
@@ -107,7 +131,7 @@
           interval-count="0"
         >
           <template v-slot:event="{ event }">
-            <div v-if="type === 'month'">
+            <div v-if="formatEvents.includes(type) && type !== 'day'">
               <div class="font-weight-bold px-2">
                 {{ event.name
                 }}{{ event.client !== null ? " - " + event.client : "" }}
@@ -120,16 +144,19 @@
             >
               <v-row no-gutters>
                 <v-col cols="auto">
-                  <div class="font-weight-bold">
-                    {{ event.name
-                    }}{{ event.client !== null ? " - " + event.client : "" }}
+                  <div class="text-overline font-weight-bold">
+                    {{ event.name }}
+                  </div>
+                  <div class="text-subtitle-1">
+                    {{ event.client ? event.client : event.status }}
                   </div>
                 </v-col>
               </v-row>
             </v-container>
           </template>
           <!-- <template #day-header>
-            <div style="max-height: 100%"></div>
+            <div style="max-height: 10vh">
+            test</div>
           </template> -->
         </v-calendar>
         <v-menu
@@ -139,11 +166,17 @@
           offset-x
         >
           <v-card color="grey lighten-4" min-width="350px" flat>
-            <v-toolbar :color="selectedEvent.color" dark>
+            <v-toolbar dark>
               <v-btn icon>
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
-              <v-toolbar-title v-html="selectedEvent.name"></v-toolbar-title>
+              <v-toolbar-title>
+                {{ selectedEvent.name }}
+              </v-toolbar-title>
+              <v-divider class="mx-4" vertical></v-divider>
+              <v-toolbar-title>
+                {{ formatDate(selectedEvent.start) }}
+              </v-toolbar-title>
               <v-spacer></v-spacer>
               <v-btn icon>
                 <v-icon>mdi-heart</v-icon>
@@ -233,6 +266,7 @@ export default {
       "Theodore Doe",
       "Teddy Doe",
     ],
+    showLegend: false,
     legendsData: [
       "Confirmed",
       "Checked-in",
@@ -308,11 +342,11 @@ export default {
 
       while (currentDate <= endDate) {
         const startTime = new Date(currentDate);
-        startTime.setHours(0, 0, 0); // Set start time to 2:00 PM
+        startTime.setHours(14, 0, 0); // Set start time to 2:00 PM
 
         const endTime = new Date(startTime);
-        endTime.setDate(endTime.getDate());
-        endTime.setHours(23, 0, 0); // Set end time to 11:00 AM next day
+        endTime.setDate(endTime.getDate() + 1);
+        endTime.setHours(12, 0, 0); // Set end time to 11:00 AM next day
 
         for (let i = 0; i <= 7; i++) {
           let client =
@@ -342,15 +376,28 @@ export default {
       }
 
       this.events = events;
-      console.log(this.events);
     },
     rnd(a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a;
     },
+    triggerTransition() {
+      this.showLegend = !this.showLegend;
+    },
+    formatDate(date) {
+      const formattedDate = new Date(date).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      return formattedDate;
+    },
   },
   computed: {
-    viewedDay() {
-      return this.type === "day" ? "100%" : 20;
+    sizeEvents() {
+      return this.type === "day" ? 85 : 20;
+    },
+    formatEvents() {
+      return ["month", "week", "4day"];
     },
   },
   watch: {
@@ -361,11 +408,16 @@ export default {
         this.updateRange();
       },
     },
+    type: {
+      handler(value) {
+        console.log(this.formatEvents.includes(value) && this.type !== "day");
+      },
+    },
   },
 };
 </script>
 
-<style scoped>
+<style>
 .chips {
   display: inline-block;
   width: 10px;
@@ -373,4 +425,13 @@ export default {
   border-radius: 50%;
   margin-left: 0.2rem;
 }
+
+/* .v-event {
+  width: 95% !important;
+  margin: 0 125px;
+} */
+
+/* .v-calendar-monthly {
+  overflow: hidden;
+} */
 </style>
