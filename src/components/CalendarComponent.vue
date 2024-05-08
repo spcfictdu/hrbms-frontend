@@ -2,14 +2,9 @@
   <v-row class="fill-height">
     <v-col>
       <v-sheet height="64">
-        <v-row no-gutters align="center">
+        <v-row dense align="center">
           <v-col cols="auto">
-            <v-btn
-              outlined
-              class="mr-4"
-              color="grey darken-2"
-              @click="setToday"
-            >
+            <v-btn outlined color="grey darken-2" @click="setToday">
               Today
             </v-btn>
           </v-col>
@@ -27,6 +22,19 @@
             <v-toolbar-title v-if="$refs.calendar">
               {{ $refs.calendar.title }}
             </v-toolbar-title>
+          </v-col>
+          <v-divider vertical class="mx-4"></v-divider>
+          <v-col cols="auto">
+            <div class="d-flex justify-start align-center">
+              <div
+                class="d-flex justify-start align-center mr-5"
+                v-for="(data, index) in legendsData"
+                :key="index"
+              >
+                <div :class="`chips ${getEventColor(data)}`" class="mr-2"></div>
+                <div>{{ data }}</div>
+              </div>
+            </div>
           </v-col>
           <v-spacer></v-spacer>
           <v-col cols="auto">
@@ -89,33 +97,40 @@
           color="primary"
           :events="events"
           :event-color="getEventColor"
-          event-height="0"
+          :event-height="viewedDay"
           :type="type"
           event-more
           @click:event="showEvent"
           @click:more="viewDay"
           @click:date="viewDay"
           @change="updateRange"
+          interval-count="0"
         >
           <template v-slot:event="{ event }">
-            <div style="width: 100px; height: 50px;">
-              <div class="font-weight-bold">
-                {{ event.name }} - {{ event.client }}
+            <div v-if="type === 'month'">
+              <div class="font-weight-bold px-2">
+                {{ event.name
+                }}{{ event.client !== null ? " - " + event.client : "" }}
               </div>
             </div>
-            <!-- <v-container class="d-flex justify-center" style="max-width: 100%; max-height: 100%">
+            <v-container
+              class="d-flex justify-center"
+              style="max-width: 100%; max-height: 100%"
+              v-else
+            >
               <v-row no-gutters>
                 <v-col cols="auto">
                   <div class="font-weight-bold">
-                    {{ event.name }} - {{ event.client }}
+                    {{ event.name
+                    }}{{ event.client !== null ? " - " + event.client : "" }}
                   </div>
                 </v-col>
               </v-row>
-            </v-container> -->
+            </v-container>
           </template>
-          <template #day-header>
+          <!-- <template #day-header>
             <div style="max-height: 100%"></div>
-          </template>
+          </template> -->
         </v-calendar>
         <v-menu
           v-model="selectedOpen"
@@ -207,19 +222,23 @@ export default {
         "Suite 8",
       ],
     },
-    statuses: [
-      "Confirmed",
-      "Checked-in",
-      "Checked-out",
-      "Unallocated",
-      "Ready for Occupancy",
-    ],
+    statuses: {
+      withClient: ["Confirmed", "Checked-in", "Checked-out"],
+      withoutClient: ["Unallocated", "Ready for Occupancy"],
+    },
     clients: [
       "John Doe",
       "Jane Doe",
       "Michael Doe",
       "Theodore Doe",
       "Teddy Doe",
+    ],
+    legendsData: [
+      "Confirmed",
+      "Checked-in",
+      "Checked-out",
+      "Unallocated",
+      "Ready for Occupancy",
     ],
   }),
   mounted() {
@@ -233,15 +252,18 @@ export default {
     },
     getEventColor(event) {
       let color = null;
-      if (event.status === "Confirmed") {
+      if (event.status === "Confirmed" || event === "Confirmed") {
         color = "red";
-      } else if (event.status === "Checked-in") {
+      } else if (event.status === "Checked-in" || event === "Checked-in") {
         color = "primary";
-      } else if (event.status === "Checked-out") {
+      } else if (event.status === "Checked-out" || event === "Checked-out") {
         color = "grey";
-      } else if (event.status === "Unallocated") {
+      } else if (event.status === "Unallocated" || event === "Unallocated") {
         color = "blue lighten-3";
-      } else if (event.status === "Ready for Occupancy") {
+      } else if (
+        event.status === "Ready for Occupancy" ||
+        event === "Ready for Occupancy"
+      ) {
         color = "success";
       }
       return color;
@@ -286,33 +308,49 @@ export default {
 
       while (currentDate <= endDate) {
         const startTime = new Date(currentDate);
-        startTime.setHours(14, 0, 0); // Set start time to 2:00 PM
+        startTime.setHours(0, 0, 0); // Set start time to 2:00 PM
 
         const endTime = new Date(startTime);
-        endTime.setDate(endTime.getDate() + 1);
-        endTime.setHours(11, 0, 0); // Set end time to 11:00 AM next day
+        endTime.setDate(endTime.getDate());
+        endTime.setHours(23, 0, 0); // Set end time to 11:00 AM next day
 
-        events.push({
-          name: this.rooms[Math.floor(Math.random() * this.rooms.length)],
-          start: startTime,
-          end: endTime,
-          status:
-            this.statuses[Math.floor(Math.random() * this.statuses.length)],
-          client:
+        for (let i = 0; i <= 7; i++) {
+          let client =
             Math.random() > 0.5
               ? this.clients[Math.floor(Math.random() * this.clients.length)]
-              : null,
-          timed: false,
-        });
+              : null;
+          let status =
+            client !== null
+              ? this.statuses.withClient[
+                  Math.floor(Math.random() * this.statuses.withClient.length)
+                ]
+              : this.statuses.withoutClient[
+                  Math.floor(Math.random() * this.statuses.withoutClient.length)
+                ];
+
+          events.push({
+            name: this.rooms[i],
+            start: startTime,
+            end: endTime,
+            status: status,
+            client: client,
+          });
+        }
 
         // Move to the next day
         currentDate.setDate(currentDate.getDate() + 1);
       }
 
       this.events = events;
+      console.log(this.events);
     },
     rnd(a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a;
+    },
+  },
+  computed: {
+    viewedDay() {
+      return this.type === "day" ? "100%" : 20;
     },
   },
   watch: {
@@ -327,4 +365,12 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.chips {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-left: 0.2rem;
+}
+</style>
