@@ -426,10 +426,16 @@ export default {
   margin-left: 0.2rem;
 }
 
-/* .v-event {
+.v-calendar-weekly__day.v-future > div[style='height: 21px;']{
+  display: none;
+}
+
+.v-event {
   width: 95% !important;
-  margin: 0 125px;
-} */
+  position: absolute;
+  top: 0px;
+  margin-left: 50px;
+}
 
 /* .v-calendar-monthly {
   overflow: hidden;
