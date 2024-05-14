@@ -1,25 +1,86 @@
 <template>
   <v-container class="pa-0">
-    <div class="d-flex flex-row align-center pb-3">
-      <p class="text-h6 font-weight-bold ma-0 pa-0">
+    <div
+      class="w-full d-flex flex-column flex-sm-row align-center justify-space-between"
+    >
+      <p class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-0">
         {{ $router.currentRoute.meta.name }}
       </p>
-
-      <div class="header-nav-buttons-wrapper ml-auto">
-        <p
-          class="header-nav-buttons text-subtitle-2 font-weight-regular pa-2 ma-0"
+      <div class="w-full d-none d-sm-flex flex-row align-center justify-center">
+        <v-btn
+          small
+          :plain="route.name !== activeRouteButton"
+          :text="route.name === activeRouteButton"
+          elevation="0"
           v-for="(route, index) in routes"
-          :key="index"
+          :key="'route' + index"
+          @click="redirect(route)"
+          >{{ route.name.toUpperCase() }}</v-btn
         >
-          {{ route.name.toUpperCase() }}
-        </p>
+      </div>
+
+      <!-- Mobile breakpoint -->
+      <div class="w-full d-flex d-sm-none flex-row align-center justify-center mb-2">
+        <v-btn
+          x-small
+          :plain="route.name !== activeRouteButton"
+          :text="route.name === activeRouteButton"
+          elevation="0"
+          v-for="(route, index) in routes"
+          :key="'route' + index"
+          @click="redirect(route)"
+          >{{ route.name.toUpperCase() }}</v-btn
+        >
       </div>
     </div>
 
     <v-divider />
 
-    <div class="d-flex flex-row align-center py-3">
-      <div class="chip-wrapper">
+    <div class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-2">
+      <div class="w-full d-flex align-center order-first order-md-last">
+        <v-text-field
+          block
+          dense
+          rounded
+          hide-details
+          filled
+          full-width
+          prepend-inner-icon="mdi-magnify"
+          placeholder="Search for room here..."
+          class="mr-2 ml-md-2"
+        />
+        <v-btn outlined rounded color="primary" class="d-none d-md-flex">
+          <v-icon left>mdi-plus</v-icon>
+          ROOM
+        </v-btn>
+
+        <v-btn
+          fab
+          small
+          elevation="0"
+          color="primary"
+          @click="redirect(route)"
+          class="d-flex d-md-none"
+        >
+          <v-icon color="white">mdi-plus</v-icon>
+        </v-btn>
+      </div>
+
+      <div class="d-none d-md-flex chip-wrapper order-last order-md-first">
+        <v-chip
+          small
+          color="primary"
+          :outlined="chip !== 'All'"
+          v-for="chip in chips"
+          :key="chip"
+        >
+          {{ chip }}
+        </v-chip>
+      </div>
+    </div>
+
+    <!-- <div class="d-flex flex-column flex-md-row align-center py-3">
+      <div class="chip-wrapper order-last order-md-first">
         <v-chip
           small
           color="primary"
@@ -31,8 +92,9 @@
         </v-chip>
       </div>
 
-      <div class="d-flex align-center ml-auto">
+      <div class="d-flex align-center ml-md-auto order-first order-md-last">
         <v-text-field
+          block
           dense
           rounded
           hide-details
@@ -45,7 +107,7 @@
           ROOM
         </v-btn>
       </div>
-    </div>
+    </div> -->
   </v-container>
 </template>
 
@@ -53,8 +115,7 @@
 export default {
   name: "HotelRoomsHeader",
   data: () => ({
-    hello: "world",
-
+    activeButton: null,
     routes: [
       {
         name: "Rooms",
@@ -85,6 +146,21 @@ export default {
       "Family",
     ],
   }),
+  computed: {
+    activeRouteButton: function () {
+      return this.activeButton;
+    },
+  },
+
+  methods: {
+    redirect: function (route) {
+      this.activeButton = route.name;
+      return this.$router.push({ name: route.route });
+    },
+  },
+  mounted() {
+    this.activeButton = this.$router.currentRoute.meta.name;
+  },
 };
 </script>
 

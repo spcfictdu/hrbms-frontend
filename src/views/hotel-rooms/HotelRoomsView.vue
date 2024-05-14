@@ -1,7 +1,7 @@
 <template>
-  <div class="px-lg-16 py-8">
-    <!-- <HotelRoomsHeader />
-    <v-divider class="mb-5"/>
+  <div class="px-sm-2 px-lg-16 py-md-8">
+    <HotelRoomsHeader />
+    <!-- <v-divider class="mb-5"/>
     <RoomsList /> -->
   </div>
 </template>

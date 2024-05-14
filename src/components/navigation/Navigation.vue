@@ -23,7 +23,7 @@
             </div>
           </div>
         </v-col>
-        
+
         <v-col
           cols="12"
           sm="8"
@@ -42,7 +42,7 @@
               :plain="route.name !== activeRouteButton"
               :text="route.name === activeRouteButton"
               elevation="0"
-              class="white--text font-weight-regular"
+              class="white--text"
               v-for="(route, index) in routes"
               :key="'route' + index"
               @click="redirect(route)"
@@ -75,7 +75,7 @@
                 >
               </v-btn>
 
-              <p class="text-caption mb-0 mt-2 white--text">{{ route.name }}</p>
+              <!-- <p class="text-caption mb-0 mt-2 white--text">{{ route.name }}</p> -->
             </div>
 
             <v-divider vertical class="white" />
@@ -84,7 +84,7 @@
               <v-btn fab outlined x-small elevation="0" color="white"
                 ><v-icon> mdi-logout-variant </v-icon></v-btn
               >
-              <p class="text-caption mb-0 mt-2 white--text">Sign Out</p>
+              <!-- <p class="text-caption mb-0 mt-2 white--text">Sign Out</p> -->
             </div>
           </div>
         </v-col>
