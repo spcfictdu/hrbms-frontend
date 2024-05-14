@@ -20,7 +20,9 @@
       </div>
 
       <!-- Mobile breakpoint -->
-      <div class="w-full d-flex d-sm-none flex-row align-center justify-center mb-2">
+      <div
+        class="w-full d-flex d-sm-none flex-row align-center justify-center mb-2"
+      >
         <v-btn
           x-small
           :plain="route.name !== activeRouteButton"
@@ -36,7 +38,10 @@
 
     <v-divider />
 
-    <div class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-2">
+    <div
+      class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-2"
+      v-if="showControls"
+    >
       <div class="w-full d-flex align-center order-first order-md-last">
         <v-text-field
           block
@@ -149,6 +154,9 @@ export default {
   computed: {
     activeRouteButton: function () {
       return this.activeButton;
+    },
+    showControls() {
+      return this.$route.meta.name !== 'Availability' ? true: false;
     },
   },
 

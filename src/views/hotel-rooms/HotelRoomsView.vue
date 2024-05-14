@@ -3,6 +3,7 @@
     <HotelRoomsHeader />
     <!-- <v-divider class="mb-5"/>
     <RoomsList /> -->
+    <router-view />
   </div>
 </template>
 
