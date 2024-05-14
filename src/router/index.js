@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import roomsList from "./hotel-rooms/rooms-list";
+import guestList from "./guest-list/guest-list";
 
 Vue.use(VueRouter);
 
@@ -12,7 +13,8 @@ const routes = [
       import(/* webpackChunkName: "index" */ "@/views/DashboardView.vue"),
   },
 
-  ...roomsList
+  ...roomsList,
+  ...guestList
 ];
 
 const router = new VueRouter({
