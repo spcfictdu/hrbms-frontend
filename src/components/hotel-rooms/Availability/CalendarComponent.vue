@@ -1,42 +1,54 @@
 <template>
   <v-container class="pa-0">
-    <div class="w-full d-flex justify-space-around align-center py-8">
-      <!-- Room Categories -->
-      <v-btn
+    <!-- Room Categories -->
+    <!-- <div
+      class="w-full d-flex flex-column flex-md-row flex-wrap justify-space-around align-center py-8"
+    ></div> -->
+    <v-row dense justify="center" class="py-4 py-sm-8">
+      <v-col
+        cols="auto"
         v-for="(i, index) in buttons"
         :key="index"
-        depressed
-        small
-        min-width="140"
-        height="40"
-        :color="i.roomType === activeButton ? 'accentTwo' : 'lightBg'"
-        class="pa-0 calendar-buttons text-subtitle-2"
-        :class="{
-          'font-weight-bold': i.roomType === activeButton,
-          'font-weight-regular': i.roomType !== activeButton,
-        }"
-        @click="activeValue(i.roomType)"
-        >{{ i.roomType }}</v-btn
+        class="d-none d-sm-block"
       >
-    </div>
+        <v-btn
+          depressed
+          small
+          min-width="140"
+          height="40"
+          :color="i.roomType === activeButton ? 'accentTwo' : 'lightBg'"
+          class="pa-0 calendar-buttons text-subtitle-2"
+          :class="{
+            'font-weight-bold': i.roomType === activeButton,
+            'font-weight-regular': i.roomType !== activeButton,
+          }"
+          @click="activeValue(i.roomType)"
+          >{{ i.roomType }}</v-btn
+        >
+      </v-col>
+
+      <!-- Mobile Breakpoint -->
+      <v-col cols="12" class="d-block d-sm-none">
+        <v-select
+          dense
+          outlined
+          class="lightBg"
+          hide-details="auto"
+          :items="buttons"
+          item-text="roomType"
+          label="Select a Room"
+          @click="activeValue(i.roomType)"
+        ></v-select>
+      </v-col>
+    </v-row>
 
     <!-- Calendar Component Card -->
     <v-card class="pa-5" flat>
-      <!-- <div class="py-4">
-        <div class="d-flex justify-space-between align-center">
-          <v-btn outlined icon color="primary"
+      <div class="d-flex justify-space-between align-center">
+        <div class="d-flex align-center">
+          <v-btn outlined icon color="primary" class="mr-4"
             ><v-icon>mdi-filter-variant</v-icon></v-btn
           >
-          <v-select filled rounded dense></v-select>
-        </div>
-      </div> -->
-      <v-row>
-        <v-col cols="auto">
-          <v-btn outlined icon color="primary"
-            ><v-icon>mdi-filter-variant</v-icon></v-btn
-          >
-        </v-col>
-        <v-col cols="auto" class="col-md-4">
           <v-select
             rounded
             dense
@@ -46,20 +58,24 @@
             :items="dropdownData"
             v-model="dropdownValue"
           ></v-select>
-        </v-col>
-        <v-spacer></v-spacer>
-        <v-col cols="auto">
-          <v-btn rounded color="primary" depressed
+        </div>
+        <div class="ml-4 ml-sm-0">
+          <v-btn rounded color="primary" depressed class="d-none d-sm-block"
             ><v-icon left>mdi-plus</v-icon>Reserve</v-btn
           >
-        </v-col>
-      </v-row>
+          <v-btn icon rounded color="white" class="primary d-block d-sm-none"
+            ><v-icon>mdi-plus</v-icon></v-btn
+          >
+        </div>
+      </div>
 
       <v-divider class="my-4" />
 
-      <div class="d-flex justify-end align-center my-4">
+      <div
+        class="d-flex justify-start justify-sm-end flex-wrap flex-sm-nowrap align-center my-4"
+      >
         <div
-          class="d-flex justify-start align-center text-subtitle-2 font-weight-regular ml-4"
+          class="d-flex justify-start align-center text-subtitle-2 font-weight-regular ml-0 ml-sm-4 mr-4 mr-sm-0"
           v-for="(data, index) in legendsData"
           :key="index"
         >
@@ -72,28 +88,37 @@
       </div>
 
       <!-- Calendar Controls -->
-      <v-row dense align="center" class="my-4">
+      <v-row
+        dense
+        :justify="breakpoints.calendarJustify"
+        align="center"
+        class="mt-4 my-sm-4"
+      >
         <v-col cols="auto">
           <v-btn outlined color="grey darken-2" @click="setToday">
             Today
           </v-btn>
         </v-col>
-        <v-col cols="auto">
+        <v-col cols="auto" :order="breakpoints.chevronLeft.order">
           <v-btn fab text small color="grey darken-2" @click="prev">
-            <v-icon small> mdi-chevron-left </v-icon>
+            <v-icon :small="breakpoints.chevronLeft.iconSize">
+              mdi-chevron-left
+            </v-icon>
           </v-btn>
         </v-col>
-        <v-col cols="auto">
+        <v-col cols="auto" :order="breakpoints.chevronRight.order">
           <v-btn fab text small color="grey darken-2" @click="next">
-            <v-icon small> mdi-chevron-right </v-icon>
+            <v-icon :small="breakpoints.chevronLeft.iconSize">
+              mdi-chevron-right
+            </v-icon>
           </v-btn>
         </v-col>
-        <v-col cols="auto">
+        <v-col cols="auto" class="d-none d-sm-block">
           <v-toolbar-title v-if="$refs.calendar">
             {{ $refs.calendar.title }}
           </v-toolbar-title>
         </v-col>
-        <v-spacer></v-spacer>
+        <v-spacer class="d-none d-sm-block"></v-spacer>
         <v-col cols="auto">
           <v-menu bottom right>
             <template v-slot:activator="{ on, attrs }">
@@ -118,11 +143,17 @@
             </v-list>
           </v-menu>
         </v-col>
+        <v-spacer class="d-block d-sm-none"></v-spacer>
+        <v-col cols="auto" class="d-block d-sm-none" order="last">
+          <div v-if="$refs.calendar" class="text-h6 font-weight-regular">
+            {{ $refs.calendar.title }}
+          </div>
+        </v-col>
       </v-row>
 
       <!-- Calendar Scheduler -->
       <div class="mt-4">
-        <v-sheet height="120vh">
+        <v-sheet height="800">
           <v-calendar
             ref="calendar"
             v-model="focus"
@@ -140,8 +171,7 @@
             <template v-slot:event="{ event }">
               <div v-if="formatEvents.includes(type) && type !== 'day'">
                 <div class="font-weight-regular px-2">
-                  {{ event.client === null ? event.name : ""
-                  }}{{ event.client !== null ? event.client : "" }}
+                  {{ event.client !== null ? event.client : "" }}
                 </div>
               </div>
               <v-container
@@ -168,33 +198,68 @@
             :activator="selectedElement"
             offset-x
           >
-            <v-card color="grey lighten-4" min-width="350px" flat>
-              <v-toolbar dark>
-                <v-btn icon>
-                  <v-icon>mdi-pencil</v-icon>
-                </v-btn>
-                <v-toolbar-title>
-                  {{ selectedEvent.name }}
-                </v-toolbar-title>
-                <v-divider class="mx-4" vertical></v-divider>
-                <v-toolbar-title>
-                  {{ formatDate(selectedEvent.start) }}
-                </v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-btn icon>
-                  <v-icon>mdi-heart</v-icon>
-                </v-btn>
-                <v-btn icon>
-                  <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
-              </v-toolbar>
-              <v-card-text>
-                <span v-html="selectedEvent.details"></span>
-              </v-card-text>
-              <v-card-actions>
-                <v-btn text color="secondary" @click="selectedOpen = false">
-                  Cancel
-                </v-btn>
+            <v-card color="white" max-width="400">
+              <!-- Information -->
+              <div class="pa-6">
+                <div class="text-subtitle-1 font-weight-bold text-uppercase">
+                  <div class="mb-1">
+                    {{
+                      selectedEvent.client !== null
+                        ? selectedEvent.client
+                        : "Not Available"
+                    }}
+                  </div>
+                  <div class="d-flex align-center">
+                    <v-chip
+                      :color="getEventColor(selectedEvent)"
+                      class="text-outline white--text"
+                      small
+                      >{{ selectedEvent.status }}</v-chip
+                    >
+                    <div
+                      class="d-flex text-caption font-weight-regular grey--text text--darken-2 text-capitalize"
+                    >
+                      <div class="mx-2">
+                        {{ this.activeButton }}
+                      </div>
+                      <v-divider vertical></v-divider>
+                      <div class="mx-2">
+                        {{ selectedEvent.name }}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="mt-4"
+                  v-for="(sched, index) in selectedEvent.schedule"
+                  :key="index"
+                >
+                  <div
+                    class="text-caption font-weight-bold grey--text text--darken-2"
+                  >
+                    {{ sched.title }}
+                  </div>
+                  <div class="text-subtitle-2 font-weight-regular mb-2">
+                    {{ formatDate(sched.time) }}
+                  </div>
+                </div>
+              </div>
+
+              <v-divider />
+
+              <v-card-actions
+                class="d-flex flex-column align-center justify-center px-6 py-4"
+              >
+                <v-btn color="#e9a800" outlined block>View Details</v-btn>
+
+                <v-btn
+                  color="#ff3838"
+                  text
+                  block
+                  class="ml-0 mt-2"
+                  @click="selectedOpen = false"
+                  >Close</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-menu>
@@ -210,15 +275,15 @@ export default {
   data: () => ({
     activeButton: "Executive Room",
     dropdownData: null,
-    dropdownValue: null,
+    dropdownValue: "Room E1",
     buttons: [
       {
         roomType: "Executive Room",
-        rooms: ["Executive Suite 1", "Executive Suite 2"],
+        rooms: ["Room E1", "Room E2"],
       },
       {
         roomType: "Deluxe Room",
-        rooms: ["Deluxe Suite 1", "Deluxe Suite 2"],
+        rooms: ["Room D1", "Room D2"],
       },
       {
         roomType: "Family Room",
@@ -246,18 +311,18 @@ export default {
       day: "Day",
       "4day": "4 Days",
     },
-    typeToRooms: {
-      deluxe: "Deluxe",
-      regular: "Regular",
-      suite: "Suite",
-    },
     selectedEvent: {},
     selectedElement: null,
     selectedOpen: false,
     events: [],
     statuses: {
-      withClient: ["Confirmed", "Checked-in", "Checked-out", "Reserved"],
-      withoutClient: ["Housekeeping"],
+      withClient: [
+        "Confirmed",
+        "Checked-in",
+        "Checked-out",
+        "Reserved",
+        "Housekeeping",
+      ],
     },
     clients: [
       "John Doe",
@@ -273,9 +338,15 @@ export default {
       "Reserved",
       "Confirmed",
     ],
+    breakpoints: {
+      calendarJustify: "center",
+      chevronLeft: {},
+      chevronRight: {},
+    },
   }),
   mounted() {
     this.$refs.calendar.checkChange();
+    this.updateRange();
   },
   methods: {
     activeValue(value) {
@@ -348,23 +419,35 @@ export default {
 
         for (let i = 0; i <= 0; i++) {
           let client =
-            Math.random() > 0.5
-              ? this.clients[Math.floor(Math.random() * this.clients.length)]
-              : null;
+            this.clients[Math.floor(Math.random() * this.clients.length)];
           let status =
-            client !== null
-              ? this.statuses.withClient[
-                  Math.floor(Math.random() * this.statuses.withClient.length)
-                ]
-              : this.statuses.withoutClient[
-                  Math.floor(Math.random() * this.statuses.withoutClient.length)
-                ];
+            this.statuses.withClient[
+              Math.floor(Math.random() * this.statuses.withClient.length)
+            ];
 
           events.push({
             name: this.dropdownValue,
             start: startTime,
-            status: status,
             end: endTime,
+            schedule: [
+              {
+                title: "From:",
+                time: startTime,
+              },
+              {
+                title: "To:",
+                time: endTime,
+              },
+              {
+                title: "Checked In:",
+                time: startTime,
+              },
+              {
+                title: "Checked Out:",
+                time: endTime,
+              },
+            ],
+            status: status,
             client: client,
           });
         }
@@ -385,7 +468,11 @@ export default {
         month: "long",
         day: "numeric",
       });
-      return formattedDate;
+      const formattedTime = new Date(date).toLocaleTimeString("en-US", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+      return `${formattedDate} - ${formattedTime}`;
     },
   },
   computed: {
@@ -394,6 +481,9 @@ export default {
     },
     formatEvents() {
       return ["month", "week", "4day"];
+    },
+    size() {
+      return this.$vuetify.breakpoint;
     },
   },
   watch: {
@@ -405,8 +495,28 @@ export default {
       },
     },
     dropdownValue: {
+      immediate: true, //Testing
       handler: function (newVal) {
         newVal && this.updateRange();
+      },
+    },
+    size: {
+      immediate: true,
+      deep: true,
+      handler: function (newVal) {
+        if (newVal.xs) {
+          this.breakpoints.calendarJustify = "space-around";
+          this.breakpoints.chevronLeft.iconSize = false;
+          this.breakpoints.chevronRight.iconSize = false;
+          this.breakpoints.chevronLeft.order = "3";
+          this.breakpoints.chevronRight.order = "4";
+        } else {
+          this.breakpoints.calendarJustify = "center";
+          this.breakpoints.chevronLeft.iconSize = true;
+          this.breakpoints.chevronRight.iconSize = true;
+          this.breakpoints.chevronLeft.order = "";
+          this.breakpoints.chevronRight.order = "";
+        }
       },
     },
   },
