@@ -46,7 +46,12 @@
     <v-card class="pa-5" flat>
       <div class="d-flex justify-space-between align-center">
         <div class="d-flex align-center">
-          <v-btn outlined icon color="primary" class="mr-4"
+          <v-btn
+            outlined
+            icon
+            color="primary"
+            class="mr-4"
+            @click="triggerActivator"
             ><v-icon>mdi-filter-variant</v-icon></v-btn
           >
           <v-select
@@ -153,7 +158,7 @@
 
       <!-- Calendar Scheduler -->
       <div class="mt-4">
-        <v-sheet height="800">
+        <v-sheet :height="breakpoints.calendarBreakpoint">
           <v-calendar
             ref="calendar"
             v-model="focus"
@@ -266,13 +271,23 @@
         </v-sheet>
       </div>
     </v-card>
+    <calendar-filter-dialog
+      :activator="filterDialog"
+      @reset-activator="resetActivator"
+      @request-filter="requestFilter"
+    />
   </v-container>
 </template>
 
 <script>
+import CalendarFilterDialog from "./CalendarFilterDialog.vue";
 export default {
   name: "CalendarComponent",
+  components: {
+    CalendarFilterDialog,
+  },
   data: () => ({
+    filterDialog: false,
     activeButton: "Executive Room",
     dropdownData: null,
     dropdownValue: "Room E1",
@@ -342,6 +357,7 @@ export default {
       calendarJustify: "center",
       chevronLeft: {},
       chevronRight: {},
+      calendarBreakpoint: "",
     },
   }),
   mounted() {
@@ -457,7 +473,6 @@ export default {
       }
 
       this.events = events;
-      console.log(this.events);
     },
     rnd(a, b) {
       return Math.floor((b - a + 1) * Math.random()) + a;
@@ -473,6 +488,16 @@ export default {
         minute: "2-digit",
       });
       return `${formattedDate} - ${formattedTime}`;
+    },
+    resetActivator: function (newVal) {
+      this.filterDialog = newVal;
+    },
+    triggerActivator: function () {
+      this.filterDialog = !this.filterDialog;
+    },
+    requestFilter: function (payload) {
+      this.focus = payload[0];
+      this.type = "week";
     },
   },
   computed: {
@@ -510,12 +535,14 @@ export default {
           this.breakpoints.chevronRight.iconSize = false;
           this.breakpoints.chevronLeft.order = "3";
           this.breakpoints.chevronRight.order = "4";
+          this.breakpoints.calendarBreakpoint = newVal.thresholds.xs;
         } else {
           this.breakpoints.calendarJustify = "center";
           this.breakpoints.chevronLeft.iconSize = true;
           this.breakpoints.chevronRight.iconSize = true;
           this.breakpoints.chevronLeft.order = "";
           this.breakpoints.chevronRight.order = "";
+          this.breakpoints.calendarBreakpoint = newVal.thresholds.sm;
         }
       },
     },
