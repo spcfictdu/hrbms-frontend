@@ -156,7 +156,7 @@ export default {
       return this.activeButton;
     },
     showControls() {
-      return this.$route.meta.name !== 'Availability' ? true: false;
+      return this.$route.meta.hideInputs ? false : true;
     },
   },
 

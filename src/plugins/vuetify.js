@@ -20,6 +20,7 @@ export default new Vuetify({
         checkedout: "#e9a700",
         confirmed: "#2f45b7",
         reserved: "#df18ff",
+        warning: "#ff3838",
       },
     },
   },

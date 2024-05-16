@@ -68,7 +68,7 @@
           </div>
         </div>
         <div class="ml-4 ml-sm-0">
-          <v-btn rounded color="primary" depressed class="d-none d-sm-block"
+          <v-btn rounded color="primary" depressed class="d-none d-sm-block" @click="pushToBooking"
             ><v-icon left>mdi-plus</v-icon>Reserve</v-btn
           >
           <v-btn icon rounded color="white" class="primary d-block d-sm-none"
@@ -499,6 +499,9 @@ export default {
     requestFilter: function (payload) {
       this.focus = payload[0];
       this.type = "week";
+    },
+    pushToBooking: function () {
+      this.$router.push({ name: "Booking" });
     },
   },
   computed: {
