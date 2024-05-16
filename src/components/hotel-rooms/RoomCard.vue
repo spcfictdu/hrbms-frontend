@@ -1,92 +1,112 @@
 <template>
   <div>
-    <div class="card w-full" v-for="(room, index) in rooms" :key="index">
-      <img
-        src="../../assets/hotelRoom.png"
-        alt="hotel room"
-        class="room-images"
-      />
-      <div class="card-text">
-        <div>
-          <p class="text-h5 font-weight-bold mb-0">{{ room.name }}</p>
-          <p class="text-subtitle-2">
-            <span class="text-overline font-weight-bold">{{
-              room.category
-            }}</span
-            >{{ ` | ${room.maxOccupancy} max occupancy` }}
-          </p>
-        </div>
+    <v-hover v-slot="{ hover }">
+      <v-card
+        flat
+        class="card"
+        :elevation="hover ? 12 : 0"
+        :class="{ 'on-hover': hover }"
+      >
+        <div
+          class="d-flex flex-column flex-sm-row w-full align-center mx-4 my-0 my-sm-1"
+        >
+          <v-img
+            src="../../assets/hotelRoom.png"
+            class="room-image-smAndUp d-none d-sm-flex mr-2"
+          />
+          <v-img
+            src="../../assets/hotelRoom.png"
+            class="room-image-mobile d-flex d-sm-none"
+          />
+          <div class="d-flex flex-column justify-center">
+            <v-card-title class="pb-0 font-weight-bold">{{
+              room.name.toUpperCase()
+            }}</v-card-title>
+            <v-card-subtitle class="pb-4 pt-2">
+              <span class="text-overline font-weight-bold">{{ room.category }}</span>
+              <!-- <v-chip
+                small
+                outlined
+                color="primary"
+                class="text-caption font-weight-bold mr-2"
+              >
+                {{ room.category.toUpperCase() }}
+              </v-chip> -->
+              {{ ` | ${room.maxOccupancy} max occupancy` }}
+            </v-card-subtitle>
+            <v-card-text>
+              <p class="text-body-2 room-description longText--text mb-0">
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime
+                rem dicta deserunt sit, in magni! Ducimus sapiente tenetur quos?
+                Inventore neque natus ea voluptas officiis non minima et, iusto
+                laudantium?
+              </p>
+            </v-card-text>
 
-        <div>
-          <p class="text-subtitle-2 font-weight-bold longText--text mb-0">
-            {{ `${room.name} offers the following amenities:` }}
-          </p>
-          <div class="amenities-wrapper">
-            <p
-              v-for="(amenity, index) in room.amenities"
-              :key="'amenity' + index"
-              class="text-subtitle-2 font-weight-regular longText--text mb-0"
-            >
-              {{ amenity }}
-            </p>
+            <v-divider />
+
+            <v-card-actions>
+              <p class="text-overline accentOne--text ml-2 font-weight-bold">DreamStay Discount</p>
+              <v-spacer />
+              <v-btn @click="redirect" small color="primary"
+                >View Details</v-btn
+              >
+            </v-card-actions>
           </div>
         </div>
-
-        <v-divider class="my-3"/>
-
-        <div class="card-actions">
-            <v-btn rounded color="primary" small class="ml-auto"> View Details</v-btn>
-        </div>
-
-      </div>
-    </div>
+      </v-card>
+    </v-hover>
   </div>
 </template>
 
 <script>
 export default {
   name: "RoomCard",
-  props: { rooms: Array },
+  props: { room: Object },
   data: () => ({
     hello: "world",
   }),
+  methods: {
+    redirect: function () {
+      this.$router.push({ name: "Room Details" });
+    },
+  },
 };
 </script>
 
 <style scoped>
 .card {
-  height: 215px;
-  background-color: #fcfcfc;
   border-radius: 10px;
-  padding: 1rem;
-  margin-bottom: 2rem;
-  display: flex;
-  align-items: start;
-  gap: 2rem;
+  overflow: hidden;
 }
 
-.room-images {
-  height: 100%;
-  width: 250px;
-  object-fit: cover;
+.card-content {
+  background-color: rgba(255, 255, 255, 0.7);
   border-radius: 10px;
+  backdrop-filter: blur(5px) !important;
 }
 
-.card-text {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+.room-image-smAndUp {
+  width: 275px;
+  border-radius: 10px;
+  aspect-ratio: 16/10;
+}
+
+.room-image-mobile {
   width: 100%;
+  margin-top: 1rem;
+  border-radius: 10px;
 }
 
-.amenities-wrapper{
-    display: flex;
-    gap: 3rem;
+.room-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
-.card-actions{
-    width: 100%;
-    display: flex;
-    justify-content: end;
+.on-hover {
+  box-shadow: 10px 50px #000000;
+  transition: 0.5s;
 }
 </style>

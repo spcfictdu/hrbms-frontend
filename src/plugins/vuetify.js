@@ -13,6 +13,7 @@ export default new Vuetify({
                 accentTwo: "#D3DAFF",
                 lightBg: "#ECEFFF",
                 longText: "#555555",
+                darkText: "#BABABA",
                 titleText: "#111111",
                 line: "#E0E0E0"
             },

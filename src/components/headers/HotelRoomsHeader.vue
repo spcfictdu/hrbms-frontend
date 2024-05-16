@@ -3,7 +3,7 @@
     <div
       class="w-full d-flex flex-column flex-sm-row align-center justify-space-between"
     >
-      <p class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-0">
+      <p class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-1">
         {{ $router.currentRoute.meta.name }}
       </p>
       <div class="w-full d-none d-sm-flex flex-row align-center justify-center">
@@ -20,7 +20,9 @@
       </div>
 
       <!-- Mobile breakpoint -->
-      <div class="w-full d-flex d-sm-none flex-row align-center justify-center mb-2">
+      <div
+        class="w-full d-flex d-sm-none flex-row align-center justify-center mb-2"
+      >
         <v-btn
           x-small
           :plain="route.name !== activeRouteButton"
@@ -36,8 +38,10 @@
 
     <v-divider />
 
-    <div class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-2">
-      <div class="w-full d-flex align-center order-first order-md-last">
+    <div
+      class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-2"
+    >
+      <div class="w-full d-flex align-center order-first order-md-last ml-md-auto">
         <v-text-field
           block
           dense
@@ -49,9 +53,20 @@
           placeholder="Search for room here..."
           class="mr-2 ml-md-2"
         />
-        <v-btn outlined rounded color="primary" class="d-none d-md-flex">
+        <v-btn
+          v-if="$router.currentRoute.meta.name !== 'Categories'"
+          outlined
+          rounded
+          color="primary"
+          class="d-none d-md-flex"
+        >
           <v-icon left>mdi-plus</v-icon>
           ROOM
+        </v-btn>
+
+        <v-btn v-else outlined rounded color="primary" class="d-none d-md-flex">
+          <v-icon left>mdi-plus</v-icon>
+          CATEGORY
         </v-btn>
 
         <v-btn
@@ -66,7 +81,10 @@
         </v-btn>
       </div>
 
-      <div class="d-none d-md-flex chip-wrapper order-last order-md-first">
+      <div
+        v-if="$router.currentRoute.meta.name !== 'Categories'"
+        class="d-none d-md-flex chip-wrapper order-last order-md-first"
+      >
         <v-chip
           small
           color="primary"
@@ -119,7 +137,7 @@ export default {
     routes: [
       {
         name: "Rooms",
-        route: "Rooms",
+        route: "Rooms List",
       },
       {
         name: "Occupied",
@@ -127,7 +145,7 @@ export default {
       },
       {
         name: "Categories",
-        route: "Categories",
+        route: "Room Categories",
       },
       {
         name: "Availability",

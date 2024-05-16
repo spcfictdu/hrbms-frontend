@@ -1,6 +1,6 @@
 <template>
   <div class="primary pb-10 pt-md-5 pb-md-15">
-    <v-container class="px-lg-16">
+    <v-container :class="{'xl-padding': $vuetify.breakpoint.xl}">
       <v-row no-gutters>
         <v-col
           cols="0"
@@ -9,7 +9,6 @@
           xl="4"
           class="d-none d-md-flex justify-start"
         >
-
           <!-- Shows only on medium and up breakpoints -->
           <div
             class="white--text d-none d-md-flex align-center w-full justify-start"
@@ -39,8 +38,8 @@
           >
             <v-btn
               small
-              :plain="route.name !== activeRouteButton"
-              :text="route.name === activeRouteButton"
+              :plain="!route.childRouteNames.includes(activeRouteButton)"
+              :text="route.childRouteNames.includes(activeRouteButton)"
               elevation="0"
               class="white--text"
               v-for="(route, index) in routes"
@@ -52,7 +51,7 @@
 
           <!-- Icon variant -->
           <div
-            class="w-full d-flex d-md-none align-center justify-space-around"
+            class="w-full d-flex d-md-none align-center justify-space-around mb-5 mt-2"
           >
             <div
               class="d-flex flex-column align-center justify-space-around"
@@ -61,7 +60,7 @@
             >
               <v-btn
                 fab
-                :outlined="route.name !== activeRouteButton"
+                :outlined="!route.childRouteNames.includes(activeRouteButton)"
                 x-small
                 elevation="0"
                 color="white"
@@ -69,13 +68,15 @@
               >
                 <v-icon
                   :color="
-                    route.name !== activeRouteButton ? 'white' : 'primary'
+                    !route.childRouteNames.includes(activeRouteButton)
+                      ? 'white'
+                      : 'primary'
                   "
                   >{{ route.icon }}</v-icon
                 >
               </v-btn>
 
-              <!-- <p class="text-caption mb-0 mt-2 white--text">{{ route.name }}</p> -->
+              <p class="text-caption mb-0 mt-2 white--text">{{ route.name }}</p>
             </div>
 
             <v-divider vertical class="white" />
@@ -84,7 +85,7 @@
               <v-btn fab outlined x-small elevation="0" color="white"
                 ><v-icon> mdi-logout-variant </v-icon></v-btn
               >
-              <!-- <p class="text-caption mb-0 mt-2 white--text">Sign Out</p> -->
+              <p class="text-caption mb-0 mt-2 white--text">Sign Out</p>
             </div>
           </div>
         </v-col>
@@ -130,21 +131,30 @@ export default {
         name: "Dashboard",
         route: "Dashboard",
         icon: "mdi-view-dashboard-outline",
+        childRouteNames: [],
       },
       {
         name: "Transactions",
         route: "Transactions",
         icon: "mdi-clipboard-text-clock-outline",
+        childRouteNames: [],
       },
       {
         name: "Guests",
         route: "Guests",
         icon: "mdi-account-multiple-outline",
+        childRouteNames: [],
       },
       {
         name: "Hotel Rooms",
-        route: "Rooms",
+        route: "Rooms List",
         icon: "mdi-sofa-single-outline",
+        childRouteNames: [
+          "Rooms",
+          "Occupied Rooms",
+          "Room Categories",
+          "Availability",
+        ],
       },
     ],
   }),
@@ -170,5 +180,9 @@ export default {
 <style scoped>
 .active-route {
   font-weight: bold;
+}
+
+.xl-padding{
+  padding: 0 300px 0 300px;
 }
 </style>

@@ -1,11 +1,8 @@
 <template>
-  <div
-    :class="{
-      'xl-padding': $vuetify.breakpoint.xl,
-      'px-sm-2 py-md-8': $vuetify.breakpoint.lgAndDown,
-    }"
-  >
-    <router-view />
+  <div>
+    <HotelRoomsHeader />
+    <v-divider class="mb-10" />
+    <RoomsList />
   </div>
 </template>
 
@@ -13,7 +10,7 @@
 import RoomsList from "../../components/hotel-rooms/RoomsList.vue";
 import HotelRoomsHeader from "../../components/headers/HotelRoomsHeader.vue";
 export default {
-  name: "HotelRoomsView",
+  name: "RoomsListView",
   components: { RoomsList, HotelRoomsHeader },
   data: () => ({
     hello: "world",
@@ -21,8 +18,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.xl-padding {
-  padding: 0 300px 0 300px;
-}
-</style>
+<style scoped></style>
