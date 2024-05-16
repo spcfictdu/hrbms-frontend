@@ -73,7 +73,7 @@ export default {
   name: "CalendarFilterDialog",
   data: () => ({
     dialog: false,
-    cancelColor: "#ff3838",
+    cancelColor: "housekeeping",
     proceedColor: "primary",
     menu: false,
     dateRange: [],

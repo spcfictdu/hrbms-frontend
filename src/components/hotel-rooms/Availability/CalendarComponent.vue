@@ -29,16 +29,16 @@
 
       <!-- Mobile Breakpoint -->
       <v-col cols="12" class="d-block d-sm-none">
-        <v-select
-          dense
-          outlined
-          class="lightBg"
+        <v-autocomplete
+          rounded
+          filled
+          background-color="white"
           hide-details="auto"
           :items="buttons"
           item-text="roomType"
           label="Select a Room"
-          @click="activeValue(i.roomType)"
-        ></v-select>
+          v-model="activeButton"
+        ></v-autocomplete>
       </v-col>
     </v-row>
 
@@ -54,18 +54,21 @@
             @click="triggerActivator"
             ><v-icon>mdi-filter-variant</v-icon></v-btn
           >
-          <v-select
-            rounded
-            dense
-            filled
-            class="lightBg"
-            hide-details="auto"
-            :items="dropdownData"
-            v-model="dropdownValue"
-          ></v-select>
+          <div style="max-width: 300px">
+            <v-autocomplete
+              class="d-block"
+              rounded
+              dense
+              filled
+              background-color="lightBg"
+              hide-details="auto"
+              :items="dropdownData"
+              v-model="dropdownValue"
+            ></v-autocomplete>
+          </div>
         </div>
         <div class="ml-4 ml-sm-0">
-          <v-btn rounded color="primary" depressed class="d-none d-sm-block"
+          <v-btn rounded color="primary" depressed class="d-none d-sm-block" @click="pushToBooking"
             ><v-icon left>mdi-plus</v-icon>Reserve</v-btn
           >
           <v-btn icon rounded color="white" class="primary d-block d-sm-none"
@@ -84,10 +87,7 @@
           v-for="(data, index) in legendsData"
           :key="index"
         >
-          <div
-            :style="`background: ${getEventColor(data)};`"
-            class="chips mr-2"
-          ></div>
+          <div :class="`${getEventColor(data)}`" class="chips mr-2"></div>
           <div>{{ data }}</div>
         </div>
       </div>
@@ -202,8 +202,9 @@
             :close-on-content-click="false"
             :activator="selectedElement"
             offset-x
+            max-width="400"
           >
-            <v-card color="white" max-width="400">
+            <v-card color="white">
               <!-- Information -->
               <div class="pa-6">
                 <div class="text-subtitle-1 font-weight-bold text-uppercase">
@@ -235,7 +236,7 @@
                   </div>
                 </div>
                 <div
-                  class="mt-4"
+                  class="mt-2 mt-sm-4"
                   v-for="(sched, index) in selectedEvent.schedule"
                   :key="index"
                 >
@@ -280,7 +281,7 @@
 </template>
 
 <script>
-import CalendarFilterDialog from "./CalendarFilterDialog.vue";
+import CalendarFilterDialog from "../../dialogs/CalendarFilterDialog.vue";
 export default {
   name: "CalendarComponent",
   components: {
@@ -375,15 +376,15 @@ export default {
     getEventColor(event) {
       let color = null;
       if (event.status === "Confirmed" || event === "Confirmed") {
-        color = "#2f45b7";
+        color = "confirmed";
       } else if (event.status === "Checked-in" || event === "Checked-in") {
-        color = "#00ac30";
+        color = "checkedin";
       } else if (event.status === "Checked-out" || event === "Checked-out") {
-        color = "#e9a700";
+        color = "checkedout";
       } else if (event.status === "Housekeeping" || event === "Housekeeping") {
-        color = "#ff3838";
+        color = "housekeeping";
       } else if (event.status === "Reserved" || event === "Reserved") {
-        color = "#df18ff";
+        color = "reserved";
       }
       return color;
     },
@@ -499,6 +500,9 @@ export default {
       this.focus = payload[0];
       this.type = "week";
     },
+    pushToBooking: function () {
+      this.$router.push({ name: "Booking" });
+    },
   },
   computed: {
     sizeEvents() {
@@ -517,6 +521,7 @@ export default {
       handler(newVal) {
         const filteredData = this.buttons.filter((i) => i.roomType === newVal);
         this.dropdownData = filteredData[0]?.rooms;
+        this.activeButton = newVal;
       },
     },
     dropdownValue: {
@@ -529,7 +534,7 @@ export default {
       immediate: true,
       deep: true,
       handler: function (newVal) {
-        if (newVal.xs) {
+        if (newVal.xs || newVal.sm) {
           this.breakpoints.calendarJustify = "space-around";
           this.breakpoints.chevronLeft.iconSize = false;
           this.breakpoints.chevronRight.iconSize = false;
