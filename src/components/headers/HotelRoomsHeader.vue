@@ -168,6 +168,9 @@ export default {
     activeRouteButton: function () {
       return this.activeButton;
     },
+    showControls() {
+      return this.$route.meta.hideInputs ? false : true;
+    },
   },
 
   methods: {
