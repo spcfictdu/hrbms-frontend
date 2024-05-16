@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import BookingForm from "@/components/hotel-rooms/availability/BookingForm.vue";
+import BookingForm from '@/components/hotel-rooms/Availability/BookingForm.vue';
 export default {
   name: "BookingView",
   data: () => ({}),
