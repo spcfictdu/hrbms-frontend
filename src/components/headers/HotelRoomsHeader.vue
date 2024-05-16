@@ -36,12 +36,15 @@
       </div>
     </div>
 
-    <v-divider />
+    <v-divider v-if="!toHideFrom.includes($router.currentRoute.meta.name)" />
 
     <div
+      v-if="!toHideFrom.includes($router.currentRoute.meta.name)"
       class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-2"
     >
-      <div class="w-full d-flex align-center order-first order-md-last ml-md-auto">
+      <div
+        class="w-full d-flex align-center order-first order-md-last ml-md-auto"
+      >
         <v-text-field
           block
           dense
@@ -134,6 +137,7 @@ export default {
   name: "HotelRoomsHeader",
   data: () => ({
     activeButton: null,
+    toHideFrom: ["Categories", "Booking"],
     routes: [
       {
         name: "Rooms",

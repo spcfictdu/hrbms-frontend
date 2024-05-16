@@ -1,16 +1,20 @@
 <template>
   <div>
+    <HotelRoomsHeader />
+    <v-divider class="mb-10" />
     <booking-form />
   </div>
 </template>
 
 <script>
-import BookingForm from '@/components/hotel-rooms/Availability/BookingForm.vue';
+import BookingForm from "@/components/hotel-rooms/Availability/BookingForm.vue";
+import HotelRoomsHeader from "@/components/headers/HotelRoomsHeader.vue";
 export default {
   name: "BookingView",
   data: () => ({}),
   components: {
     BookingForm,
+    HotelRoomsHeader,
   },
 };
 </script>
