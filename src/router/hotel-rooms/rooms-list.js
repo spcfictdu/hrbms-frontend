@@ -1,11 +1,11 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import HotelRoomsView from "../../views/hotel-rooms/HotelRoomsView"
-import RoomsListView from "../../views/hotel-rooms/RoomsListView"
+import HotelRoomsView from "../../views/hotel-rooms/HotelRoomsView";
+import RoomsListView from "../../views/hotel-rooms/RoomsListView";
 import RoomDetailsView from "@/views/hotel-rooms/RoomDetailsView";
 import RoomCategoriesView from "@/views/hotel-rooms/RoomCategoriesView";
 import AvailabilityView from "../../views/hotel-rooms/AvailabilityView";
-import BookingView from "../../views/hotel-rooms/availability/BookingView"
+import BookingView from "../../views/hotel-rooms/availability/BookingView";
 
 Vue.use(VueRouter);
 
@@ -15,31 +15,31 @@ export default [
     component: HotelRoomsView,
     children: [
       {
-        path: "/",
+        path: "",
         name: "Rooms List",
         component: RoomsListView,
         meta: {
-          name: "Rooms"
-        }
+          name: "Rooms",
+        },
       },
       {
-        path: "/room-details",
+        path: "room-details",
         name: "Room Details",
         component: RoomDetailsView,
         meta: {
-          name: "Rooms"
-        }
+          name: "Rooms",
+        },
       },
       {
-        path: "/room-categories",
+        path: "room-categories",
         name: "Room Categories",
         component: RoomCategoriesView,
         meta: {
-          name: "Categories"
-        }
+          name: "Categories",
+        },
       },
       {
-        path: "/availability",
+        path: "availability",
         name: "Availability",
         component: AvailabilityView,
         meta: {
@@ -48,7 +48,7 @@ export default [
         },
       },
       {
-        path: "/booking",
+        path: "booking",
         name: "Booking",
         component: BookingView,
         meta: {
@@ -56,6 +56,6 @@ export default [
           hideInputs: true,
         },
       },
-    ]
+    ],
   },
 ];

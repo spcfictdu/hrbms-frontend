@@ -1,21 +1,23 @@
 <template>
   <div class="pb-8">
-    <v-form>
-      <title-slot>
-        <template v-slot:title> Transaction </template>
-      </title-slot>
+    <title-slot>
+      <template v-slot:title> Transaction </template>
+    </title-slot>
 
-      <label-slot>
-        <template v-slot:label> Status </template>
-      </label-slot>
-      <v-select
-        outlined
-        dense
-        :items="statuses"
-        v-model="payload.status"
-        hide-details="auto"
-      ></v-select>
-    </v-form>
+    <label-slot>
+      <template v-slot:label> Status </template>
+    </label-slot>
+    <v-select
+      outlined
+      dense
+      :items="statuses"
+      v-model="payload.status"
+      hide-details="auto"
+      @change="emitTransaction"
+      clearable
+      :rules="rules.status"
+      required
+    ></v-select>
   </div>
 </template>
 
@@ -34,7 +36,18 @@ export default {
     TitleSlot,
     LabelSlot,
   },
-  methods: {},
+  methods: {
+    emitTransaction: function () {
+      this.$emit("emit-transaction", this.payload);
+    },
+  },
+  computed: {
+    rules() {
+      const errors = {};
+      errors.status = [(v) => !!v || "Status is required"];
+      return errors;
+    },
+  },
 };
 </script>
 

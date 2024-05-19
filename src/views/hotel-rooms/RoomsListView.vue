@@ -1,17 +1,14 @@
 <template>
-  <div>
-    <HotelRoomsHeader />
-    <v-divider class="mb-10" />
+  <div class="mt-10">
     <RoomsList />
   </div>
 </template>
 
 <script>
 import RoomsList from "../../components/hotel-rooms/RoomsList.vue";
-import HotelRoomsHeader from "../../components/headers/HotelRoomsHeader.vue";
 export default {
   name: "RoomsListView",
-  components: { RoomsList, HotelRoomsHeader },
+  components: { RoomsList },
   data: () => ({
     hello: "world",
   }),

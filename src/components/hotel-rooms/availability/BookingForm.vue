@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="d-flex justify-end align-center mt-8 mb-2">
+    <div class="d-flex justify-end align-center mb-2">
       <div>
         <v-select
           class="d-block"
@@ -15,55 +15,57 @@
       </div>
     </div>
 
-    <v-row>
-      <!-- Left Column -->
-      <v-col cols="12" md="6">
-        <!-- Transactions -->
-        <v-divider />
-        <transaction-template />
-
-        <!-- Guest Name -->
-        <v-divider />
-        <guest-name-template />
-
-        <!-- Address -->
-        <v-divider />
-        <address-template />
-
-        <!-- Contact Details -->
-        <v-divider />
-        <contact-details-template />
-
-        <!-- ID -->
-        <v-divider />
-        <identification-template />
-      </v-col>
-
-      <!-- Right Column -->
-      <v-col cols="12" md="6">
-        <!-- Check In -->
-        <v-divider />
-        <check-in-template />
-
-        <!-- Check Out -->
-        <v-divider />
-        <check-out-template />
-
-        <!-- Guests -->
-        <v-divider />
-        <guests-template />
-
-        <!-- Payment -->
-        <div>
+    <v-form lazy-validation v-model="valid" ref="form">
+      <v-row>
+        <!-- Left Column -->
+        <v-col cols="12" md="6">
+          <!-- Transactions -->
           <v-divider />
-          <payment-template />
-        </div>
+          <transaction-template @emit-transaction="assignPayload" />
 
-        <!-- Booking Summary -->
-        <v-divider />
-        <booking-summary />
-      </v-col>
-    </v-row>
+          <!-- Guest Name -->
+          <v-divider />
+          <guest-name-template />
+
+          <!-- Address -->
+          <v-divider />
+          <address-template />
+
+          <!-- Contact Details -->
+          <v-divider />
+          <contact-details-template />
+
+          <!-- ID -->
+          <v-divider />
+          <identification-template />
+        </v-col>
+
+        <!-- Right Column -->
+        <v-col cols="12" md="6">
+          <!-- Check In -->
+          <v-divider />
+          <check-in-template />
+
+          <!-- Check Out -->
+          <v-divider />
+          <check-out-template />
+
+          <!-- Guests -->
+          <v-divider />
+          <guests-template />
+
+          <!-- Payment -->
+          <div v-if="showPayment">
+            <v-divider />
+            <payment-template :isIncluded="showPayment"/>
+          </div>
+
+          <!-- Booking Summary -->
+          <v-divider />
+          <booking-summary :isStatus="payload.status" @validation-event="submitForValidation" />
+        </v-col>
+      </v-row>
+    </v-form>
   </div>
 </template>
 
@@ -81,8 +83,10 @@ import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 export default {
   name: "BookingForm",
   data: () => ({
+    valid: true,
     autofill: "Dela Cruz, Juan",
     autofillEnums: ["Dela Cruz, Juan", "Cruz, Jose Gabriel"],
+    payload: {},
   }),
   components: {
     TransactionTemplate,
@@ -95,6 +99,26 @@ export default {
     GuestsTemplate,
     BookingSummary,
     PaymentTemplate,
+  },
+  methods: {
+    assignPayload: function (payload) {
+      for (const key in payload) {
+        if (Object.hasOwnProperty.call(payload, key)) {
+          this.$set(this.payload, key, payload[key]);
+        }
+      }
+    },
+    submitForValidation: function () {
+      this.$refs.form.validate();
+      if (this.$refs.form.validate()) {
+        console.log("Success");
+      }
+    },
+  },
+  computed: {
+    showPayment() {
+      return this.payload?.status === "For Booking" ? true : false;
+    },
   },
 };
 </script>

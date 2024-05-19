@@ -5,27 +5,60 @@
     </title-slot>
 
     <div>
-        <total-bill-slot />
+      <total-bill-slot
+        @validation-event="$emit('validation-event')"
+        :totalInformation="totalInformation"
+      >
+      </total-bill-slot>
     </div>
   </div>
 </template>
 
 <script>
 import TitleSlot from "./slots/TitleSlot.vue";
-import TotalBillSlot from "./slots/TotalBillSlot.vue"
+import TotalBillSlot from "../hotel-rooms/Availability/TotalBillCard.vue";
 export default {
-  name: "TransactionTemplate",
-  data: () => ({
-    payload: {
-      province: null,
-      cityMunicipality: null,
+  name: "BookingSummary",
+  props: {
+    isStatus: {
+      type: String,
+      required: true,
     },
-  }),
+  },
+  data: () => ({}),
   components: {
     TitleSlot,
     TotalBillSlot,
   },
   methods: {},
+  computed: {
+    totalInformation() {
+      let data = [
+        {
+          title: "Guest Name",
+          value: "Dela Cruz, Juan",
+        },
+      ];
+      if (this.isStatus === "For Booking") {
+        data.push(
+          {
+            title: "Room",
+            value: "Room D1",
+          },
+          {
+            title: "Floor",
+            value: "Floor 4",
+          }
+        );
+      }
+      return {
+        title: "The Serenity Suite",
+        room: "Deluxe Room",
+        occupancy: "5 room occupancy",
+        guest: data,
+      };
+    },
+  },
 };
 </script>
 
