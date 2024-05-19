@@ -4,7 +4,7 @@
       class="w-full d-flex flex-column flex-sm-row align-center justify-space-between"
     >
       <p class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-1">
-        {{ $router.currentRoute.meta.name }}
+        {{ $route.meta.name }}
       </p>
       <div class="w-full d-none d-sm-flex flex-row align-center justify-center">
         <v-btn
@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <v-divider v-if="!toHideFrom.includes($router.currentRoute.meta.name)" />
+    <v-divider />
 
     <div
       v-if="!toHideFrom.includes($router.currentRoute.meta.name)"
@@ -137,7 +137,7 @@ export default {
   name: "HotelRoomsHeader",
   data: () => ({
     activeButton: null,
-    toHideFrom: ["Categories", "Booking"],
+    toHideFrom: ["Categories", "Booking", "Availability"],
     routes: [
       {
         name: "Rooms",
@@ -175,6 +175,9 @@ export default {
     showControls() {
       return this.$route.meta.hideInputs ? false : true;
     },
+    test() {
+      return this.$router.currentRoute.meta.name;
+    },
   },
 
   methods: {
@@ -185,6 +188,15 @@ export default {
   },
   mounted() {
     this.activeButton = this.$router.currentRoute.meta.name;
+  },
+  watch: {
+    test: {
+      immediate: true,
+      deep: true,
+      handler: function (newVal) {
+        console.log(newVal);
+      },
+    },
   },
 };
 </script>

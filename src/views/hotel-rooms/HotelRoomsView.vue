@@ -5,6 +5,7 @@
       'px-sm-2 py-md-8': $vuetify.breakpoint.lgAndDown,
     }"
   >
+    <HotelRoomsHeader />
     <router-view />
   </div>
 </template>

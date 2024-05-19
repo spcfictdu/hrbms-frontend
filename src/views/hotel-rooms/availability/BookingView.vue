@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <HotelRoomsHeader />
-    <v-divider class="mb-10" />
+  <div class="mt-10">
     <booking-form />
   </div>
 </template>
