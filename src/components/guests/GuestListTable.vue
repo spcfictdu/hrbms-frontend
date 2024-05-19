@@ -1,15 +1,13 @@
 <template>
-  <v-container>
-    <v-row>
+  <v-container class="mt-lg-5">
+    <div>
+      <v-row>
       <v-col cols="12">
         <div :class="guestClass">Guests</div>
       </v-col>
     </v-row>
-    <v-row class="mt-n3">
-      <v-col cols="12">
-        <div><v-divider></v-divider></div>
-      </v-col>
-    </v-row>
+    </div>
+    <v-divider/>
     <v-row>
       <v-col cols="12">
         <v-card elevation="0">
@@ -96,28 +94,28 @@ export default {
       {
         name: "Camerino, Maria Santos",
         booking: "BKG-234567-20240514",
-        email: "jose.rizal@gmail.com",
+        email: "macamerino@gmail.com",
         phone: "09229876543",
         id: 2,
       },
       {
         name: "Cruz, Jose Rizal",
         booking: "BKG-345678-20240514",
-        email: "juan.delacruz@gmail.com",
+        email: "jose.rizal@gmail.com",
         phone: "09229876543",
         id: 3,
       },
       {
         name: "De Jesus, Angelica Reyes",
         booking: "BKG-456789-20240514",
-        email: "angelica.reyes@gmail.com",
+        email: "angelicadejesus@gmail.com",
         phone: "09278765432",
         id: 4,
       },
       {
         name: "Quizon, Manuel Gonzales",
         booking: "BKG-567890-20240514",
-        email: "manuel.gonzales@gmail.com",
+        email: "manuel.quizon@gmail.com",
         phone: "09187654321",
         id: 5,
       },

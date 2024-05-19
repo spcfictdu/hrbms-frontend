@@ -1,5 +1,5 @@
 <template>
-    <div class="px-sm-2 px-lg-13 mt-lg-n3 py-md-8">
+    <div>
         <GuestListTable />
     </div>
 </template>
