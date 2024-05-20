@@ -16,6 +16,8 @@
           outlined
           :rules="rules.phoneNumber"
           counter="11"
+          v-model="payload.phoneNumber"
+          @change="emitTransaction"
         ></v-text-field>
       </v-col>
       <v-col cols="12" md="6">
@@ -28,6 +30,8 @@
           hide-details="auto"
           outlined
           :rules="rules.email"
+          v-model="payload.email"
+          @change="emitTransaction"
         ></v-text-field>
       </v-col>
     </v-row>
@@ -49,7 +53,11 @@ export default {
     TitleSlot,
     LabelSlot,
   },
-  methods: {},
+  methods: {
+    emitTransaction: function () {
+      this.$emit("emit-transaction", this.payload);
+    },
+  },
   computed: {
     rules() {
       const errors = {};

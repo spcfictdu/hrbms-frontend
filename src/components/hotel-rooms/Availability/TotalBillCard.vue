@@ -23,7 +23,7 @@
         v-for="(i, index) in totalInformation.guest"
         :key="index"
       >
-        <div>{{ i.title }}</div>
+        <div>{{ i.title }}:</div>
         <div>{{ i.value }}</div>
       </div>
     </div>

@@ -56,6 +56,8 @@
         hide-details="auto"
         outlined
         :rules="rules.amountReceived"
+        v-model="payload.payment.amountReceived"
+        @change="emitTransaction"
       ></v-text-field>
     </div>
   </div>
@@ -77,8 +79,10 @@ export default {
     buttonOne: "Cash",
     buttonTwo: "GCash",
     payload: {
-      type: null,
-      amountReceived: null,
+      payment: {
+        type: null,
+        amountReceived: null,
+      },
     },
     imgSrc: require("@/assets/GCashLogo.png"),
   }),
@@ -89,7 +93,11 @@ export default {
   methods: {
     assignActiveButton: function (string) {
       this.activeButton = string;
-      this.payload.type = string;
+      this.payload.payment.type = string;
+      this.emitTransaction();
+    },
+    emitTransaction: function () {
+      this.$emit("emit-transaction", this.payload);
     },
   },
   computed: {

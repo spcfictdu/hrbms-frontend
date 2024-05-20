@@ -14,6 +14,7 @@
         hide-details="auto"
         outlined
         v-model="payload.guests"
+        @change="emitTransaction"
       ></v-text-field>
     </div>
   </div>
@@ -33,7 +34,11 @@ export default {
     TitleSlot,
     LabelSlot,
   },
-  methods: {},
+  methods: {
+    emitTransaction: function () {
+      this.$emit("emit-transaction", this.payload);
+    },
+  },
   computed: {
     rules() {
       const errors = {};

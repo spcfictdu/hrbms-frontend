@@ -25,14 +25,14 @@
               dense
               readonly
               hide-details="auto"
-              :value="payload.date"
+              :value="payload.checkIn.date"
               :rules="rules.date"
             ></v-text-field>
           </template>
           <v-date-picker
-            v-model="payload.date"
+            v-model="payload.checkIn.date"
             :min="minDate"
-            @change="menu = false"
+            @change="emitDate"
           ></v-date-picker>
         </v-menu>
       </v-col>
@@ -56,15 +56,15 @@
               dense
               readonly
               hide-details="auto"
-              :value="payload.time"
+              :value="payload.checkIn.time"
               :rules="rules.time"
             ></v-text-field>
           </template>
           <v-time-picker
-            v-model="payload.time"
+            v-model="payload.checkIn.time"
             scrollable
             active-picker="HOUR"
-            @change="menu_2 = false"
+            @change="emitTime"
           ></v-time-picker>
         </v-menu>
       </v-col>
@@ -79,8 +79,10 @@ export default {
   name: "CheckInTemplate",
   data: () => ({
     payload: {
-      date: null,
-      time: null,
+      checkIn: {
+        date: null,
+        time: null,
+      },
     },
     menu: false,
     menu_2: false,
@@ -90,7 +92,19 @@ export default {
     TitleSlot,
     LabelSlot,
   },
-  methods: {},
+  methods: {
+    emitTransaction: function () {
+      this.$emit("emit-transaction", this.payload);
+    },
+    emitDate: function () {
+      this.menu = false;
+      this.emitTransaction();
+    },
+    emitTime: function () {
+      this.menu_2 = false;
+      this.emitTransaction();
+    },
+  },
   computed: {
     rules() {
       const errors = {};
