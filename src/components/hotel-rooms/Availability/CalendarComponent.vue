@@ -4,20 +4,18 @@
     <!-- <div
       class="w-full d-flex flex-column flex-md-row flex-wrap justify-space-around align-center py-8"
     ></div> -->
-    <v-row dense justify="center" class="py-4 py-sm-8">
+    <v-row dense justify="space-between" class="py-4 py-sm-8">
       <v-col
-        cols="auto"
         v-for="(i, index) in buttons"
         :key="index"
         class="d-none d-sm-block"
       >
         <v-btn
           depressed
-          small
-          min-width="140"
+          block
           height="40"
           :color="i.roomType === activeButton ? 'accentTwo' : 'lightBg'"
-          class="pa-0 calendar-buttons text-subtitle-2"
+          class="calendar-buttons text-subtitle-2"
           :class="{
             'font-weight-bold': i.roomType === activeButton,
             'font-weight-regular': i.roomType !== activeButton,
@@ -68,7 +66,12 @@
           </div>
         </div>
         <div class="ml-4 ml-sm-0">
-          <v-btn rounded color="primary" depressed class="d-none d-sm-block" @click="pushToBooking"
+          <v-btn
+            rounded
+            color="primary"
+            depressed
+            class="d-none d-sm-block"
+            @click="pushToBooking"
             ><v-icon left>mdi-plus</v-icon>Reserve</v-btn
           >
           <v-btn icon rounded color="white" class="primary d-block d-sm-none"

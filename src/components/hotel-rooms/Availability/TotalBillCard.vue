@@ -10,7 +10,7 @@
         </div>
         <v-divider vertical />
         <div class="font-weight-regular ml-2">
-          {{ totalInformation.occupancy }}
+          {{ totalInformation.occupancy }} room occupancy
         </div>
       </div>
     </div>
