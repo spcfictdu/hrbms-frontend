@@ -1,5 +1,5 @@
 <template>
-  <v-container class="mt-lg-5">
+  <v-container>
     <div>
       <v-row>
       <v-col cols="12">
@@ -10,7 +10,7 @@
     <v-divider/>
     <v-row>
       <v-col cols="12">
-        <v-card elevation="0">
+        <v-card elevation="0" class="mt-5">
           <v-card-title class="text-subtitle-2 font-weight-black ml-3"
             >{{ guests.length }} GUESTS
             <v-spacer></v-spacer>
@@ -62,7 +62,7 @@
               <v-text-field outlined dense></v-text-field>
             </v-col>
           </v-row>
-          <v-row class="mt-n3">
+          <v-row>
             <v-col cols="12">
               <v-data-table
                 @click:row="test"
@@ -152,7 +152,7 @@ export default {
     colsTextfield: 4,
     small: true,
     xSmall: false,
-    guestClass: "text-h5 font-weight-black",
+    guestClass: "text-h5 font-weight-black mb-1",
   }),
   methods: {
     test: function (row) {
@@ -185,12 +185,17 @@ export default {
           this.small = false;
           this.xSmall = true;
           this.guestClass =
-            "d-flex text-h6 font-weight-black justify-center mt-n3";
-        } else {
-          this.colsTextfield = 4;
+            "d-flex text-h6 font-weight-bold justify-center mt-n3";
+        } else if (newVal.sm === true){
+          this.guestClass = "text-h6 font-weight-bold mb-1";
           this.small = true;
           this.xSmall = false;
-          this.guestClass = "text-h5 font-weight-black";
+          this.colsTextfield = 4;
+        } else {
+          this.guestClass = "text-h5 font-weight-bold mb-1";
+          this.small = true;
+          this.xSmall = false;
+          this.colsTextfield = 4;
         }
       },
     },

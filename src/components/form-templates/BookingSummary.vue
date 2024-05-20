@@ -16,7 +16,7 @@
 
 <script>
 import TitleSlot from "../slots/TitleSlot.vue";
-import TotalBillSlot from "../hotel-rooms/availability/TotalBillCard.vue";
+import TotalBillSlot from "../hotel-rooms/Availability/TotalBillCard.vue";
 export default {
   name: "BookingSummary",
   props: {

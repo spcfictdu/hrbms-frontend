@@ -1,12 +1,12 @@
 <template>
   <v-container class="mt-lg-5">
     <v-row>
-      <v-col cols="12"><div :class="title" >Transactions</div></v-col>
+      <v-col cols="12"><div :class="title">Transactions</div></v-col>
     </v-row>
     <v-divider />
     <v-row>
       <v-col cols="12">
-        <v-card elevation="0">
+        <v-card elevation="0" class="mt-5">
           <v-card-title class="text-subtitle-2 font-weight-black ml-3">
             {{ items.length }} ITEMS
             <v-spacer></v-spacer>
@@ -58,7 +58,28 @@
               <v-text-field outlined dense></v-text-field>
             </v-col>
           </v-row>
-          <v-data-table :headers="headers" :items="items"> </v-data-table>
+          <v-data-table
+            :headers="headers"
+            :items="items"
+            group-by="date"
+            group-toggle="false"
+            class="ma-5"
+            toggle="false"
+          >
+            <template v-slot:item.status="{ item }">
+              <v-chip
+                :color="statusColor(item.status)"
+                dark
+                class="text-overline"
+                >{{ item.status }}</v-chip
+              >
+            </template>
+            <template v-slot:group.header="{ group }">
+              <td :colspan="headers.length" class="pl-8">
+                {{ group }}
+              </td>
+            </template>
+          </v-data-table>
         </v-card>
       </v-col>
     </v-row>
@@ -69,7 +90,7 @@
 export default {
   name: "TransactionsTable",
   data: () => ({
-    title: "text-h5 font-weight-black",
+    title: "text-h4 font-weight-black mb-1",
     show: false,
     indeterminate: true,
     value: 0,
@@ -78,91 +99,138 @@ export default {
     colsTextfield: 4,
     items: [
       {
+        date: "May 19, 2024",
+        name: "Camerino, Maria Santos",
+        status: "Checked-out",
+        reference: "BKG-234567-20240514",
+        occupants: "5",
+        checkIn: "05-18-2024",
+        checkOut: "05-20-2024",
+        booked: "05-18-2024",
+        room: "Room 145",
+        total: "3500",
+      },
+      {
+        date: "May 19, 2024",
+        name: "Dela Cruz, Juan Flores",
+        status: "Reserved",
+        reference: "BKG-234567-20240514",
+        occupants: "3",
+        checkIn: "",
+        checkOut: "",
+        booked: "05-19-2024",
+        room: "Room 146",
+        total: "3000",
+      },
+      {
+        date: "May 19, 2024",
+        name: "Cruz, Jose Rizal",
+        status: "Confirmed",
+        reference: "BKG-345678-20240514",
+        occupants: "1",
+        checkIn: "",
+        checkOut: "",
+        booked: "05-18-2024",
+        room: "Room 147",
+        total: "3123",
+      },
+      {
+        date: "May 19, 2024",
+        name: "De Jesus, Angelica Reyes",
+        status: "Checked-in",
+        reference: "BKG-456789-20240514",
+        occupants: "2",
+        checkIn: "05-19-2024",
+        checkOut: "",
+        booked: "05-19-2024",
+        room: "Room 148",
+        total: "4578",
+      },
+      {
         date: "May 20, 2024",
-        content: [
-          {
-            name: "Camerino, Maria Santos",
-            status: "Checked-out",
-            reference: "BKG-234567-20240514",
-            occupants: "5",
-            checkIn: "05-20-2024",
-            checkOut: "05-22-2024",
-            booked: "05-18-2024",
-            room: "Room 145",
-            total: "3500",
-          },
-          {
-            name: "Dela Cruz, Juan Flores",
-            status: "Reserved",
-            reference: "BKG-234567-20240514",
-            occupants: "3",
-            checkIn: "",
-            checkOut: "",
-            booked: "05-19-2024",
-            room: "Room 146",
-            total: "3000",
-          },
-          {
-            name: "Cruz, Jose Rizal",
-            status: "Confirmed",
-            reference: "BKG-345678-20240514",
-            occupants: "1",
-            checkIn: "",
-            checkOut: "",
-            booked: "05-18-2024",
-            room: "Room 147",
-            total: "3123",
-          },
-          {
-            name: "De Jesus, Angelica Reyes",
-            status: "Checked-in",
-            reference: "BKG-456789-20240514",
-            occupants: "2",
-            checkIn: "05-20-2024",
-            checkOut: "",
-            booked: "05-19-2024",
-            room: "Room 148",
-            total: "4578",
-          },
-        ],
+        name: "Dela Cruz, Juan Flores",
+        status: "Checked-in",
+        reference: "BKG-234567-20240514",
+        occupants: "3",
+        checkIn: "05-20-2024",
+        checkOut: "",
+        booked: "05-19-2024",
+        room: "Room 146",
+        total: "3000",
+      },
+      {
+        date: "May 20, 2024",
+        name: "Cruz, Jose Rizal",
+        status: "Checked-in",
+        reference: "BKG-345678-20240514",
+        occupants: "1",
+        checkIn: "05-20-2024",
+        checkOut: "",
+        booked: "05-18-2024",
+        room: "Room 147",
+        total: "3123",
+      },
+      {
+        date: "May 20, 2024",
+        name: "De Jesus, Angelica Reyes",
+        status: "Checked-in",
+        reference: "BKG-456789-20240514",
+        occupants: "2",
+        checkIn: "05-19-2024",
+        checkOut: "",
+        booked: "05-19-2024",
+        room: "Room 148",
+        total: "4578",
+      },
+      {
+        date: "May 20, 2024",
+        name: "Quizon, Manuel Gonzales",
+        status: "Reserved",
+        reference: "BKG-567890-20240514",
+        occupants: "2",
+        checkIn: "",
+        checkOut: "",
+        booked: "05-20-2024",
+        room: "Room 155",
+        total: "3600",
       },
     ],
     headers: [
       {
         text: "Name",
-        value: "",
+        value: "name",
       },
       {
         text: "Status",
-        value: "",
+        value: "status",
       },
       {
         text: "Reference",
-        value: "",
+        value: "reference",
       },
       {
         text: "Occupants",
-        value: "",
+        value: "occupants",
       },
       {
         text: "Check-in",
-        value: "",
+        value: "checkIn",
       },
       {
         text: "Check-out",
-        value: "",
+        value: "checkOut",
       },
       {
         text: "Booked",
-        value: "",
+        value: "booked",
       },
       {
         text: "Room",
-        value: "",
+        value: "room",
       },
       {
         text: "Total",
-        value: "",
+        value: "total",
       },
     ],
     textfieldHeaders: [
@@ -174,6 +242,14 @@ export default {
       "Check-out Date",
     ],
   }),
+  methods: {
+    statusColor: function (status) {
+      if (status === "Checked-in") return "green";
+      else if (status === "Checked-out") return "orange";
+      else if (status === "Reserved") return "pink";
+      else return "indigo";
+    },
+  },
   watch: {
     items: {
       immediate: true,
@@ -193,12 +269,17 @@ export default {
       deep: true,
       handler(newVal) {
         if (newVal.xs === true) {
-          this.title = "d-flex text-h6 font-weight-black justify-center mt-n3";
+          this.title = "d-flex text-h6 font-weight-bold justify-center mt-n3";
           this.small = false;
           this.xSmall = true;
           this.colsTextfield = 6;
+        } else if (newVal.sm === true) {
+          this.title = "text-h6 font-weight-bold mb-1";
+          this.small = true;
+          this.xSmall = false;
+          this.colsTextfield = 4;
         } else {
-          this.title = "text-h5 font-weight-black";
+          this.title = "text-h5 font-weight-bold mb-1";
           this.small = true;
           this.xSmall = false;
           this.colsTextfield = 4;
