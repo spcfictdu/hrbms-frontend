@@ -21,8 +21,8 @@
 </template>
 
 <script>
-import LabelSlot from "./slots/LabelSlot.vue";
-import TitleSlot from "./slots/TitleSlot.vue";
+import LabelSlot from "../slots/LabelSlot.vue";
+import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "AddressTemplate",
   data: () => ({

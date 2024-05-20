@@ -57,12 +57,15 @@
           <!-- Payment -->
           <div v-if="showPayment">
             <v-divider />
-            <payment-template :isIncluded="showPayment"/>
+            <payment-template :isIncluded="showPayment" />
           </div>
 
           <!-- Booking Summary -->
           <v-divider />
-          <booking-summary :isStatus="payload.status" @validation-event="submitForValidation" />
+          <booking-summary
+            :isStatus="payload.status"
+            @validation-event="submitForValidation"
+          />
         </v-col>
       </v-row>
     </v-form>
@@ -111,7 +114,7 @@ export default {
     submitForValidation: function () {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
-        console.log("Success");
+        this.$router.push({ name: "Confirmation" });
       }
     },
   },

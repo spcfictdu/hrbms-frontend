@@ -15,7 +15,7 @@
 </template>
 
 <script>
-import TitleSlot from "./slots/TitleSlot.vue";
+import TitleSlot from "../slots/TitleSlot.vue";
 import TotalBillSlot from "../hotel-rooms/availability/TotalBillCard.vue";
 export default {
   name: "BookingSummary",

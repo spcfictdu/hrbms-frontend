@@ -74,7 +74,7 @@
             @click="pushToBooking"
             ><v-icon left>mdi-plus</v-icon>Reserve</v-btn
           >
-          <v-btn icon rounded color="white" class="primary d-block d-sm-none"
+          <v-btn icon rounded color="white" class="primary d-block d-sm-none" @click="pushToBooking"
             ><v-icon>mdi-plus</v-icon></v-btn
           >
         </div>
