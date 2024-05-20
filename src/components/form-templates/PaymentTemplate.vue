@@ -105,7 +105,7 @@ export default {
       const errors = {};
       // errors.type = [(v) => !!v || "Type is required"];
       errors.amountReceived = [
-        !!this.payload.type || "Type is required",
+        !!this.payload.payment.type || "Type is required",
         (v) => !!v || "Amount is required",
       ];
       return errors;

@@ -24,9 +24,12 @@
     </div>
     <div>
       <slot name="button">
-        <v-btn :outlined="button.style.outlined" :color="button.style.color">{{
-          button.title
-        }}</v-btn>
+        <v-btn
+          @click="$emit('button-event', button.title)"
+          :outlined="button.style.outlined"
+          :color="button.style.color"
+          >{{ button.title }}</v-btn
+        >
       </slot>
     </div>
   </div>

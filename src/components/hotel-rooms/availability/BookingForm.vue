@@ -134,6 +134,13 @@ export default {
       return {
         type: this.payload.room.type,
         roomName: this.payload.room.roomName,
+        client: `${this.payload.lastName}, ${this.payload.firstName} ${
+          this.payload.middleName ? this.payload.middleName : ""
+        }`,
+        button: {
+          title: "Save Reservation",
+          outlined: false,
+        },
       };
     },
   },
@@ -142,7 +149,7 @@ export default {
       immediate: true,
       handler: function (newVal) {
         this.assignPayload(newVal);
-        console.log(newVal)
+        console.log(newVal);
       },
     },
   },

@@ -33,11 +33,11 @@
     <div class="my-3 font-weight-regular">
       <div class="d-flex justify-space-between align-center">
         <div>Room Total:</div>
-        <div>PhP. 2000</div>
+        <div>PhP. {{ totalInformation.totalPayment.roomTotal }}</div>
       </div>
       <div class="d-flex justify-space-between align-center">
         <div>Extra Person Total:</div>
-        <div>PhP. 0</div>
+        <div>PhP. {{ totalInformation.totalPayment.extraPersonTotal }}</div>
       </div>
     </div>
 
@@ -46,11 +46,11 @@
     <div class="my-3 font-weight-regular">
       <div class="d-flex justify-space-between align-center">
         <div>Total:</div>
-        <div>PhP. 2000</div>
+        <div>PhP. {{ totalInformation.totalPayment.total }}</div>
       </div>
       <div class="d-flex justify-space-between align-center">
         <div>Total Received:</div>
-        <div>PhP. 0</div>
+        <div>PhP. {{ totalInformation.totalPayment.totalReceived }}</div>
       </div>
     </div>
 
@@ -60,17 +60,18 @@
       class="my-3 d-flex justify-space-between align-center font-weight-bold warning--text"
     >
       <div>Total Outstanding:</div>
-      <div>PhP. 2000</div>
+      <div>PhP. {{ totalInformation.totalPayment.totalOutstanding }}</div>
     </div>
 
     <v-card-actions class="pa-0">
       <v-btn
         block
         depressed
+        :outlined="totalInformation.button.outlined"
         color="primary"
         class="mt-4"
         @click="$emit('validation-event')"
-        >Save Reservation</v-btn
+        >{{ totalInformation.button.title }}</v-btn
       >
     </v-card-actions>
   </v-card>

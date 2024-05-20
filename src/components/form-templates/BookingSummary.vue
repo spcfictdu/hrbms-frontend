@@ -16,7 +16,7 @@
 
 <script>
 import TitleSlot from "../slots/TitleSlot.vue";
-import TotalBillSlot from "../hotel-rooms/Availability/TotalBillCard.vue";
+import TotalBillSlot from "../hotel-rooms/availability/TotalBillCard.vue";
 export default {
   name: "BookingSummary",
   props: {
@@ -40,7 +40,7 @@ export default {
       let data = [
         {
           title: "Guest Name",
-          value: "Dela Cruz, Juan",
+          value: this.cardInformation.client,
         },
       ];
       if (this.isStatus === "For Booking") {
@@ -60,6 +60,14 @@ export default {
         room: this.cardInformation.roomName,
         occupancy: 5,
         guest: data,
+        totalPayment: {
+          roomTotal: 2000,
+          extraPersonTotal: 0,
+          total: 2000,
+          totalReceived: 0,
+          totalOutstanding: 2000,
+        },
+        button: this.cardInformation.button,
       };
     },
   },

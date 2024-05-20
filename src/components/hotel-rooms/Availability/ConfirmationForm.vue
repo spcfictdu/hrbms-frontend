@@ -1,7 +1,8 @@
 <template>
   <div>
-    <header-booking-slot :headerData="headerData"> </header-booking-slot>
-    <v-form>
+    <header-booking-slot @button-event="headerEvents" :headerData="headerData">
+    </header-booking-slot>
+    <v-form ref="form" lazy-validation>
       <v-row>
         <v-col cols="12" md="6">
           <!-- Transaction -->
@@ -27,7 +28,11 @@
         <v-col cols="12" md="6">
           <!-- Booking Summary -->
           <v-divider />
-          <booking-summary :isStatus="payload.status" />
+          <booking-summary
+            :isStatus="payload.status"
+            :cardInformation="cardInformation"
+            @validation-event="submitForValidation"
+          />
         </v-col>
       </v-row>
     </v-form>
@@ -68,6 +73,26 @@ export default {
       });
       return `${formattedDate}`;
     },
+    submitForValidation: function () {
+      this.$refs.form.validate();
+      if (this.$refs.form.validate()) {
+        // API request
+        this.$router.push({
+          name: "CheckInOut",
+          query: {
+            payload: JSON.stringify(this.payload),
+          },
+        });
+      }
+    },
+    headerEvents: function (type) {
+      if (type === "Cancel Reservation") {
+        //Actions
+        this.$router.push({ name: "Availability" });
+      } else {
+        // Save Actions
+      }
+    },
   },
   computed: {
     headerData() {
@@ -107,7 +132,20 @@ export default {
       };
     },
     showScan() {
-      return this.payload?.type === "GCash" ? true : false;
+      return this.payload.payment?.type === "GCash" ? true : false;
+    },
+    cardInformation() {
+      return {
+        type: this.payload.room.type,
+        roomName: this.payload.room.roomName,
+        client: `${this.payload.lastName}, ${this.payload.firstName} ${
+          this.payload.middleName ? this.payload.middleName : ""
+        }`,
+        button: {
+          title: "Record Payment",
+          outlined: false,
+        },
+      };
     },
   },
   watch: {
@@ -115,9 +153,15 @@ export default {
       immediate: true,
       handler: function (newVal) {
         this.assignPayload(newVal);
-      }
-    }
-  }
+      },
+    },
+    payload: {
+      immediate: true,
+      handler: function (newVal) {
+        console.log(newVal);
+      },
+    },
+  },
 };
 </script>
 

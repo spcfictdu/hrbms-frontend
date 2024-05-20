@@ -39,7 +39,7 @@
     <v-divider />
 
     <div
-      v-if="!toHideFrom.includes($router.currentRoute.meta.name)"
+      v-if="!$route.meta.hideInputs"
       class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-2"
     >
       <div
