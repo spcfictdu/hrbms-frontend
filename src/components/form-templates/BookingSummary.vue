@@ -24,6 +24,10 @@ export default {
       type: String,
       required: true,
     },
+    cardInformation: {
+      type: Object,
+      required: true,
+    },
   },
   data: () => ({}),
   components: {
@@ -52,8 +56,8 @@ export default {
         );
       }
       return {
-        title: "The Serenity Suite",
-        room: "Deluxe Room",
+        title: this.cardInformation.type,
+        room: this.cardInformation.roomName,
         occupancy: 5,
         guest: data,
       };

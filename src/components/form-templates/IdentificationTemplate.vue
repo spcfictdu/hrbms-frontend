@@ -15,6 +15,8 @@
           dense
           :items="IdEnums"
           :rules="rules.type"
+          v-model="payload.id.type"
+          @change="emitTransaction"
         ></v-select>
       </v-col>
       <v-col cols="12" md="6">
@@ -26,6 +28,8 @@
           hide-details="auto"
           outlined
           :rules="rules.IdNumber"
+          v-model="payload.id.IdNumber"
+          @change="emitTransaction"
         ></v-text-field>
       </v-col>
     </v-row>
@@ -39,8 +43,10 @@ export default {
   name: "IdentificationTemplate",
   data: () => ({
     payload: {
-      type: null,
-      IdNumber: null,
+      id: {
+        type: null,
+        IdNumber: null,
+      },
     },
     IdEnums: ["National ID", "Driver's License", "Passport"],
   }),
@@ -48,7 +54,11 @@ export default {
     TitleSlot,
     LabelSlot,
   },
-  methods: {},
+  methods: {
+    emitTransaction: function () {
+      this.$emit("emit-transaction", this.payload);
+    },
+  },
   computed: {
     rules() {
       const errors = {};

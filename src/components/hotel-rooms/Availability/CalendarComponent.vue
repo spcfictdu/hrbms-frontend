@@ -74,7 +74,12 @@
             @click="pushToBooking"
             ><v-icon left>mdi-plus</v-icon>Reserve</v-btn
           >
-          <v-btn icon rounded color="white" class="primary d-block d-sm-none" @click="pushToBooking"
+          <v-btn
+            icon
+            rounded
+            color="white"
+            class="primary d-block d-sm-none"
+            @click="pushToBooking"
             ><v-icon>mdi-plus</v-icon></v-btn
           >
         </div>
@@ -504,7 +509,18 @@ export default {
       this.type = "week";
     },
     pushToBooking: function () {
-      this.$router.push({ name: "Booking" });
+      let payload = {
+        room: {
+          type: this.activeButton,
+          roomName: this.dropdownValue,
+        },
+      };
+      this.$router.push({
+        name: "Booking",
+        query: {
+          room: JSON.stringify(payload),
+        },
+      });
     },
   },
   computed: {

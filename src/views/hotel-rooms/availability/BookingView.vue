@@ -1,6 +1,6 @@
 <template>
   <div class="mt-10">
-    <booking-form />
+    <booking-form :queryResult="queryResult"/>
   </div>
 </template>
 
@@ -14,6 +14,13 @@ export default {
     BookingForm,
     HotelRoomsHeader,
   },
+  computed: {
+    queryResult() {
+      let query = this.$route.query.room;
+      let format = JSON.parse(query)
+      return format;
+    }
+  }
 };
 </script>
 

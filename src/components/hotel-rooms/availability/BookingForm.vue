@@ -25,45 +25,49 @@
 
           <!-- Guest Name -->
           <v-divider />
-          <guest-name-template />
+          <guest-name-template @emit-transaction="assignPayload" />
 
           <!-- Address -->
           <v-divider />
-          <address-template />
+          <address-template @emit-transaction="assignPayload" />
 
           <!-- Contact Details -->
           <v-divider />
-          <contact-details-template />
+          <contact-details-template @emit-transaction="assignPayload" />
 
           <!-- ID -->
           <v-divider />
-          <identification-template />
+          <identification-template @emit-transaction="assignPayload" />
         </v-col>
 
         <!-- Right Column -->
         <v-col cols="12" md="6">
           <!-- Check In -->
           <v-divider />
-          <check-in-template />
+          <check-in-template @emit-transaction="assignPayload" />
 
           <!-- Check Out -->
           <v-divider />
-          <check-out-template />
+          <check-out-template @emit-transaction="assignPayload" />
 
           <!-- Guests -->
           <v-divider />
-          <guests-template />
+          <guests-template @emit-transaction="assignPayload" />
 
           <!-- Payment -->
           <div v-if="showPayment">
             <v-divider />
-            <payment-template :isIncluded="showPayment" />
+            <payment-template
+              :isIncluded="showPayment"
+              @emit-transaction="assignPayload"
+            />
           </div>
 
           <!-- Booking Summary -->
           <v-divider />
           <booking-summary
             :isStatus="payload.status"
+            :cardInformation="cardInformation"
             @validation-event="submitForValidation"
           />
         </v-col>
@@ -85,6 +89,7 @@ import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 export default {
   name: "BookingForm",
+  props: ["queryResult"],
   data: () => ({
     valid: true,
     autofill: "Dela Cruz, Juan",
@@ -114,13 +119,31 @@ export default {
     submitForValidation: function () {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
-        this.$router.push({ name: "Confirmation" });
+        this.$router.push({
+          name: "Confirmation",
+          query: { payload: JSON.stringify(this.payload) },
+        });
       }
     },
   },
   computed: {
     showPayment() {
       return this.payload?.status === "For Booking" ? true : false;
+    },
+    cardInformation() {
+      return {
+        type: this.payload.room.type,
+        roomName: this.payload.room.roomName,
+      };
+    },
+  },
+  watch: {
+    queryResult: {
+      immediate: true,
+      handler: function (newVal) {
+        this.assignPayload(newVal);
+        console.log(newVal)
+      },
     },
   },
 };

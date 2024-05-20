@@ -8,14 +8,28 @@
       <label-slot>
         <template v-slot:label> Province </template>
       </label-slot>
-      <v-text-field dense hide-details="auto" outlined :rules="rules.province"></v-text-field>
+      <v-text-field
+        dense
+        hide-details="auto"
+        outlined
+        :rules="rules.province"
+        v-model="payload.province"
+        @change="emitTransaction"
+      ></v-text-field>
     </div>
 
     <div class="mt-4">
       <label-slot>
         <template v-slot:label> City/Municipality </template>
       </label-slot>
-      <v-text-field dense hide-details="auto" outlined :rules="rules.cityMunicipality"></v-text-field>
+      <v-text-field
+        dense
+        hide-details="auto"
+        outlined
+        :rules="rules.cityMunicipality"
+        v-model="payload.cityMunicipality"
+        @change="emitTransaction"
+      ></v-text-field>
     </div>
   </div>
 </template>
@@ -35,7 +49,11 @@ export default {
     TitleSlot,
     LabelSlot,
   },
-  methods: {},
+  methods: {
+    emitTransaction: function () {
+      this.$emit("emit-transaction", this.payload);
+    },
+  },
   computed: {
     rules() {
       const errors = {};

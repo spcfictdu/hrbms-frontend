@@ -6,6 +6,7 @@ import RoomDetailsView from "@/views/hotel-rooms/RoomDetailsView";
 import RoomCategoriesView from "@/views/hotel-rooms/RoomCategoriesView";
 import AvailabilityView from "../../views/hotel-rooms/AvailabilityView";
 import BookingView from "../../views/hotel-rooms/availability/BookingView";
+import ConfirmationView from "../../views/hotel-rooms/availability/ConfirmationView"
 
 Vue.use(VueRouter);
 
@@ -48,7 +49,7 @@ export default [
         },
       },
       {
-        path: "booking",
+        path: "availability/booking",
         name: "Booking",
         component: BookingView,
         meta: {
@@ -56,6 +57,15 @@ export default [
           hideInputs: true,
         },
       },
+      {
+        path: "availability/booking/confirmation",
+        name: "Confirmation",
+        component: ConfirmationView,
+        meta: {
+          name: "Booking",
+          hideInputs: true,
+        },
+      }
     ],
   },
 ];
