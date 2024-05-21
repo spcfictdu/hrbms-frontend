@@ -56,7 +56,7 @@
               dense
               readonly
               hide-details="auto"
-              :value="time"
+              :value="formattedTime"
               :rules="rules.time"
             ></v-text-field>
           </template>
@@ -75,13 +75,15 @@
 <script>
 import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
+import { formatTime } from "@/mixins/FormattingFunctions";
 export default {
   name: "CheckInTemplate",
+  mixins: [formatTime],
   data: () => ({
     payload: {
       checkIn: {
         official: null,
-        date: null 
+        date: null,
       },
     },
     date: null,
@@ -117,6 +119,12 @@ export default {
       errors.date = [(v) => !!v || "Date is required"];
       errors.time = [(v) => !!v || "Time is required"];
       return errors;
+    },
+    formattedTime() {
+      //Show the time in another format
+      const now = new Date().toISOString().slice(0, 10);
+      const dateString = `${now}T${this.time}:00`;
+      return this.time ? this.formatTime(dateString) : null;
     },
   },
 };
