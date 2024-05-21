@@ -122,7 +122,7 @@ export default {
       immediate: true,
       handler: function (newVal) {
         this.assignPayload(newVal);
-        if (newVal.status === "For Reservation & Confirmation") {
+        if (newVal.status === "For Reservation & Confirmation" || newVal.status === "For Booking") {
           this.payload.status = "Confirmed";
         }
       },

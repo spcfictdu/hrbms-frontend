@@ -58,12 +58,26 @@
           <guests-template @emit-transaction="assignPayload" />
 
           <!-- Payment -->
-          <div v-if="showPayment">
+          <div v-if="showPayment" class="pb-8">
             <v-divider />
             <payment-template
               :isIncluded="showPayment"
               @emit-transaction="assignPayload"
             />
+            <!-- GCash QR Code Transition -->
+            <v-expand-transition>
+              <div
+                v-show="showScan"
+                class="lightBg rounded-lg pa-6 text-center"
+              >
+                <v-img
+                  eager
+                  class="mx-auto"
+                  :src="imgSrc"
+                  max-width="200"
+                ></v-img>
+              </div>
+            </v-expand-transition>
           </div>
 
           <!-- Booking Summary -->
@@ -99,6 +113,7 @@ export default {
     autofillEnums: ["Dela Cruz, Juan", "Cruz, Jose Gabriel"],
     statuses: ["For Reservation", "For Booking"],
     payload: {},
+    imgSrc: require("@/assets/GCashScan.png"),
   }),
   components: {
     TransactionTemplate,
@@ -123,10 +138,17 @@ export default {
     submitForValidation: function () {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
-        this.$router.push({
-          name: "Confirmation",
-          query: { payload: JSON.stringify(this.payload) },
-        });
+        if (this.payload.status === "For Reservation") {
+          this.$router.push({
+            name: "Confirmation",
+            query: { payload: JSON.stringify(this.payload) },
+          });
+        } else {
+          this.$router.push({
+            name: "CheckInOut",
+            query: { payload: JSON.stringify(this.payload) },
+          });
+        }
       }
     },
   },
@@ -138,14 +160,17 @@ export default {
       return {
         type: this.payload.room.type,
         roomName: this.payload.room.roomName,
-        client: `${this.payload.lastName}, ${this.payload.firstName} ${
-          this.payload.middleName ? this.payload.middleName : ""
-        }`,
+        client: this.payload.lastName && this.payload.firstName ? `${this.payload.lastName ? this.payload.lastName : ""}, ${
+          this.payload.firstName ? this.payload.firstName : ""
+        } ${this.payload.middleName ? this.payload.middleName : ""}` : "Please Type",
         button: {
           title: "Save Reservation",
           outlined: false,
         },
       };
+    },
+    showScan() {
+      return this.payload.payment?.type === "GCash" ? true : false;
     },
   },
   watch: {
