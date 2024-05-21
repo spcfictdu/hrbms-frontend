@@ -25,12 +25,12 @@
               dense
               readonly
               hide-details="auto"
-              :value="payload.checkIn.date"
+              :value="date"
               :rules="rules.date"
             ></v-text-field>
           </template>
           <v-date-picker
-            v-model="payload.checkIn.date"
+            v-model="date"
             :min="minDate"
             @change="emitDate"
           ></v-date-picker>
@@ -56,12 +56,12 @@
               dense
               readonly
               hide-details="auto"
-              :value="payload.checkIn.time"
+              :value="time"
               :rules="rules.time"
             ></v-text-field>
           </template>
           <v-time-picker
-            v-model="payload.checkIn.time"
+            v-model="time"
             scrollable
             active-picker="HOUR"
             @change="emitTime"
@@ -80,10 +80,12 @@ export default {
   data: () => ({
     payload: {
       checkIn: {
-        date: null,
-        time: null,
+        official: null,
+        date: null 
       },
     },
+    date: null,
+    time: null,
     menu: false,
     menu_2: false,
     minDate: new Date().toISOString().slice(0, 10),
@@ -94,6 +96,10 @@ export default {
   },
   methods: {
     emitTransaction: function () {
+      // Format Date
+      let dateString = `${this.date}T${this.time}:00`;
+      this.payload.checkIn.date = dateString;
+
       this.$emit("emit-transaction", this.payload);
     },
     emitDate: function () {

@@ -21,7 +21,10 @@
         <v-col cols="12" md="6">
           <!-- Transactions -->
           <v-divider />
-          <transaction-template @emit-transaction="assignPayload" />
+          <transaction-template
+            :statuses="statuses"
+            @emit-transaction="assignPayload"
+          />
 
           <!-- Guest Name -->
           <v-divider />
@@ -94,6 +97,7 @@ export default {
     valid: true,
     autofill: "Dela Cruz, Juan",
     autofillEnums: ["Dela Cruz, Juan", "Cruz, Jose Gabriel"],
+    statuses: ["For Reservation", "For Booking"],
     payload: {},
   }),
   components: {

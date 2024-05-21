@@ -7,7 +7,7 @@
         <v-col cols="12" md="6">
           <!-- Transaction -->
           <v-divider />
-          <transaction-template @emit-transaction="assignPayload" />
+          <transaction-template :statuses="statuses" @emit-transaction="assignPayload" />
 
           <!-- Payment -->
           <v-divider />
@@ -50,6 +50,7 @@ export default {
   data: () => ({
     payload: {},
     imgSrc: require("@/assets/GCashScan.png"),
+    statuses: ["For Reservation & Confirmation"],
   }),
   components: {
     HeaderBookingSlot,
@@ -85,13 +86,8 @@ export default {
         });
       }
     },
-    headerEvents: function (type) {
-      if (type === "Cancel Reservation") {
-        //Actions
-        this.$router.push({ name: "Availability" });
-      } else {
-        // Save Actions
-      }
+    headerEvents: function () {
+      // Cancel Reservation
     },
   },
   computed: {
@@ -100,32 +96,21 @@ export default {
       let button = {};
       if (this.queryResult.status === "For Reservation") {
         status.type = "Reserved"; // May Change
-        status.color = "reserved";
         button.title = "Cancel Reservation";
         button.style = {
           color: "warning",
           outlined: true,
         };
-      } else {
-        status.type = "Booking"; // May Change
-        status.color = "primary";
-        button.title = "Save Checked-In Time";
-        button.style = {
-          color: "primary",
-          outlined: false,
-        };
-      }
+      } 
       return {
         client: `${this.queryResult.lastName}, ${this.queryResult.firstName} ${
           this.queryResult.middleName ? this.queryResult.middleName : ""
         }`,
         from: {
-          date: this.formatDate(this.queryResult.checkIn.date),
-          time: this.queryResult.checkIn.time,
+          date: this.queryResult.checkIn.date,
         },
         to: {
-          date: this.formatDate(this.queryResult.checkOut.date),
-          time: this.queryResult.checkOut.time,
+          date: this.queryResult.checkOut.date,
         },
         status: status,
         button: button,
