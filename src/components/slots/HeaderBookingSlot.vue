@@ -37,9 +37,11 @@
 </template>
 
 <script>
+import { formatDate, formatTime } from "@/mixins/FormattingFunctions"
 export default {
   name: "HeaderBookingSlot",
   props: ["headerData"],
+  mixins: [formatDate, formatTime],
   methods: {
     getColor: function (status) {
       let color = null;
@@ -58,21 +60,6 @@ export default {
     },
     showButton(status) {
       return status === "Checked-out" ? false : true;
-    },
-    formatDate: function (date) {
-      const formattedDate = new Date(date).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-      return `${formattedDate}`;
-    },
-    formatTime: function (date) {
-      const formattedTime = new Date(date).toLocaleTimeString("en-US", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-      return `${formattedTime}`;
     },
   },
   computed: {

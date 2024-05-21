@@ -8,16 +8,18 @@
         >
           {{ card.status }}
         </div>
-        <div>{{ formatDate(card.time) }}</div>
+        <div>{{ formatSchedule(card.time) }}</div>
       </div>
     </v-card>
   </div>
 </template>
 
 <script>
+import { formatDate, formatTime } from "@/mixins/FormattingFunctions";
 export default {
   name: "CheckCard",
   props: ["card"],
+  mixins: [formatDate, formatTime],
   data: () => ({}),
   methods: {
     getColor(status) {
@@ -29,18 +31,9 @@ export default {
       }
       return color;
     },
-    formatDate(date) {
+    formatSchedule(date) {
       if (date) {
-        const formattedDate = new Date(date).toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        });
-        const formattedTime = new Date(date).toLocaleTimeString("en-US", {
-          hour: "2-digit",
-          minute: "2-digit",
-        });
-        return `${formattedDate} - ${formattedTime}`;
+        return `${this.formatDate(date)} - ${this.formatTime(date)}`;
       }
       return "- -";
     },

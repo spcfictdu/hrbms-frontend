@@ -64,20 +64,9 @@
               :isIncluded="showPayment"
               @emit-transaction="assignPayload"
             />
+            
             <!-- GCash QR Code Transition -->
-            <v-expand-transition>
-              <div
-                v-show="showScan"
-                class="lightBg rounded-lg pa-6 text-center"
-              >
-                <v-img
-                  eager
-                  class="mx-auto"
-                  :src="imgSrc"
-                  max-width="200"
-                ></v-img>
-              </div>
-            </v-expand-transition>
+            <g-cash-image-transition :showScan="showScan"/>
           </div>
 
           <!-- Booking Summary -->
@@ -104,6 +93,7 @@ import CheckOutTemplate from "@/components/form-templates/CheckOutTemplate.vue";
 import GuestsTemplate from "@/components/form-templates/GuestsTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
+import GCashImageTransition from "@/components/hotel-rooms/availability/GCashImageTransition.vue"
 export default {
   name: "BookingForm",
   props: ["queryResult"],
@@ -113,7 +103,6 @@ export default {
     autofillEnums: ["Dela Cruz, Juan", "Cruz, Jose Gabriel"],
     statuses: ["For Reservation", "For Booking"],
     payload: {},
-    imgSrc: require("@/assets/GCashScan.png"),
   }),
   components: {
     TransactionTemplate,
@@ -126,6 +115,7 @@ export default {
     GuestsTemplate,
     BookingSummary,
     PaymentTemplate,
+    GCashImageTransition,
   },
   methods: {
     assignPayload: function (payload) {
