@@ -1,12 +1,9 @@
 <template>
   <v-container class="pa-0">
     <!-- Room Categories -->
-    <!-- <div
-      class="w-full d-flex flex-column flex-md-row flex-wrap justify-space-around align-center py-8"
-    ></div> -->
     <v-row dense justify="space-between" class="py-4 py-sm-8">
       <v-col
-        v-for="(i, index) in buttons"
+        v-for="(i, index) in roomTypeEnum"
         :key="index"
         class="d-none d-sm-block"
       >
@@ -32,7 +29,7 @@
           filled
           background-color="white"
           hide-details="auto"
-          :items="buttons"
+          :items="roomTypeEnum"
           item-text="roomType"
           label="Select a Room"
           v-model="activeButton"
@@ -60,7 +57,8 @@
               filled
               background-color="lightBg"
               hide-details="auto"
-              :items="dropdownData"
+              :items="roomNumberEnum"
+              item-text="roomNumber"
               v-model="dropdownValue"
             ></v-autocomplete>
           </div>
@@ -290,6 +288,7 @@
 
 <script>
 import CalendarFilterDialog from "../../dialogs/CalendarFilterDialog.vue";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "CalendarComponent",
   components: {
@@ -297,36 +296,8 @@ export default {
   },
   data: () => ({
     filterDialog: false,
-    activeButton: "Executive Room",
-    dropdownData: null,
-    dropdownValue: "Room E1",
-    buttons: [
-      {
-        roomType: "Executive Room",
-        rooms: ["Room E1", "Room E2"],
-      },
-      {
-        roomType: "Deluxe Room",
-        rooms: ["Room D1", "Room D2"],
-      },
-      {
-        roomType: "Family Room",
-        rooms: [],
-      },
-      { roomType: "Junior Room", rooms: [] },
-      {
-        roomType: "Presidential Room",
-        rooms: [],
-      },
-      {
-        roomType: "Standard Room",
-        rooms: [],
-      },
-      {
-        roomType: "Superior Room",
-        rooms: [],
-      },
-    ],
+    activeButton: "JUNIOR STANDARD",
+    dropdownValue: "",
     focus: "",
     type: "month",
     typeToLabel: {
@@ -373,7 +344,12 @@ export default {
     this.$refs.calendar.checkChange();
     this.updateRange();
   },
+  created() {
+    this.requestEnums();
+  },
   methods: {
+    ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
+    ...mapActions("roomNumberEnum", ["fetchRoomNumbers"]),
     activeValue(value) {
       this.activeButton = value;
     },
@@ -522,8 +498,19 @@ export default {
         },
       });
     },
+    requestEnums: function () {
+      this.fetchRoomTypes();
+    },
+    requestQuery: function (newVal) {
+      const payload = {
+        roomType: newVal,
+      }
+      this.fetchRoomNumbers(payload);
+    }
   },
   computed: {
+    ...mapState("roomTypeEnum", ["roomTypeEnum"]),
+    ...mapState("roomNumberEnum", ["roomNumberEnum"]),
     sizeEvents() {
       return this.type === "day" ? 85 : 20;
     },
@@ -538,9 +525,8 @@ export default {
     activeButton: {
       immediate: true,
       handler(newVal) {
-        const filteredData = this.buttons.filter((i) => i.roomType === newVal);
-        this.dropdownData = filteredData[0]?.rooms;
         this.activeButton = newVal;
+        this.requestQuery(newVal);
       },
     },
     dropdownValue: {
