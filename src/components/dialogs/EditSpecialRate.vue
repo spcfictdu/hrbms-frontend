@@ -7,6 +7,34 @@
       >
       <div>
         <v-row>
+          <v-col cols="12">
+            <span>Special Rate Name</span>
+            <v-text-field></v-text-field>
+          </v-col>
+        </v-row>
+      </div>
+      <div>
+        <v-row>
+          <v-col cols="6">
+            <span>Start Date</span>
+            <v-date-picker
+              v-model="startDate"
+              :min="minDate"
+              @change="menu = false"
+            ></v-date-picker>
+          </v-col>
+          <v-col cols="6">
+            <span>End Date</span>
+            <v-date-picker
+              v-model="endDate"
+              :min="minDate"
+              @change="menu = false"
+            ></v-date-picker>
+          </v-col>
+        </v-row>
+      </div>
+      <div>
+        <v-row>
           <v-col cols="6">
             <div class="font-weight-bold">Day</div>
           </v-col>
@@ -57,8 +85,12 @@
 
 <script>
 export default {
-  name: "EditRegularRate",
+  name: "EditSpecialRate",
   data: () => ({
+    minDate: new Date().toISOString().slice(0, 10),
+    startDate: null,
+    endDate: null,
+    menu: false,
     days: [
       {
         day: "Sunday",

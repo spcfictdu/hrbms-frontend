@@ -60,7 +60,7 @@ export default {
   name: "RoomPricing",
   components: { RoomsList, HotelRoomsHeader, EditRegularRate },
   data: () => ({
-    regularRateDialog: true,
+    regularRateDialog: false,
     specialRateDialog: false,
     headers: [
       {

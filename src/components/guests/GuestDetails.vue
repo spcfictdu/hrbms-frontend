@@ -126,7 +126,6 @@
 </template>
 
 <script>
-import { watch } from "vue";
 import DeleteDialog from "../dialogs/DeleteDialog.vue";
 export default {
   name: "GuestDetails",
