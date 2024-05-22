@@ -1,5 +1,5 @@
 <template>
-  <v-card class="pa-8 text-subtitle-2" flat>
+  <v-card class="pa-4 pa-md-8 text-subtitle-2" flat>
     <div class="pb-6">
       <div class="text-body-1 font-weight-bold text-uppercase">
         {{ totalInformation.title }}
