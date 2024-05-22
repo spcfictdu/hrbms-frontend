@@ -21,7 +21,10 @@
         <v-col cols="12" md="6">
           <!-- Transactions -->
           <v-divider />
-          <transaction-template @emit-transaction="assignPayload" />
+          <transaction-template
+            :statuses="statuses"
+            @emit-transaction="assignPayload"
+          />
 
           <!-- Guest Name -->
           <v-divider />
@@ -55,12 +58,15 @@
           <guests-template @emit-transaction="assignPayload" />
 
           <!-- Payment -->
-          <div v-if="showPayment">
+          <div v-if="showPayment" class="pb-8">
             <v-divider />
             <payment-template
               :isIncluded="showPayment"
               @emit-transaction="assignPayload"
             />
+            
+            <!-- GCash QR Code Transition -->
+            <g-cash-image-transition :showScan="showScan"/>
           </div>
 
           <!-- Booking Summary -->
@@ -87,6 +93,7 @@ import CheckOutTemplate from "@/components/form-templates/CheckOutTemplate.vue";
 import GuestsTemplate from "@/components/form-templates/GuestsTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
+import GCashImageTransition from "@/components/hotel-rooms/availability/GCashImageTransition.vue"
 export default {
   name: "BookingForm",
   props: ["queryResult"],
@@ -94,6 +101,7 @@ export default {
     valid: true,
     autofill: "Dela Cruz, Juan",
     autofillEnums: ["Dela Cruz, Juan", "Cruz, Jose Gabriel"],
+    statuses: ["For Reservation", "For Booking"],
     payload: {},
   }),
   components: {
@@ -107,6 +115,7 @@ export default {
     GuestsTemplate,
     BookingSummary,
     PaymentTemplate,
+    GCashImageTransition,
   },
   methods: {
     assignPayload: function (payload) {
@@ -119,10 +128,17 @@ export default {
     submitForValidation: function () {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
-        this.$router.push({
-          name: "Confirmation",
-          query: { payload: JSON.stringify(this.payload) },
-        });
+        if (this.payload.status === "For Reservation") {
+          this.$router.push({
+            name: "Confirmation",
+            query: { payload: JSON.stringify(this.payload) },
+          });
+        } else {
+          this.$router.push({
+            name: "CheckInOut",
+            query: { payload: JSON.stringify(this.payload) },
+          });
+        }
       }
     },
   },
@@ -134,14 +150,17 @@ export default {
       return {
         type: this.payload.room.type,
         roomName: this.payload.room.roomName,
-        client: `${this.payload.lastName}, ${this.payload.firstName} ${
-          this.payload.middleName ? this.payload.middleName : ""
-        }`,
+        client: this.payload.lastName && this.payload.firstName ? `${this.payload.lastName ? this.payload.lastName : ""}, ${
+          this.payload.firstName ? this.payload.firstName : ""
+        } ${this.payload.middleName ? this.payload.middleName : ""}` : "Please Type",
         button: {
           title: "Save Reservation",
           outlined: false,
         },
       };
+    },
+    showScan() {
+      return this.payload.payment?.type === "GCash" ? true : false;
     },
   },
   watch: {

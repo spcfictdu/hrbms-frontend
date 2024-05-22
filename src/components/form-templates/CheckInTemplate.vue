@@ -25,12 +25,12 @@
               dense
               readonly
               hide-details="auto"
-              :value="payload.checkIn.date"
+              :value="date"
               :rules="rules.date"
             ></v-text-field>
           </template>
           <v-date-picker
-            v-model="payload.checkIn.date"
+            v-model="date"
             :min="minDate"
             @change="emitDate"
           ></v-date-picker>
@@ -56,12 +56,12 @@
               dense
               readonly
               hide-details="auto"
-              :value="payload.checkIn.time"
+              :value="formattedTime"
               :rules="rules.time"
             ></v-text-field>
           </template>
           <v-time-picker
-            v-model="payload.checkIn.time"
+            v-model="time"
             scrollable
             active-picker="HOUR"
             @change="emitTime"
@@ -75,15 +75,19 @@
 <script>
 import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
+import { formatTime } from "@/mixins/FormattingFunctions";
 export default {
   name: "CheckInTemplate",
+  mixins: [formatTime],
   data: () => ({
     payload: {
       checkIn: {
+        official: null,
         date: null,
-        time: null,
       },
     },
+    date: null,
+    time: null,
     menu: false,
     menu_2: false,
     minDate: new Date().toISOString().slice(0, 10),
@@ -94,6 +98,10 @@ export default {
   },
   methods: {
     emitTransaction: function () {
+      // Format Date
+      let dateString = `${this.date}T${this.time}:00`;
+      this.payload.checkIn.date = dateString;
+
       this.$emit("emit-transaction", this.payload);
     },
     emitDate: function () {
@@ -111,6 +119,12 @@ export default {
       errors.date = [(v) => !!v || "Date is required"];
       errors.time = [(v) => !!v || "Time is required"];
       return errors;
+    },
+    formattedTime() {
+      //Show the time in another format
+      const now = new Date().toISOString().slice(0, 10);
+      const dateString = `${now}T${this.time}:00`;
+      return this.time ? this.formatTime(dateString) : null;
     },
   },
 };

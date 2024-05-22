@@ -1,11 +1,15 @@
 <template>
   <div>
-    <header-booking-slot :headerData="headerData" />
+    <header-booking-slot
+      @button-event="requestUpdateOnTime"
+      :headerData="headerData"
+    />
 
     <v-row>
       <v-col cols="12" md="6">
         <!-- Checked-in/out -->
         <v-divider />
+        <check-in-out-details :cardTimeInformation="cardTimeInformation" />
       </v-col>
       <v-col cols="12" md="6">
         <!-- Booking Summary -->
@@ -22,25 +26,20 @@
 <script>
 import HeaderBookingSlot from "@/components/slots/HeaderBookingSlot.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
+import CheckInOutDetails from "@/components/form-templates/CheckInOutDetails.vue";
 export default {
   name: "ConfirmedDetails",
   props: ["queryResult"],
   data: () => ({
     payload: {},
+    activeButtonTitle: "Save Check-In Time",
   }),
   components: {
     HeaderBookingSlot,
     BookingSummary,
+    CheckInOutDetails,
   },
   methods: {
-    formatDate(date) {
-      const formattedDate = new Date(date).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-      return `${formattedDate}`;
-    },
     assignPayload: function (payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
@@ -48,31 +47,51 @@ export default {
         }
       }
     },
+    requestUpdateOnTime: function () {
+      //API Calls
+      if (!this.payload.checkIn.official) {
+        this.payload.checkIn.official = new Date();
+        this.activeButtonTitle = "Save Checked-Out Time";
+        this.payload.status = "Checked-in";
+      } else {
+        this.payload.checkOut.official = new Date();
+        this.payload.status = "Checked-out";
+      }
+    },
   },
   computed: {
     headerData() {
       let status = {};
       let button = {};
+      let disabled = true;
 
-      status.type = "Booking";
-      status.color = "primary";
-      button.title = "Save Checked-In Time";
+      const now = new Date();
+      const from = new Date(this.payload.checkIn.date);
+      const to = new Date(this.payload.checkOut.date);
+
+      if (this.payload.status === "Confirmed" && from <= now) {
+        disabled = false;
+      } else if (this.payload.status === "Checked-in" && to <= now) {
+        disabled = false;
+      }
+
+      status.type = this.payload.status;
+      button.title = this.activeButtonTitle;
       button.style = {
         color: "primary",
         outlined: false,
       };
+      button.disabled = disabled;
 
       return {
-        client: `${this.queryResult.lastName}, ${this.queryResult.firstName} ${
-          this.queryResult.middleName ? this.queryResult.middleName : ""
+        client: `${this.payload.lastName}, ${this.payload.firstName} ${
+          this.payload.middleName ? this.payload.middleName : ""
         }`,
         from: {
-          date: this.formatDate(this.queryResult.checkIn.date),
-          time: this.queryResult.checkIn.time,
+          date: this.payload.checkIn.date,
         },
         to: {
-          date: this.formatDate(this.queryResult.checkOut.date),
-          time: this.queryResult.checkOut.time,
+          date: this.payload.checkOut.date,
         },
         status: status,
         button: button,
@@ -91,12 +110,21 @@ export default {
         },
       };
     },
+    cardTimeInformation() {
+      return {
+        checkIn: this.payload.checkIn,
+        checkOut: this.payload.checkOut,
+      };
+    },
   },
   watch: {
     queryResult: {
       immediate: true,
       handler: function (newVal) {
         this.assignPayload(newVal);
+        if (newVal.status === "For Reservation & Confirmation" || newVal.status === "For Booking") {
+          this.payload.status = "Confirmed";
+        }
       },
     },
   },

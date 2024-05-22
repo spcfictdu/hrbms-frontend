@@ -5,18 +5,18 @@
     </title-slot>
 
     <div>
-      <total-bill-slot
+      <total-bill-card
         @validation-event="$emit('validation-event')"
         :totalInformation="totalInformation"
       >
-      </total-bill-slot>
+      </total-bill-card>
     </div>
   </div>
 </template>
 
 <script>
 import TitleSlot from "../slots/TitleSlot.vue";
-import TotalBillSlot from "../hotel-rooms/availability/TotalBillCard.vue";
+import TotalBillCard from "../hotel-rooms/availability/TotalBillCard.vue";
 export default {
   name: "BookingSummary",
   props: {
@@ -32,7 +32,7 @@ export default {
   data: () => ({}),
   components: {
     TitleSlot,
-    TotalBillSlot,
+    TotalBillCard,
   },
   methods: {},
   computed: {
@@ -43,7 +43,12 @@ export default {
           value: this.cardInformation.client,
         },
       ];
-      if (this.isStatus === "For Booking") {
+      if (
+        this.isStatus === "For Booking" ||
+        this.isStatus === "Confirmed" ||
+        this.isStatus === "For Reservation & Confirmation" ||
+        this.isStatus === "Checked-in" || this.isStatus === "Checked-out"
+      ) {
         data.push(
           {
             title: "Room",

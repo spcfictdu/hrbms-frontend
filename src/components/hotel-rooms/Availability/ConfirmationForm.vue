@@ -7,23 +7,14 @@
         <v-col cols="12" md="6">
           <!-- Transaction -->
           <v-divider />
-          <transaction-template @emit-transaction="assignPayload" />
+          <transaction-template :statuses="statuses" @emit-transaction="assignPayload" />
 
           <!-- Payment -->
           <v-divider />
           <payment-template @emit-transaction="assignPayload" />
 
           <!-- GCash QR Code Transition -->
-          <v-expand-transition>
-            <div v-show="showScan" class="lightBg rounded-lg pa-6 text-center">
-              <v-img
-                eager
-                class="mx-auto"
-                :src="imgSrc"
-                max-width="200"
-              ></v-img>
-            </div>
-          </v-expand-transition>
+          <g-cash-image-transition :showScan="showScan"/>
         </v-col>
         <v-col cols="12" md="6">
           <!-- Booking Summary -->
@@ -44,18 +35,20 @@ import TransactionTemplate from "@/components/form-templates/TransactionTemplate
 import HeaderBookingSlot from "../../../components/slots/HeaderBookingSlot.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
+import GCashImageTransition from "./GCashImageTransition.vue";
 export default {
   name: "ConfirmationForm",
   props: ["queryResult"],
   data: () => ({
     payload: {},
-    imgSrc: require("@/assets/GCashScan.png"),
+    statuses: ["For Reservation & Confirmation"],
   }),
   components: {
     HeaderBookingSlot,
     TransactionTemplate,
     PaymentTemplate,
     BookingSummary,
+    GCashImageTransition,
   },
   methods: {
     assignPayload: function (payload) {
@@ -64,14 +57,6 @@ export default {
           this.$set(this.payload, key, payload[key]);
         }
       }
-    },
-    formatDate(date) {
-      const formattedDate = new Date(date).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-      return `${formattedDate}`;
     },
     submitForValidation: function () {
       this.$refs.form.validate();
@@ -85,13 +70,8 @@ export default {
         });
       }
     },
-    headerEvents: function (type) {
-      if (type === "Cancel Reservation") {
-        //Actions
-        this.$router.push({ name: "Availability" });
-      } else {
-        // Save Actions
-      }
+    headerEvents: function () {
+      // Cancel Reservation
     },
   },
   computed: {
@@ -100,32 +80,21 @@ export default {
       let button = {};
       if (this.queryResult.status === "For Reservation") {
         status.type = "Reserved"; // May Change
-        status.color = "reserved";
         button.title = "Cancel Reservation";
         button.style = {
           color: "warning",
           outlined: true,
         };
-      } else {
-        status.type = "Booking"; // May Change
-        status.color = "primary";
-        button.title = "Save Checked-In Time";
-        button.style = {
-          color: "primary",
-          outlined: false,
-        };
-      }
+      } 
       return {
         client: `${this.queryResult.lastName}, ${this.queryResult.firstName} ${
           this.queryResult.middleName ? this.queryResult.middleName : ""
         }`,
         from: {
-          date: this.formatDate(this.queryResult.checkIn.date),
-          time: this.queryResult.checkIn.time,
+          date: this.queryResult.checkIn.date,
         },
         to: {
-          date: this.formatDate(this.queryResult.checkOut.date),
-          time: this.queryResult.checkOut.time,
+          date: this.queryResult.checkOut.date,
         },
         status: status,
         button: button,

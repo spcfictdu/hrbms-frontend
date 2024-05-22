@@ -26,8 +26,8 @@ import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "TransactionTemplate",
+  props: ["statuses"],
   data: () => ({
-    statuses: ["For Reservation", "For Booking"],
     payload: {
       status: null,
     },
