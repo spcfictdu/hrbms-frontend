@@ -17,7 +17,11 @@
         </v-alert>
       </div>
 
-      <div class="text-fields-container">
+      <v-form
+        ref="form"
+        class="text-fields-container"
+        @submit.prevent="authenticateUser"
+      >
         <v-text-field v-model="user.username" outlined label="Username" />
         <v-text-field
           v-model="user.password"
@@ -31,11 +35,11 @@
           color="primary"
           elevation="0"
           :loading="loading"
-          @click="authenticateUser"
+          type="submit"
         >
           SIGN IN
         </v-btn>
-      </div>
+      </v-form>
     </v-card>
   </div>
 </template>
@@ -66,9 +70,11 @@ export default {
     ...mapActions("authentication", ["login"]),
 
     authenticateUser: async function () {
-      this.loading = true;
-      await this.login(this.user);
-      this.loading = false;
+      if (this.$refs.form.validate()) {
+        this.loading = true;
+        await this.login(this.user);
+        this.loading = false;
+      }
     },
 
     triggerAlert: function (value) {
