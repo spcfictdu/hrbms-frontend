@@ -8,6 +8,7 @@ import AvailabilityView from "../../views/hotel-rooms/AvailabilityView";
 import BookingView from "../../views/hotel-rooms/availability/BookingView";
 import ConfirmationView from "../../views/hotel-rooms/availability/ConfirmationView";
 import CheckInAndOutView from "../../views/hotel-rooms/availability/CheckInAndOutView.vue";
+import CreateRoomView from "@/views/hotel-rooms/CreateRoomView.vue";
 
 Vue.use(VueRouter);
 
@@ -73,9 +74,17 @@ export default [
         component: CheckInAndOutView,
         meta: {
           name: "Check In & Out",
+        }
+      },
+      {
+        path: "create-room",
+        name: "Create Room",
+        component: CreateRoomView,
+        meta: {
+          name: "Create Room",
           hideInputs: true,
         },
-      },
+      }
     ],
   },
 ];

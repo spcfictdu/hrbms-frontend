@@ -46,6 +46,6 @@ export default {
 
 <style scoped>
 .room-images {
-  border-radius: 5px;
+  border-radius: 3px;
 }
 </style>

@@ -62,6 +62,7 @@
           rounded
           color="primary"
           class="d-none d-md-flex"
+          @click="redirect({name: 'Rooms', route: 'Create Room'})"
         >
           <v-icon left>mdi-plus</v-icon>
           ROOM

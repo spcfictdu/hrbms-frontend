@@ -70,6 +70,7 @@
               <v-chip
                 :color="statusColor(item.status)"
                 dark
+                small
                 class="text-overline"
                 >{{ item.status }}</v-chip
               >

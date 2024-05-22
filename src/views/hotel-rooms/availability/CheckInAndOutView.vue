@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ConfirmedDetails from "@/components/hotel-rooms/availability/ConfirmedDetails.vue";
+import ConfirmedDetails from "../../../components/hotel-rooms/availability/ConfirmedDetails.vue"
 export default {
   name: "CheckInAndOut",
   components: {

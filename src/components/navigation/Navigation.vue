@@ -1,6 +1,6 @@
 <template>
   <div class="primary pb-10 pt-md-5 pb-md-15">
-    <v-container :class="{'xl-padding': $vuetify.breakpoint.xl}">
+    <v-container :class="{ 'xl-padding': $vuetify.breakpoint.xl }">
       <v-row no-gutters>
         <v-col
           cols="0"
@@ -38,8 +38,8 @@
           >
             <v-btn
               small
-              :plain="!route.childRouteNames.includes(activeRouteButton)"
-              :text="route.childRouteNames.includes(activeRouteButton)"
+              :plain="!isActive(route)"
+              :text="isActive(route)"
               elevation="0"
               class="white--text"
               v-for="(route, index) in routes"
@@ -60,20 +60,15 @@
             >
               <v-btn
                 fab
-                :outlined="!route.childRouteNames.includes(activeRouteButton)"
+                :outlined="!isActive(route)"
                 x-small
                 elevation="0"
                 color="white"
                 @click="redirect(route)"
               >
-                <v-icon
-                  :color="
-                    !route.childRouteNames.includes(activeRouteButton)
-                      ? 'white'
-                      : 'primary'
-                  "
-                  >{{ route.icon }}</v-icon
-                >
+                <v-icon :color="!isActive(route) ? 'white' : 'primary'">{{
+                  route.icon
+                }}</v-icon>
               </v-btn>
 
               <p class="text-caption mb-0 mt-2 white--text">{{ route.name }}</p>
@@ -82,9 +77,16 @@
             <v-divider vertical class="white" />
 
             <div class="d-flex flex-column align-center justify-end">
-              <v-btn fab outlined x-small elevation="0" color="white"
-                ><v-icon> mdi-logout-variant </v-icon></v-btn
+              <v-btn
+                fab
+                outlined
+                x-small
+                elevation="0"
+                color="white"
+                @click="logout"
               >
+                <v-icon> mdi-logout-variant </v-icon>
+              </v-btn>
               <p class="text-caption mb-0 mt-2 white--text">Sign Out</p>
             </div>
           </div>
@@ -104,9 +106,16 @@
             >
               Sign out
             </p>
-            <v-btn fab outlined small elevation="0" color="white"
-              ><v-icon> mdi-logout-variant </v-icon></v-btn
+            <v-btn
+              fab
+              outlined
+              small
+              elevation="0"
+              color="white"
+              @click="logout"
             >
+              <v-icon> mdi-logout-variant </v-icon>
+            </v-btn>
           </div>
         </v-col>
       </v-row>
@@ -115,6 +124,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "Navigation",
   data: () => ({
@@ -152,7 +163,7 @@ export default {
         childRouteNames: [
           "Rooms",
           "Occupied Rooms",
-          "Room Categories",
+          "Categories",
           "Availability",
         ],
       },
@@ -165,9 +176,21 @@ export default {
   },
 
   methods: {
+    ...mapActions("authentication", ["logout"]),
+
     redirect: function (route) {
       this.activeButton = route.name;
       return this.$router.push({ name: route.route });
+    },
+
+    isActive: function (route) {
+      if (
+        route.childRouteNames.includes(this.activeRouteButton) ||
+        this.activeRouteButton === route.name
+      ) {
+        return true;
+      }
+      return false;
     },
   },
 
@@ -182,7 +205,7 @@ export default {
   font-weight: bold;
 }
 
-.xl-padding{
+.xl-padding {
   padding: 0 300px 0 300px;
 }
 </style>

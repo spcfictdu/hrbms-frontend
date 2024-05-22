@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import ConfirmationForm from "@/components/hotel-rooms/availability/ConfirmationForm.vue";
+import ConfirmationForm from "../../../components/hotel-rooms/availability/ConfirmationForm.vue"
 export default {
   name: "ConfirmationView",
   components: {
