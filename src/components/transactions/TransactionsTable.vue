@@ -55,7 +55,7 @@
               :key="index"
             >
               <span class="ml-2">{{ header }}</span>
-              <v-text-field outlined dense></v-text-field>
+              <v-text-field outlined dense hide-details="auto"></v-text-field>
             </v-col>
           </v-row>
           <v-data-table
@@ -66,16 +66,16 @@
             class="ma-5"
             toggle="false"
           >
-            <template v-slot:item.status="{ item }">
+            <template v-slot:[`item.status`]="{ item }">
               <v-chip
-                :color="statusColor(item.status)"
+                :color="statusColors[item.status.toLowerCase()]"
                 dark
                 small
                 class="text-overline"
                 >{{ item.status }}</v-chip
               >
             </template>
-            <template v-slot:group.header="{ group }">
+            <template v-slot:[`group.header`]="{ group }">
               <td :colspan="headers.length" class="pl-8">
                 {{ group }}
               </td>
@@ -242,14 +242,25 @@ export default {
       "Check-in Date",
       "Check-out Date",
     ],
+    statusColors: {
+      "checked-in": "checkedin",
+      "checked-out": "checkedout",
+      "reserved": "reserved",
+      "confirmed": "confirmed"
+    }
   }),
   methods: {
-    statusColor: function (status) {
-      if (status === "Checked-in") return "green";
-      else if (status === "Checked-out") return "orange";
-      else if (status === "Reserved") return "pink";
-      else return "indigo";
-    },
+    // statusColor: function (status) {
+    //   if (status === "Checked-in") return "green";
+    //   else if (status === "Checked-out") return "orange";
+    //   else if (status === "Reserved") return "pink";
+    //   else return "indigo";
+    // },
+  },
+  computed:{
+    size: function(){
+      return this.$vuetify.breakpoint;
+    }
   },
   watch: {
     items: {
@@ -265,20 +276,20 @@ export default {
         }
       },
     },
-    "$vuetify.breakpoint": {
+    size: {
       immediate: true,
       deep: true,
       handler(newVal) {
-        if (newVal.xs === true) {
+        if (newVal.xs) {
           this.title = "d-flex text-h6 font-weight-bold justify-center mt-n3";
           this.small = false;
           this.xSmall = true;
-          this.colsTextfield = 6;
-        } else if (newVal.sm === true) {
+          this.colsTextfield = 12;
+        } else if (newVal.sm) {
           this.title = "text-h6 font-weight-bold mb-1";
           this.small = true;
           this.xSmall = false;
-          this.colsTextfield = 4;
+          this.colsTextfield = 6;
         } else {
           this.title = "text-h5 font-weight-bold mb-1";
           this.small = true;

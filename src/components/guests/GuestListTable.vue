@@ -2,12 +2,12 @@
   <v-container>
     <div>
       <v-row>
-      <v-col cols="12">
-        <div :class="guestClass">Guests</div>
-      </v-col>
-    </v-row>
+        <v-col cols="12">
+          <div :class="guestClass">Guests</div>
+        </v-col>
+      </v-row>
     </div>
-    <v-divider/>
+    <v-divider />
     <v-row>
       <v-col cols="12">
         <v-card elevation="0" class="mt-5">
@@ -162,6 +162,11 @@ export default {
       });
     },
   },
+  computed: {
+    size: function () {
+      return this.$vuetify.breakpoint;
+    },
+  },
   watch: {
     guests: {
       immediate: true,
@@ -176,21 +181,21 @@ export default {
         }
       },
     },
-    "$vuetify.breakpoint": {
+    size: {
       immediate: true,
       deep: true,
       handler(newVal) {
-        if (newVal.xs === true) {
-          this.colsTextfield = 6;
+        if (newVal.xs) {
+          this.colsTextfield = 12;
           this.small = false;
           this.xSmall = true;
           this.guestClass =
             "d-flex text-h6 font-weight-bold justify-center mt-n3";
-        } else if (newVal.sm === true){
+        } else if (newVal.sm) {
           this.guestClass = "text-h6 font-weight-bold mb-1";
           this.small = true;
           this.xSmall = false;
-          this.colsTextfield = 4;
+          this.colsTextfield = 6;
         } else {
           this.guestClass = "text-h5 font-weight-bold mb-1";
           this.small = true;

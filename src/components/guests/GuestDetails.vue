@@ -1,18 +1,18 @@
 <template>
-  <div
-    :class="{
-      'xl-padding mt-n3': $vuetify.breakpoint.xl,
-      'px-sm-2 mx-md-n3 my-md-5 mx-sm-n3 my-sm-n3':
-        $vuetify.breakpoint.lgAndDown,
-    }"
-  >
-    <v-container>
+  <v-container>
+    <div
+      :class="{
+        'xl-padding mt-n3': $vuetify.breakpoint.xl,
+        'px-sm-2 mx-md-n3 my-md-5 mx-sm-n3 my-sm-n3':
+          $vuetify.breakpoint.lgAndDown,
+      }"
+    >
       <v-row v-if="!$vuetify.breakpoint.xs">
         <v-col cols="12">
           <div :class="title">Guest Details</div>
         </v-col>
       </v-row>
-      <v-divider v-if="!$vuetify.breakpoint.xs" :class="classDivider"/>
+      <v-divider v-if="!$vuetify.breakpoint.xs" :class="classDivider" />
       <v-row>
         <v-col>
           <div :class="classGuestName">
@@ -21,10 +21,12 @@
         </v-col>
         <v-spacer v-if="!$vuetify.breakpoint.xs"></v-spacer>
         <v-col cols="auto" v-if="!$vuetify.breakpoint.xs">
-          <v-btn outlined color="red">DELETE GUEST DETAILS</v-btn>
+          <v-btn outlined color="red" @click="dialogActivator"
+            >DELETE GUEST DETAILS</v-btn
+          >
         </v-col>
         <v-col cols="auto" v-else>
-          <v-btn icon outlined color="red"
+          <v-btn icon outlined color="red" @click="dialogActivator"
             ><v-icon>mdi-trash-can-outline</v-icon></v-btn
           >
         </v-col>
@@ -92,7 +94,7 @@
                 :cols="textfieldCols"
               >
                 <span class="ml-2">{{ header }}</span>
-                <v-text-field dense outlined></v-text-field>
+                <v-text-field dense outlined hide-details="auto"></v-text-field>
               </v-col>
             </v-row>
             <v-row>
@@ -102,9 +104,9 @@
                   :items="stayStatus"
                   class="ma-5"
                 >
-                  <template v-slot:item.status="{ item }">
+                  <template v-slot:[`item.status`]="{ item }">
                     <v-chip
-                      :color="statusColor(item.status)"
+                      :color="statusColors[item.status.toLowerCase()]"
                       dark
                       small
                       class="text-overline"
@@ -118,13 +120,17 @@
           </v-card>
         </v-col>
       </v-row>
-    </v-container>
-  </div>
+    </div>
+    <DeleteDialog :activator="deleteDialog" @reset-activator="resetActivator" />
+  </v-container>
 </template>
 
 <script>
+import { watch } from "vue";
+import DeleteDialog from "../dialogs/DeleteDialog.vue";
 export default {
   name: "GuestDetails",
+  components: { DeleteDialog },
   data: () => ({
     name: "Dela Cruz, Juan Flores",
     guestDetails: [
@@ -187,6 +193,12 @@ export default {
         total: "5000",
       },
     ],
+    statusColors: {
+      "checked-in": "checkedin",
+      "checked-out": "checkedout",
+      reserved: "reserved",
+      confirmed: "confirmed",
+    },
     show: false,
     textfieldHeaders: ["Reference", "Check-in Date", "Check-out Date"],
     indeterminate: true,
@@ -198,21 +210,36 @@ export default {
     classDivider: "my-3",
     detailCols: "auto",
     title: "text-h5 font-weight-bold",
+    deleteDialog: false,
   }),
   methods: {
-    statusColor: function (status) {
-      if (status === "Checked-in") return "green";
-      else if (status === "Checked-out") return "orange";
-      else if (status === "Reserved") return "pink";
-      else return "indigo";
+    // statusColor: function (status) {
+    //   if (status === "Checked-in") return "green";
+    //   else if (status === "Checked-out") return "orange";
+    //   else if (status === "Reserved") return "pink";
+    //   else return "indigo";
+    // },
+    dialogActivator: function () {
+      this.deleteDialog = !this.deleteDialog;
+    },
+    resetActivator: function () {
+      this.deleteDialog = !this.deleteDialog;
     },
   },
   computed: {
     detailLabels() {
       return Object.keys(this.guestDetails);
     },
+    size: function () {
+      return this.$vuetify.breakpoint;
+    },
   },
   watch: {
+    deleteDialog: {
+      handler(value) {
+        console.log(value);
+      },
+    },
     stayStatus: {
       immediate: true,
       handler(value) {
@@ -226,11 +253,11 @@ export default {
         }
       },
     },
-    "$vuetify.breakpoint": {
+    size: {
       immediate: true,
       deep: true,
       handler(newVal) {
-        if (newVal.xs === true) {
+        if (newVal.xs) {
           this.classGuestName =
             "d-flex font-weight-bold text-h6 justify-center";
           this.textfieldCols = 12;
@@ -238,16 +265,16 @@ export default {
           this.xSmall = true;
           this.classDivider = "my-3";
           this.detailCols = "auto";
-        } else if (newVal.md === true || newVal.sm === true) {
+        } else if (newVal.md || newVal.sm) {
           this.detailCols = 6;
           this.textfieldCols = 4;
           this.small = true;
           this.xSmall = false;
           this.classDivider = "my-3";
-          if (newVal.sm === true) {
+          if (newVal.sm) {
             this.title = "text-h6 font-weight-bold";
             this.classGuestName = "text-subtitle-1 font-weight-bold";
-          } 
+          }
         } else {
           this.classGuestName = "text-h6 font-weight-bold";
           this.textfieldCols = 4;
