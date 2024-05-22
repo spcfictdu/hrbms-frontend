@@ -10,7 +10,8 @@ import { auth } from "./utils/auth";
 Vue.config.productionTip = false;
 
 const axiosInstance = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api' // For localhost
+  // baseURL: 'http://127.0.0.1:8000/api' // For localhost
+  baseURL: 'http://192.168.31.230/api'
 })
 
 
@@ -24,6 +25,7 @@ Vue.prototype.$auth = auth
 
 Vuex.Store.prototype.$axios = axiosInstance;
 Vuex.Store.prototype.$router = router;
+Vuex.Store.prototype.$auth = auth;
 
 new Vue({
   router,

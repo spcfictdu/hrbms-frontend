@@ -41,15 +41,21 @@ export const authentication = {
 
         async logout({ commit }) {
             try {
+                const config = {
+                    headers: {
+                        'Authorization': 'Bearer ' + this.$auth.token()
+                    }
+                }
+
                 let url = "user/logout"
 
-                await this.$axios.get(url)
+                await this.$axios.get(url, config)
                 commit("SET_CURRENT_USER", null)
                 this.$router.push({ name: "Sign In" })
 
             } catch (error) {
                 commit("SET_CURRENT_USER", null)
-                this.$router.push({name: "Sign In"})
+                this.$router.push({ name: "Sign In" })
             }
         }
     }
