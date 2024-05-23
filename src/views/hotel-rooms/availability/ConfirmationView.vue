@@ -1,6 +1,10 @@
 <template>
   <div class="mt-10">
-    <confirmation-form :result="transaction" v-if="transaction"/>
+    <confirmation-form
+      @delete-event="requestDelete"
+      :result="transaction"
+      v-if="transaction"
+    />
   </div>
 </template>
 
@@ -13,18 +17,24 @@ export default {
     ConfirmationForm,
   },
   methods: {
-    ...mapActions("transaction", ["fetchTransaction"]),
+    ...mapActions("transaction", ["fetchTransaction", "deleteReservation"]),
     fetchData: function () {
       const referenceNumber = this.$route.params.referenceNumber;
       this.fetchTransaction(referenceNumber);
-    }
+    },
+    requestDelete: function (payload) {
+      this.deleteReservation({
+        status: payload.status,
+        transactionRefNum: payload.transactionRefNum,
+      });
+    },
   },
   computed: {
-    ...mapState("transaction", ["transaction"])
+    ...mapState("transaction", ["transaction"]),
   },
   created() {
     this.fetchData();
-  }
+  },
 };
 </script>
 

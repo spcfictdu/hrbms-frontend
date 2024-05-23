@@ -81,7 +81,7 @@ export default {
     payload: {
       payment: {
         paymentType: null,
-        amountReceived: null,
+        amountReceived: 0,
       },
     },
     imgSrc: require("@/assets/GCashLogo.png"),

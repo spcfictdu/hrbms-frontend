@@ -115,7 +115,7 @@ export default {
     payload: {
       payment: {
         paymentType: null,
-        amountReceived: null,
+        amountReceived: 0,
       },
     },
   }),

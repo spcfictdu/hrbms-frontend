@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <header-booking-slot @button-event="headerEvents" :headerData="headerData">
+  <div v-if="room">
+    <header-booking-slot @button-event="requestCancel" :headerData="headerData">
     </header-booking-slot>
     <v-form ref="form" lazy-validation>
       <v-row>
@@ -44,17 +44,18 @@ export default {
   name: "ConfirmationForm",
   props: ["result"],
   data: () => ({
-    payload: {},
+    payload: {
+      payment: {
+        amountReceived: 0,
+        paymentType: null,
+      },
+    },
     statuses: [
       {
         status: "For Reservation & Confirmation",
         value: "CONFIRMED",
       },
     ],
-    roomTotal: 2000,
-    extraPersonTotal: 0,
-    total: 2000,
-    totalOutstanding: 2000,
   }),
   components: {
     HeaderBookingSlot,
@@ -84,8 +85,19 @@ export default {
         // });
       }
     },
-    headerEvents: function () {
-      // Cancel Reservation
+    requestCancel: function () {
+      let params = {
+        status: this.result.transaction.status,
+        transactionRefNum: this.result.transaction.referenceNumber,
+      };
+      this.$emit("delete-event", params);
+    },
+    fetchQuery: function (newVal) {
+      let query = {
+        roomType: newVal.room.name,
+        roomNumber: newVal.room.number,
+      };
+      this.fetchRoom(query);
     },
   },
   computed: {
@@ -117,26 +129,44 @@ export default {
       return this.payload.payment?.paymentType === "GCash" ? true : false;
     },
     cardInformation() {
-      const additionalGuests = this.payload.guests
-      const totalReceived = this.payload.payment?.amountReceived
+      const room = this.room ? this.room[0] : null;
+
+      // Assign the Guests to a variable
+      const additionalGuests = this.payload.guests ? this.payload.guests : 0;
+
+      // Compute the total additional guests price
+      const extraPersonTotal = room.extraPersonTotal * additionalGuests;
+
+      // Total Bill
+      const total = room.roomTotal + room.extraPersonTotal * additionalGuests;
+
+      // Total Received
+      const totalReceived = this.payload.payment
         ? this.payload.payment.amountReceived
         : 0;
-      const totalOutstanding = this.totalOutstanding - totalReceived;
+
+      // Total Outstanding Bill
+      const totalOutstanding =
+        total - totalReceived < 0 ? 0 : total - totalReceived;
+
+      // Total Change
+      const totalChange = totalReceived > total ? totalReceived - total : 0;
 
       return {
         client: this.result.guestName,
         room: {
-          type: this.result.room.name,
-          roomName: this.result.room.number,
-          capacity: this.result.room.capacity,
-
+          type: room.roomType,
+          roomName: room.roomNumber,
+          capacity: room.roomTypeCapacity,
+          roomFloor: room.roomFloor,
         },
         payment: {
-          roomTotal: this.roomTotal,
-          extraPersonTotal: this.extraPersonTotal,
-          total: this.total,
+          roomTotal: room.roomTotal,
+          extraPersonTotal: extraPersonTotal,
+          total: total,
           totalReceived: totalReceived,
           totalOutstanding: totalOutstanding,
+          totalChange: totalChange,
         },
         button: {
           title: "Record Payment",
@@ -150,10 +180,7 @@ export default {
       immediate: true,
       handler: function (newVal) {
         if (newVal) {
-          let query = {
-            "room-number": newVal.room.number,
-          }
-          this.fetchRoom(query);
+          this.fetchQuery(newVal);
         }
       },
     },

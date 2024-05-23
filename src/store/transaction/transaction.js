@@ -62,5 +62,19 @@ export const transaction = {
           console.error("Error creating transaction: ", error);
         });
     },
+    deleteReservation: function ({ _ }, { status, transactionRefNum }) {
+      const url = `transaction/reservation/delete/${status}/${transactionRefNum}`;
+      return this.$axios
+        .delete(url)
+        .then((response) => {
+          console.log(response.data.message);
+          this.$router.replace({
+            name: "Availability",
+          });
+        })
+        .catch((error) => {
+          console.error("Error deleting reservation: ", error);
+        });
+    },
   },
 };

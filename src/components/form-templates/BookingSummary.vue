@@ -21,7 +21,6 @@ export default {
   name: "BookingSummary",
   props: {
     isStatus: {
-      type: String,
       required: true,
     },
     cardInformation: {
@@ -55,7 +54,7 @@ export default {
           },
           {
             title: "Floor",
-            value: "Floor 4",
+            value: this.cardInformation.room.roomFloor,
           }
         );
       }
