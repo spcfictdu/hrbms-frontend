@@ -60,21 +60,23 @@ export default [
         },
       },
       {
-        path: "availability/booking/confirmation",
+        path: "availability/confirmation/:referenceNumber",
         name: "Confirmation",
         component: ConfirmationView,
+        props: true,
         meta: {
           name: "Booking",
           hideInputs: true,
         },
       },
       {
-        path: "availability/check-in-out",
+        path: "availability/check-in-out/:referenceNumber",
         name: "CheckInOut",
         component: CheckInAndOutView,
+        props: true,
         meta: {
           name: "Check In & Out",
-        }
+        },
       },
       {
         path: "create-room",
@@ -84,7 +86,7 @@ export default [
           name: "Create Room",
           hideInputs: true,
         },
-      }
+      },
     ],
   },
 ];

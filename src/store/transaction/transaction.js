@@ -31,7 +31,7 @@ export const transaction = {
       return this.$axios
         .get(url)
         .then((response) => {
-          commit("SET_TRANSACTION", response.data.results);
+          commit("SET_TRANSACTION", response.data.results.bookingHistory);
         })
         .catch((error) => {
           console.error("Error fetching transaction: ", error);
@@ -40,12 +40,23 @@ export const transaction = {
     createTransaction: function ({ _ }, payload) {
       const url = `transaction/create`;
       return this.$axios
-        .post(url, data)
+        .post(url, payload)
         .then((response) => {
-          this.$router.push({
-            name: "Confirmation",
-            params: { referenceNumber: response.data.results.referenceNumber },
-          });
+          if (response.data.results.status === "RESERVED") {
+            this.$router.push({
+              name: "Confirmation",
+              params: {
+                referenceNumber: response.data.results.referenceNumber,
+              },
+            });
+          } else {
+            this.$router.push({
+              name: "CheckInOut",
+              params: {
+                referenceNumber: response.data.results.referenceNumber,
+              },
+            });
+          }
         })
         .catch((error) => {
           console.error("Error creating transaction: ", error);

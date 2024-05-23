@@ -25,12 +25,12 @@
               dense
               readonly
               hide-details="auto"
-              :value="date"
+              :value="payload.checkIn.date"
               :rules="rules.date"
             ></v-text-field>
           </template>
           <v-date-picker
-            v-model="date"
+            v-model="payload.checkIn.date"
             :min="minDate"
             @change="emitDate"
           ></v-date-picker>
@@ -61,7 +61,7 @@
             ></v-text-field>
           </template>
           <v-time-picker
-            v-model="time"
+            v-model="payload.checkIn.time"
             scrollable
             active-picker="HOUR"
             @change="emitTime"
@@ -82,12 +82,10 @@ export default {
   data: () => ({
     payload: {
       checkIn: {
-        official: null,
         date: null,
+        time: null,
       },
     },
-    date: null,
-    time: null,
     menu: false,
     menu_2: false,
     minDate: new Date().toISOString().slice(0, 10),
@@ -98,10 +96,9 @@ export default {
   },
   methods: {
     emitTransaction: function () {
-      // Format Date
-      let dateString = `${this.date}T${this.time}:00`;
-      this.payload.checkIn.date = dateString;
-
+      // // Format Date
+      // let dateString = `${this.date}T${this.time}:00`;
+      // this.payload.checkIn.date = dateString;
       this.$emit("emit-transaction", this.payload);
     },
     emitDate: function () {
@@ -123,8 +120,8 @@ export default {
     formattedTime() {
       //Show the time in another format
       const now = new Date().toISOString().slice(0, 10);
-      const dateString = `${now}T${this.time}:00`;
-      return this.time ? this.formatTime(dateString) : null;
+      const dateString = `${now}T${this.payload.checkIn.time}:00`;
+      return this.payload.checkIn.time ? this.formatTime(dateString) : null;
     },
   },
 };

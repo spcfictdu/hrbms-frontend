@@ -56,7 +56,7 @@
         hide-details="auto"
         outlined
         :rules="rules.amountReceived"
-        v-model="payload.payment.amountReceived"
+        v-model.number="payload.payment.amountReceived"
         @change="emitTransaction"
       ></v-text-field>
     </div>
@@ -76,11 +76,11 @@ export default {
   },
   data: () => ({
     activeButton: "",
-    buttonOne: "Cash",
-    buttonTwo: "GCash",
+    buttonOne: "CASH",
+    buttonTwo: "GCASH",
     payload: {
       payment: {
-        type: null,
+        paymentType: null,
         amountReceived: null,
       },
     },
@@ -93,7 +93,7 @@ export default {
   methods: {
     assignActiveButton: function (string) {
       this.activeButton = string;
-      this.payload.payment.type = string;
+      this.payload.payment.paymentType = string;
       this.emitTransaction();
     },
     emitTransaction: function () {
@@ -105,7 +105,7 @@ export default {
       const errors = {};
       // errors.type = [(v) => !!v || "Type is required"];
       errors.amountReceived = [
-        !!this.payload.payment.type || "Type is required",
+        !!this.payload.payment.paymentType || "Type is required",
         (v) => !!v || "Amount is required",
       ];
       return errors;

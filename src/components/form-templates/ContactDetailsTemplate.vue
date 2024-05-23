@@ -16,7 +16,7 @@
           outlined
           :rules="rules.phoneNumber"
           counter="11"
-          v-model="payload.phoneNumber"
+          v-model="payload.contact.phoneNumber"
           @change="emitTransaction"
         ></v-text-field>
       </v-col>
@@ -30,7 +30,7 @@
           hide-details="auto"
           outlined
           :rules="rules.email"
-          v-model="payload.email"
+          v-model="payload.contact.email"
           @change="emitTransaction"
         ></v-text-field>
       </v-col>
@@ -45,8 +45,10 @@ export default {
   name: "ContactDetailsTemplate",
   data: () => ({
     payload: {
-      phoneNumber: null,
-      email: null,
+      contact: {
+        phoneNumber: null,
+        email: null,
+      },
     },
   }),
   components: {

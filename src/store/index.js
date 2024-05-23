@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import createPersistedState from "vuex-persistedstate"
 
 import { authentication } from "./authentication/authentication";
-import { roomTypeEnum, roomNumberEnum } from "./enums/rooms";
+import { roomTypeEnum, roomNumberEnum, roomEnum } from "./enums/rooms";
 import { transaction } from "./transaction/transaction";
 
 Vue.use(Vuex);
@@ -16,6 +16,7 @@ export default new Vuex.Store({
     //Enums
     roomTypeEnum,
     roomNumberEnum,
+    roomEnum,
   },
   plugins: [createPersistedState({
     paths: ['authentication.currentUser']

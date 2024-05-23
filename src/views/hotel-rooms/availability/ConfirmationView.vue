@@ -1,24 +1,30 @@
 <template>
   <div class="mt-10">
-    <confirmation-form :queryResult="queryResult" />
+    <confirmation-form :result="transaction" v-if="transaction"/>
   </div>
 </template>
 
 <script>
-import ConfirmationForm from "../../../components/hotel-rooms/availability/ConfirmationForm.vue"
+import ConfirmationForm from "../../../components/hotel-rooms/availability/ConfirmationForm.vue";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "ConfirmationView",
   components: {
     ConfirmationForm,
   },
-  methods: {},
-  computed: {
-    queryResult() {
-      let query = this.$route.query.payload;
-      let format = JSON.parse(query);
-      return format;
-    },
+  methods: {
+    ...mapActions("transaction", ["fetchTransaction"]),
+    fetchData: function () {
+      const referenceNumber = this.$route.params.referenceNumber;
+      this.fetchTransaction(referenceNumber);
+    }
   },
+  computed: {
+    ...mapState("transaction", ["transaction"])
+  },
+  created() {
+    this.fetchData();
+  }
 };
 </script>
 

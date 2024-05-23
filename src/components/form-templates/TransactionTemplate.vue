@@ -14,6 +14,8 @@
       v-model="payload.status"
       hide-details="auto"
       @change="emitTransaction"
+      item-text="status"
+      item-value="value"
       clearable
       :rules="rules.status"
       required

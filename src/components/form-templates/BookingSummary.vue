@@ -44,15 +44,14 @@ export default {
         },
       ];
       if (
-        this.isStatus === "For Booking" ||
-        this.isStatus === "Confirmed" ||
-        this.isStatus === "For Reservation & Confirmation" ||
-        this.isStatus === "Checked-in" || this.isStatus === "Checked-out"
+        this.isStatus === "CONFIRMED" ||
+        this.isStatus === "CHECKED-IN" ||
+        this.isStatus === "CHECKED-OUT"
       ) {
         data.push(
           {
             title: "Room",
-            value: "Room D1",
+            value: this.cardInformation.room.roomName,
           },
           {
             title: "Floor",
@@ -61,16 +60,19 @@ export default {
         );
       }
       return {
-        title: this.cardInformation.type,
-        room: this.cardInformation.roomName,
-        occupancy: 5,
+        room: {
+          type: this.cardInformation.room.type,
+          room: this.cardInformation.room.roomName,
+          capacity: this.cardInformation.room.capacity,
+        },
         guest: data,
-        totalPayment: {
-          roomTotal: 2000,
-          extraPersonTotal: 0,
-          total: 2000,
-          totalReceived: 0,
-          totalOutstanding: 2000,
+        payment: {
+          roomTotal: this.cardInformation.payment.roomTotal,
+          extraPersonTotal: this.cardInformation.payment.extraPersonTotal,
+          total: this.cardInformation.payment.total,
+          totalReceived: this.cardInformation.payment.totalReceived,
+          totalOutstanding: this.cardInformation.payment.totalOutstanding,
+          totalChange: this.cardInformation.payment.totalChange,
         },
         button: this.cardInformation.button,
       };

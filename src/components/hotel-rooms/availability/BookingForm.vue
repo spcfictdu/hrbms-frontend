@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="this.room">
     <div class="d-flex justify-end align-center mb-2">
       <div>
         <v-select
@@ -64,9 +64,9 @@
               :isIncluded="showPayment"
               @emit-transaction="assignPayload"
             />
-            
+
             <!-- GCash QR Code Transition -->
-            <g-cash-image-transition :showScan="showScan"/>
+            <g-cash-image-transition :showScan="showScan" />
           </div>
 
           <!-- Booking Summary -->
@@ -93,7 +93,8 @@ import CheckOutTemplate from "@/components/form-templates/CheckOutTemplate.vue";
 import GuestsTemplate from "@/components/form-templates/GuestsTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
-import GCashImageTransition from "@/components/hotel-rooms/availability/GCashImageTransition.vue"
+import GCashImageTransition from "@/components/hotel-rooms/availability/GCashImageTransition.vue";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "BookingForm",
   props: ["queryResult"],
@@ -101,8 +102,22 @@ export default {
     valid: true,
     autofill: "Dela Cruz, Juan",
     autofillEnums: ["Dela Cruz, Juan", "Cruz, Jose Gabriel"],
-    statuses: ["For Reservation", "For Booking"],
-    payload: {},
+    statuses: [
+      {
+        status: "For Reservation",
+        value: "RESERVED",
+      },
+      {
+        status: "For Booking",
+        value: "CONFIRMED",
+      },
+    ],
+    payload: {
+      payment: {
+        paymentType: null,
+        amountReceived: null,
+      },
+    },
   }),
   components: {
     TransactionTemplate,
@@ -118,6 +133,7 @@ export default {
     GCashImageTransition,
   },
   methods: {
+    ...mapActions("roomEnum", ["fetchRoom"]),
     assignPayload: function (payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
@@ -128,31 +144,66 @@ export default {
     submitForValidation: function () {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
-        if (this.payload.status === "For Reservation") {
-          this.$router.push({
-            name: "Confirmation",
-            query: { payload: JSON.stringify(this.payload) },
-          });
-        } else {
-          this.$router.push({
-            name: "CheckInOut",
-            query: { payload: JSON.stringify(this.payload) },
-          });
-        }
+        this.$emit("validation-event", this.payload);
       }
+    },
+    fetchQuery: function (newVal) {
+      let query = {
+        roomType: newVal.room.type,
+        roomNumber: newVal.room.details.roomNumber,
+      };
+      this.fetchRoom(query);
     },
   },
   computed: {
+    ...mapState("roomEnum", ["room"]),
     showPayment() {
-      return this.payload?.status === "For Booking" ? true : false;
+      return this.payload?.status === "CONFIRMED" ? true : false;
     },
     cardInformation() {
+      const room = this.room ? this.room[0] : null;
+
+      // Assign the Guests to a variable
+      const additionalGuests = this.payload.guests ? this.payload.guests : 0;
+
+      // Compute the total additional guests price
+      const extraPersonTotal = room.extraPersonTotal * additionalGuests;
+
+      // Total Bill
+      const total = room.roomTotal + room.extraPersonTotal * additionalGuests;
+
+      // Total Received
+      const totalReceived = this.payload.payment
+        ? this.payload.payment.amountReceived
+        : 0;
+
+      // Total Outstanding Bill
+      const totalOutstanding =
+        total - totalReceived < 0 ? 0 : total - totalReceived;
+
+      // Total Change
+      const totalChange = totalReceived > total ? totalReceived - total : 0;
+
       return {
-        type: this.payload.room.type,
-        roomName: this.payload.room.roomName,
-        client: this.payload.lastName && this.payload.firstName ? `${this.payload.lastName ? this.payload.lastName : ""}, ${
-          this.payload.firstName ? this.payload.firstName : ""
-        } ${this.payload.middleName ? this.payload.middleName : ""}` : "Please Type",
+        client:
+          this.payload.lastName && this.payload.firstName
+            ? `${this.payload.lastName ? this.payload.lastName : ""}, ${
+                this.payload.firstName ? this.payload.firstName : ""
+              } ${this.payload.middleName ? this.payload.middleName : ""}`
+            : "Please Type",
+        room: {
+          type: room.roomType,
+          roomName: room.roomNumber,
+          capacity: room.roomTypeCapacity,
+        },
+        payment: {
+          roomTotal: room.roomTotal,
+          extraPersonTotal: extraPersonTotal,
+          total: total,
+          totalReceived: totalReceived,
+          totalOutstanding: totalOutstanding,
+          totalChange: totalChange,
+        },
         button: {
           title: "Save Reservation",
           outlined: false,
@@ -160,15 +211,26 @@ export default {
       };
     },
     showScan() {
-      return this.payload.payment?.type === "GCash" ? true : false;
+      return this.payload.payment?.paymentType === "GCash" ? true : false;
     },
   },
   watch: {
     queryResult: {
       immediate: true,
       handler: function (newVal) {
-        this.assignPayload(newVal);
-        console.log(newVal);
+        this.payload.room = {
+          referenceNumber: newVal.room.details.referenceNumber,
+        };
+        this.fetchQuery(newVal);
+      },
+    },
+    "payload.status": {
+      deep: true,
+      handler: function (newVal) {
+        if (newVal === "RESERVED") {
+          this.payload.payment.amountReceived = null;
+          this.payload.payment.paymentType = null;
+        }
       },
     },
   },

@@ -2,15 +2,15 @@
   <v-card class="pa-4 pa-md-8 text-subtitle-2" flat>
     <div class="pb-6">
       <div class="text-body-1 font-weight-bold text-uppercase">
-        {{ totalInformation.title }}
+        {{ totalInformation.room.type }}
       </div>
       <div class="d-flex align-center grey--text text--darken-2">
         <div class="font-weight-bold text-uppercase mr-2">
-          {{ totalInformation.room }}
+          Room {{ totalInformation.room.room }}
         </div>
         <v-divider vertical />
         <div class="font-weight-regular ml-2">
-          {{ totalInformation.occupancy }} room occupancy
+          {{ totalInformation.room.capacity }} room occupancy
         </div>
       </div>
     </div>
@@ -33,11 +33,11 @@
     <div class="my-3 font-weight-regular">
       <div class="d-flex justify-space-between align-center">
         <div>Room Total:</div>
-        <div>PhP. {{ totalInformation.totalPayment.roomTotal }}</div>
+        <div>₱ {{ totalInformation.payment.roomTotal }}</div>
       </div>
       <div class="d-flex justify-space-between align-center">
         <div>Extra Person Total:</div>
-        <div>PhP. {{ totalInformation.totalPayment.extraPersonTotal }}</div>
+        <div>₱ {{ totalInformation.payment.extraPersonTotal }}</div>
       </div>
     </div>
 
@@ -46,21 +46,25 @@
     <div class="my-3 font-weight-regular">
       <div class="d-flex justify-space-between align-center">
         <div>Total:</div>
-        <div>PhP. {{ totalInformation.totalPayment.total }}</div>
+        <div>₱ {{ totalInformation.payment.total }}</div>
       </div>
       <div class="d-flex justify-space-between align-center">
         <div>Total Received:</div>
-        <div>PhP. {{ totalInformation.totalPayment.totalReceived }}</div>
+        <div>₱ {{ totalInformation.payment.totalReceived }}</div>
       </div>
     </div>
 
     <v-divider />
 
-    <div
-      class="my-3 d-flex justify-space-between align-center font-weight-bold warning--text"
-    >
-      <div>Total Outstanding:</div>
-      <div>PhP. {{ totalInformation.totalPayment.totalOutstanding }}</div>
+    <div class="my-3 font-weight-bold">
+      <div class="d-flex justify-space-between align-center warning--text">
+        <div>Total Outstanding:</div>
+        <div>₱ {{ totalInformation.payment.totalOutstanding }}</div>
+      </div>
+      <div class="d-flex justify-space-between align-center">
+        <div>Total Change:</div>
+        <div>₱ {{ totalInformation.payment.totalChange }}</div>
+      </div>
     </div>
 
     <v-card-actions class="pa-0">

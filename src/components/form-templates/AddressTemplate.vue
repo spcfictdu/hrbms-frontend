@@ -13,7 +13,7 @@
         hide-details="auto"
         outlined
         :rules="rules.province"
-        v-model="payload.province"
+        v-model="payload.address.province"
         @change="emitTransaction"
       ></v-text-field>
     </div>
@@ -26,8 +26,8 @@
         dense
         hide-details="auto"
         outlined
-        :rules="rules.cityMunicipality"
-        v-model="payload.cityMunicipality"
+        :rules="rules.city"
+        v-model="payload.address.city"
         @change="emitTransaction"
       ></v-text-field>
     </div>
@@ -41,8 +41,10 @@ export default {
   name: "AddressTemplate",
   data: () => ({
     payload: {
-      province: null,
-      cityMunicipality: null,
+      address: {
+        province: null,
+        city: null,
+      },
     },
   }),
   components: {
@@ -58,7 +60,7 @@ export default {
     rules() {
       const errors = {};
       errors.province = [(v) => !!v || "Province is required"];
-      errors.cityMunicipality = [(v) => !!v || "City/Municipality is required"];
+      errors.city = [(v) => !!v || "City/Municipality is required"];
       return errors;
     },
   },

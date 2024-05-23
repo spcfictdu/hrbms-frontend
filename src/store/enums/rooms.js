@@ -36,7 +36,7 @@ export const roomNumberEnum = {
   }),
   getters: {},
   mutations: {
-    SET_ROOM_NUMBERS: (state, data) => state.roomNumberEnum = data,
+    SET_ROOM_NUMBERS: (state, data) => (state.roomNumberEnum = data),
   },
   actions: {
     fetchRoomNumbers: function ({ commit }, queryParams = {}) {
@@ -49,6 +49,31 @@ export const roomNumberEnum = {
         })
         .catch((error) => {
           console.error("Error fetchinr room numbers: ", error);
+        });
+    },
+  },
+};
+
+export const roomEnum = {
+  namespaced: true,
+  state: () => ({
+    room: null,
+  }),
+  getters: {},
+  mutations: {
+    SET_ROOM: (state, data) => (state.room = data),
+  },
+  actions: {
+    fetchRoom: function ({ commit }, queryParams = {}) {
+      const url = `enum/room`;
+      const queryUrl = functions.query(url, queryParams);
+      return this.$axios
+        .get(queryUrl)
+        .then((response) => {
+          commit("SET_ROOM", response.data.results);
+        })
+        .catch((error) => {
+          console.error("Error fetching room: ", error);
         });
     },
   },

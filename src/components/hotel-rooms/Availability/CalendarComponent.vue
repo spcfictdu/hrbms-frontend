@@ -459,9 +459,6 @@ export default {
 
       this.events = events;
     },
-    rnd(a, b) {
-      return Math.floor((b - a + 1) * Math.random()) + a;
-    },
     formatDate(date) {
       const formattedDate = new Date(date).toLocaleDateString("en-US", {
         year: "numeric",
@@ -488,7 +485,7 @@ export default {
       let payload = {
         room: {
           type: this.activeButton,
-          roomName: this.dropdownValue,
+          details: (this.filteredRoom(this.dropdownValue)),
         },
       };
       this.$router.push({
@@ -501,12 +498,18 @@ export default {
     requestEnums: function () {
       this.fetchRoomTypes();
     },
+    filteredRoom: function (room) {
+      const filteredRoom = this.roomNumberEnum.filter(
+        (item) => item.roomNumber === room
+      );
+      return filteredRoom[0];
+    },
     requestQuery: function (newVal) {
       const payload = {
         roomType: newVal,
-      }
+      };
       this.fetchRoomNumbers(payload);
-    }
+    },
   },
   computed: {
     ...mapState("roomTypeEnum", ["roomTypeEnum"]),
@@ -527,6 +530,12 @@ export default {
       handler(newVal) {
         this.activeButton = newVal;
         this.requestQuery(newVal);
+      },
+    },
+    roomNumberEnum: {
+      deep: true,
+      handler: function (newVal) {
+        this.dropdownValue = newVal[0].roomNumber;
       },
     },
     dropdownValue: {

@@ -28,7 +28,7 @@
           hide-details="auto"
           outlined
           :rules="rules.IdNumber"
-          v-model="payload.id.IdNumber"
+          v-model="payload.id.number"
           @change="emitTransaction"
         ></v-text-field>
       </v-col>
@@ -45,7 +45,7 @@ export default {
     payload: {
       id: {
         type: null,
-        IdNumber: null,
+        number: null,
       },
     },
     IdEnums: ["National ID", "Driver's License", "Passport"],
