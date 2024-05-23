@@ -8,7 +8,7 @@
       <v-col cols="12">
         <v-card elevation="0" class="mt-5">
           <v-card-title class="text-subtitle-2 font-weight-black ml-3">
-            {{ items.length }} ITEMS
+            {{ transactions.length }} TRANSACTIONS
             <v-spacer></v-spacer>
             <v-btn
               color="primary"
@@ -60,7 +60,7 @@
           </v-row>
           <v-data-table
             :headers="headers"
-            :items="items"
+            :items="transactions"
             group-by="date"
             group-toggle="false"
             class="ma-5"
@@ -88,6 +88,9 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
+import { mapState } from 'vuex';
+
 export default {
   name: "TransactionsTable",
   data: () => ({
@@ -98,108 +101,10 @@ export default {
     small: true,
     xSmall: false,
     colsTextfield: 4,
-    items: [
-      {
-        date: "May 19, 2024",
-        name: "Camerino, Maria Santos",
-        status: "Checked-out",
-        reference: "BKG-234567-20240514",
-        occupants: "5",
-        checkIn: "05-18-2024",
-        checkOut: "05-20-2024",
-        booked: "05-18-2024",
-        room: "Room 145",
-        total: "3500",
-      },
-      {
-        date: "May 19, 2024",
-        name: "Dela Cruz, Juan Flores",
-        status: "Reserved",
-        reference: "BKG-234567-20240514",
-        occupants: "3",
-        checkIn: "",
-        checkOut: "",
-        booked: "05-19-2024",
-        room: "Room 146",
-        total: "3000",
-      },
-      {
-        date: "May 19, 2024",
-        name: "Cruz, Jose Rizal",
-        status: "Confirmed",
-        reference: "BKG-345678-20240514",
-        occupants: "1",
-        checkIn: "",
-        checkOut: "",
-        booked: "05-18-2024",
-        room: "Room 147",
-        total: "3123",
-      },
-      {
-        date: "May 19, 2024",
-        name: "De Jesus, Angelica Reyes",
-        status: "Checked-in",
-        reference: "BKG-456789-20240514",
-        occupants: "2",
-        checkIn: "05-19-2024",
-        checkOut: "",
-        booked: "05-19-2024",
-        room: "Room 148",
-        total: "4578",
-      },
-      {
-        date: "May 20, 2024",
-        name: "Dela Cruz, Juan Flores",
-        status: "Checked-in",
-        reference: "BKG-234567-20240514",
-        occupants: "3",
-        checkIn: "05-20-2024",
-        checkOut: "",
-        booked: "05-19-2024",
-        room: "Room 146",
-        total: "3000",
-      },
-      {
-        date: "May 20, 2024",
-        name: "Cruz, Jose Rizal",
-        status: "Checked-in",
-        reference: "BKG-345678-20240514",
-        occupants: "1",
-        checkIn: "05-20-2024",
-        checkOut: "",
-        booked: "05-18-2024",
-        room: "Room 147",
-        total: "3123",
-      },
-      {
-        date: "May 20, 2024",
-        name: "De Jesus, Angelica Reyes",
-        status: "Checked-in",
-        reference: "BKG-456789-20240514",
-        occupants: "2",
-        checkIn: "05-19-2024",
-        checkOut: "",
-        booked: "05-19-2024",
-        room: "Room 148",
-        total: "4578",
-      },
-      {
-        date: "May 20, 2024",
-        name: "Quizon, Manuel Gonzales",
-        status: "Reserved",
-        reference: "BKG-567890-20240514",
-        occupants: "2",
-        checkIn: "",
-        checkOut: "",
-        booked: "05-20-2024",
-        room: "Room 155",
-        total: "3600",
-      },
-    ],
     headers: [
       {
         text: "Name",
-        value: "name",
+        value: "fullName",
       },
       {
         text: "Status",
@@ -207,7 +112,7 @@ export default {
       },
       {
         text: "Reference",
-        value: "reference",
+        value: "transactionRefNum",
       },
       {
         text: "Occupants",
@@ -215,11 +120,11 @@ export default {
       },
       {
         text: "Check-in",
-        value: "checkIn",
+        value: "checkInDate",
       },
       {
         text: "Check-out",
-        value: "checkOut",
+        value: "checkOutDate",
       },
       {
         text: "Booked",
@@ -250,20 +155,21 @@ export default {
     }
   }),
   methods: {
-    // statusColor: function (status) {
-    //   if (status === "Checked-in") return "green";
-    //   else if (status === "Checked-out") return "orange";
-    //   else if (status === "Reserved") return "pink";
-    //   else return "indigo";
-    // },
+    ...mapActions("transaction", ["fetchTransactions"]),
   },
   computed:{
+    ...mapState("transaction", {
+      transactions: "transactions"
+    }),
     size: function(){
       return this.$vuetify.breakpoint;
     }
   },
+  created(){
+    this.fetchTransactions();
+  },
   watch: {
-    items: {
+    transactions: {
       immediate: true,
       handler(value) {
         if (value.length) {
