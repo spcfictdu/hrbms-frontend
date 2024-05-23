@@ -4,12 +4,16 @@ import createPersistedState from "vuex-persistedstate"
 
 import { authentication } from "./authentication/authentication";
 import { roomTypeEnum, roomNumberEnum } from "./enums/rooms";
+import { transaction } from "./transaction/transaction";
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
     authentication,
+    transaction,
+
+    //Enums
     roomTypeEnum,
     roomNumberEnum,
   },
