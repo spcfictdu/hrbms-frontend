@@ -53,15 +53,15 @@ export default {
   methods: {
     getColor: function (status) {
       let color = null;
-      if (status === "Confirmed") {
+      if (status === "CONFIRMED") {
         color = "confirmed";
-      } else if (status === "Checked-in") {
+      } else if (status === "CHECKED-IN") {
         color = "checkedin";
-      } else if (status === "Checked-out") {
+      } else if (status === "CHECKED-OUT") {
         color = "checkedout";
-      } else if (status === "Housekeeping") {
+      } else if (status === "HOUSEKEEPING") {
         color = "housekeeping";
-      } else if (status === "Reserved") {
+      } else if (status === "RESERVED") {
         color = "reserved";
       }
       return color;

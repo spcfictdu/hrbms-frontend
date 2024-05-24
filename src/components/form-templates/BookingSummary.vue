@@ -54,7 +54,7 @@ export default {
           },
           {
             title: "Floor",
-            value: this.cardInformation.room.roomFloor,
+            value: `Floor ${this.cardInformation.room.roomFloor}`,
           }
         );
       }
