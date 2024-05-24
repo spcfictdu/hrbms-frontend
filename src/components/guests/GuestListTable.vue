@@ -80,57 +80,21 @@
 </template>
 
 <script>
+import { mapActions, mapState } from "vuex";
 export default {
   name: "GuestListTable",
   data: () => ({
-    guests: [
-      {
-        name: "Dela Cruz, Juan Flores",
-        booking: "BKG-987654-20240514",
-        email: "juan.delacruz@gmail.com",
-        phone: "09123456789",
-        id: 1,
-      },
-      {
-        name: "Camerino, Maria Santos",
-        booking: "BKG-234567-20240514",
-        email: "macamerino@gmail.com",
-        phone: "09229876543",
-        id: 2,
-      },
-      {
-        name: "Cruz, Jose Rizal",
-        booking: "BKG-345678-20240514",
-        email: "jose.rizal@gmail.com",
-        phone: "09229876543",
-        id: 3,
-      },
-      {
-        name: "De Jesus, Angelica Reyes",
-        booking: "BKG-456789-20240514",
-        email: "angelicadejesus@gmail.com",
-        phone: "09278765432",
-        id: 4,
-      },
-      {
-        name: "Quizon, Manuel Gonzales",
-        booking: "BKG-567890-20240514",
-        email: "manuel.quizon@gmail.com",
-        phone: "09187654321",
-        id: 5,
-      },
-    ],
     show: false,
     indeterminate: true,
     value: 0,
     headers: [
       {
         text: "Name",
-        value: "name",
+        value: "fullName",
       },
       {
         text: "Booking Reference",
-        value: "booking",
+        value: "referenceNumber",
       },
       {
         text: "Email",
@@ -155,6 +119,7 @@ export default {
     guestClass: "text-h5 font-weight-black mb-1",
   }),
   methods: {
+    ...mapActions("guest", ["fetchGuests"]),
     test: function (row) {
       this.$router.push({
         name: "guest",
@@ -163,9 +128,15 @@ export default {
     },
   },
   computed: {
+    ...mapState("guest", {
+      guests: "guests",
+    }),
     size: function () {
       return this.$vuetify.breakpoint;
     },
+  },
+  created() {
+    this.fetchGuests();
   },
   watch: {
     guests: {

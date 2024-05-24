@@ -16,7 +16,7 @@
       <v-row>
         <v-col>
           <div :class="classGuestName">
-            {{ name }}
+            {{ guest.fullName }}
           </div>
         </v-col>
         <v-spacer v-if="!$vuetify.breakpoint.xs"></v-spacer>
@@ -47,7 +47,8 @@
         <v-col cols="12">
           <v-card elevation="0">
             <v-card-title class="text-subtitle-2 font-weight-black ml-3"
-              >{{ stayStatus.length }} ITEMS
+              >{{ guest.transactions.length }}
+              {{ guest.transactions.length < 1 ? "ITEMS" : "ITEM" }}
               <v-spacer></v-spacer>
               <v-btn
                 color="primary"
@@ -101,7 +102,7 @@
               <v-col cols="12">
                 <v-data-table
                   :headers="headers"
-                  :items="stayStatus"
+                  :items="guest.transactions"
                   class="ma-5"
                 >
                   <template v-slot:[`item.status`]="{ item }">
@@ -127,70 +128,21 @@
 
 <script>
 import DeleteDialog from "../dialogs/DeleteDialog.vue";
+import { mapState, mapActions } from "vuex";
 export default {
   name: "GuestDetails",
   components: { DeleteDialog },
   data: () => ({
-    name: "Dela Cruz, Juan Flores",
-    guestDetails: [
-      {
-        title: "ADDRESS",
-        content: "Angeles City, Pampanga",
-      },
-      {
-        title: "EMAIL",
-        content: "juan.delacruz@gmail.com",
-      },
-      {
-        title: "PHONE",
-        content: "09123456789",
-      },
-      {
-        title: "ID NUMBER",
-        content: "0528305-4102-583258 - National ID",
-      },
-    ],
+    guestDetails: [],
     headers: [
       { text: "Status", value: "status" },
       { text: "Reference", value: "reference" },
-      { text: "Occupants", value: "occupants" },
+      { text: "Occupants", value: "ocupants" },
       { text: "Check-in", value: "checkIn" },
       { text: "Check-out", value: "checkOut" },
       { text: "Booked", value: "booked" },
       { text: "Room", value: "room" },
       { text: "Total", value: "total" },
-    ],
-    stayStatus: [
-      {
-        status: "Checked-out",
-        reference: "BKG-987654-20240514",
-        occupants: 5,
-        checkIn: "05-10-2024",
-        checkOut: "05-15-2024",
-        booked: "05-09-2024",
-        room: "Room 147",
-        total: "5000",
-      },
-      {
-        status: "Checked-out",
-        reference: "BKG-987654-20240514",
-        occupants: 5,
-        checkIn: "05-10-2024",
-        checkOut: "05-15-2024",
-        booked: "05-09-2024",
-        room: "Room 147",
-        total: "5000",
-      },
-      {
-        status: "Checked-out",
-        reference: "BKG-987654-20240514",
-        occupants: 5,
-        checkIn: "05-10-2024",
-        checkOut: "05-15-2024",
-        booked: "05-09-2024",
-        room: "Room 147",
-        total: "5000",
-      },
     ],
     statusColors: {
       "checked-in": "checkedin",
@@ -212,34 +164,45 @@ export default {
     deleteDialog: false,
   }),
   methods: {
-    // statusColor: function (status) {
-    //   if (status === "Checked-in") return "green";
-    //   else if (status === "Checked-out") return "orange";
-    //   else if (status === "Reserved") return "pink";
-    //   else return "indigo";
-    // },
+    ...mapActions("guest", ["fetchGuest"]),
     dialogActivator: function () {
       this.deleteDialog = !this.deleteDialog;
     },
     resetActivator: function () {
       this.deleteDialog = !this.deleteDialog;
     },
+    fetchGuestDetails: function () {
+      const id = this.$route.params.id;
+      this.fetchGuest(id).catch((error) => {
+        console.error("Error fetching guest details: ", error);
+      });
+    },
   },
   computed: {
+    ...mapState("guest", {
+      guest: "guest",
+    }),
     detailLabels() {
       return Object.keys(this.guestDetails);
     },
-    size: function () {
+    size() {
       return this.$vuetify.breakpoint;
     },
+    // mappedGuestDetails() {
+    //   return this.guest ? this.guestDetails.map((detail))
+    // },
+  },
+  created() {
+    this.fetchGuestDetails();
   },
   watch: {
-    deleteDialog: {
+    guestDetails: {
+      immediate: true,
       handler(value) {
-        console.log(value);
+        console.log("guestDetails: ", value);
       },
     },
-    stayStatus: {
+    "guest.transactions": {
       immediate: true,
       handler(value) {
         if (value.length) {

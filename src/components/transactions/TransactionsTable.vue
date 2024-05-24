@@ -60,11 +60,9 @@
           </v-row>
           <v-data-table
             :headers="headers"
-            :items="transactions"
+            :items="mappedTransactions"
             group-by="date"
-            group-toggle="false"
             class="ma-5"
-            toggle="false"
           >
             <template v-slot:[`item.status`]="{ item }">
               <v-chip
@@ -88,8 +86,8 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
-import { mapState } from 'vuex';
+import { format, parseISO } from "date-fns";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "TransactionsTable",
@@ -104,7 +102,7 @@ export default {
     headers: [
       {
         text: "Name",
-        value: "fullName",
+        value: "name",
       },
       {
         text: "Status",
@@ -112,7 +110,7 @@ export default {
       },
       {
         text: "Reference",
-        value: "transactionRefNum",
+        value: "reference",
       },
       {
         text: "Occupants",
@@ -120,11 +118,11 @@ export default {
       },
       {
         text: "Check-in",
-        value: "checkInDate",
+        value: "checkIn",
       },
       {
         text: "Check-out",
-        value: "checkOutDate",
+        value: "checkOut",
       },
       {
         text: "Booked",
@@ -150,22 +148,38 @@ export default {
     statusColors: {
       "checked-in": "checkedin",
       "checked-out": "checkedout",
-      "reserved": "reserved",
-      "confirmed": "confirmed"
-    }
+      reserved: "reserved",
+      confirmed: "confirmed",
+    },
   }),
   methods: {
     ...mapActions("transaction", ["fetchTransactions"]),
   },
-  computed:{
+  computed: {
     ...mapState("transaction", {
-      transactions: "transactions"
+      transactions: "transactions",
     }),
-    size: function(){
+    size() {
       return this.$vuetify.breakpoint;
-    }
+    },
+    mappedTransactions() {
+      return this.transactions
+        ? this.transactions.map((item) => ({
+            name: item.fullName,
+            status: item.status,
+            reference: item.transactionRefNum,
+            occupants: item.occupants,
+            date: format(parseISO(item.booked), "MMMM dd, yyyy"),
+            checkIn: item.checkInDate,
+            checkOut: item.checkOutDate,
+            booked: item.booked,
+            room: item.room,
+            total: item.total,
+          }))
+        : [];
+    },
   },
-  created(){
+  created() {
     this.fetchTransactions();
   },
   watch: {

@@ -49,16 +49,18 @@
         :items-per-page="5"
       ></v-data-table>
     </v-card>
-    <EditRegularRate :activator="regularRateDialog"/>
+    <EditRegularRate :activator="regularRateDialog"  @reset-activator="resetActivator"/>
+    <EditSpecialRate :activator="specialRateDialog"  @reset-activator="resetActivator"/>
   </v-container>
 </template>
 <script>
 import RoomsList from "../../components/hotel-rooms/RoomsList.vue";
 import HotelRoomsHeader from "../../components/headers/HotelRoomsHeader.vue";
 import EditRegularRate from '../dialogs/EditRegularRate.vue';
+import EditSpecialRate from "../dialogs/EditSpecialRate.vue";
 export default {
   name: "RoomPricing",
-  components: { RoomsList, HotelRoomsHeader, EditRegularRate },
+  components: { RoomsList, HotelRoomsHeader, EditRegularRate, EditSpecialRate },
   data: () => ({
     regularRateDialog: false,
     specialRateDialog: false,
@@ -205,9 +207,17 @@ export default {
       } else {
         return "black--text"
       }
-    }
+    },
+    resetActivator: function () {
+      if(this.regularRateDialog){
+        this.regularRateDialog = !this.regularRateDialog;
+      } else if (this.specialRateDialog){
+        this.specialRateDialog = !this.specialRateDialog;
+      }
+    },
   },
-  computed: {},
+  computed: {
+  },
 };
 </script>
 
