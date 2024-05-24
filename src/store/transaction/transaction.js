@@ -76,5 +76,17 @@ export const transaction = {
           console.error("Error deleting reservation: ", error);
         });
     },
+    updateTransaction: function ({ dispatch }, payload) {
+      const url = `transaction/update`;
+      return this.$axios
+        .put(url, payload)
+        .then((response) => {
+          console.log(response.data.message);
+          dispatch("fetchTransaction", payload.referenceNumber);
+        })
+        .catch((error) => {
+          console.error("Error updating transaction: ", error);
+        });
+    },
   },
 };

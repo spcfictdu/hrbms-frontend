@@ -76,6 +76,7 @@ export default [
         props: true,
         meta: {
           name: "Check In & Out",
+          hideInputs: true,
         },
       },
       {

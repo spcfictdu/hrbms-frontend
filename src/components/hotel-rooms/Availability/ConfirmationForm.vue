@@ -76,13 +76,7 @@ export default {
     submitForValidation: function () {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
-        // // API request
-        // this.$router.push({
-        //   name: "CheckInOut",
-        //   query: {
-        //     payload: JSON.stringify(this.payload),
-        //   },
-        // });
+        this.$emit("validation-event", this.payload);
       }
     },
     requestCancel: function () {
@@ -105,14 +99,15 @@ export default {
     headerData() {
       let status = {};
       let button = {};
-      if (this.result.transaction.status === "RESERVED") {
-        status.type = "Reserved"; // May Change
-        button.title = "Cancel Reservation";
-        button.style = {
-          color: "warning",
-          outlined: true,
-        };
-      }
+
+      // Manipulate Button and Title Styling
+      status.type = this.result.transaction.status;
+      button.title = "Cancel Reservation";
+      button.style = {
+        color: "warning",
+        outlined: true,
+      };
+
       return {
         client: this.result.guestName,
         from: {

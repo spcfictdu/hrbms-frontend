@@ -31,16 +31,16 @@ export default {
         {
           card: {
             status: "Checked-in",
-            time: this.cardTimeInformation.checkIn.official
-              ? this.cardTimeInformation.checkIn.official
+            time: this.cardTimeInformation.checkIn
+              ? this.cardTimeInformation.checkIn
               : null,
           },
         },
         {
           card: {
             status: "Checked-out",
-            time: this.cardTimeInformation.checkOut.official
-              ? this.cardTimeInformation.checkOut.official
+            time: this.cardTimeInformation.checkOut
+              ? this.cardTimeInformation.checkOut
               : null,
           },
         },
