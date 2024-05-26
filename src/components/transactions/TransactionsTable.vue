@@ -63,6 +63,7 @@
             :items="mappedTransactions"
             group-by="date"
             class="ma-5"
+            @click:row="(v) => requestRouteEvent(v)"
           >
             <template v-slot:[`item.status`]="{ item }">
               <v-chip
@@ -154,6 +155,13 @@ export default {
   }),
   methods: {
     ...mapActions("transaction", ["fetchTransactions"]),
+    requestRouteEvent: function (value) {
+      const routeParams = {
+        status: value.status,
+        referenceNumber: value.reference,
+      };
+      this.$emit("route-event", routeParams);
+    },
   },
   computed: {
     ...mapState("transaction", {

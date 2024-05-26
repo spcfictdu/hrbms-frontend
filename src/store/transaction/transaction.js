@@ -26,7 +26,11 @@ export const transaction = {
           console.error("Error fetching transactions: ", error);
         });
     },
-    fetchTransaction: function ({ commit }, referenceNumber) {
+    fetchTransaction: function ({ commit, state }, referenceNumber) {
+      // Reset to null state every fetch transaction
+      state.transaction = null;
+
+      // Get the transaction
       const url = `transaction/show/${referenceNumber}`;
       return this.$axios
         .get(url)
@@ -82,7 +86,14 @@ export const transaction = {
         .put(url, payload)
         .then((response) => {
           console.log(response.data.message);
-          dispatch("fetchTransaction", payload.referenceNumber);
+          if (payload.status === "CONFIRMED") {
+            this.$router.push({
+              name: "CheckInOut",
+              params: { referenceNumber: payload.referenceNumber },
+            });
+          } else {
+            dispatch("fetchTransaction", payload.referenceNumber);
+          }
         })
         .catch((error) => {
           console.error("Error updating transaction: ", error);

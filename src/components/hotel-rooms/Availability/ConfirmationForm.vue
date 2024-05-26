@@ -25,7 +25,7 @@
           <booking-summary
             :isStatus="payload.status"
             :cardInformation="cardInformation"
-            @validation-event="submitForValidation"
+            @validation-event="requestUpdateOnTransaction"
           />
         </v-col>
       </v-row>
@@ -73,10 +73,19 @@ export default {
         }
       }
     },
-    submitForValidation: function () {
+    requestUpdateOnTransaction: function () {
+      // Assign Variables
+      const referenceNumber = this.result.transaction.referenceNumber;
+      let payload = {
+        referenceNumber: referenceNumber,
+        paymentType: this.payload.payment.paymentType,
+        amountReceived: this.payload.payment.amountReceived,
+        status: this.payload.status,
+      };
+
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
-        this.$emit("validation-event", this.payload);
+        this.$emit("validation-event", payload);
       }
     },
     requestCancel: function () {

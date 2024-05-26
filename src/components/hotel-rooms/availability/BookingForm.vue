@@ -195,6 +195,7 @@ export default {
           type: room.roomType,
           roomName: room.roomNumber,
           capacity: room.roomTypeCapacity,
+          roomFloor: room.roomFloor,
         },
         payment: {
           roomTotal: room.roomTotal,

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="pa-0">
+  <v-container class="pa-0" v-if="enums">
     <!-- Room Categories -->
     <v-row dense justify="space-between" class="py-4 py-sm-8">
       <v-col
@@ -485,7 +485,7 @@ export default {
       let payload = {
         room: {
           type: this.activeButton,
-          details: (this.filteredRoom(this.dropdownValue)),
+          details: this.filteredRoom(this.dropdownValue),
         },
       };
       this.$router.push({
@@ -522,6 +522,9 @@ export default {
     },
     size() {
       return this.$vuetify.breakpoint;
+    },
+    enums() {
+      return this.roomTypeEnum && this.roomNumberEnum;
     },
   },
   watch: {

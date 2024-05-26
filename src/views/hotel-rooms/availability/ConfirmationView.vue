@@ -2,6 +2,7 @@
   <div class="mt-10">
     <confirmation-form
       @delete-event="requestDelete"
+      @validation-event="requestUpdate"
       :result="transaction"
       v-if="transaction"
     />
@@ -17,7 +18,7 @@ export default {
     ConfirmationForm,
   },
   methods: {
-    ...mapActions("transaction", ["fetchTransaction", "deleteReservation"]),
+    ...mapActions("transaction", ["fetchTransaction", "deleteReservation", "updateTransaction"]),
     fetchData: function () {
       const referenceNumber = this.$route.params.referenceNumber;
       this.fetchTransaction(referenceNumber);
@@ -28,6 +29,9 @@ export default {
         transactionRefNum: payload.transactionRefNum,
       });
     },
+    requestUpdate: function (payload) {
+      this.updateTransaction(payload);
+    }
   },
   computed: {
     ...mapState("transaction", ["transaction"]),
