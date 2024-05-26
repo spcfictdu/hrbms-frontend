@@ -104,6 +104,7 @@
                   :headers="headers"
                   :items="guest.transactions"
                   class="ma-5"
+                  @click:row="(v) => pushToTransactionRoute(v)"
                 >
                   <template v-slot:[`item.status`]="{ item }">
                     <v-chip
@@ -162,6 +163,8 @@ export default {
     detailCols: "auto",
     title: "text-h5 font-weight-bold",
     deleteDialog: false,
+    confirmationRoute: ["RESERVED"],
+    checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
   }),
   methods: {
     ...mapActions("guest", ["fetchGuest"]),
@@ -176,6 +179,28 @@ export default {
       this.fetchGuest(id).catch((error) => {
         console.error("Error fetching guest details: ", error);
       });
+    },
+    pushToTransactionRoute: function (value) {
+      console.log(value);
+      let payload = {
+        status: value.status,
+        referenceNumber: value.reference,
+      }
+      if (this.confirmationRoute.includes(payload.status)) {
+        this.$router.push({
+          name: "Confirmation",
+          params: {
+            referenceNumber: payload.referenceNumber,
+          },
+        });
+      } else if (this.checkInCheckOutRoute.includes(payload.status)) {
+        this.$router.push({
+          name: "CheckInOut",
+          params: {
+            referenceNumber: payload.referenceNumber,
+          },
+        });
+      }
     },
   },
   computed: {
