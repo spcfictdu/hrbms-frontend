@@ -80,7 +80,7 @@ export default {
         referenceNumber: referenceNumber,
         paymentType: this.payload.payment.paymentType,
         amountReceived: this.payload.payment.amountReceived,
-        status: this.payload.status,
+        status: this.result.transaction.status,
       };
 
       this.$refs.form.validate();

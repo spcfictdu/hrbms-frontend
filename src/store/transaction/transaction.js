@@ -86,7 +86,7 @@ export const transaction = {
         .put(url, payload)
         .then((response) => {
           console.log(response.data.message);
-          if (payload.status === "CONFIRMED") {
+          if (payload.status === "RESERVED") {
             this.$router.push({
               name: "CheckInOut",
               params: { referenceNumber: payload.referenceNumber },
