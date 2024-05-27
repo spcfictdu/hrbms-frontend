@@ -14,7 +14,7 @@
 
           <!-- Payment -->
           <v-divider />
-          <payment-template @emit-transaction="assignPayload" />
+          <payment-template @emit-transaction="assignPayload" :isGreater="totalPayment"/>
 
           <!-- GCash QR Code Transition -->
           <g-cash-image-transition :showScan="showScan" />
@@ -56,6 +56,7 @@ export default {
         value: "CONFIRMED",
       },
     ],
+    totalPayment: 0,
   }),
   components: {
     HeaderBookingSlot,
@@ -143,6 +144,7 @@ export default {
 
       // Total Bill
       const total = room.roomTotal + room.extraPersonTotal * additionalGuests;
+      this.totalPayment = total;
 
       // Total Received
       const totalReceived = this.payload.payment

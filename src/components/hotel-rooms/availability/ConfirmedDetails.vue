@@ -189,9 +189,8 @@ export default {
         checkIn = `${transactionHistory.checkInDate}T${transactionHistory.checkInTime}`;
       }
       if (transactionHistory.checkOutDate && transactionHistory.checkOutTime) {
-        checkIn = `${transactionHistory.checkOutDate}T${transactionHistory.checkOutTime}`;
+        checkOut = `${transactionHistory.checkOutDate}T${transactionHistory.checkOutTime}`;
       }
-
       return {
         checkIn: checkIn,
         checkOut: checkOut,

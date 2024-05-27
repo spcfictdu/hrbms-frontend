@@ -69,10 +69,10 @@ import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "PaymentTemplate",
   props: {
-    isIncluded: {
-      type: Boolean,
-      required: false,
-    },
+    isGreater: {
+      type: Number,
+      required: true,
+    }
   },
   data: () => ({
     activeButton: "",
@@ -107,6 +107,7 @@ export default {
       errors.amountReceived = [
         !!this.payload.payment.paymentType || "Type is required",
         (v) => !!v || "Amount is required",
+        (v) => v >= this.isGreater || "Amount should be greater than total",
       ];
       return errors;
     },

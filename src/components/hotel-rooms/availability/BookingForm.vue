@@ -61,7 +61,7 @@
           <div v-if="showPayment" class="pb-8">
             <v-divider />
             <payment-template
-              :isIncluded="showPayment"
+              :isGreater="totalPayment"
               @emit-transaction="assignPayload"
             />
 
@@ -118,6 +118,7 @@ export default {
         amountReceived: 0,
       },
     },
+    totalPayment: 0,
   }),
   components: {
     TransactionTemplate,
@@ -171,6 +172,7 @@ export default {
 
       // Total Bill
       const total = room.roomTotal + room.extraPersonTotal * additionalGuests;
+      this.totalPayment = total;
 
       // Total Received
       const totalReceived = this.payload.payment
