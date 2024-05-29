@@ -12,7 +12,7 @@
       <v-col cols="12">
         <v-card elevation="0" class="mt-5">
           <v-card-title class="text-subtitle-2 font-weight-black ml-3"
-            >{{ guests.length }} GUESTS
+            >{{ guests.guests.length }} GUESTS
             <v-spacer></v-spacer>
             <v-btn
               color="primary"
@@ -67,7 +67,7 @@
               <v-data-table
                 @click:row="test"
                 :headers="headers"
-                :items="guests"
+                :items="guests.guests"
                 class="ma-5"
               >
               </v-data-table>
@@ -139,7 +139,7 @@ export default {
     this.fetchGuests();
   },
   watch: {
-    guests: {
+    "guests.guests": {
       immediate: true,
       handler(value) {
         if (value.length) {

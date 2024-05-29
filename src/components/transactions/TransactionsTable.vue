@@ -8,7 +8,7 @@
       <v-col cols="12">
         <v-card elevation="0" class="mt-5">
           <v-card-title class="text-subtitle-2 font-weight-black ml-3">
-            {{ transactions.length }} TRANSACTIONS
+            {{ transactions.data.length }} TRANSACTIONS
             <v-spacer></v-spacer>
             <v-btn
               color="primary"
@@ -64,6 +64,9 @@
             group-by="date"
             class="ma-5"
             @click:row="(v) => requestRouteEvent(v)"
+            :footer-props="{
+              itemsPerPage: [5, 10, 15],
+            }"
           >
             <template v-slot:[`item.status`]="{ item }">
               <v-chip
@@ -89,11 +92,14 @@
 <script>
 import { format, parseISO } from "date-fns";
 import { mapActions, mapState } from "vuex";
+import TablePagination from "@/mixins/TablePagination";
 
 export default {
   name: "TransactionsTable",
+  mixins: [TablePagination],
   data: () => ({
     title: "text-h4 font-weight-black mb-1",
+    total_transactions: 0,
     show: false,
     indeterminate: true,
     value: 0,
@@ -172,7 +178,7 @@ export default {
     },
     mappedTransactions() {
       return this.transactions
-        ? this.transactions.map((item) => ({
+        ? this.transactions.data.map((item) => ({
             name: item.fullName,
             status: item.status,
             reference: item.transactionRefNum,
@@ -191,16 +197,24 @@ export default {
     this.fetchTransactions();
   },
   watch: {
+    mappedTransactions:{
+      immediate: true,
+      handler(value){
+        console.log("mappedTransactions: ", value)
+      }
+    },
     transactions: {
       immediate: true,
       handler(value) {
-        if (value.length) {
+        if (value.data.length) {
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
           this.value = 100;
+          this.total_transactions = value.pagination.total;
         } else {
           this.indeterminate = false;
+          this.value = 0;
         }
       },
     },

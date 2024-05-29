@@ -134,7 +134,6 @@ export default {
   name: "GuestDetails",
   components: { DeleteDialog },
   data: () => ({
-    guestDetails: [],
     headers: [
       { text: "Status", value: "status" },
       { text: "Reference", value: "reference" },
@@ -185,7 +184,7 @@ export default {
       let payload = {
         status: value.status,
         referenceNumber: value.reference,
-      }
+      };
       if (this.confirmationRoute.includes(payload.status)) {
         this.$router.push({
           name: "Confirmation",
@@ -213,9 +212,35 @@ export default {
     size() {
       return this.$vuetify.breakpoint;
     },
-    // mappedGuestDetails() {
-    //   return this.guest ? this.guestDetails.map((detail))
-    // },
+    guestDetails() {
+      let guestDetails = [];
+
+      Object.keys(this.guest).forEach((detail) => {
+        if (detail.includes("city")) {
+          guestDetails.unshift({
+            title: "ADDRESS",
+            content: this.guest["city"] + ", " + this.guest["province"],
+          });
+        } else if (detail.includes("email")) {
+          guestDetails.push({
+            title: "EMAIL",
+            content: this.guest[detail],
+          });
+        } else if (detail.includes("phone")) {
+          guestDetails.push({
+            title: "PHONE",
+            content: this.guest[detail],
+          });
+        } else if (detail.includes("idNumber")) {
+          guestDetails.push({
+            title: "ID NUMBER",
+            content: this.guest[detail],
+          });
+        }
+      });
+
+      return guestDetails;
+    },
   },
   created() {
     this.fetchGuestDetails();

@@ -3,6 +3,8 @@ import Vuex from "vuex";
 
 Vue.use(Vuex);
 
+import { functions } from "@/utils/functions";
+
 export const transaction = {
   namespaced: true,
   state: () => ({
@@ -15,10 +17,11 @@ export const transaction = {
     SET_TRANSACTION: (state, data) => (state.transaction = data),
   },
   actions: {
-    fetchTransactions: function ({ commit }) {
+    fetchTransactions: function ({ commit }, queryParams = {}) {
       const url = `transaction`;
+      const queryUrl = functions.query(url, queryParams)
       return this.$axios
-        .get(url)
+        .get(queryUrl)
         .then((response) => {
           commit("SET_TRANSACTIONS", response.data.results);
         })
