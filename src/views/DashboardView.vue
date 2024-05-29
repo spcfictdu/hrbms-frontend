@@ -1,18 +1,10 @@
 <template>
-  <div>
-    <v-container fluid>
-      <CalendarComponent />
-    </v-container>
-  </div>
+  <div></div>
 </template>
 
 <script>
-import CalendarComponent from "../components/CalendarComponent.vue";
 export default {
   name: "DashboardView",
-  components: {
-    CalendarComponent,
-  },
 };
 </script>
 

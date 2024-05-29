@@ -35,7 +35,11 @@
             :min="minDate"
             range
             @change="menu = false"
-          ></v-date-picker>
+          >
+            <v-btn @click="resetButton" color="warning" outlined block dark
+              >Clear</v-btn
+            >
+          </v-date-picker>
         </v-menu>
       </div>
 
@@ -92,6 +96,9 @@ export default {
     requestFilter: function () {
       this.$emit("request-filter", this.dateRange);
       this.dialog = false;
+    },
+    resetButton: function () {
+      this.dateRange = [];
     },
   },
   computed: {

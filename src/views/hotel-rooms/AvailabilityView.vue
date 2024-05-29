@@ -1,15 +1,50 @@
 <template>
   <div>
-    <calendar-component />
+    <calendar-component
+      @calendar-event="requestCalendar"
+      :calendarData="calendar"
+      @route-event="pushToTransactionRoute"
+    />
   </div>
 </template>
 
 <script>
-import CalendarComponent from "../../components/hotel-rooms/availability/CalendarComponent.vue"
+import CalendarComponent from "../../components/hotel-rooms/availability/CalendarComponent.vue";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "AvailabilityView",
   components: {
     CalendarComponent,
+  },
+  data: () => ({
+    confirmationRoute: ["RESERVED"],
+    checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
+  }),
+  methods: {
+    ...mapActions("availabilityCalendar", ["fetchAvailabilityCalendar"]),
+    requestCalendar: function (queryParams) {
+      this.fetchAvailabilityCalendar(queryParams);
+    },
+    pushToTransactionRoute: function (payload) {
+      if (this.confirmationRoute.includes(payload.status)) {
+        this.$router.push({
+          name: "Confirmation",
+          params: {
+            referenceNumber: payload.referenceNumber,
+          },
+        });
+      } else if (this.checkInCheckOutRoute.includes(payload.status)) {
+        this.$router.push({
+          name: "CheckInOut",
+          params: {
+            referenceNumber: payload.referenceNumber,
+          },
+        });
+      }
+    },
+  },
+  computed: {
+    ...mapState("availabilityCalendar", ["calendar"]),
   },
 };
 </script>

@@ -169,7 +169,7 @@
             ref="calendar"
             v-model="focus"
             color="primary"
-            :events="events"
+            :events="mappedCalendarData"
             :event-color="getEventColor"
             :event-height="sizeEvents"
             event-more
@@ -252,7 +252,7 @@
                     {{ sched.title }}
                   </div>
                   <div class="text-subtitle-2 font-weight-regular mb-2">
-                    {{ formatDate(sched.time) }}
+                    {{ sched.time }}
                   </div>
                 </div>
               </div>
@@ -262,10 +262,17 @@
               <v-card-actions
                 class="d-flex flex-column align-center justify-center px-6 py-4"
               >
-                <v-btn color="#e9a800" outlined block>View Details</v-btn>
+                <v-btn
+                  :disabled="selectedEvent.status === 'HOUSEKEEPING'"
+                  :color="getEventColor(selectedEvent)"
+                  outlined
+                  block
+                  @click="requestRouteChange(selectedEvent)"
+                  >View Details</v-btn
+                >
 
                 <v-btn
-                  color="#ff3838"
+                  color="warning"
                   text
                   block
                   class="ml-0 mt-2"
@@ -291,6 +298,11 @@ import CalendarFilterDialog from "../../dialogs/CalendarFilterDialog.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "CalendarComponent",
+  props: {
+    calendarData: {
+      required: true,
+    },
+  },
   components: {
     CalendarFilterDialog,
   },
@@ -306,26 +318,13 @@ export default {
       day: "Day",
       "4day": "4 Days",
     },
+    queryParams: {
+      roomType: null,
+      roomNumber: null,
+    },
     selectedEvent: {},
     selectedElement: null,
     selectedOpen: false,
-    events: [],
-    statuses: {
-      withClient: [
-        "Confirmed",
-        "Checked-in",
-        "Checked-out",
-        "Reserved",
-        "Housekeeping",
-      ],
-    },
-    clients: [
-      "John Doe",
-      "Jane Doe",
-      "Michael Doe",
-      "Theodore Doe",
-      "Teddy Doe",
-    ],
     legendsData: [
       "Housekeeping",
       "Checked-out",
@@ -340,37 +339,37 @@ export default {
       calendarBreakpoint: "",
     },
   }),
-  mounted() {
-    this.$refs.calendar.checkChange();
-    this.updateRange();
-  },
   created() {
     this.requestEnums();
   },
   methods: {
     ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
     ...mapActions("roomNumberEnum", ["fetchRoomNumbers"]),
+
+    // Calendar Values
     activeValue(value) {
       this.activeButton = value;
     },
-    viewDay({ date }) {
-      this.focus = date;
-      this.type = "day";
-    },
     getEventColor(event) {
       let color = null;
-      if (event.status === "Confirmed" || event === "Confirmed") {
+      if (event.status === "CONFIRMED" || event === "Confirmed") {
         color = "confirmed";
-      } else if (event.status === "Checked-in" || event === "Checked-in") {
+      } else if (event.status === "CHECKED-IN" || event === "Checked-in") {
         color = "checkedin";
-      } else if (event.status === "Checked-out" || event === "Checked-out") {
+      } else if (event.status === "CHECKED-OUT" || event === "Checked-out") {
         color = "checkedout";
-      } else if (event.status === "Housekeeping" || event === "Housekeeping") {
+      } else if (event.status === "HOUSEKEEPING" || event === "Housekeeping") {
         color = "housekeeping";
-      } else if (event.status === "Reserved" || event === "Reserved") {
+      } else if (event.status === "RESERVED" || event === "Reserved") {
         color = "reserved";
       }
       return color;
+    },
+
+    // Calendar Native Methods
+    viewDay({ date }) {
+      this.focus = date;
+      this.type = "day";
     },
     setToday() {
       this.focus = "";
@@ -399,66 +398,8 @@ export default {
 
       nativeEvent.stopPropagation();
     },
-    updateRange() {
-      const events = [];
 
-      // Get today's date and set the time to the start of the day
-      let currentDate = new Date();
-      currentDate.setHours(0, 0, 0, 0); // Reset time to midnight for consistency
-
-      // Create an endDate that is 31 days after the currentDate
-      const endDate = new Date(currentDate); // Clone currentDate
-      endDate.setDate(endDate.getDate() + 31); // Add 31 days
-
-      while (currentDate <= endDate) {
-        const startTime = new Date(currentDate);
-        startTime.setHours(14, 0, 0); // Set start time to 2:00 PM
-
-        const endTime = new Date(startTime);
-        endTime.setDate(endTime.getDate() + 1);
-        endTime.setHours(11, 0, 0); // Set end time to 11:00 AM next day
-
-        for (let i = 0; i <= 0; i++) {
-          let client =
-            this.clients[Math.floor(Math.random() * this.clients.length)];
-          let status =
-            this.statuses.withClient[
-              Math.floor(Math.random() * this.statuses.withClient.length)
-            ];
-
-          events.push({
-            name: this.dropdownValue,
-            start: startTime,
-            end: endTime,
-            schedule: [
-              {
-                title: "From:",
-                time: startTime,
-              },
-              {
-                title: "To:",
-                time: endTime,
-              },
-              {
-                title: "Checked In:",
-                time: startTime,
-              },
-              {
-                title: "Checked Out:",
-                time: endTime,
-              },
-            ],
-            status: status,
-            client: client,
-          });
-        }
-
-        // Move to the next day
-        currentDate.setDate(currentDate.getDate() + 1);
-      }
-
-      this.events = events;
-    },
+    // Calendar Methods
     formatDate(date) {
       const formattedDate = new Date(date).toLocaleDateString("en-US", {
         year: "numeric",
@@ -470,16 +411,6 @@ export default {
         minute: "2-digit",
       });
       return `${formattedDate} - ${formattedTime}`;
-    },
-    resetActivator: function (newVal) {
-      this.filterDialog = newVal;
-    },
-    triggerActivator: function () {
-      this.filterDialog = !this.filterDialog;
-    },
-    requestFilter: function (payload) {
-      this.focus = payload[0];
-      this.type = "week";
     },
     pushToBooking: function () {
       let payload = {
@@ -495,6 +426,9 @@ export default {
         },
       });
     },
+    requestRouteChange: function (event) {
+      this.$emit("route-event", event);
+    },
     requestEnums: function () {
       this.fetchRoomTypes();
     },
@@ -509,6 +443,47 @@ export default {
         roomType: newVal,
       };
       this.fetchRoomNumbers(payload);
+    },
+
+    // Filter Methods
+    resetActivator: function (newVal) {
+      this.filterDialog = newVal;
+    },
+    triggerActivator: function () {
+      this.filterDialog = !this.filterDialog;
+    },
+    requestFilter: function (payload) {
+      const queryParams = {
+        dateRange: payload,
+      };
+
+      if (payload.length === 0) {
+        queryParams.dateRange = null;
+      }
+
+      this.assignParams(queryParams);
+
+      if (payload.length > 0) {
+        this.focus = payload[0];
+        this.type = "week";
+      } else {
+        this.focus = "";
+        this.type = "month";
+      }
+    },
+    assignParams(payload) {
+      for (const key in payload) {
+        if (Object.hasOwnProperty.call(payload, key)) {
+          const value = payload[key];
+          if (value === null) {
+            // if value is null, delete in query_params
+            this.$delete(this.queryParams, key);
+          } else {
+            // if property has data, add to query_params
+            this.$set(this.queryParams, key, value);
+          }
+        }
+      }
     },
   },
   computed: {
@@ -526,25 +501,78 @@ export default {
     enums() {
       return this.roomTypeEnum && this.roomNumberEnum;
     },
+    mappedCalendarData() {
+      return this.calendarData
+        ? this.calendarData.map((item) => ({
+            name: item.roomNumber,
+            start: new Date(item.checkIn),
+            end: new Date(item.checkOut),
+            schedule: [
+              {
+                title: "From:",
+                time: this.formatDate(item.checkIn),
+              },
+              {
+                title: "To:",
+                time: this.formatDate(item.checkOut),
+              },
+              {
+                title: "Checked In:",
+                time: item.transactionHistory.checkIn
+                  ? this.formatDate(item.transactionHistory.checkIn)
+                  : "Pending",
+              },
+              {
+                title: "Checked Out:",
+                time: item.transactionHistory.checkOut
+                  ? this.formatDate(item.transactionHistory.checkOut)
+                  : "Pending",
+              },
+            ],
+            status: item.status,
+            client: item.guest,
+            referenceNumber: item.referenceNumber,
+          }))
+        : [];
+    },
   },
   watch: {
     activeButton: {
       immediate: true,
       handler(newVal) {
-        this.activeButton = newVal;
         this.requestQuery(newVal);
+        this.queryParams.roomType = newVal;
+      },
+    },
+    roomTypeEnum: {
+      deep: true,
+      handler: function (newVal) {
+        this.activeButton = newVal[0].roomType;
       },
     },
     roomNumberEnum: {
       deep: true,
       handler: function (newVal) {
         this.dropdownValue = newVal[0].roomNumber;
+        this.queryParams.roomNumber = newVal[0].roomNumber;
+      },
+    },
+    queryParams: {
+      deep: true,
+      handler: function (newVal, oldVal) {
+        this.$emit("calendar-event", newVal);
+      },
+    },
+    mappedCalendarData: {
+      immediate: true,
+      handler: function (newVal) {
+        console.log(newVal);
       },
     },
     dropdownValue: {
-      immediate: true, //Testing
+      immediate: true,
       handler: function (newVal) {
-        newVal && this.updateRange();
+        this.queryParams.roomNumber = newVal;
       },
     },
     size: {
