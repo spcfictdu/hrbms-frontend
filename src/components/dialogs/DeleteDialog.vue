@@ -33,6 +33,8 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "DeleteDialog",
   data: () => ({
@@ -53,11 +55,12 @@ export default {
     },
   },
   methods: {
+    ...mapActions("guest", ["deleteGuest"]),
     cancelButton: function () {
       this.$emit("reset-activator");
     },
     deleteButton: function () {
-      this.$emit("reset-activator");
+      this.$emit("delete-guest");
     },
   },
   watch: {

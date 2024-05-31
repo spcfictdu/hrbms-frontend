@@ -25,7 +25,8 @@
 
 <script>
 import TransactionsTable from "@/components/transactions/TransactionsTable.vue";
-import { mapState, mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
+
 export default {
   name: "TransactionView",
   components: { TransactionsTable },
@@ -34,6 +35,11 @@ export default {
     checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
     isShowAlert: false,
   }),
+  computed: {
+    ...mapState("transaction", {
+      transactions: "transactions",
+    }),
+  },
   methods: {
     ...mapActions("transaction", ["fetchTransactions"]),
     pushToTransactionRoute: function (payload) {
@@ -98,6 +104,9 @@ export default {
   created() {
     this.fetchTransactions();
   },
+  created(){
+    this.fetchTransactions();
+  }
 };
 </script>
 

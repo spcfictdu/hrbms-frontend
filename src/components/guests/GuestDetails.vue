@@ -2,7 +2,7 @@
   <v-container>
     <div
       :class="{
-        'xl-padding mt-n3': $vuetify.breakpoint.xl,
+        'xl-padding mt-n6': $vuetify.breakpoint.xl,
         'px-sm-2 mx-md-n3 my-md-5 mx-sm-n3 my-sm-n3':
           $vuetify.breakpoint.lgAndDown,
       }"
@@ -25,8 +25,8 @@
             >DELETE GUEST DETAILS</v-btn
           >
         </v-col>
-        <v-col cols="auto" v-else>
-          <v-btn icon outlined color="red" @click="dialogActivator"
+        <v-col cols="auto" v-else class="relative-position">
+          <v-btn icon outlined color="red" @click="dialogActivator" class="absolute-position"
             ><v-icon>mdi-trash-can-outline</v-icon></v-btn
           >
         </v-col>
@@ -123,7 +123,11 @@
         </v-col>
       </v-row>
     </div>
-    <DeleteDialog :activator="deleteDialog" @reset-activator="resetActivator" />
+    <DeleteDialog
+      :activator="deleteDialog"
+      @reset-activator="resetActivator"
+      @delete-guest="deleteEvent"
+    />
   </v-container>
 </template>
 
@@ -166,12 +170,21 @@ export default {
     checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
   }),
   methods: {
-    ...mapActions("guest", ["fetchGuest"]),
+    ...mapActions("guest", ["fetchGuest", "deleteGuest"]),
     dialogActivator: function () {
       this.deleteDialog = !this.deleteDialog;
     },
     resetActivator: function () {
       this.deleteDialog = !this.deleteDialog;
+    },
+    deleteEvent: function () {
+      this.deleteGuest(this.guest.id)
+        .catch((error) => {
+          console.log("Error deleting guest: ", error);
+        })
+        .finally(() => {
+          this.resetActivator;
+        });
     },
     fetchGuestDetails: function () {
       const id = this.$route.params.id;
@@ -206,9 +219,6 @@ export default {
     ...mapState("guest", {
       guest: "guest",
     }),
-    detailLabels() {
-      return Object.keys(this.guestDetails);
-    },
     size() {
       return this.$vuetify.breakpoint;
     },
@@ -246,12 +256,6 @@ export default {
     this.fetchGuestDetails();
   },
   watch: {
-    guestDetails: {
-      immediate: true,
-      handler(value) {
-        console.log("guestDetails: ", value);
-      },
-    },
     "guest.transactions": {
       immediate: true,
       handler(value) {
@@ -271,12 +275,12 @@ export default {
       handler(newVal) {
         if (newVal.xs) {
           this.classGuestName =
-            "d-flex font-weight-bold text-h6 justify-center";
+            "font-weight-bold text-h6 text-center mt-n3";
           this.textfieldCols = 12;
           this.small = false;
           this.xSmall = true;
           this.classDivider = "my-3";
-          this.detailCols = "auto";
+          this.detailCols = "12";
         } else if (newVal.md || newVal.sm) {
           this.detailCols = 6;
           this.textfieldCols = 4;
@@ -305,5 +309,16 @@ export default {
 <style scoped>
 .xl-padding {
   padding: 0 288px 0 288px;
+}
+
+.absolute-position {
+  position: absolute;
+
+}
+
+.relative-position{
+  position: relative;
+  right: 40px;
+  top: -15px
 }
 </style>

@@ -16,10 +16,10 @@
                 small
                 color="primary"
                 class="text-subtitle-2 white--text"
-                >{{ room.discount }}</v-chip
+                >{{ room.discountName }}</v-chip
               >
             </span>
-            {{ room.discountDate }}
+            {{ room.discountStart }} - {{ room.discountEnd }}
           </p>
 
           <v-menu offset-y left rounded>
@@ -31,8 +31,10 @@
             <v-list dense>
               <v-list-item v-for="(option, index) in menuList" :key="index">
                 <v-list-item-content>
-                  <v-list-item-title :class="listTitleColor(option.option)">{{ option.option }}</v-list-item-title>
-                  <v-divider class="mt-3" v-if="index < menuList.length - 1"/>
+                  <v-list-item-title :class="listTitleColor(option.option)">{{
+                    option.option
+                  }}</v-list-item-title>
+                  <v-divider class="mt-3" v-if="index < menuList.length - 1" />
                 </v-list-item-content>
               </v-list-item>
             </v-list>
@@ -49,18 +51,30 @@
         :items-per-page="5"
       ></v-data-table>
     </v-card>
-    <EditRegularRate :activator="regularRateDialog"  @reset-activator="resetActivator"/>
-    <EditSpecialRate :activator="specialRateDialog"  @reset-activator="resetActivator"/>
+    <EditRegularRate
+      :activator="regularRateDialog"
+      @reset-activator="resetActivator"
+    />
+    <EditSpecialRate
+      :activator="specialRateDialog"
+      @reset-activator="resetActivator"
+    />
   </v-container>
 </template>
 <script>
 import RoomsList from "../../components/hotel-rooms/RoomsList.vue";
 import HotelRoomsHeader from "../../components/headers/HotelRoomsHeader.vue";
-import EditRegularRate from '../dialogs/EditRegularRate.vue';
+import EditRegularRate from "../dialogs/EditRegularRate.vue";
 import EditSpecialRate from "../dialogs/EditSpecialRate.vue";
 export default {
   name: "RoomPricing",
   components: { RoomsList, HotelRoomsHeader, EditRegularRate, EditSpecialRate },
+  props: {
+    roomPrice: {
+      type: Array,
+      required: true,
+    },
+  },
   data: () => ({
     regularRateDialog: false,
     specialRateDialog: false,
@@ -99,7 +113,7 @@ export default {
       },
     ],
 
-    standardRoom: [
+    juniorStandard: [
       {
         rate: "Regular rate",
         sunday: 1000,
@@ -172,24 +186,6 @@ export default {
         option: "Remove category",
       },
     ],
-
-    roomTypes: [
-      {
-        room: "STANDARD ROOM",
-        discount: "DreamStay Discount",
-        discountDate: "February 10, 2024 - March 10, 2024",
-      },
-      {
-        room: "DELUXE ROOM",
-        discount: null,
-        discountDate: null,
-      },
-      {
-        room: "PRESIDENTIAL ROOM",
-        discount: "DreamStay Discount",
-        discountDate: "February 10, 2024 - March 10, 2024",
-      },
-    ],
   }),
   methods: {
     tableContent: function (room) {
@@ -202,21 +198,68 @@ export default {
       }
     },
     listTitleColor: function (option) {
-      if (option === "Remove category"){
-        return "red--text"
+      if (option === "Remove category") {
+        return "red--text";
       } else {
-        return "black--text"
+        return "black--text";
       }
     },
     resetActivator: function () {
-      if(this.regularRateDialog){
+      if (this.regularRateDialog) {
         this.regularRateDialog = !this.regularRateDialog;
-      } else if (this.specialRateDialog){
+      } else if (this.specialRateDialog) {
         this.specialRateDialog = !this.specialRateDialog;
       }
     },
   },
   computed: {
+    roomTypes() {
+      let rooms = [];
+
+      Object.keys(this.roomPrice).forEach((outerIndex) => {
+        const index = this.roomPrice[outerIndex];
+
+        Object.keys(index).forEach((innerIndex) => {
+          const roomIndex = index[innerIndex];
+
+          Object.keys(roomIndex).forEach((roomType) => {
+            if (roomType.includes("name")) {
+              rooms.push({
+                room: roomIndex[roomType],
+              });
+            }
+            const special = roomIndex[roomType];
+
+            Object.keys(special).forEach((specialIndex) => {
+              const discount = special[specialIndex];
+
+              rooms.forEach((room) => {
+                Object.keys(discount).forEach((detail) => {
+                  if (detail.includes("discountName")) {
+                    Object.assign(room, { discountName: discount[detail] });
+                  }
+                  if (detail.includes("startDate")) {
+                    Object.assign(room, { discountStart: discount[detail] });
+                  }
+                  if (detail.includes("endDate")) {
+                    Object.assign(room, { discountEnd: discount[detail] });
+                  }
+                });
+              });
+            });
+          });
+        });
+      });
+      return rooms;
+    },
+  },
+  watch: {
+    roomTypes: {
+      immediate: true,
+      handler(value) {
+        console.log(value);
+      },
+    },
   },
 };
 </script>

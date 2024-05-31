@@ -12,7 +12,7 @@
       <v-col cols="12">
         <v-card elevation="0" class="mt-5">
           <v-card-title class="text-subtitle-2 font-weight-black ml-3"
-            >{{ guests.guests.length }} GUESTS
+            >{{ guests.pagination.total }} GUESTS
             <v-spacer></v-spacer>
             <v-btn
               color="primary"
@@ -69,6 +69,11 @@
                 :headers="headers"
                 :items="guests.guests"
                 class="ma-5"
+                :footer-props="{
+                  itemsPerPage: [5, 10, 15],
+                }"
+                :options.sync="options"
+                :server-items-length="guests.pagination.total"
               >
               </v-data-table>
             </v-col>
@@ -80,7 +85,8 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import TablePagination from "@/mixins/TablePagination";
+
 export default {
   name: "GuestListTable",
   data: () => ({
@@ -118,8 +124,14 @@ export default {
     xSmall: false,
     guestClass: "text-h5 font-weight-black mb-1",
   }),
+  props: {
+    guests: {
+      type: Object,
+      required: true,
+    },
+  },
+  mixins: [TablePagination],
   methods: {
-    ...mapActions("guest", ["fetchGuests"]),
     test: function (row) {
       this.$router.push({
         name: "guest",
@@ -128,21 +140,16 @@ export default {
     },
   },
   computed: {
-    ...mapState("guest", {
-      guests: "guests",
-    }),
     size: function () {
       return this.$vuetify.breakpoint;
     },
   },
-  created() {
-    this.fetchGuests();
-  },
+
   watch: {
     "guests.guests": {
       immediate: true,
       handler(value) {
-        if (value.length) {
+        if (value) {
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);

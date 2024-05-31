@@ -166,7 +166,6 @@ export default {
     },
   }),
   methods: {
-
     requestRouteEvent: function (value) {
       const routeParams = {
         status: value.status,
@@ -197,12 +196,6 @@ export default {
     },
   },
   watch: {
-    mappedTransactions:{
-      immediate: true,
-      handler(value){
-        console.log("mappedTransactions: ", value)
-      }
-    },
     transactions: {
       immediate: true,
       handler(value) {
