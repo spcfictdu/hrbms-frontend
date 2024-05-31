@@ -34,7 +34,7 @@ export default {
             delete this.query_params.page;
           }
           if (value.itemsPerPage) {
-            this.query_params.per_page = value.itemsPerPage;
+            this.query_params.perPage = value.itemsPerPage;
           }
           if (value.sortBy.length === 1 && value.sortDesc.length === 1) {
             this.query_params.sort_by = value.sortBy[0];

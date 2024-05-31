@@ -8,7 +8,7 @@
       <v-col cols="12">
         <v-card elevation="0" class="mt-5">
           <v-card-title class="text-subtitle-2 font-weight-black ml-3">
-            {{ transactions.data.length }} TRANSACTIONS
+            {{ transactions.pagination.total }} TRANSACTIONS
             <v-spacer></v-spacer>
             <v-btn
               color="primary"
@@ -67,6 +67,8 @@
             :footer-props="{
               itemsPerPage: [5, 10, 15],
             }"
+            :server-items-length="transactions.pagination.total"
+            :options.sync="options"
           >
             <template v-slot:[`item.status`]="{ item }">
               <v-chip
@@ -91,12 +93,16 @@
 
 <script>
 import { format, parseISO } from "date-fns";
-import { mapActions, mapState } from "vuex";
 import TablePagination from "@/mixins/TablePagination";
 
 export default {
   name: "TransactionsTable",
   mixins: [TablePagination],
+  props: {
+    transactions: {
+      required: true,
+    }
+  },
   data: () => ({
     title: "text-h4 font-weight-black mb-1",
     total_transactions: 0,
@@ -160,7 +166,7 @@ export default {
     },
   }),
   methods: {
-    ...mapActions("transaction", ["fetchTransactions"]),
+
     requestRouteEvent: function (value) {
       const routeParams = {
         status: value.status,
@@ -170,9 +176,6 @@ export default {
     },
   },
   computed: {
-    ...mapState("transaction", {
-      transactions: "transactions",
-    }),
     size() {
       return this.$vuetify.breakpoint;
     },
@@ -192,9 +195,6 @@ export default {
           }))
         : [];
     },
-  },
-  created() {
-    this.fetchTransactions();
   },
   watch: {
     mappedTransactions:{

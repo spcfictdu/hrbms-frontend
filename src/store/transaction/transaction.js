@@ -10,16 +10,21 @@ export const transaction = {
   state: () => ({
     transactions: null,
     transaction: null,
+    transactionStatus: {
+      message: "",
+      status: "", //SUCCESS, ERROR
+    },
   }),
   getters: {},
   mutations: {
     SET_TRANSACTIONS: (state, data) => (state.transactions = data),
     SET_TRANSACTION: (state, data) => (state.transaction = data),
+    SET_TRANSACTION_STATUS: (state, data) => (state.transactionStatus = data),
   },
   actions: {
     fetchTransactions: function ({ commit }, queryParams = {}) {
       const url = `transaction`;
-      const queryUrl = functions.query(url, queryParams)
+      const queryUrl = functions.query(url, queryParams);
       return this.$axios
         .get(queryUrl)
         .then((response) => {
@@ -69,18 +74,28 @@ export const transaction = {
           console.error("Error creating transaction: ", error);
         });
     },
-    deleteReservation: function ({ _ }, { status, transactionRefNum }) {
+    deleteReservation: function ({ commit, state }, { status, transactionRefNum }) {
       const url = `transaction/reservation/delete/${status}/${transactionRefNum}`;
       return this.$axios
         .delete(url)
         .then((response) => {
-          console.log(response.data.message);
           this.$router.replace({
-            name: "Availability",
+            name: "Transactions",
+          });
+          commit("SET_TRANSACTION_STATUS", {
+            message: response.data.message,
+            status: "SUCCESS",
           });
         })
         .catch((error) => {
           console.error("Error deleting reservation: ", error);
+          this.$router.push({
+            name: "Transactions",
+          });
+          commit("SET_TRANSACTION_STATUS", {
+            message: error.response.data.message,
+            status: "ERROR",
+          });
         });
     },
     updateTransaction: function ({ dispatch }, payload) {
