@@ -21,6 +21,13 @@ if (auth.token()) {
   axiosInstance.defaults.headers.common["Accept"] = "application/json";
 }
 
+axiosInstance.interceptors.request.use((config) => {
+  if (auth.token()) {
+    config.headers.Authorization = `Bearer ${auth.token()}`;
+  }
+  return config;
+});
+
 // Reset or upon refresh session handling
 window.addEventListener("beforeunload", (event) => auth.handleTabTermination(event));
 auth.handleTabRefresh();
