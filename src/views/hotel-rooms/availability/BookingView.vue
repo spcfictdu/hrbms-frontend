@@ -3,6 +3,7 @@
     <booking-form
       @validation-event="requestPostTransaction"
       :queryResult="queryResult"
+      :fillResult="previousTransactions"
     />
   </div>
 </template>
@@ -10,7 +11,7 @@
 <script>
 import BookingForm from "../../../components/hotel-rooms/availability/BookingForm.vue";
 import HotelRoomsHeader from "@/components/headers/HotelRoomsHeader.vue";
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "BookingView",
   data: () => ({}),
@@ -19,7 +20,7 @@ export default {
     HotelRoomsHeader,
   },
   methods: {
-    ...mapActions("transaction", ["createTransaction"]),
+    ...mapActions("transaction", ["createTransaction", "fetchPreviousFormTransactions"]),
     requestPostTransaction: function (payload) {
       this.createTransaction(this.createObject(payload));
     },
@@ -67,14 +68,24 @@ export default {
 
       return value;
     },
+    fetchTransactionFills: function () {
+      const referenceNumber = this.queryResult.room.details.referenceNumber;
+      this.fetchPreviousFormTransactions(referenceNumber);
+    }
   },
   computed: {
+    ...mapState("transaction", {
+      previousTransactions: "previousTransactions"
+    }),
     queryResult() {
       let query = this.$route.query.room;
       let format = JSON.parse(query);
       return format;
     },
   },
+  mounted() {
+    this.fetchTransactionFills();
+  }
 };
 </script>
 

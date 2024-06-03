@@ -1,7 +1,7 @@
 <template>
   <div v-if="this.room">
     <div class="d-flex justify-end align-center mb-2">
-      <div>
+      <div style="max-width: 300px;">
         <v-select
           class="d-block"
           rounded
@@ -9,8 +9,10 @@
           filled
           background-color="lightBg"
           hide-details="auto"
-          :items="autofillEnums"
+          :items="fillResult.guests"
+          item-text="full_name"
           v-model="autofill"
+          clearable
         ></v-select>
       </div>
     </div>
@@ -28,15 +30,15 @@
 
           <!-- Guest Name -->
           <v-divider />
-          <guest-name-template @emit-transaction="assignPayload" />
+          <guest-name-template @emit-transaction="assignPayload" :fill="autoFilled"/>
 
           <!-- Address -->
           <v-divider />
-          <address-template @emit-transaction="assignPayload" />
+          <address-template @emit-transaction="assignPayload" :fill="autoFilled" />
 
           <!-- Contact Details -->
           <v-divider />
-          <contact-details-template @emit-transaction="assignPayload" />
+          <contact-details-template @emit-transaction="assignPayload" :fill="autoFilled" />
 
           <!-- ID -->
           <v-divider />
@@ -95,13 +97,15 @@ import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import GCashImageTransition from "@/components/hotel-rooms/availability/GCashImageTransition.vue";
 import { mapActions, mapState } from "vuex";
+import { calculateDaysBetweenDates } from "@/mixins/FormattingFunctions";
 export default {
   name: "BookingForm",
-  props: ["queryResult"],
+  mixins: [calculateDaysBetweenDates],
+  props: ["queryResult", "fillResult"],
   data: () => ({
     valid: true,
-    autofill: "Dela Cruz, Juan",
-    autofillEnums: ["Dela Cruz, Juan", "Cruz, Jose Gabriel"],
+    autofill: "",
+    autoFilled: null,
     statuses: [
       {
         status: "For Reservation",
@@ -155,6 +159,16 @@ export default {
       };
       this.fetchRoom(query);
     },
+    filterGuest: function (newVal) {
+      if (newVal) {
+        const autofilledObject = this.fillResult.guests.filter(
+          (item) => item.full_name === newVal
+        );
+        this.autoFilled = autofilledObject[0];
+      } else {
+        this.autoFilled = null;
+      }
+    },
   },
   computed: {
     ...mapState("roomEnum", ["room"]),
@@ -163,6 +177,12 @@ export default {
     },
     cardInformation() {
       const room = this.room ? this.room[0] : null;
+      const dateOne = this.payload.checkIn?.date
+        ? this.payload.checkIn.date
+        : null;
+      const dateTwo = this.payload.checkOut?.date
+        ? this.payload.checkOut.date
+        : null;
 
       // Assign the Guests to a variable
       const additionalGuests = this.payload.guests ? this.payload.guests : 0;
@@ -170,8 +190,15 @@ export default {
       // Compute the total additional guests price
       const extraPersonTotal = room.extraPersonTotal * additionalGuests;
 
+      const numberOfDays =
+        dateOne && dateTwo
+          ? this.calculateDaysBetweenDates(dateOne, dateTwo)
+          : 1;
+
       // Total Bill
-      const total = room.roomTotal + room.extraPersonTotal * additionalGuests;
+      const total =
+        room.roomTotal * numberOfDays +
+        room.extraPersonTotal * additionalGuests;
       this.totalPayment = total;
 
       // Total Received
@@ -234,6 +261,12 @@ export default {
           this.payload.payment.amountReceived = null;
           this.payload.payment.paymentType = null;
         }
+      },
+    },
+    autofill: {
+      deep: true,
+      handler: function (newVal) {
+        this.filterGuest(newVal);
       },
     },
   },

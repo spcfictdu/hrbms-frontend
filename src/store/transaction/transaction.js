@@ -10,6 +10,7 @@ export const transaction = {
   state: () => ({
     transactions: null,
     transaction: null,
+    previousTransactions: null,
     transactionStatus: {
       message: "",
       status: "", //SUCCESS, ERROR
@@ -20,6 +21,8 @@ export const transaction = {
     SET_TRANSACTIONS: (state, data) => (state.transactions = data),
     SET_TRANSACTION: (state, data) => (state.transaction = data),
     SET_TRANSACTION_STATUS: (state, data) => (state.transactionStatus = data),
+    SET_PREVIOUS_TRANSACTIONS: (state, data) =>
+      (state.previousTransactions = data),
   },
   actions: {
     fetchTransactions: function ({ commit }, queryParams = {}) {
@@ -74,7 +77,10 @@ export const transaction = {
           console.error("Error creating transaction: ", error);
         });
     },
-    deleteReservation: function ({ commit, state }, { status, transactionRefNum }) {
+    deleteReservation: function (
+      { commit, state },
+      { status, transactionRefNum }
+    ) {
       const url = `transaction/reservation/delete/${status}/${transactionRefNum}`;
       return this.$axios
         .delete(url)
@@ -115,6 +121,18 @@ export const transaction = {
         })
         .catch((error) => {
           console.error("Error updating transaction: ", error);
+        });
+    },
+    fetchPreviousFormTransactions: function ({ commit }, referenceNumber) {
+      const url = `transaction/form/${referenceNumber}`;
+      return this.$axios
+        .get(url)
+        .then((response) => {
+          console.log(response.data);
+          commit("SET_PREVIOUS_TRANSACTIONS", response.data.results);
+        })
+        .catch((error) => {
+          console.error("Error fetching form transactions", error);
         });
     },
   },

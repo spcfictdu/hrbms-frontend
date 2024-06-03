@@ -43,6 +43,7 @@ import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "ContactDetailsTemplate",
+  props: ["fill"],
   data: () => ({
     payload: {
       contact: {
@@ -69,6 +70,25 @@ export default {
         (v) => /.+@.+\..+/.test(v) || "Email must be valid",
       ];
       return errors;
+    },
+  },
+  watch: {
+    fill: {
+      deep: true,
+      handler: function (newVal) {
+        if (newVal) {
+          this.payload.contact = {
+            phoneNumber: newVal.phone_number,
+            email: newVal.email,
+          };
+        } else {
+          this.payload.contact = {
+            phoneNumber: null,
+            email: null,
+          };
+        }
+        this.$emit("emit-transaction", this.payload);
+      },
     },
   },
 };

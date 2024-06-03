@@ -52,6 +52,7 @@ import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "GuestNameTemplate",
+  props: ["fill"],
   data: () => ({
     payload: {
       firstName: null,
@@ -74,6 +75,27 @@ export default {
       errors.firstName = [(v) => !!v || "First name is required"];
       errors.lastName = [(v) => !!v || "Last name is required"];
       return errors;
+    },
+  },
+  watch: {
+    fill: {
+      deep: true,
+      handler: function (newVal) {
+        if (newVal) {
+          this.payload = {
+            firstName: newVal.first_name,
+            middleName: newVal.middle_name,
+            lastName: newVal.last_name,
+          };
+        } else {
+          this.payload = {
+            firstName: null,
+            middleName: null,
+            lastName: null,
+          };
+        }
+        this.$emit("emit-transaction", this.payload);
+      },
     },
   },
 };

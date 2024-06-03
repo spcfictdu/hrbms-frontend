@@ -39,6 +39,7 @@ import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "AddressTemplate",
+  props: ["fill"],
   data: () => ({
     payload: {
       address: {
@@ -62,6 +63,25 @@ export default {
       errors.province = [(v) => !!v || "Province is required"];
       errors.city = [(v) => !!v || "City/Municipality is required"];
       return errors;
+    },
+  },
+  watch: {
+    fill: {
+      deep: true,
+      handler: function (newVal) {
+        if (newVal) {
+          this.payload.address = {
+            province: newVal.province,
+            city: newVal.city,
+          };
+        } else {
+          this.payload.address = {
+            province: null,
+            city: null,
+          };
+        }
+        this.$emit("emit-transaction", this.payload);
+      },
     },
   },
 };
