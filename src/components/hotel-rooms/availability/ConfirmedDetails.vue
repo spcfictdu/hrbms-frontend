@@ -15,8 +15,10 @@
         <!-- Booking Summary -->
         <v-divider></v-divider>
         <booking-summary
+          ref="bookingSummary"
           :isStatus="payload.status"
           :cardInformation="cardInformation"
+          @validation-event="requestPrinting"
         />
       </v-col>
     </v-row>
@@ -29,6 +31,7 @@ import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import CheckInOutDetails from "@/components/form-templates/CheckInOutDetails.vue";
 import { mapActions, mapState } from "vuex";
 import { format, parseISO } from "date-fns";
+import html2canvas from "html2canvas";
 export default {
   name: "ConfirmedDetails",
   props: ["result"],
@@ -73,6 +76,65 @@ export default {
       // Attached Final Values
       payload.referenceNumber = referenceNumber;
       this.$emit("update-event", payload);
+    },
+    requestPrinting: function () {
+      const printContent = this.$refs.bookingSummary.$el;
+
+      const button = printContent.querySelector("button");
+
+      let originalDisplay = "";
+      if (button) {
+        originalDisplay = button.style.display;
+        button.style.display = "none";
+      }
+
+      const options = {
+        logging: false,
+      };
+
+      html2canvas(printContent, options)
+        .then((canvas) => {
+          const imageData = canvas.toDataURL("image/png");
+          const printWindow = window.open("", "_blank");
+          const printDocument = printWindow.document;
+
+          const head = printDocument.head;
+          const style = printDocument.createElement("style");
+          style.innerHTML = `
+        body {
+          margin: 0 auto;
+        }
+        .booking-summary {
+          display: block;
+          margin: 0 auto;
+          max-width: 100%;
+          max-height: 100%;
+        }
+      `;
+
+          head.appendChild(style);
+
+          const img = printDocument.createElement("img");
+          img.className = "booking-summary";
+          img.src = imageData;
+
+          printDocument.body.appendChild(img);
+
+          // Add a slight delay before triggering print (optional)
+          setTimeout(() => {
+            // Print the document directly
+            printWindow.print();
+
+            // Close the print window (optional)
+            printWindow.close();
+          }, 1000); // Adjust the delay as needed
+        })
+        .finally(() => {
+          // Restore the button visibility
+          if (button) {
+            button.style.display = originalDisplay;
+          }
+        });
     },
     fetchQuery: function () {
       const transaction = this.result.transaction;
@@ -155,9 +217,10 @@ export default {
       const total = room.roomTotalWithExtraPerson;
 
       // Total Received
-      const totalReceived = this.result
-        ? this.result.paymentSummary.amountReceived
-        : 0;
+      const totalReceived =
+        this.result && this.result.paymentSummary.amountReceived > 0
+          ? this.result.paymentSummary.amountReceived
+          : 0;
 
       // Total Outstanding Bill
       const totalOutstanding =
