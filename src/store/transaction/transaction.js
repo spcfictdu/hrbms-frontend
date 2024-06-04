@@ -128,7 +128,6 @@ export const transaction = {
       return this.$axios
         .get(url)
         .then((response) => {
-          console.log(response.data);
           commit("SET_PREVIOUS_TRANSACTIONS", response.data.results);
         })
         .catch((error) => {

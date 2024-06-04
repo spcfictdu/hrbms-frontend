@@ -79,6 +79,7 @@ export default {
     },
     requestPrinting: function () {
       const printContent = this.$refs.bookingSummary.$el;
+      const referenceNumber = this.result.transaction.referenceNumber;
 
       const button = printContent.querySelector("button");
 
@@ -101,16 +102,26 @@ export default {
           const head = printDocument.head;
           const style = printDocument.createElement("style");
           style.innerHTML = `
-        body {
-          margin: 0 auto;
-        }
-        .booking-summary {
-          display: block;
-          margin: 0 auto;
-          max-width: 100%;
-          max-height: 100%;
-        }
-      `;
+          html, body {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            font-family: Arial, Helvetica, sans-serif;
+          }
+          body {
+            justify-content: space-between;
+          }
+          .booking-summary {
+            display: block;
+            margin: 0 auto;
+            max-width: 100%;
+            max-height: 100%;
+          }
+          footer {
+            padding: 10px;
+            margin-top: auto;
+          }
+          `;
 
           head.appendChild(style);
 
@@ -119,6 +130,14 @@ export default {
           img.src = imageData;
 
           printDocument.body.appendChild(img);
+
+          const footer = printDocument.createElement("footer");
+
+          const divFooter = printDocument.createElement("div");
+          divFooter.textContent = "Ref no. " + referenceNumber;
+          footer.appendChild(divFooter);
+
+          printDocument.body.appendChild(footer);
 
           // Add a slight delay before triggering print (optional)
           setTimeout(() => {

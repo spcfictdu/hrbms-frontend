@@ -3,7 +3,7 @@
     <booking-form
       @validation-event="requestPostTransaction"
       :queryResult="queryResult"
-      :fillResult="previousTransactions"
+      :fillResult="returnPreviousTransactions"
     />
   </div>
 </template>
@@ -20,7 +20,10 @@ export default {
     HotelRoomsHeader,
   },
   methods: {
-    ...mapActions("transaction", ["createTransaction", "fetchPreviousFormTransactions"]),
+    ...mapActions("transaction", [
+      "createTransaction",
+      "fetchPreviousFormTransactions",
+    ]),
     requestPostTransaction: function (payload) {
       this.createTransaction(this.createObject(payload));
     },
@@ -65,7 +68,6 @@ export default {
           checkIn: payload.checkIn,
           checkOut: payload.checkOut,
           room: payload.room,
-
         };
       }
 
@@ -74,12 +76,15 @@ export default {
     fetchTransactionFills: function () {
       const referenceNumber = this.queryResult.room.details.referenceNumber;
       this.fetchPreviousFormTransactions(referenceNumber);
-    }
+    },
   },
   computed: {
     ...mapState("transaction", {
-      previousTransactions: "previousTransactions"
+      previousTransactions: "previousTransactions",
     }),
+    returnPreviousTransactions() {
+      return this.previousTransactions ? this.previousTransactions : [];
+    },
     queryResult() {
       let query = this.$route.query.room;
       let format = JSON.parse(query);
@@ -88,7 +93,7 @@ export default {
   },
   mounted() {
     this.fetchTransactionFills();
-  }
+  },
 };
 </script>
 

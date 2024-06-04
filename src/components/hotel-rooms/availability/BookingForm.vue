@@ -285,7 +285,7 @@ export default {
     },
     "payload.checkOut.date": {
       deep: true,
-      handler: function () {
+      handler: function (newVal) {
         if (newVal) {
           this.fetchQuery();
         }
