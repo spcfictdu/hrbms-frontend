@@ -91,6 +91,8 @@ export default {
 
       const options = {
         logging: false,
+        useCORS: true, // Enable CORS to handle cross-origin images
+        scale: 2, // Increase the scale to improve the quality of the screenshot
       };
 
       html2canvas(printContent, options)
@@ -102,26 +104,25 @@ export default {
           const head = printDocument.head;
           const style = printDocument.createElement("style");
           style.innerHTML = `
-          html, body {
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            font-family: Arial, Helvetica, sans-serif;
-          }
-          body {
-            justify-content: space-between;
-          }
-          .booking-summary {
-            display: block;
-            margin: 0 auto;
-            max-width: 100%;
-            max-height: 100%;
-          }
-          footer {
-            padding: 10px;
-            margin-top: auto;
-          }
-          `;
+        html, body {
+          height: 100%;
+          display: flex;
+          flex-direction: column;
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        body {
+          justify-content: space-between;
+        }
+        .booking-summary {
+          display: block;
+          margin: 0 auto;
+          max-width: 100%;
+          max-height: 100%;
+        }
+        footer {
+          margin-top: auto;
+        }
+      `;
 
           head.appendChild(style);
 
@@ -134,6 +135,7 @@ export default {
           const footer = printDocument.createElement("footer");
 
           const divFooter = printDocument.createElement("div");
+          divFooter.className = "div-footer";
           divFooter.textContent = "Ref no. " + referenceNumber;
           footer.appendChild(divFooter);
 
