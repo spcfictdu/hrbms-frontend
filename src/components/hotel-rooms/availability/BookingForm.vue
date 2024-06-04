@@ -241,7 +241,10 @@ export default {
           totalChange: totalChange,
         },
         button: {
-          title: "Save Reservation",
+          title:
+            this.payload.status === "CONFIRMED"
+              ? "Record Payment"
+              : "Save Reservation",
           outlined: false,
         },
       };
