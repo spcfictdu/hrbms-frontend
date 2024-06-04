@@ -1,7 +1,7 @@
 <template>
   <div v-if="this.room">
     <div class="d-flex justify-end align-center mb-2">
-      <div style="max-width: 300px;">
+      <div style="max-width: 300px">
         <v-select
           class="d-block"
           rounded
@@ -30,15 +30,24 @@
 
           <!-- Guest Name -->
           <v-divider />
-          <guest-name-template @emit-transaction="assignPayload" :fill="autoFilled"/>
+          <guest-name-template
+            @emit-transaction="assignPayload"
+            :fill="autoFilled"
+          />
 
           <!-- Address -->
           <v-divider />
-          <address-template @emit-transaction="assignPayload" :fill="autoFilled" />
+          <address-template
+            @emit-transaction="assignPayload"
+            :fill="autoFilled"
+          />
 
           <!-- Contact Details -->
           <v-divider />
-          <contact-details-template @emit-transaction="assignPayload" :fill="autoFilled" />
+          <contact-details-template
+            @emit-transaction="assignPayload"
+            :fill="autoFilled"
+          />
 
           <!-- ID -->
           <v-divider />
@@ -57,7 +66,10 @@
 
           <!-- Guests -->
           <v-divider />
-          <guests-template @emit-transaction="assignPayload" />
+          <guests-template
+            :guestsEnums="guestsEnums"
+            @emit-transaction="assignPayload"
+          />
 
           <!-- Payment -->
           <div v-if="showPayment" class="pb-8">
@@ -97,10 +109,8 @@ import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import GCashImageTransition from "@/components/hotel-rooms/availability/GCashImageTransition.vue";
 import { mapActions, mapState } from "vuex";
-import { calculateDaysBetweenDates } from "@/mixins/FormattingFunctions";
 export default {
   name: "BookingForm",
-  mixins: [calculateDaysBetweenDates],
   props: ["queryResult", "fillResult"],
   data: () => ({
     valid: true,
@@ -152,11 +162,25 @@ export default {
         this.$emit("validation-event", this.payload);
       }
     },
-    fetchQuery: function (newVal) {
+    fetchQuery: function () {
       let query = {
-        roomType: newVal.room.type,
-        roomNumber: newVal.room.details.roomNumber,
+        roomType: this.queryResult.room.type,
+        roomNumber: this.queryResult.room.details.roomNumber,
       };
+
+      if (this.payload.checkIn?.date && this.payload.checkOut?.date) {
+        query.dateRange = [
+          this.payload.checkIn.date,
+          this.payload.checkOut.date,
+        ];
+      } else {
+        delete query.dateRange;
+      }
+      if (this.payload.guests) {
+        query.extraPersonCount = this.payload.guests;
+      } else {
+        delete query.extraPersonCount;
+      }
       this.fetchRoom(query);
     },
     filterGuest: function (newVal) {
@@ -177,28 +201,9 @@ export default {
     },
     cardInformation() {
       const room = this.room ? this.room[0] : null;
-      const dateOne = this.payload.checkIn?.date
-        ? this.payload.checkIn.date
-        : null;
-      const dateTwo = this.payload.checkOut?.date
-        ? this.payload.checkOut.date
-        : null;
-
-      // Assign the Guests to a variable
-      const additionalGuests = this.payload.guests ? this.payload.guests : 0;
-
-      // Compute the total additional guests price
-      const extraPersonTotal = room.extraPersonTotal * additionalGuests;
-
-      const numberOfDays =
-        dateOne && dateTwo
-          ? this.calculateDaysBetweenDates(dateOne, dateTwo)
-          : 1;
 
       // Total Bill
-      const total =
-        room.roomTotal * numberOfDays +
-        room.extraPersonTotal * additionalGuests;
+      const total = room.roomTotalWithExtraPerson;
       this.totalPayment = total;
 
       // Total Received
@@ -228,8 +233,9 @@ export default {
         },
         payment: {
           roomTotal: room.roomTotal,
-          extraPersonTotal: extraPersonTotal,
-          total: total,
+          extraPersonTotal: room.extraPersonTotal,
+          total: room.roomTotalWithExtraPerson,
+          roomRatesArray: room.roomRatesArray,
           totalReceived: totalReceived,
           totalOutstanding: totalOutstanding,
           totalChange: totalChange,
@@ -243,6 +249,9 @@ export default {
     showScan() {
       return this.payload.payment?.paymentType === "GCash" ? true : false;
     },
+    guestsEnums() {
+      return this.room ? this.room[0].extraPersonCapacity : [];
+    },
   },
   watch: {
     queryResult: {
@@ -251,7 +260,7 @@ export default {
         this.payload.room = {
           referenceNumber: newVal.room.details.referenceNumber,
         };
-        this.fetchQuery(newVal);
+        this.fetchQuery();
       },
     },
     "payload.status": {
@@ -260,6 +269,30 @@ export default {
         if (newVal === "RESERVED") {
           this.payload.payment.amountReceived = null;
           this.payload.payment.paymentType = null;
+        }
+      },
+    },
+    "payload.checkIn.date": {
+      deep: true,
+      handler: function (newVal) {
+        if (newVal) {
+          this.fetchQuery();
+        }
+      },
+    },
+    "payload.checkOut.date": {
+      deep: true,
+      handler: function () {
+        if (newVal) {
+          this.fetchQuery();
+        }
+      },
+    },
+    "payload.guests": {
+      deep: true,
+      handler: function (newVal) {
+        if (newVal) {
+          this.fetchQuery();
         }
       },
     },

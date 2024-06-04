@@ -8,14 +8,14 @@
       <label-slot>
         <template v-slot:label> Extra Person </template>
       </label-slot>
-      <v-text-field
-        type="number"
-        dense
+      <v-select
         hide-details="auto"
-        outlined
         v-model="payload.guests"
+        dense
+        outlined
         @change="emitTransaction"
-      ></v-text-field>
+        :items="guestsEnums"
+      ></v-select>
     </div>
   </div>
 </template>
@@ -25,6 +25,7 @@ import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "GuestsTemplate",
+  props: ["guestsEnums"],
   data: () => ({
     payload: {
       guests: 0,

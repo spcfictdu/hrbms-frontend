@@ -55,6 +55,7 @@ export const roomNumberEnum = {
 };
 
 export const roomEnum = {
+  // Query Params include roomType, roomNumber, dateRange, extraPersonCount
   namespaced: true,
   state: () => ({
     room: null,

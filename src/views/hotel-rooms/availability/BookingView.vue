@@ -40,6 +40,7 @@ export default {
               phoneNum: payload.contact.phoneNumber,
             },
             id: payload.id,
+            extraPerson: payload.guests,
           },
           checkIn: payload.checkIn,
           checkOut: payload.checkOut,
@@ -58,11 +59,13 @@ export default {
               phoneNum: payload.contact.phoneNumber,
             },
             id: payload.id,
+            extraPerson: payload.guests,
           },
           payment: payload.payment,
           checkIn: payload.checkIn,
           checkOut: payload.checkOut,
           room: payload.room,
+
         };
       }
 

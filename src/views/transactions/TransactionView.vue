@@ -94,19 +94,10 @@ export default {
         }
       },
     },
-    handleAlertType: {
-      immediate: true,
-      handler: function (newVal) {
-        console.log(newVal);
-      },
-    },
   },
   created() {
     this.fetchTransactions();
   },
-  created(){
-    this.fetchTransactions();
-  }
 };
 </script>
 

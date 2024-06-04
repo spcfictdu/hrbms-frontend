@@ -10,9 +10,13 @@
         </div>
         <v-divider vertical />
         <div class="font-weight-regular ml-2">
-          {{ totalInformation.room.capacity }} room occupancy
+          Good for {{ totalInformation.room.capacity }} persons
         </div>
       </div>
+    </div>
+
+    <div class="text-body-2 font-weight-bold text-uppercase mb-1">
+      Accomodation Details
     </div>
 
     <v-divider />
@@ -30,11 +34,39 @@
 
     <v-divider />
 
+    <div v-if="totalInformation.payment.roomRatesArray.length > 0">
+      <div class="my-3 font-weight-regular">
+        Dates:
+        <div
+          class="ml-5 d-flex justify-space-between align-center"
+          v-for="(i, index) in totalInformation.payment.roomRatesArray"
+          :key="'roomRates' + index"
+        >
+          <div>{{ i.date }}</div>
+          <div>₱ {{ i.rate }}</div>
+        </div>
+        <div v-if="totalInformation.payment.extraPersonTotal > 0">
+          Addt'l Persons Charge:
+          <div
+            class="ml-5 d-flex justify-space-between align-center"
+            v-for="(i, index) in totalInformation.payment.roomRatesArray"
+            :key="'roomRates' + index"
+          >
+            <div>{{ i.date }}</div>
+            <div>₱ {{ i.extraPersonRate }}</div>
+          </div>
+        </div>
+      </div>
+
+      <v-divider />
+    </div>
+
     <div class="my-3 font-weight-regular">
       <div class="d-flex justify-space-between align-center">
         <div>Room Total:</div>
         <div>₱ {{ totalInformation.payment.roomTotal }}</div>
       </div>
+
       <div class="d-flex justify-space-between align-center">
         <div>Extra Person Total:</div>
         <div>₱ {{ totalInformation.payment.extraPersonTotal }}</div>

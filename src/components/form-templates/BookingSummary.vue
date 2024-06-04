@@ -72,6 +72,7 @@ export default {
           totalReceived: this.cardInformation.payment.totalReceived,
           totalOutstanding: this.cardInformation.payment.totalOutstanding,
           totalChange: this.cardInformation.payment.totalChange,
+          roomRatesArray: this.cardInformation.payment.roomRatesArray,
         },
         button: this.cardInformation.button,
       };

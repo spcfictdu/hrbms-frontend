@@ -14,7 +14,10 @@
 
           <!-- Payment -->
           <v-divider />
-          <payment-template @emit-transaction="assignPayload" :isGreater="totalPayment"/>
+          <payment-template
+            @emit-transaction="assignPayload"
+            :isGreater="totalPayment"
+          />
 
           <!-- GCash QR Code Transition -->
           <g-cash-image-transition :showScan="showScan" />
@@ -96,11 +99,25 @@ export default {
       };
       this.$emit("delete-event", params);
     },
-    fetchQuery: function (newVal) {
+    fetchQuery: function () {
+      const transaction = this.result.transaction;
+      const room = this.result.room;
       let query = {
-        roomType: newVal.room.name,
-        roomNumber: newVal.room.number,
+        roomType: room.name,
+        roomNumber: room.number,
       };
+
+      if (transaction.checkInDate && transaction.checkOutDate) {
+        query.dateRange = [transaction.checkInDate, transaction.checkOutDate];
+      } else {
+        delete query.dateRange;
+      }
+      if (transaction.extraPerson) {
+        query.extraPersonCount = transaction.extraPerson;
+      } else {
+        delete query.extraPersonCount;
+      }
+
       this.fetchRoom(query);
     },
   },
@@ -136,14 +153,8 @@ export default {
     cardInformation() {
       const room = this.room ? this.room[0] : null;
 
-      // Assign the Guests to a variable
-      const additionalGuests = this.payload.guests ? this.payload.guests : 0;
-
-      // Compute the total additional guests price
-      const extraPersonTotal = room.extraPersonTotal * additionalGuests;
-
       // Total Bill
-      const total = room.roomTotal + room.extraPersonTotal * additionalGuests;
+      const total = room.roomTotalWithExtraPerson;
       this.totalPayment = total;
 
       // Total Received
@@ -168,8 +179,9 @@ export default {
         },
         payment: {
           roomTotal: room.roomTotal,
-          extraPersonTotal: extraPersonTotal,
-          total: total,
+          extraPersonTotal: room.extraPersonTotal,
+          total: room.roomTotalWithExtraPerson,
+          roomRatesArray: room.roomRatesArray,
           totalReceived: totalReceived,
           totalOutstanding: totalOutstanding,
           totalChange: totalChange,
@@ -186,7 +198,7 @@ export default {
       immediate: true,
       handler: function (newVal) {
         if (newVal) {
-          this.fetchQuery(newVal);
+          this.fetchQuery();
         }
       },
     },
