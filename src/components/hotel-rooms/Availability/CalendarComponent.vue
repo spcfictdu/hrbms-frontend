@@ -563,12 +563,6 @@ export default {
         this.$emit("calendar-event", newVal);
       },
     },
-    mappedCalendarData: {
-      immediate: true,
-      handler: function (newVal) {
-        console.log(newVal);
-      },
-    },
     dropdownValue: {
       immediate: true,
       handler: function (newVal) {

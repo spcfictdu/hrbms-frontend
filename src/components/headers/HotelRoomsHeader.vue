@@ -176,9 +176,6 @@ export default {
     showControls() {
       return this.$route.meta.hideInputs ? false : true;
     },
-    test() {
-      return this.$router.currentRoute.meta.name;
-    },
   },
 
   methods: {
@@ -189,15 +186,6 @@ export default {
   },
   mounted() {
     this.activeButton = this.$router.currentRoute.meta.name;
-  },
-  watch: {
-    test: {
-      immediate: true,
-      deep: true,
-      handler: function (newVal) {
-        console.log(newVal);
-      },
-    },
   },
 };
 </script>
