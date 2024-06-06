@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import RoomsList from "../../components/hotel-rooms/RoomsList.vue";
+import RoomsList from "../../components/hotel-rooms/rooms/RoomsList.vue";
 import HotelRoomsHeader from "../../components/headers/HotelRoomsHeader.vue";
 export default {
   name: "HotelRoomsView",

@@ -18,12 +18,14 @@
             src="../../assets/hotelRoom.png"
             class="room-image-mobile d-flex d-sm-none"
           />
-          <div class="d-flex flex-column justify-center">
+          <div class="width-stretch d-flex flex-column justify-center">
             <v-card-title class="pb-0 font-weight-bold">{{
               room.name.toUpperCase()
             }}</v-card-title>
             <v-card-subtitle class="pb-4 pt-2">
-              <span class="text-overline font-weight-bold">{{ room.category }}</span>
+              <span class="text-overline font-weight-bold">{{
+                room.category
+              }}</span>
               <!-- <v-chip
                 small
                 outlined
@@ -36,17 +38,16 @@
             </v-card-subtitle>
             <v-card-text>
               <p class="text-body-2 room-description longText--text mb-0">
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Maxime
-                rem dicta deserunt sit, in magni! Ducimus sapiente tenetur quos?
-                Inventore neque natus ea voluptas officiis non minima et, iusto
-                laudantium?
+                {{ room.description }}
               </p>
             </v-card-text>
 
             <v-divider />
 
             <v-card-actions>
-              <p class="text-overline accentOne--text ml-2 font-weight-bold">DreamStay Discount</p>
+              <p class="text-overline accentOne--text ml-2 font-weight-bold">
+                DreamStay Discount
+              </p>
               <v-spacer />
               <v-btn @click="redirect" small color="primary"
                 >View Details</v-btn
@@ -70,11 +71,19 @@ export default {
     redirect: function () {
       this.$router.push({ name: "Room Details" });
     },
+    appendImagePath: function (path) {
+      // return `${this.$apiPath}/${path}`;
+      return `../../assets/hotelRoom.png`;
+    },
   },
 };
 </script>
 
 <style scoped>
+.width-stretch {
+  width: 100%;
+}
+
 .card {
   border-radius: 10px;
   overflow: hidden;
@@ -87,13 +96,13 @@ export default {
 }
 
 .room-image-smAndUp {
-  width: 275px;
+  max-width: 275px;
   border-radius: 10px;
   aspect-ratio: 16/10;
 }
 
 .room-image-mobile {
-  width: 100%;
+  max-width: 100%;
   margin-top: 1rem;
   border-radius: 10px;
 }

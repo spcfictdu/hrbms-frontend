@@ -8,6 +8,7 @@ import { transaction } from "./transaction/transaction";
 import { guest } from "./guest/guest";
 import { availabilityCalendar } from "./calendar/availability-calendar";
 import { roomPrice } from "./rooms/room-pricing";
+import { rooms } from "./rooms/rooms";
 
 Vue.use(Vuex);
 
@@ -18,6 +19,7 @@ export default new Vuex.Store({
     guest,
     availabilityCalendar,
     roomPrice,
+    rooms,
 
     //Enums
     roomTypeEnum,

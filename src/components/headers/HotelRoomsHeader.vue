@@ -62,7 +62,7 @@
           rounded
           color="primary"
           class="d-none d-md-flex"
-          @click="redirect({name: 'Rooms', route: 'Create Room'})"
+          @click="redirect({ name: 'Rooms', route: 'Create Room' })"
         >
           <v-icon left>mdi-plus</v-icon>
           ROOM
@@ -92,11 +92,11 @@
         <v-chip
           small
           color="primary"
-          :outlined="chip !== 'All'"
-          v-for="chip in chips"
-          :key="chip"
+          :outlined="chip.roomType !== 'All'"
+          v-for="(chip, index) in chips"
+          :key="index"
         >
-          {{ chip }}
+          {{ chip.roomType }}
         </v-chip>
       </div>
     </div>
@@ -134,6 +134,7 @@
 </template>
 
 <script>
+import { mapActions, mapState } from "vuex";
 export default {
   name: "HotelRoomsHeader",
   data: () => ({
@@ -157,32 +158,62 @@ export default {
         route: "Availability",
       },
     ],
-
-    chips: [
-      "All",
-      "Deluxe",
-      "Junior",
-      "Executive",
-      "Presidential",
-      "Superior",
-      "Standard",
-      "Family",
-    ],
+    // chips: [
+    //   "All",
+    //   "Deluxe",
+    //   "Junior",
+    //   "Executive",
+    //   "Presidential",
+    //   "Superior",
+    //   "Standard",
+    //   "Family",
+    // ],
   }),
   computed: {
+    ...mapState("roomTypeEnum", {
+      roomTypeEnum: "roomTypeEnum",
+    }),
     activeRouteButton: function () {
       return this.activeButton;
     },
     showControls() {
       return this.$route.meta.hideInputs ? false : true;
     },
+    chips: function () {
+      const data = this.roomTypeEnum
+        ? this.roomTypeEnum.map((key) => ({
+            ...key,
+            roomType: this.capitalizeString(key.roomType),
+          }))
+        : [];
+      return data.length > 0
+        ? [{ roomType: "All", referenceNumber: "" }, ...data]
+        : [];
+    },
   },
-
   methods: {
+    ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
     redirect: function (route) {
       this.activeButton = route.name;
       return this.$router.push({ name: route.route });
     },
+    capitalizeString(str) {
+      const lowerCaseString = str.toLowerCase();
+      return lowerCaseString
+        .split(" ")
+        .map((word) => {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(" ");
+    },
+    fetchEnums() {
+      if (this.$route.name === "Rooms List") {
+        this.fetchRoomTypes();
+      }
+    },
+  },
+  created() {
+    this.fetchEnums();
   },
   mounted() {
     this.activeButton = this.$router.currentRoute.meta.name;
