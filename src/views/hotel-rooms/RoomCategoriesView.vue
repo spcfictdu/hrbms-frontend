@@ -1,11 +1,11 @@
 <template>
-  <div class="mt-10" v-if="roomPrice">
-    <RoomPricing :roomPrice="roomPrice"/>
+  <div class="mt-10" v-if="roomPrices">
+    <RoomPricing :roomPrices="roomPrices"/>
   </div>
 </template>
 
 <script>
-import RoomPricing from "../../components/hotel-rooms/RoomPricing.vue";
+import RoomPricing from "../../components/hotel-rooms/categories/RoomPricing.vue";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "RoomCategoriesView",
@@ -18,7 +18,7 @@ export default {
   },
   computed: {
     ...mapState("roomPrice", {
-      roomPrice: "roomPrice",
+      roomPrices: "roomPrice",
     }),
   },
   created(){

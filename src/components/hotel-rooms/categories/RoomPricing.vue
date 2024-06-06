@@ -8,7 +8,9 @@
       <div
         class="d-flex flex-md-row flex-column justify-md-space-between align-md-center"
       >
-        <p class="text-subtitle-2 font-weight-bold">{{ room.room }}</p>
+        <p class="text-subtitle-2 font-weight-bold">
+          {{ room.room }}
+        </p>
         <div class="d-flex align-center">
           <p class="text-caption font-weight-regular" v-if="room.discount">
             <span class="mr-md-2">
@@ -50,6 +52,33 @@
         :items="tableContent(room.room)"
         :items-per-page="5"
       ></v-data-table>
+      <!-- <v-simple-table>
+        <template v-slot:default>
+          <thead>
+            <tr>
+              <th
+                v-for="(header, index) in headers"
+                :key="index"
+                class="text-left"
+              >
+                {{ header.text }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(day, index) in item.rates" :key="index">
+              <td>{{ day.rateTypes }}</td>
+              <td>{{ day.sunday }}</td>
+              <td>{{ day.monday }}</td>
+              <td>{{ day.tuesday }}</td>
+              <td>{{ day.wednesday }}</td>
+              <td>{{ day.thursday }}</td>
+              <td>{{ day.friday }}</td>
+              <td>{{ day.saturday }}</td>
+            </tr>
+          </tbody>
+        </template>
+      </v-simple-table> -->
     </v-card>
     <EditRegularRate
       :activator="regularRateDialog"
@@ -62,15 +91,14 @@
   </v-container>
 </template>
 <script>
-import RoomsList from "../../components/hotel-rooms/RoomsList.vue";
-import HotelRoomsHeader from "../../components/headers/HotelRoomsHeader.vue";
-import EditRegularRate from "../dialogs/EditRegularRate.vue";
-import EditSpecialRate from "../dialogs/EditSpecialRate.vue";
+import RoomsList from "../RoomsList.vue";
+import EditRegularRate from "../../dialogs/EditRegularRate.vue";
+import EditSpecialRate from "../../dialogs/EditSpecialRate.vue";
 export default {
   name: "RoomPricing",
-  components: { RoomsList, HotelRoomsHeader, EditRegularRate, EditSpecialRate },
+  components: { RoomsList, EditRegularRate, EditSpecialRate },
   props: {
-    roomPrice: {
+    roomPrices: {
       type: Array,
       required: true,
     },
@@ -78,6 +106,32 @@ export default {
   data: () => ({
     regularRateDialog: false,
     specialRateDialog: false,
+    // headers: [
+    //   {
+    //     text: "Rates (in peso)",
+    //   },
+    //   {
+    //     text: "Sun",
+    //   },
+    //   {
+    //     text: "Mon",
+    //   },
+    //   {
+    //     text: "Tue",
+    //   },
+    //   {
+    //     text: "Wed",
+    //   },
+    //   {
+    //     text: "Thu",
+    //   },
+    //   {
+    //     text: "Fri",
+    //   },
+    //   {
+    //     text: "Sat",
+    //   },
+    // ],
     headers: [
       {
         text: "Rates (in peso)",
@@ -213,11 +267,66 @@ export default {
     },
   },
   computed: {
+    // roomData() {
+    //   return this.roomPrices
+    //     ? this.roomPrices.map((key) => {
+    //         let data = {
+    //           roomMeta: {
+    //             roomTitle: key.roomType.name,
+    //             roomReferenceNumber: key.roomType.referenceNumber,
+    //           },
+    //           discountMeta: {},
+    //           rates: [
+    //             {
+    //               rateTypes: "Regular rate",
+    //               sunday: key.rates.regular.sunday,
+    //               monday: key.rates.regular.monday,
+    //               tuesday: key.rates.regular.tuesday,
+    //               wednesday: key.rates.regular.wednesday,
+    //               thursday: key.rates.regular.thursday,
+    //               friday: key.rates.regular.friday,
+    //               saturday: key.rates.regular.saturday,
+    //               referenceNumber: key.rates.regular.referenceNumber, // Reference Number
+    //             },
+    //           ],
+    //         };
+
+    //         // data.rates.push({
+    //         //   rateTypes: "Special rate",
+    //         //   sunday: "1400",
+    //         //   monday: "1400",
+    //         //   tuesday: "1400",
+    //         //   wednesday: "1400",
+    //         //   thursday: "1400",
+    //         //   friday: "1400",
+    //         //   saturday: "1400",
+    //         // });
+
+    //         if (key.rates.special.length > 0) {
+    //           data.discountMeta = {
+    //             //
+    //           }
+    //           data.rates.push({
+    //             rateTypes: "Special rate",
+    //             sunday: key.rates.special.sunday,
+    //             monday: key.rates.special.monday,
+    //             tuesday: key.rates.special.tuesday,
+    //             wednesday: key.rates.special.wednesday,
+    //             thursday: key.rates.special.thursday,
+    //             friday: key.rates.special.friday,
+    //             saturday: key.rates.special.saturday,
+    //           });
+    //         }
+
+    //         return data;
+    //       })
+    //     : [];
+    // },
     roomTypes() {
       let rooms = [];
 
-      Object.keys(this.roomPrice).forEach((outerIndex) => {
-        const index = this.roomPrice[outerIndex];
+      Object.keys(this.roomPrices).forEach((outerIndex) => {
+        const index = this.roomPrices[outerIndex];
 
         Object.keys(index).forEach((innerIndex) => {
           const roomIndex = index[innerIndex];
