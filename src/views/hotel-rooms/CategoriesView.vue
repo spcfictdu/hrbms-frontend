@@ -1,53 +1,47 @@
 <template>
-  <div class="mt-10">
-    <RoomsList v-if="rooms" @query-pagination="attachQuery" :rooms="rooms" />
+  <div class="mt-6">
+    <room-type-buttons @input-event="attachType" />
+    <RoomsList v-if="roomCategories" @query-pagination="attachQuery" :roomCategories="roomCategories" />
   </div>
 </template>
 
 <script>
-import RoomsList from "../../components/hotel-rooms/rooms/RoomsList.vue";
+import RoomsList from "../../components/hotel-rooms/categories/RoomsList.vue";
+import RoomTypeButtons from "@/components/hotel-rooms/RoomTypeButtons.vue";
 import { mapActions, mapState } from "vuex";
 import { assignParams } from "@/mixins/FormattingFunctions";
+
 export default {
   name: "CategoriesView",
   mixins: [assignParams],
-  components: { RoomsList },
+  components: { RoomsList, RoomTypeButtons },
   data: () => ({
     hello: "world",
   }),
   methods: {
-    ...mapActions("rooms", ["fetchRooms"]),
+    ...mapActions("roomCategories", ["fetchRoomCategories"]),
     attachQuery: function (params) {
       this.assignParams(params);
-    }
+    },
+    attachType: function (type) {
+      const object = {
+        roomType: type,
+      };
+      this.assignParams(object);
+    },
   },
   computed: {
-    ...mapState("rooms", {
-      rooms: "rooms",
+    ...mapState("roomCategories", {
+      roomCategories: "roomCategories",
     }),
-    queryResult: function () {
-      return this.$route.query;
-    },
   },
   watch: {
-    rooms: {
-      handler: function () {},
-    },
-    queryResult: {
-      deep: true,
-      handler: function (newVal) {
-        this.assignParams(newVal);
-      },
-    },
     queryParams: {
       deep: true,
       handler: function (newVal) {
-        this.fetchRooms(newVal);
-      }
-    }
-  },
-  created() {
-    this.fetchRooms();
+        this.fetchRoomCategories(newVal);
+      },
+    },
   },
 };
 </script>

@@ -23,7 +23,7 @@ export default {
   name: "RoomsList",
   mixins: [assignParams],
   props: {
-    rooms: {
+    roomCategories: {
       type: Object,
       required: true,
     },
@@ -31,39 +31,25 @@ export default {
   components: { RoomCard },
   data: () => ({
     page: 1,
-    // room: {
-    //   name: "The Serenity Suite",
-    //   category: "Family Room",
-    //   maxOccupancy: 2,
-    //   amenities: [
-    //     "Spectacular views",
-    //     "Luxurious bedding",
-    //     "Modern bathroom with deluxe toiletries",
-    //     "Private outdoor space",
-    //     "Spectacular views",
-    //     "Luxurious bedding",
-    //     "Modern bathroom with deluxe toiletries",
-    //     "Private outdoor space",
-    //   ],
-    // },
+
   }),
   methods: {},
   computed: {
     roomArray: function () {
-      return this.rooms
-        ? this.rooms.rooms.map((key) => ({
-            name: String(key.roomNumber),
-            category: key.roomType.name,
-            maxOccupancy: key.roomType.capacity,
-            amenities: key.roomType.amenities,
-            image: key.roomType.image,
+      return this.roomCategories
+        ? this.roomCategories.roomTypes.map((key) => ({
+            name: key.name,
+            price: key.price,
+            maxOccupancy: key.capacity,
+            totalRooms: key.totalRooms,
+            image: key.image,
             referenceNumber: key.referenceNumber,
-            description: key.roomType.description,
+            description: key.description,
           }))
         : [];
     },
     paginationLastPage: function () {
-      return this.rooms ? this.rooms.pagination.lastPage : 1;
+      return this.roomCategories ? this.roomCategories.pagination.lastPage : 1;
     },
   },
   watch: {
@@ -85,7 +71,7 @@ export default {
         this.$emit("query-pagination", newVal);
       },
     },
-    "rooms.pagination": {
+    "roomCategories.pagination": {
       deep: true,
       handler: function (newVal) {
         this.page = newVal.currentPage;

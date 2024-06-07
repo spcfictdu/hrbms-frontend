@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row dense justify="space-between" class="py-4 py-sm-8">
+    <v-row dense justify="space-between" class="pb-4 pb-sm-8">
       <v-col
         v-for="(i, index) in mappedRoomTypeEnum"
         :key="index"

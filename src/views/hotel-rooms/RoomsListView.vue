@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import RoomsList from "../../components/hotel-rooms/rooms/RoomsList.vue";
+import RoomsList from "../../components/hotel-rooms/categories/RoomsList.vue";
 import { mapActions, mapState } from "vuex";
 import { assignParams } from "@/mixins/FormattingFunctions";
 export default {

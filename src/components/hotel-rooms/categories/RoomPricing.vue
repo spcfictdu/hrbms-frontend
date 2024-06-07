@@ -91,7 +91,7 @@
   </v-container>
 </template>
 <script>
-import RoomsList from "../rooms/RoomsList.vue";
+import RoomsList from "./RoomsList.vue";
 import EditRegularRate from "../../dialogs/EditRegularRate.vue";
 import EditSpecialRate from "../../dialogs/EditSpecialRate.vue";
 export default {

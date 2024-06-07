@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="mt-10">
     <calendar-component
       @calendar-event="requestCalendar"
       :calendarData="calendar"

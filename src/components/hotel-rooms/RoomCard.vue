@@ -19,13 +19,13 @@
             class="room-image-mobile d-flex d-sm-none"
           />
           <div class="width-stretch d-flex flex-column justify-center">
-            <v-card-title class="pb-0 font-weight-bold">{{
+            <v-card-title class="pb-1 font-weight-bold">{{
               room.name.toUpperCase()
             }}</v-card-title>
             <v-card-subtitle class="pb-4 pt-2">
-              <span class="text-overline font-weight-bold">{{
-                room.category
-              }}</span>
+              <span class="price--text font-weight-bold"
+                >PHP {{ room.price }}</span
+              ><span class="price--text"><small>/NIGHT</small></span>
               <!-- <v-chip
                 small
                 outlined
@@ -45,9 +45,15 @@
             <v-divider />
 
             <v-card-actions>
-              <p class="text-overline accentOne--text ml-2 font-weight-bold">
+              <!-- <p class="text-overline accentOne--text ml-2 font-weight-bold">
                 DreamStay Discount
-              </p>
+              </p> -->
+              <v-chip
+                outlined
+                color="primary"
+                class="text-overline font-weight-bold"
+                >{{ room.totalRooms }} Rooms in Total</v-chip
+              >
               <v-spacer />
               <v-btn @click="redirect" small color="primary"
                 >View Details</v-btn
@@ -116,5 +122,9 @@ export default {
 .on-hover {
   box-shadow: 10px 50px #000000;
   transition: 0.5s;
+}
+
+.price--text {
+  color: #db8300;
 }
 </style>
