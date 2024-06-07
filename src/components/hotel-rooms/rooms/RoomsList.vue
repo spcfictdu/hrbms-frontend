@@ -5,14 +5,23 @@
         <RoomCard :room="room" />
       </v-col>
     </v-row>
+    <v-row>
+      <v-col>
+        <v-pagination
+          :length="paginationLastPage"
+          v-model="page"
+        ></v-pagination>
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
 import RoomCard from "../RoomCard.vue";
-
+import { assignParams } from "@/mixins/FormattingFunctions";
 export default {
   name: "RoomsList",
+  mixins: [assignParams],
   props: {
     rooms: {
       type: Object,
@@ -21,6 +30,7 @@ export default {
   },
   components: { RoomCard },
   data: () => ({
+    page: 1,
     // room: {
     //   name: "The Serenity Suite",
     //   category: "Family Room",
@@ -52,6 +62,35 @@ export default {
           }))
         : [];
     },
+    paginationLastPage: function () {
+      return this.rooms ? this.rooms.pagination.lastPage : 1;
+    },
+  },
+  watch: {
+    page: {
+      immediate: true,
+      deep: true,
+      handler: function (newVal) {
+        const object = {
+          perPage: 5,
+          page: newVal,
+        };
+        this.assignParams(object);
+      },
+    },
+    queryParams: {
+      immediate: true,
+      deep: true,
+      handler: function (newVal) {
+        this.$emit("query-pagination", newVal);
+      },
+    },
+    "rooms.pagination": {
+      deep: true,
+      handler: function (newVal) {
+        this.page = newVal.currentPage;
+      }
+    }
   },
 };
 </script>

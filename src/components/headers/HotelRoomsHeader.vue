@@ -213,7 +213,7 @@ export default {
       const object = {
         roomType: chip !== "All" ? chip.toUpperCase() : null,
       };
-      this.assignParams(object);
+      this.assignParamsWithoutDelete(object);
     },
     capitalizeString(str) {
       const lowerCaseString = str.toLowerCase();
@@ -234,7 +234,8 @@ export default {
     queryParams: {
       deep: true,
       handler: function (newVal) {
-        return this.$router.push({
+        console.log(newVal);
+        return this.$router.replace({
           query: newVal,
         });
       },
@@ -246,14 +247,16 @@ export default {
 
         this.searchTimeout = setTimeout(() => {
           const object = {
-            search: newVal !== "" ? newVal : null,
+            search: newVal,
           };
-          this.assignParams(object);
+          this.assignParamsWithoutDelete(object);
         }, 300);
       },
     },
   },
   created() {
+    // Reset Query
+    this.$router.replace({ query: {} });
     this.fetchEnums();
   },
   mounted() {

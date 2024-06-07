@@ -23,7 +23,7 @@ export const formatTime = {
 };
 export const assignParams = {
   data: () => ({
-    queryParams: {}
+    queryParams: {},
   }),
   methods: {
     assignParams: function (payload) {
@@ -40,5 +40,13 @@ export const assignParams = {
         }
       }
     },
-  }
-}
+    assignParamsWithoutDelete: function (payload) {
+      for (const key in payload) {
+        if (Object.hasOwnProperty.call(payload, key)) {
+          const value = payload[key];
+          this.$set(this.queryParams, key, value);
+        }
+      }
+    },
+  },
+};
