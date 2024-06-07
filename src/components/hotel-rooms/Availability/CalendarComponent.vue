@@ -1,44 +1,10 @@
 <template>
-  <v-container class="pa-0" v-if="enums">
-    <!-- Room Categories -->
-    <v-row dense justify="space-between" class="py-4 py-sm-8">
-      <v-col
-        v-for="(i, index) in mappedRoomTypeEnum"
-        :key="index"
-        class="d-none d-sm-block"
-      >
-        <v-btn
-          depressed
-          block
-          height="40"
-          :color="i.roomType === activeButton ? 'accentTwo' : 'lightBg'"
-          class="calendar-buttons text-subtitle-2"
-          :class="{
-            'font-weight-bold': i.roomType === activeButton,
-            'font-weight-regular': i.roomType !== activeButton,
-          }"
-          @click="activeValue(i.roomType)"
-          >{{ i.roomType }}</v-btn
-        >
-      </v-col>
-
-      <!-- Mobile Breakpoint -->
-      <v-col cols="12" class="d-block d-sm-none">
-        <v-autocomplete
-          rounded
-          filled
-          background-color="white"
-          hide-details="auto"
-          :items="mappedRoomTypeEnum"
-          item-text="roomType"
-          label="Select a Room"
-          v-model="activeButton"
-        ></v-autocomplete>
-      </v-col>
-    </v-row>
+  <v-container class="pa-0">
+    <!-- Room Types -->
+    <room-type-buttons @input-event="assignValue" />
 
     <!-- Calendar Component Card -->
-    <v-card class="pa-5" flat>
+    <v-card class="pa-5" flat v-if="requirements">
       <div class="d-flex justify-space-between align-center">
         <div class="d-flex align-center">
           <v-btn
@@ -231,8 +197,8 @@
                     <div
                       class="d-flex text-caption font-weight-regular grey--text text--darken-2 text-capitalize"
                     >
-                      <div class="mx-2">
-                        {{ this.activeButton }}
+                      <div class="mx-2 text-uppercase">
+                        {{ queryParams.roomType}}
                       </div>
                       <v-divider vertical></v-divider>
                       <div class="mx-2">
@@ -295,6 +261,7 @@
 
 <script>
 import CalendarFilterDialog from "../../dialogs/CalendarFilterDialog.vue";
+import RoomTypeButtons from "../RoomTypeButtons.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "CalendarComponent",
@@ -305,11 +272,11 @@ export default {
   },
   components: {
     CalendarFilterDialog,
+    RoomTypeButtons,
   },
   data: () => ({
     filterDialog: false,
-    activeButton: "JUNIOR STANDARD",
-    dropdownValue: "",
+    dropdownValue: null,
     focus: "",
     type: "month",
     typeToLabel: {
@@ -339,16 +306,11 @@ export default {
       calendarBreakpoint: "",
     },
   }),
-  created() {
-    this.requestEnums();
-  },
   methods: {
-    ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
     ...mapActions("roomNumberEnum", ["fetchRoomNumbers"]),
-
-    // Calendar Values
-    activeValue(value) {
-      this.activeButton = value;
+    assignValue(value) {
+      this.queryParams.roomType = value;
+      this.requestQuery(value);
     },
     getEventColor(event) {
       let color = null;
@@ -415,7 +377,7 @@ export default {
     pushToBooking: function () {
       let payload = {
         room: {
-          type: this.activeButton,
+          type: this.queryParams.roomType,
           details: this.filteredRoom(this.dropdownValue),
         },
       };
@@ -429,9 +391,6 @@ export default {
     requestRouteChange: function (event) {
       this.$emit("route-event", event);
     },
-    requestEnums: function () {
-      this.fetchRoomTypes();
-    },
     filteredRoom: function (room) {
       const filteredRoom = this.roomNumberEnum.filter(
         (item) => item.roomNumber === room
@@ -440,7 +399,7 @@ export default {
     },
     requestQuery: function (newVal) {
       const payload = {
-        roomType: newVal,
+        roomType: newVal.toUpperCase(),
       };
       this.fetchRoomNumbers(payload);
     },
@@ -485,18 +444,8 @@ export default {
         }
       }
     },
-    capitalizeString(str) {
-      const lowerCaseString = str.toLowerCase();
-      return lowerCaseString
-        .split(" ")
-        .map((word) => {
-          return word.charAt(0).toUpperCase() + word.slice(1);
-        })
-        .join(" ");
-    },
   },
   computed: {
-    ...mapState("roomTypeEnum", ["roomTypeEnum"]),
     ...mapState("roomNumberEnum", ["roomNumberEnum"]),
     sizeEvents() {
       return this.type === "day" ? 85 : 20;
@@ -507,8 +456,8 @@ export default {
     size() {
       return this.$vuetify.breakpoint;
     },
-    enums() {
-      return this.roomTypeEnum && this.roomNumberEnum;
+    requirements() {
+      return this.roomNumberEnum;
     },
     mappedCalendarData() {
       return this.calendarData
@@ -544,31 +493,8 @@ export default {
           }))
         : [];
     },
-    mappedRoomTypeEnum: function () {
-      return this.roomTypeEnum
-        ? this.roomTypeEnum.map((key) => ({
-            roomType: this.capitalizeString(key.roomType),
-            referenceNumber: key.referenceNumber,
-          }))
-        : [];
-    },
   },
   watch: {
-    activeButton: {
-      immediate: true,
-      handler(newVal) {
-        this.requestQuery(newVal);
-        this.queryParams.roomType = newVal;
-      },
-    },
-    roomTypeEnum: {
-      deep: true,
-      handler: function (newVal) {
-        if (newVal) {
-          this.activeButton = this.mappedRoomTypeEnum[0].roomType;
-        }
-      },
-    },
     roomNumberEnum: {
       deep: true,
       handler: function (newVal) {
@@ -578,8 +504,10 @@ export default {
     },
     queryParams: {
       deep: true,
-      handler: function (newVal, oldVal) {
-        this.$emit("calendar-event", newVal);
+      handler: function (newVal) {
+        if (newVal.roomType && newVal.roomNumber) {
+          this.$emit("calendar-event", newVal);
+        }
       },
     },
     dropdownValue: {
@@ -614,12 +542,6 @@ export default {
 </script>
 
 <style scoped>
-.calendar-buttons {
-  text-transform: capitalize;
-}
-.calendar-buttons:hover {
-  background: #d3daff;
-}
 .chips {
   display: inline-block;
   width: 15px;
