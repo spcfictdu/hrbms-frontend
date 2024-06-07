@@ -54,11 +54,11 @@
           full-width
           prepend-inner-icon="mdi-magnify"
           placeholder="Search for room here..."
-          class="mr-2 ml-md-2"
+          class="mr-2 ml-md-2 d-none"
           v-model="search"
         />
         <v-btn
-          v-if="$router.currentRoute.meta.name !== 'Categories'"
+          v-if="$router.currentRoute.meta.name !== 'Room Categories'"
           outlined
           rounded
           color="primary"
@@ -137,7 +137,6 @@
 
 <script>
 import { assignParams } from "@/mixins/FormattingFunctions";
-import { mapActions, mapState } from "vuex";
 export default {
   name: "HotelRoomsHeader",
   mixins: [assignParams],
@@ -149,8 +148,8 @@ export default {
     toHideFrom: ["Categories", "Booking", "Availability"],
     routes: [
       {
-        name: "Rooms",
-        route: "Rooms List",
+        name: "Amenities",
+        route: "Amenities",
       },
       {
         name: "Occupied",
@@ -177,9 +176,6 @@ export default {
     // ],
   }),
   computed: {
-    ...mapState("roomTypeEnum", {
-      roomTypeEnum: "roomTypeEnum",
-    }),
     activeRouteButton: function () {
       return this.activeButton;
     },
@@ -202,7 +198,6 @@ export default {
     },
   },
   methods: {
-    ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
     redirect: function (route) {
       this.activeButton = route.name;
       return this.$router.push({ name: route.route });
@@ -223,11 +218,6 @@ export default {
           return word.charAt(0).toUpperCase() + word.slice(1);
         })
         .join(" ");
-    },
-    fetchEnums() {
-      if (this.$route.name === "Rooms List") {
-        this.fetchRoomTypes();
-      }
     },
   },
   watch: {
@@ -253,11 +243,6 @@ export default {
         }, 300);
       },
     },
-  },
-  created() {
-    // Reset Query
-    this.$router.replace({ query: {} });
-    this.fetchEnums();
   },
   mounted() {
     this.activeButton = this.$router.currentRoute.meta.name;

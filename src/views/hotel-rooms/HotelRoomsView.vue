@@ -11,11 +11,10 @@
 </template>
 
 <script>
-import RoomsList from "../../components/hotel-rooms/rooms/RoomsList.vue";
 import HotelRoomsHeader from "../../components/headers/HotelRoomsHeader.vue";
 export default {
   name: "HotelRoomsView",
-  components: { RoomsList, HotelRoomsHeader },
+  components: { HotelRoomsHeader },
   data: () => ({
     hello: "world",
   }),

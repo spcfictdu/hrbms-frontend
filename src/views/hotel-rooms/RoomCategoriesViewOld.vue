@@ -8,7 +8,7 @@
 import RoomPricing from "../../components/hotel-rooms/categories/RoomPricing.vue";
 import { mapState, mapActions } from "vuex";
 export default {
-  name: "RoomCategoriesView",
+  name: "RoomCategoriesViewOld",
   components: { RoomPricing },
   data: () => ({
     hello: "world",

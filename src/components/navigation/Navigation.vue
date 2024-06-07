@@ -158,10 +158,10 @@ export default {
       },
       {
         name: "Hotel Rooms",
-        route: "Rooms List",
+        route: "Amenities",
         icon: "mdi-sofa-single-outline",
         childRouteNames: [
-          "Rooms",
+          "Amenities",
           "Occupied Rooms",
           "Categories",
           "Availability",
@@ -180,6 +180,7 @@ export default {
 
     redirect: function (route) {
       this.activeButton = route.name;
+      console.log(route.route);
       return this.$router.push({ name: route.route });
     },
 

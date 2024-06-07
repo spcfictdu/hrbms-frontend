@@ -3,7 +3,7 @@
     <!-- Room Categories -->
     <v-row dense justify="space-between" class="py-4 py-sm-8">
       <v-col
-        v-for="(i, index) in roomTypeEnum"
+        v-for="(i, index) in mappedRoomTypeEnum"
         :key="index"
         class="d-none d-sm-block"
       >
@@ -29,7 +29,7 @@
           filled
           background-color="white"
           hide-details="auto"
-          :items="roomTypeEnum"
+          :items="mappedRoomTypeEnum"
           item-text="roomType"
           label="Select a Room"
           v-model="activeButton"
@@ -485,6 +485,15 @@ export default {
         }
       }
     },
+    capitalizeString(str) {
+      const lowerCaseString = str.toLowerCase();
+      return lowerCaseString
+        .split(" ")
+        .map((word) => {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(" ");
+    },
   },
   computed: {
     ...mapState("roomTypeEnum", ["roomTypeEnum"]),
@@ -535,6 +544,14 @@ export default {
           }))
         : [];
     },
+    mappedRoomTypeEnum: function () {
+      return this.roomTypeEnum
+        ? this.roomTypeEnum.map((key) => ({
+            roomType: this.capitalizeString(key.roomType),
+            referenceNumber: key.referenceNumber,
+          }))
+        : [];
+    },
   },
   watch: {
     activeButton: {
@@ -547,7 +564,9 @@ export default {
     roomTypeEnum: {
       deep: true,
       handler: function (newVal) {
-        this.activeButton = newVal[0].roomType;
+        if (newVal) {
+          this.activeButton = this.mappedRoomTypeEnum[0].roomType;
+        }
       },
     },
     roomNumberEnum: {
