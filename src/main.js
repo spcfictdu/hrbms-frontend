@@ -10,8 +10,8 @@ import { auth } from "./utils/auth";
 Vue.config.productionTip = false;
 
 const axiosInstance = axios.create({
-  baseURL: 'http://127.0.0.1:8000/api' // For localhost
-  // baseURL: 'http://192.168.31.230/api'
+  // baseURL: 'http://127.0.0.1:8000/api' // For localhost
+  baseURL: 'http://192.168.31.230/api'
   // baseURL: "http://192.168.31.185:81/api",
 });
 
@@ -34,7 +34,7 @@ auth.handleTabRefresh();
 
 Vue.prototype.$axios = axiosInstance;
 Vue.prototype.$auth = auth;
-Vue.prototype.$apiPath = 'http://127.0.0.1:8000/api';
+Vue.prototype.$apiPath = 'http://192.168.31.230';
 
 Vuex.Store.prototype.$axios = axiosInstance;
 Vuex.Store.prototype.$router = router;

@@ -55,6 +55,7 @@
           prepend-inner-icon="mdi-magnify"
           placeholder="Search for room here..."
           class="mr-2 ml-md-2"
+          v-model="search"
         />
         <v-btn
           v-if="$router.currentRoute.meta.name !== 'Categories'"
@@ -92,9 +93,10 @@
         <v-chip
           small
           color="primary"
-          :outlined="chip.roomType !== 'All'"
+          :outlined="chip.roomType !== activeChipButtion"
           v-for="(chip, index) in chips"
           :key="index"
+          @click="activateChip(chip.roomType)"
         >
           {{ chip.roomType }}
         </v-chip>
@@ -134,11 +136,16 @@
 </template>
 
 <script>
+import { assignParams } from "@/mixins/FormattingFunctions";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "HotelRoomsHeader",
+  mixins: [assignParams],
   data: () => ({
     activeButton: null,
+    activeChip: "All",
+    search: "",
+    searchTimeout: null,
     toHideFrom: ["Categories", "Booking", "Availability"],
     routes: [
       {
@@ -176,6 +183,9 @@ export default {
     activeRouteButton: function () {
       return this.activeButton;
     },
+    activeChipButtion: function () {
+      return this.activeChip;
+    },
     showControls() {
       return this.$route.meta.hideInputs ? false : true;
     },
@@ -197,6 +207,14 @@ export default {
       this.activeButton = route.name;
       return this.$router.push({ name: route.route });
     },
+    activateChip: function (chip) {
+      this.activeChip = chip;
+
+      const object = {
+        roomType: chip !== "All" ? chip.toUpperCase() : null,
+      };
+      this.assignParams(object);
+    },
     capitalizeString(str) {
       const lowerCaseString = str.toLowerCase();
       return lowerCaseString
@@ -210,6 +228,29 @@ export default {
       if (this.$route.name === "Rooms List") {
         this.fetchRoomTypes();
       }
+    },
+  },
+  watch: {
+    queryParams: {
+      deep: true,
+      handler: function (newVal) {
+        return this.$router.push({
+          query: newVal,
+        });
+      },
+    },
+    search: {
+      deep: true,
+      handler: function (newVal) {
+        clearTimeout(this.searchTimeout);
+
+        this.searchTimeout = setTimeout(() => {
+          const object = {
+            search: newVal !== "" ? newVal : null,
+          };
+          this.assignParams(object);
+        }, 300);
+      },
     },
   },
   created() {

@@ -11,11 +11,11 @@
           class="d-flex flex-column flex-sm-row w-full align-center mx-4 my-0 my-sm-1"
         >
           <v-img
-            src="../../assets/hotelRoom.png"
+            :src="appendImagePath(room.image)"
             class="room-image-smAndUp d-none d-sm-flex mr-2"
           />
           <v-img
-            src="../../assets/hotelRoom.png"
+            :src="appendImagePath(room.image)"
             class="room-image-mobile d-flex d-sm-none"
           />
           <div class="width-stretch d-flex flex-column justify-center">
@@ -72,8 +72,7 @@ export default {
       this.$router.push({ name: "Room Details" });
     },
     appendImagePath: function (path) {
-      // return `${this.$apiPath}/${path}`;
-      return `../../assets/hotelRoom.png`;
+      return `${this.$apiPath}/${path}`;
     },
   },
 };

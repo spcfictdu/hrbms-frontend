@@ -18,9 +18,10 @@ export default [
     component: HotelRoomsView,
     children: [
       {
-        path: "",
+        path: ":roomType?",
         name: "Rooms List",
         component: RoomsListView,
+        props: true,
         meta: {
           name: "Rooms",
         },

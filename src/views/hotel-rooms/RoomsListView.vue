@@ -20,11 +20,18 @@ export default {
     ...mapState("rooms", {
       rooms: "rooms",
     }),
+    queryResult: function () {
+      return this.$route.query;
+    },
   },
   watch: {
     rooms: {
+      handler: function () {},
+    },
+    queryResult: {
+      deep: true,
       handler: function (newVal) {
-        console.log(newVal);
+        this.fetchRooms(newVal);
       },
     },
   },

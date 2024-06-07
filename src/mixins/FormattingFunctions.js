@@ -21,3 +21,24 @@ export const formatTime = {
     },
   },
 };
+export const assignParams = {
+  data: () => ({
+    queryParams: {}
+  }),
+  methods: {
+    assignParams: function (payload) {
+      for (const key in payload) {
+        if (Object.hasOwnProperty.call(payload, key)) {
+          const value = payload[key];
+          if (value === null) {
+            // if value is null, delete in query_params
+            this.$delete(this.queryParams, key);
+          } else {
+            // if property has data, add to query_params
+            this.$set(this.queryParams, key, value);
+          }
+        }
+      }
+    },
+  }
+}
