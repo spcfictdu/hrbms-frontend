@@ -2,7 +2,7 @@ import Vue from "vue";
 import VueRouter from "vue-router";
 import HotelRoomsView from "../../views/hotel-rooms/HotelRoomsView";
 import AmenitiesView from "../../views/hotel-rooms/AmenitiesView";
-import RoomDetailsView from "@/views/hotel-rooms/RoomDetailsView";
+import RoomDetailsView from "../../views/hotel-rooms/categories/RoomDetailsView";
 import CategoriesView from "../../views/hotel-rooms/CategoriesView";
 import AvailabilityView from "../../views/hotel-rooms/AvailabilityView";
 import BookingView from "../../views/hotel-rooms/availability/BookingView";
@@ -25,14 +25,7 @@ export default [
           name: "Amenities",
         },
       },
-      {
-        path: "room-details",
-        name: "Room Details",
-        component: RoomDetailsView,
-        meta: {
-          name: "Rooms",
-        },
-      },
+      // Categories
       {
         path: "room-categories",
         name: "Room Categories",
@@ -41,6 +34,15 @@ export default [
           name: "Room Categories",
         },
       },
+      {
+        path: "room-details",
+        name: "Room Details",
+        component: RoomDetailsView,
+        meta: {
+          name: "Room Categories",
+        },
+      },
+      // Availability
       {
         path: "availability",
         name: "Availability",

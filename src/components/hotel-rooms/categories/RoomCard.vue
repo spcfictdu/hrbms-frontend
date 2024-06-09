@@ -23,9 +23,11 @@
               room.name.toUpperCase()
             }}</v-card-title>
             <v-card-subtitle class="pb-4 pt-2">
-              <span class="price--text font-weight-bold"
-                >PHP {{ room.price }}</span
-              ><span class="price--text"><small>/NIGHT</small></span>
+              <PriceSlot>
+                <template v-slot:price>
+                  {{ room.price }}
+                </template>
+              </PriceSlot>
               <!-- <v-chip
                 small
                 outlined
@@ -67,9 +69,13 @@
 </template>
 
 <script>
+import PriceSlot from '../../slots/PriceSlot.vue';
 export default {
   name: "RoomCard",
   props: { room: Object },
+  components: {
+    PriceSlot
+  },
   data: () => ({
     hello: "world",
   }),
@@ -122,9 +128,5 @@ export default {
 .on-hover {
   box-shadow: 10px 50px #000000;
   transition: 0.5s;
-}
-
-.price--text {
-  color: #db8300;
 }
 </style>

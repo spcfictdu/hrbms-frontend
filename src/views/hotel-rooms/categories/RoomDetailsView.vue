@@ -1,10 +1,10 @@
 <template>
   <div class="mt-10">
     <v-row>
-      <v-col cols="12" md="5">
+      <v-col cols="12">
         <RoomImages />
       </v-col>
-      <v-col cols="12" md="7">
+      <v-col cols="12">
         <RoomDetails />
       </v-col>
     </v-row>
@@ -12,8 +12,8 @@
 </template>
 
 <script>
-import RoomImages from "../../components/hotel-rooms/RoomImages.vue";
-import RoomDetails from "../../components/hotel-rooms/RoomDetails.vue";
+import RoomImages from "../../../components/hotel-rooms/categories/RoomImages.vue";
+import RoomDetails from "../../../components/hotel-rooms/categories/RoomDetails.vue";
 
 export default {
   name: "RoomDetailsView",
@@ -21,6 +21,9 @@ export default {
   data: () => ({
     hello: "world",
   }),
+  methods: {
+    // API Calls
+  }
 };
 </script>
 

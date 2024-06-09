@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-6">
+  <div class="mt-10">
     <room-type-buttons @input-event="attachType" />
     <RoomsList v-if="roomCategories" @query-pagination="attachQuery" :roomCategories="roomCategories" />
   </div>

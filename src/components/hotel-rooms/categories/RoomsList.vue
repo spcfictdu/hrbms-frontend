@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import RoomCard from "../RoomCard.vue";
+import RoomCard from "./RoomCard.vue";
 import { assignParams } from "@/mixins/FormattingFunctions";
 export default {
   name: "RoomsList",
