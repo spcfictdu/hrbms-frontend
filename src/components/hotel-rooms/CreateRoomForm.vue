@@ -1,27 +1,31 @@
 <template>
   <v-row>
     <v-col cols="12" md="5">
-      <div class="room-large lightBg mb-2">
-        <v-img class="room-images" height="300" :src="null" />
+      <div class="room-large mb-2">
+        <v-img class="room-images lightBg" height="300" :src="imagesUrl[0]" />
       </div>
       <div class="small-images-wrapper">
-        <div class="room-small lightBg">
-          <v-img class="room-images" height="100" :src="null" />
-        </div>
-        <div class="room-small lightBg">
-          <v-img class="room-images" height="100" :src="null" />
-        </div>
-        <div class="room-small lightBg">
-          <v-img class="room-images" height="100" :src="null" />
-        </div>
+        <v-img
+          class="room-images room-small lightBg"
+          height="100"
+          :src="imagesUrl[1]"
+        />
+        <v-img
+          class="room-images room-small lightBg"
+          height="100"
+          :src="imagesUrl[2]"
+        />
+        <v-img
+          class="room-images room-small lightBg"
+          height="100"
+          :src="imagesUrl[3]"
+        />
       </div>
     </v-col>
     <v-col cols="12" md="7">
-      <div
-        class="d-flex align-start justify-space-between mb-4 mb-md-0"
-      >
+      <div class="d-flex align-start justify-space-between mb-4 mb-md-0">
         <div>
-          <p class="text-h6 font-weight-bold">NEW ROOM</p>
+          <p class="text-h6 font-weight-bold">NEW ROOM CATEGORY</p>
         </div>
 
         <div class="d-flex">
@@ -32,33 +36,19 @@
       <v-row>
         <v-col cols="12">
           <label-slot>
-            <template v-slot:label>Name</template>
+            <template v-slot:label>Category</template>
           </label-slot>
           <v-text-field dense hide-details="auto" outlined required />
         </v-col>
 
         <v-col cols="12">
           <label-slot>
-            <template v-slot:label> Category </template>
-          </label-slot>
-          <v-select
-            outlined
-            dense
-            :items="categories"
-            hide-details="auto"
-            clearable
-            required
-          />
-        </v-col>
-
-        <!-- <v-col cols="12">
-          <label-slot>
             <template v-slot:label> Description </template>
           </label-slot>
-          <v-textarea hide-details="auto" outlined />
-        </v-col> -->
+          <v-textarea rows="3" hide-details="auto" dense outlined> </v-textarea>
+        </v-col>
 
-        <v-col cols="6">
+        <v-col cols="4">
           <label-slot>
             <template v-slot:label>Maximum Occupancy</template>
           </label-slot>
@@ -71,17 +61,44 @@
           />
         </v-col>
 
-        <v-col cols="6">
+        <v-col cols="4">
           <label-slot>
-            <template v-slot:label>Floor Number</template>
+            <template v-slot:label>Bed Size</template>
           </label-slot>
-          <v-text-field
-            type="number"
-            dense
-            hide-details="auto"
-            outlined
-            required
-          />
+          <v-text-field dense hide-details="auto" outlined required />
+        </v-col>
+
+        <v-col cols="4">
+          <label-slot>
+            <template v-slot:label>Property Size</template>
+          </label-slot>
+          <v-text-field dense hide-details="auto" outlined required />
+        </v-col>
+
+        <v-col cols="12">
+          <v-divider />
+          <title-slot>
+            <template v-slot:title>Inclusions</template>
+          </title-slot>
+
+          <v-row align="center">
+            <v-col cols="auto">
+              <v-checkbox
+                :ripple="false"
+                label="Non-Smoking"
+                hide-details="auto"
+                dense
+              ></v-checkbox>
+            </v-col>
+            <v-col cols="auto">
+              <v-checkbox
+                :ripple="false"
+                label="Balcony or Terrace Included"
+                hide-details="auto"
+                dense
+              ></v-checkbox>
+            </v-col>
+          </v-row>
         </v-col>
 
         <v-col cols="12">
@@ -110,7 +127,30 @@
             hide-details="auto"
             outlined
             dense
+            @change="handleImageUpload"
           />
+        </v-col>
+
+        <v-col cols="12">
+          <v-divider />
+          <title-slot>
+            <template v-slot:title>Pricing</template>
+          </title-slot>
+          <div>
+            <v-row>
+              <v-col v-for="(iter, index) in days" :key="index">
+                <label-slot>
+                  <template v-slot:label>{{ iter }}</template>
+                </label-slot>
+                <v-text-field
+                  type="number"
+                  dense
+                  hide-details="auto"
+                  outlined
+                ></v-text-field>
+              </v-col>
+            </v-row>
+          </div>
         </v-col>
       </v-row>
     </v-col>
@@ -119,84 +159,13 @@
 
 <script>
 import LabelSlot from "../slots/LabelSlot.vue";
+import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "CreateRoomForm",
-  components: { LabelSlot },
+  components: { LabelSlot, TitleSlot },
   data: () => ({
-    room: {
-      name: "The Serenity Suite",
-      category: "Family Room",
-      maxOccupancy: 2,
-      amenities: [
-        "Spectacular views",
-        "Luxurious bedding",
-        "Modern bathroom with toiletries",
-        "Private outdoor space",
-        "Spectacular views",
-        "Luxurious bedding",
-        "Modern bathroom",
-        "Private space",
-      ],
-    },
-
-    headers: [
-      {
-        text: "Rates (in peso)",
-        value: "rate",
-      },
-      {
-        text: "Sun",
-        value: "sunday",
-      },
-      {
-        text: "Mon",
-        value: "monday",
-      },
-      {
-        text: "Tue",
-        value: "tuesday",
-      },
-      {
-        text: "Wed",
-        value: "wednesday",
-      },
-      {
-        text: "Thu",
-        value: "thursday",
-      },
-      {
-        text: "Fri",
-        value: "friday",
-      },
-      {
-        text: "Sat",
-        value: "saturday",
-      },
-    ],
-
-    prices: [
-      {
-        rate: "Regular rate",
-        sunday: 1000,
-        monday: 1000,
-        tuesday: 1000,
-        wednesday: 1000,
-        thursday: 1000,
-        friday: 1000,
-        saturday: 1000,
-      },
-      {
-        rate: "Special rate",
-        sunday: 700,
-        monday: 700,
-        tuesday: 700,
-        wednesday: 700,
-        thursday: 700,
-        friday: 700,
-        saturday: 700,
-      },
-    ],
-
+    images: [],
+    imagesUrl: [],
     categories: [
       "Deluxe",
       "Standard",
@@ -207,7 +176,24 @@ export default {
     ],
 
     amenities: ["Amenity One", "Amenity Two", "Amenity Three"],
+    days: [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ],
   }),
+  methods: {
+    handleImageUpload: function (files) {
+      this.uploads = files;
+      this.imagesUrl = files.map((key) => URL.createObjectURL(key));
+    },
+  },
+  computed: {},
+  watch: {},
 };
 </script>
 
@@ -218,18 +204,17 @@ export default {
 
 .small-images-wrapper {
   width: 100%;
-  display: flex;
-  gap: 0.5rem;
+  display: grid;
+  column-gap: 0.5rem;
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .room-large {
   min-height: 300px;
-  border-radius: 3px;
 }
 
 .room-small {
   min-height: 100px;
-  flex-grow: 1;
-  border-radius: 3px;
 }
+
 </style>

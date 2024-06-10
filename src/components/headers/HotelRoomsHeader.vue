@@ -69,7 +69,14 @@
           ROOM
         </v-btn>
 
-        <v-btn v-else outlined rounded color="primary" class="d-none d-md-flex">
+        <v-btn
+          v-else
+          outlined
+          rounded
+          color="primary"
+          class="d-none d-md-flex"
+          @click="redirect({ name: 'Categories', route: 'Create Room' })"
+        >
           <v-icon left>mdi-plus</v-icon>
           CATEGORY
         </v-btn>

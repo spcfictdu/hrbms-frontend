@@ -42,6 +42,15 @@ export default [
           name: "Room Categories",
         },
       },
+      {
+        path: "create-room-category",
+        name: "Create Room",
+        component: CreateRoomView,
+        meta: {
+          name: "Room Categories",
+          hideInputs: true,
+        },
+      },
       // Availability
       {
         path: "availability",
@@ -78,15 +87,6 @@ export default [
         props: true,
         meta: {
           name: "Check In & Out",
-          hideInputs: true,
-        },
-      },
-      {
-        path: "create-room",
-        name: "Create Room",
-        component: CreateRoomView,
-        meta: {
-          name: "Create Room",
           hideInputs: true,
         },
       },

@@ -21,6 +21,13 @@ export default new Vuetify({
         confirmed: "#2f45b7",
         reserved: "#df18ff",
         warning: "#ff3838",
+
+        // Room List Card
+        // Confirmed and Reserved already included..
+        occupied: "#DB8300",
+        unclean: "#db1a00",
+        available: "#00ac30",
+        
       },
     },
   },

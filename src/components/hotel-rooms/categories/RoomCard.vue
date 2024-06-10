@@ -8,7 +8,7 @@
         :class="{ 'on-hover': hover }"
       >
         <div
-          class="d-flex flex-column flex-sm-row w-full align-center mx-4 my-0 my-sm-1"
+          class="d-flex flex-column flex-sm-row w-full align-center mx-4 my-0 my-sm-4"
         >
           <v-img
             :src="appendImagePath(room.image)"
@@ -19,7 +19,7 @@
             class="room-image-mobile d-flex d-sm-none"
           />
           <div class="width-stretch d-flex flex-column justify-center">
-            <v-card-title class="pb-1 font-weight-bold">{{
+            <v-card-title class="pb-1 pt-0 font-weight-bold">{{
               room.name.toUpperCase()
             }}</v-card-title>
             <v-card-subtitle class="pb-4 pt-2">
