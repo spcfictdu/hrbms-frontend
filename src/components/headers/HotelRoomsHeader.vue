@@ -43,7 +43,7 @@
       class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-2"
     >
       <div
-        class="w-full d-flex align-center order-first order-md-last ml-md-auto"
+        class="w-full d-flex align-center order-first order-md-last ml-auto"
       >
         <v-text-field
           block
@@ -82,14 +82,14 @@
         </v-btn>
 
         <v-btn
-          fab
-          small
+          rounded
+          outlined
           elevation="0"
           color="primary"
-          @click="redirect(route)"
+          @click="redirect({ name: 'Categories', route: 'Create Room' })"
           class="d-flex d-md-none"
         >
-          <v-icon color="white">mdi-plus</v-icon>
+          <v-icon left >mdi-plus</v-icon>Category
         </v-btn>
       </div>
 
