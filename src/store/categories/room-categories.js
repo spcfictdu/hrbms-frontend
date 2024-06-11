@@ -18,10 +18,12 @@ export const roomCategories = {
   namespaced: true,
   state: () => ({
     roomCategories: null,
+    roomCategory: null,
   }),
   getters: {},
   mutations: {
     SET_ROOM_CATEGORIES: (state, data) => (state.roomCategories = data),
+    SET_ROOM_CATEGORY: (state, data) => (state.roomCategory = data),
   },
   actions: {
     fetchRoomCategories: function ({ commit }, queryParams = {}) {
@@ -34,6 +36,17 @@ export const roomCategories = {
         })
         .catch((error) => {
           console.error("Error fetching room categories", error);
+        });
+    },
+    fetchRoomCategory: function ({ commit }, { roomTypeReferenceNumber }) {
+      const url = `room-type/${roomTypeReferenceNumber}`;
+      return this.$axios
+        .get(url)
+        .then((response) => {
+          commit("SET_ROOM_CATEGORY", response.data.results);
+        })
+        .catch((error) => {
+          console.error("Error fetching room category: ", error);
         });
     },
   },

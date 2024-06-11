@@ -50,7 +50,6 @@ export default {
     ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
     capitalizeString(str) {
       const lowerCaseString = str.toLowerCase();
-      console.log(lowerCaseString);
       return lowerCaseString
         .split(" ")
         .map((word) => {

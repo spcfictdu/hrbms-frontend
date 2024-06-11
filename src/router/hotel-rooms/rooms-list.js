@@ -35,9 +35,10 @@ export default [
         },
       },
       {
-        path: "room-details",
+        path: "room-details/:roomCategoryReferenceNumber",
         name: "Room Details",
         component: RoomDetailsView,
+        props: true,
         meta: {
           name: "Room Categories",
         },
@@ -48,7 +49,6 @@ export default [
         component: CreateRoomView,
         meta: {
           name: "Room Categories",
-          hideInputs: true,
         },
       },
       // Availability

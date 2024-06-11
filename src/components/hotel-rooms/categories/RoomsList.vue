@@ -2,7 +2,12 @@
   <div>
     <v-row>
       <v-col cols="12" v-for="(room, index) in roomArray" :key="index">
-        <RoomCard :room="room" />
+        <RoomCard
+          @redirect-event="
+            (referenceNumber) => $emit('redirect-event', referenceNumber)
+          "
+          :room="room"
+        />
       </v-col>
     </v-row>
     <v-row>
@@ -31,7 +36,6 @@ export default {
   components: { RoomCard },
   data: () => ({
     page: 1,
-
   }),
   methods: {},
   computed: {
@@ -75,8 +79,8 @@ export default {
       deep: true,
       handler: function (newVal) {
         this.page = newVal.currentPage;
-      }
-    }
+      },
+    },
   },
 };
 </script>

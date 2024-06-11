@@ -57,7 +57,7 @@
                 >{{ room.totalRooms }} Rooms in Total</v-chip
               >
               <v-spacer />
-              <v-btn @click="redirect" small color="primary"
+              <v-btn @click="redirect(room.referenceNumber)" small color="primary"
                 >View Details</v-btn
               >
             </v-card-actions>
@@ -69,19 +69,19 @@
 </template>
 
 <script>
-import PriceSlot from '../../slots/PriceSlot.vue';
+import PriceSlot from "../../slots/PriceSlot.vue";
 export default {
   name: "RoomCard",
   props: { room: Object },
   components: {
-    PriceSlot
+    PriceSlot,
   },
   data: () => ({
     hello: "world",
   }),
   methods: {
-    redirect: function () {
-      this.$router.push({ name: "Room Details" });
+    redirect: function (referenceNumber) {
+      this.$emit('redirect-event', referenceNumber);
     },
     appendImagePath: function (path) {
       return `${this.$apiPath}/${path}`;

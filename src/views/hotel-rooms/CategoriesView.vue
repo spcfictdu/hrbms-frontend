@@ -1,7 +1,7 @@
 <template>
   <div class="mt-10">
     <room-type-buttons @input-event="attachType" />
-    <RoomsList v-if="roomCategories" @query-pagination="attachQuery" :roomCategories="roomCategories" />
+    <RoomsList v-if="roomCategories" @redirect-event="redirect" @query-pagination="attachQuery" :roomCategories="roomCategories" />
   </div>
 </template>
 
@@ -29,6 +29,12 @@ export default {
       };
       this.assignParams(object);
     },
+    redirect: function (referenceNumber) {
+      this.$router.push({
+        name: "Room Details",
+        params: { roomCategoryReferenceNumber: referenceNumber },
+      });
+    }
   },
   computed: {
     ...mapState("roomCategories", {

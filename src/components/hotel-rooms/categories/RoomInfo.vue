@@ -39,7 +39,7 @@
           v-for="(amenity, i) in room.amenities"
           :key="i"
           :color="i % 2 === 0 ? 'primary' : 'accentOne'"
-          >{{ amenity }}</v-chip
+          >{{ capitalizeString(amenity) }}</v-chip
         >
       </div>
     </div>
@@ -52,11 +52,11 @@
       >
         <p class="text-overline font-weight-bold">Price Rates</p>
         <p class="text-caption font-weight-regular">
-          February 10, 2024 - March 10, 2024
+          {{ discountDates }}
           <span class="ml-md-2">
-            <v-chip small color="primary" outlined class="text-subtitle-2"
-              >DreamStay Discount</v-chip
-            >
+            <v-chip small color="primary" outlined class="text-subtitle-2">{{
+              discountChip
+            }}</v-chip>
           </span>
         </p>
       </div>
@@ -65,19 +65,26 @@
         dense
         hide-default-footer
         class="price-table"
-        :headers="room.headers"
+        :headers="headers"
         :items="room.prices"
         :items-per-page="5"
+        @click:row="(row) => assignValues(row)"
       ></v-data-table>
+      <div class="mt-2 text-caption grey--text text--darken-2 text-right">*click a row to view its discount range</div>
     </div>
 
     <v-divider class="mb-5 mt-7" />
-
     <div>
-      <p class="text-overline font-weight-bold">Rooms List</p>
+      <div class="d-flex justify-space-between mb-4 mb-md-0">
+        <p class="text-overline font-weight-bold">Rooms List</p>
+        <v-btn icon outlined color="primary"
+          ><v-icon small>mdi-pen-plus</v-icon></v-btn
+        >
+      </div>
+
       <v-row dense>
         <v-col cols="12" v-for="(iter, index) in room.rooms" :key="index">
-          <RoomListCard :room="iter"/>
+          <RoomListCard :room="iter" />
         </v-col>
       </v-row>
     </div>
@@ -96,7 +103,76 @@ export default {
     PriceSlot,
     RoomListCard,
   },
-  data: () => ({}),
+  data: () => ({
+    discountChip: "Regular Rate",
+    discountDates: "",
+    headers: [
+      {
+        text: "Rates (in peso)",
+        value: "rate",
+      },
+      {
+        text: "Sun",
+        value: "sunday",
+      },
+      {
+        text: "Mon",
+        value: "monday",
+      },
+      {
+        text: "Tue",
+        value: "tuesday",
+      },
+      {
+        text: "Wed",
+        value: "wednesday",
+      },
+      {
+        text: "Thu",
+        value: "thursday",
+      },
+      {
+        text: "Fri",
+        value: "friday",
+      },
+      {
+        text: "Sat",
+        value: "saturday",
+      },
+    ],
+  }),
+  methods: {
+    capitalizeString(str) {
+      const lowerCaseString = str.toLowerCase();
+      return lowerCaseString
+        .split(" ")
+        .map((word) => {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(" ");
+    },
+    assignValues: function (rowData) {
+      this.discountChip = rowData.rate;
+      this.discountDates =
+        rowData.startDate && rowData.endDate
+          ? this.formatDate(rowData.startDate, rowData.endDate)
+          : "";
+    },
+    formatDate(start, end) {
+      const formattedDateOne = new Date(start).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+      const formattedDateTwo = new Date(end).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+
+      return `${formattedDateOne} - ${formattedDateTwo}`;
+    },
+  },
 };
 </script>
 

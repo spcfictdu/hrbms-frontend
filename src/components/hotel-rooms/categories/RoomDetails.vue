@@ -2,7 +2,7 @@
   <div>
     <v-row>
       <v-col cols="12" md="8">
-        <room-info :room="room"/>
+        <room-info v-if="category" :room="room" />
       </v-col>
       <v-col cols="12" md="4">
         <room-reservation-form />
@@ -17,95 +17,60 @@ import RoomReservationForm from "./RoomReservationForm.vue";
 export default {
   name: "RoomDetails",
   components: { RoomInfo, RoomReservationForm },
-  data: () => ({
-    room: {
-      name: "Family Rooms",
-      price: 1000,
-      maxOccupancy: 2,
-      description:
-        "Lorem ipsum dolor sit amet consectetur adipisicing elit. Alias, natus quam possimus cumque error itaque odio et ullam suscipit, aperiam fugit numquam temporibus voluptate ducimus. Accusantium odio impedit temporibus eum.",
-      amenities: [
-        "Spectacular views",
-        "Luxurious bedding",
-        "Modern bathroom with toiletries",
-        "Private outdoor space",
-        "Spectacular views",
-        "Luxurious bedding",
-        "Modern bathroom",
-        "Private space",
-      ],
-      headers: [
-        {
-          text: "Rates (in peso)",
-          value: "rate",
-        },
-        {
-          text: "Sun",
-          value: "sunday",
-        },
-        {
-          text: "Mon",
-          value: "monday",
-        },
-        {
-          text: "Tue",
-          value: "tuesday",
-        },
-        {
-          text: "Wed",
-          value: "wednesday",
-        },
-        {
-          text: "Thu",
-          value: "thursday",
-        },
-        {
-          text: "Fri",
-          value: "friday",
-        },
-        {
-          text: "Sat",
-          value: "saturday",
-        },
-      ],
-      prices: [
-        {
-          rate: "Regular rate",
-          sunday: 1000,
-          monday: 1000,
-          tuesday: 1000,
-          wednesday: 1000,
-          thursday: 1000,
-          friday: 1000,
-          saturday: 1000,
-        },
-        {
-          rate: "Special rate",
-          sunday: 700,
-          monday: 700,
-          tuesday: 700,
-          wednesday: 700,
-          thursday: 700,
-          friday: 700,
-          saturday: 700,
-        },
-      ],
-      rooms: [
-        {
-          name: "Room 1",
+  props: {
+    category: Object,
+  },
+  data: () => ({}),
+  computed: {
+    room: function () {
+      const category = this.category;
+      let room = {
+        name: category.name,
+        price: category.price,
+        maxOccupancy: category.capacity,
+        description: category.description,
+        amenities: category.amenities,
+        prices: [
+          {
+            rate: "Regular Rate",
+            sunday: category.rates.regular.sunday,
+            monday: category.rates.regular.monday,
+            tuesday: category.rates.regular.tuesday,
+            wednesday: category.rates.regular.wednesday,
+            thursday: category.rates.regular.thursday,
+            friday: category.rates.regular.friday,
+            saturday: category.rates.regular.saturday,
+            referenceNumber: category.rates.regular.referenceNumber,
+          },
+        ],
+        rooms: category.rooms.map((key) => ({
+          name: key.roomNumber,
           floor: "Floor 1",
-          guest: "Juan Dela Cruz",
-          status: "OCCUPIED",
-        },
-        {
-          name: "Room 2",
-          floor: "Floor 1",
-          guest: "Fernando Poe Jr.",
-          status: "OCCUPIED",
-        },
-      ]
+          guest: key.guest ? key.guest : "None",
+          status: key.status,
+        })),
+      };
+
+      category.rates.special.forEach((key) => {
+        room.prices.push({
+          rate: key.discountName,
+          startDate: key.startDate,
+          endDate: key.endDate,
+          referenceNumber: key.referenceNumber,
+          sunday: key.sunday,
+          monday: key.monday,
+          tuesday: key.tuesday,
+          wednesday: key.wednesday,
+          thursday: key.thursday,
+          friday: key.friday,
+          saturday: key.saturday,
+          referenceNumber: key.referenceNumber,
+        });
+      });
+
+      return room;
     },
-  }),
+  },
 };
 </script>
 
