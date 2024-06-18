@@ -36,15 +36,13 @@
       </div>
     </div>
 
-    <v-divider class="mb-1"/>
+    <v-divider />
 
     <div
       v-if="!$route.meta.hideInputs"
       class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-2"
     >
-      <div
-        class="w-full d-flex align-center order-first order-md-last ml-auto"
-      >
+      <div class="w-full d-flex align-center order-first order-md-last ml-auto">
         <v-text-field
           block
           dense
@@ -58,27 +56,14 @@
           v-model="search"
         />
         <v-btn
-          v-if="$router.currentRoute.meta.name !== 'Room Categories'"
           outlined
           rounded
           color="primary"
           class="d-none d-md-flex"
-          @click="redirect({ name: 'Rooms', route: 'Create Room' })"
+          @click="redirect(addButton.route)"
         >
           <v-icon left>mdi-plus</v-icon>
-          AMENITY
-        </v-btn>
-
-        <v-btn
-          v-else
-          outlined
-          rounded
-          color="primary"
-          class="d-none d-md-flex"
-          @click="redirect({ name: 'Categories', route: 'Create Room' })"
-        >
-          <v-icon left>mdi-plus</v-icon>
-          CATEGORY
+          {{ addButton.name }}
         </v-btn>
 
         <v-btn
@@ -89,7 +74,7 @@
           @click="redirect({ name: 'Categories', route: 'Create Room' })"
           class="d-flex d-md-none"
         >
-          <v-icon left >mdi-plus</v-icon>Category
+          <v-icon left>mdi-plus</v-icon>Category
         </v-btn>
       </div>
 
@@ -109,8 +94,6 @@
         </v-chip>
       </div>
     </div>
-
-    <v-divider class="mt-1"/>
 
     <!-- <div class="d-flex flex-column flex-md-row align-center py-3">
       <div class="chip-wrapper order-last order-md-first">
@@ -204,6 +187,30 @@ export default {
       return data.length > 0
         ? [{ roomType: "All", referenceNumber: "" }, ...data]
         : [];
+    },
+    addButton: function () {
+      const metaName = this.$route.meta.name;
+      let buttonData = {
+        name: null,
+        route: null,
+      };
+      switch (metaName) {
+        case "Amenities":
+          buttonData.name = "Amenity";
+          buttonData.route = {};
+          break;
+        case "Occupied Rooms":
+          buttonData.name = "Room";
+          buttonData.route = { name: "Occupied", route: "Create Room" };
+          break;
+        case "Room Categories":
+          buttonData.name = "Category";
+          buttonData.route = { name: "Categories", route: "Create Room" };
+
+          break;
+        default:
+      }
+      return buttonData;
     },
   },
   methods: {
