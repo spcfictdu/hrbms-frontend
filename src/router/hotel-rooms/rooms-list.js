@@ -17,12 +17,16 @@ export default [
   {
     path: "/hotel-rooms",
     component: HotelRoomsView,
+    meta: {
+      selectedMainNav: "Hotel Rooms",
+    },
     children: [
       // Amenities
       {
         path: "amenities",
         name: "Amenities",
         component: AmenitiesView,
+        props: true,
         meta: {
           name: "Amenities",
         },
@@ -62,6 +66,7 @@ export default [
         component: CreateRoomView,
         meta: {
           name: "Room Categories",
+          hideAddButton: true,
         },
       },
 

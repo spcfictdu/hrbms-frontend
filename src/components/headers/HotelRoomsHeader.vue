@@ -55,27 +55,29 @@
           class="mr-2 ml-md-2 d-none"
           v-model="search"
         />
-        <v-btn
-          outlined
-          rounded
-          color="primary"
-          class="d-none d-md-flex"
-          @click="redirect(addButton.route)"
-        >
-          <v-icon left>mdi-plus</v-icon>
-          {{ addButton.name }}
-        </v-btn>
+        <div v-if="!$route.meta.hideAddButton">
+          <v-btn
+            outlined
+            rounded
+            color="primary"
+            class="d-none d-md-flex"
+            @click="redirect(addButton.route)"
+          >
+            <v-icon left>mdi-plus</v-icon>
+            {{ addButton.name }}
+          </v-btn>
 
-        <v-btn
-          rounded
-          outlined
-          elevation="0"
-          color="primary"
-          @click="redirect({ name: 'Categories', route: 'Create Room' })"
-          class="d-flex d-md-none"
-        >
-          <v-icon left>mdi-plus</v-icon>Category
-        </v-btn>
+          <v-btn
+            rounded
+            outlined
+            elevation="0"
+            color="primary"
+            @click="redirect(addButton.route)"
+            class="d-flex d-md-none"
+          >
+            <v-icon left>mdi-plus</v-icon>{{ addButton.name }}
+          </v-btn>
+        </div>
       </div>
 
       <div
@@ -197,7 +199,7 @@ export default {
       switch (metaName) {
         case "Amenities":
           buttonData.name = "Amenity";
-          buttonData.route = {};
+          buttonData.route = { name: "Amenities", route: "Amenities" };
           break;
         case "Occupied Rooms":
           buttonData.name = "Room";
@@ -206,7 +208,6 @@ export default {
         case "Room Categories":
           buttonData.name = "Category";
           buttonData.route = { name: "Categories", route: "Create Room" };
-
           break;
         default:
       }

@@ -163,15 +163,17 @@ export default {
         childRouteNames: [
           "Amenities",
           "Occupied Rooms",
-          "Categories",
-          "Availability",
+          "Room Categories",
+          // "Availability",
         ],
       },
     ],
   }),
   computed: {
     activeRouteButton: function () {
-      return this.activeButton;
+      return this.activeButton
+        ? this.activeButton
+        : this.$route.meta.selectedMainNav;
     },
   },
 
@@ -180,7 +182,6 @@ export default {
 
     redirect: function (route) {
       this.activeButton = route.name;
-      console.log(route.route);
       return this.$router.push({ name: route.route });
     },
 

@@ -5,12 +5,13 @@ import TransactionView from "@/views/transactions/TransactionView.vue";
 Vue.use(VueRouter);
 
 export default [
-    {
-        path: "/transactions",
-        name: "Transactions",
-        component: TransactionView,
-        meta: {
-            name: "Transactions"
-        }
-    }
-]
+  {
+    path: "/transactions",
+    name: "Transactions",
+    component: TransactionView,
+    meta: {
+      name: "Transactions",
+      selectedMainNav: "Transactions",
+    },
+  },
+];
