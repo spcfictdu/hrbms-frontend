@@ -60,7 +60,7 @@ export default {
       this.$emit("reset-activator");
     },
     deleteButton: function () {
-      this.$emit("delete-guest");
+      this.$emit("delete-request");
     },
   },
   watch: {

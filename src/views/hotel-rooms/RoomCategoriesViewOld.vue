@@ -14,7 +14,7 @@ export default {
     hello: "world",
   }),
   methods: {
-    ...mapActions("roomPrice", ["fetchRoomPrice"]),
+    ...mapActions("roomPrice", ["fetchRoomPrice", "fetchRoomTypePrice"]),
   },
   computed: {
     ...mapState("roomPrice", {

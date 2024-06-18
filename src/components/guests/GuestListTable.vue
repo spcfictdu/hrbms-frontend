@@ -126,7 +126,6 @@ export default {
   }),
   props: {
     guests: {
-      type: Object,
       required: true,
     },
   },
