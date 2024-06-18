@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import CheckCard from "../hotel-rooms/availability/CheckCard.vue";
+import CheckCard from "../hotel-rooms/forms/CheckCard.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "CheckInOutDetails",

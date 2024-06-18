@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import CalendarComponent from "../../components/hotel-rooms/availability/CalendarComponent.vue";
+import CalendarComponent from "../../components/dashboard/CalendarComponent.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "AvailabilityView",
@@ -49,4 +49,4 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped></style>../../components/hotel-rooms/forms/CalendarComponent.vue

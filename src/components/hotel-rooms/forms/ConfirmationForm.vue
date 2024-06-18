@@ -38,7 +38,7 @@
 
 <script>
 import TransactionTemplate from "@/components/form-templates/TransactionTemplate.vue";
-import HeaderBookingSlot from "../../../components/slots/HeaderBookingSlot.vue";
+import HeaderBookingSlot from "../../slots/HeaderBookingSlot.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import GCashImageTransition from "./GCashImageTransition.vue";
@@ -148,7 +148,7 @@ export default {
       };
     },
     showScan() {
-      return this.payload.payment?.paymentType === "GCash" ? true : false;
+      return this.payload.payment?.paymentType === "GCASH" ? true : false;
     },
     cardInformation() {
       const room = this.room ? this.room[0] : null;
@@ -202,6 +202,12 @@ export default {
         }
       },
     },
+    payload: {
+      deep: true,
+      handler: function (newVal) {
+        console.log(newVal);
+      }
+    }
   },
 };
 </script>

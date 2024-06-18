@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import BookingForm from "../../../components/hotel-rooms/availability/BookingForm.vue";
+import BookingForm from "../../../components/hotel-rooms/forms/BookingForm.vue";
 import HotelRoomsHeader from "@/components/headers/HotelRoomsHeader.vue";
 import { mapActions, mapState } from "vuex";
 export default {
@@ -98,3 +98,4 @@ export default {
 </script>
 
 <style scoped></style>
+../../../components/dashboard/BookingForm.vue../../../components/hotel-rooms/forms/BookingForm.vue

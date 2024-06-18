@@ -46,6 +46,9 @@ export default {
       return errors;
     },
   },
+  mounted() {
+    this.emitTransaction();
+  }
 };
 </script>
 

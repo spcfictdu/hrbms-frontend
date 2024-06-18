@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import ConfirmedDetails from "../../../components/hotel-rooms/availability/ConfirmedDetails.vue";
+import ConfirmedDetails from "../../../components/hotel-rooms/forms/ConfirmedDetails.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "CheckInAndOut",
@@ -36,3 +36,4 @@ export default {
 </script>
 
 <style scoped></style>
+../../../components/dashboard/ConfirmedDetails.vue../../../components/hotel-rooms/forms/ConfirmedDetails.vue

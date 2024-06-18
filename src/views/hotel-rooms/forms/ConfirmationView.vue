@@ -10,7 +10,7 @@
 </template>
 
 <script>
-import ConfirmationForm from "../../../components/hotel-rooms/availability/ConfirmationForm.vue";
+import ConfirmationForm from "../../../components/hotel-rooms/forms/ConfirmationForm.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "ConfirmationView",
@@ -43,3 +43,4 @@ export default {
 </script>
 
 <style scoped></style>
+../../../components/dashboard/ConfirmationForm.vue../../../components/hotel-rooms/forms/ConfirmationForm.vue

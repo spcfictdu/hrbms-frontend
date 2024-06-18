@@ -107,7 +107,7 @@ import CheckOutTemplate from "@/components/form-templates/CheckOutTemplate.vue";
 import GuestsTemplate from "@/components/form-templates/GuestsTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
-import GCashImageTransition from "@/components/hotel-rooms/availability/GCashImageTransition.vue";
+import GCashImageTransition from "@/components/hotel-rooms/forms/GCashImageTransition.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "BookingForm",
@@ -250,7 +250,7 @@ export default {
       };
     },
     showScan() {
-      return this.payload.payment?.paymentType === "GCash" ? true : false;
+      return this.payload.payment?.paymentType === "GCASH" ? true : false;
     },
     guestsEnums() {
       return this.room ? this.room[0].extraPersonCapacity : [];

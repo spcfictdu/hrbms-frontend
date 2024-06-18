@@ -4,12 +4,12 @@ import HotelRoomsView from "../../views/hotel-rooms/HotelRoomsView";
 import AmenitiesView from "../../views/hotel-rooms/AmenitiesView";
 import RoomDetailsView from "../../views/hotel-rooms/categories/RoomDetailsView";
 import CategoriesView from "../../views/hotel-rooms/CategoriesView";
-import AvailabilityView from "../../views/hotel-rooms/AvailabilityView";
-import BookingView from "../../views/hotel-rooms/availability/BookingView";
-import ConfirmationView from "../../views/hotel-rooms/availability/ConfirmationView";
-import CheckInAndOutView from "../../views/hotel-rooms/availability/CheckInAndOutView.vue";
 import CreateRoomView from "../../views/hotel-rooms/CreateRoomView.vue";
 import OccupiedRoomsView from "../../views/hotel-rooms/occupied/OccupiedRoomsView.vue";
+// import AvailabilityView from "../../views/hotel-rooms/AvailabilityView";
+import BookingView from "../../views/hotel-rooms/forms/BookingView";
+import ConfirmationView from "../../views/hotel-rooms/forms/ConfirmationView";
+import CheckInAndOutView from "../../views/hotel-rooms/forms/CheckInAndOutView.vue";
 
 Vue.use(VueRouter);
 
@@ -27,6 +27,7 @@ export default [
           name: "Amenities",
         },
       },
+
       // Occupied
       {
         path: "occupied-rooms",
@@ -36,6 +37,7 @@ export default [
           name: "Occupied Rooms",
         },
       },
+
       // Categories
       {
         path: "room-categories",
@@ -62,18 +64,21 @@ export default [
           name: "Room Categories",
         },
       },
+
       // Availability
+      // {
+      //   path: "availability",
+      //   name: "Availability",
+      //   component: AvailabilityView,
+      //   meta: {
+      //     name: "Availability",
+      //     hideInputs: true,
+      //   },
+      // },
+
+      // Transaction Forms
       {
-        path: "availability",
-        name: "Availability",
-        component: AvailabilityView,
-        meta: {
-          name: "Availability",
-          hideInputs: true,
-        },
-      },
-      {
-        path: "availability/booking",
+        path: "booking",
         name: "Booking",
         component: BookingView,
         meta: {
@@ -82,7 +87,7 @@ export default [
         },
       },
       {
-        path: "availability/confirmation/:referenceNumber",
+        path: "confirmation/:referenceNumber",
         name: "Confirmation",
         component: ConfirmationView,
         props: true,
@@ -92,7 +97,7 @@ export default [
         },
       },
       {
-        path: "availability/check-in-out/:referenceNumber",
+        path: "check-in-out/:referenceNumber",
         name: "CheckInOut",
         component: CheckInAndOutView,
         props: true,

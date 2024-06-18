@@ -16,7 +16,7 @@
 
 <script>
 import TitleSlot from "../slots/TitleSlot.vue";
-import TotalBillCard from "../hotel-rooms/availability/TotalBillCard.vue";
+import TotalBillCard from "../hotel-rooms/forms/TotalBillCard.vue";
 export default {
   name: "BookingSummary",
   props: {
@@ -82,3 +82,4 @@ export default {
 </script>
 
 <style scoped></style>
+../dashboard/TotalBillCard.vue../hotel-rooms/forms/TotalBillCard.vue

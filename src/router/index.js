@@ -6,6 +6,7 @@ import roomsList from "./hotel-rooms/rooms-list";
 import guestList from "./guest-list/guest-list";
 import transaction from "./transaction/transaction";
 import authentication from "./authentication/authentication";
+
 Vue.use(VueRouter);
 
 const routes = [
@@ -13,13 +14,14 @@ const routes = [
     path: "/",
     name: "Dashboard",
     component: () =>
-      import(/* webpackChunkName: "index" */ "@/views/dashboard/DashboardView.vue"),
+      import(
+        /* webpackChunkName: "index" */ "@/views/dashboard/DashboardView.vue"
+      ),
   },
-
   ...roomsList,
   ...guestList,
   ...transaction,
-  ...authentication
+  ...authentication,
 ];
 
 const router = new VueRouter({
@@ -29,14 +31,14 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  let loggedIn = auth.user()
+  let loggedIn = auth.user();
   if (!loggedIn && to.name !== "Sign In") {
-    next({ name: "Sign In" })
+    next({ name: "Sign In" });
   } else if (loggedIn && to.name === "Sign In") {
-    return next({name: "Rooms List"})
+    return next({ name: "Rooms List" });
   } else {
-    next()
+    next();
   }
-})
+});
 
 export default router;
