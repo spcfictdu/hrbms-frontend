@@ -7,7 +7,11 @@
     }"
     v-if="guests"
   >
-    <GuestListTable :guests="guests" @query_params="paginationGuestTable"/>
+    <v-alert
+    :value="showAlert"
+    >
+    </v-alert>
+    <GuestListTable :guests="guests" @query_params="paginationGuestTable" />
   </div>
 </template>
 
@@ -17,11 +21,14 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "GuestListView",
   components: { GuestListTable },
+  data: () => ({
+    showAlert: false,
+  }),
   methods: {
     ...mapActions("guest", ["fetchGuests"]),
-    paginationGuestTable: function(queryParams) {
+    paginationGuestTable: function (queryParams) {
       this.fetchGuests(queryParams);
-    }
+    },
   },
   computed: {
     ...mapState("guest", {

@@ -36,7 +36,7 @@
       </div>
     </div>
 
-    <v-divider />
+    <v-divider class="mb-1"/>
 
     <div
       v-if="!$route.meta.hideInputs"
@@ -66,7 +66,7 @@
           @click="redirect({ name: 'Rooms', route: 'Create Room' })"
         >
           <v-icon left>mdi-plus</v-icon>
-          ROOM
+          AMENITY
         </v-btn>
 
         <v-btn
@@ -109,6 +109,8 @@
         </v-chip>
       </div>
     </div>
+
+    <v-divider class="mt-1"/>
 
     <!-- <div class="d-flex flex-column flex-md-row align-center py-3">
       <div class="chip-wrapper order-last order-md-first">
