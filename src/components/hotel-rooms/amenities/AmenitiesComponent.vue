@@ -73,8 +73,8 @@
 </template>
 
 <script>
-import DeleteDialog from "../dialogs/DeleteDialog.vue";
-import EditAmenityDialog from "../dialogs/EditAmenityDialog.vue";
+import DeleteDialog from '@/components/dialogs/DeleteDialog.vue';
+import EditAmenityDialog from '@/components/dialogs/EditAmenityDialog.vue';
 
 export default {
   name: "AmenitiesComponent",
@@ -115,7 +115,7 @@ export default {
     selectedOption: function (option, selectedAmenityRefNum) {
       if (option === "Delete Amenity") {
         this.deleteDialog = true;
-        this.payload.refNum = amenityRefNum;
+        this.payload.refNum = selectedAmenityRefNum;
       } else if (option === "Edit Amenity") {
         this.editDialog = true;
         this.selectedAmenityRefNum = selectedAmenityRefNum;
@@ -149,12 +149,6 @@ export default {
     },
   },
   watch: {
-    payload: {
-      immediate: true,
-      handler: function (newVal) {
-        console.log("payload: ", newVal);
-      },
-    },
     size: {
       immediate: true,
       deep: true,
