@@ -17,7 +17,7 @@
 </template>
 
 <script>
-import AmenitiesComponent from "@/components/amenities/AmenitiesComponent.vue";
+import AmenitiesComponent from "@/components/hotel-rooms/amenities/AmenitiesComponent.vue";
 import { mapActions, mapState } from "vuex";
 
 export default {
