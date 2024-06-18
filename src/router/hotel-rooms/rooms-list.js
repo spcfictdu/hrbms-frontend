@@ -8,7 +8,8 @@ import AvailabilityView from "../../views/hotel-rooms/AvailabilityView";
 import BookingView from "../../views/hotel-rooms/availability/BookingView";
 import ConfirmationView from "../../views/hotel-rooms/availability/ConfirmationView";
 import CheckInAndOutView from "../../views/hotel-rooms/availability/CheckInAndOutView.vue";
-import CreateRoomView from "@/views/hotel-rooms/CreateRoomView.vue";
+import CreateRoomView from "../../views/hotel-rooms/CreateRoomView.vue";
+import OccupiedRoomsView from "../../views/hotel-rooms/occupied/OccupiedRoomsView.vue";
 
 Vue.use(VueRouter);
 
@@ -17,12 +18,22 @@ export default [
     path: "/hotel-rooms",
     component: HotelRoomsView,
     children: [
+      // Amenities
       {
         path: "amenities",
         name: "Amenities",
         component: AmenitiesView,
         meta: {
           name: "Amenities",
+        },
+      },
+      // Occupied
+      {
+        path: "occupied-rooms",
+        name: "Occupied Rooms",
+        component: OccupiedRoomsView,
+        meta: {
+          name: "Occupied Rooms",
         },
       },
       // Categories

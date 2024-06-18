@@ -11,9 +11,9 @@ Vue.use(VueRouter);
 const routes = [
   {
     path: "/",
-    name: "home",
+    name: "Dashboard",
     component: () =>
-      import(/* webpackChunkName: "index" */ "@/views/DashboardView.vue"),
+      import(/* webpackChunkName: "index" */ "@/views/dashboard/DashboardView.vue"),
   },
 
   ...roomsList,

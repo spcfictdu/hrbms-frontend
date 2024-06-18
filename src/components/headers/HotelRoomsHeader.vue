@@ -160,16 +160,16 @@ export default {
       },
       {
         name: "Occupied",
-        route: "Occupied",
+        route: "Occupied Rooms",
       },
       {
         name: "Categories",
         route: "Room Categories",
       },
-      {
-        name: "Availability",
-        route: "Availability",
-      },
+      // {
+      //   name: "Availability",
+      //   route: "Availability",
+      // },
     ],
     // chips: [
     //   "All",

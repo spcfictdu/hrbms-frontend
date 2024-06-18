@@ -35,7 +35,7 @@ export const authentication = {
           status: "SUCCESS",
         });
 
-        this.$router.push({ name: "home" });
+        this.$router.push({ name: "Dashboard" });
       } catch (error) {
         commit("SET_LOGIN_STATUS", {
           message: error.response.data.message,
