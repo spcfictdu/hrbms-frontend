@@ -3,7 +3,7 @@ import Vuex from "vuex";
 import createPersistedState from "vuex-persistedstate";
 
 import { authentication } from "./authentication/authentication";
-import { roomTypeEnum, roomNumberEnum, roomEnum } from "./enums/rooms";
+import { roomTypeEnum, roomNumberEnum, roomEnum, rateTypeEnum } from "./enums/rooms";
 import { transaction } from "./transaction/transaction";
 import { guest } from "./guest/guest";
 import { availabilityCalendar } from "./calendar/availability-calendar";
@@ -29,6 +29,7 @@ export default new Vuex.Store({
     roomTypeEnum,
     roomNumberEnum,
     roomEnum,
+    rateTypeEnum,
   },
   plugins: [
     createPersistedState({

@@ -80,4 +80,27 @@ export const roomEnum = {
   },
 };
 
-
+export const rateTypeEnum = {
+  namespaced: true,
+  state: () => ({
+    rateType: null,
+  }),
+  getters: {},
+  mutations: {
+    SET_RATE_TYPE: (state, data) => (state.rateType = data),
+  },
+  actions: {
+    fetchRateType: function ({ commit }, queryParams = {}) {
+      const url = `enum/room-type-rate`;
+      const queryUrl = functions.query(url, queryParams);
+      return this.$axios
+        .get(queryUrl)
+        .then((response) => {
+          commit("SET_RATE_TYPE", response.data.results);
+        })
+        .catch((error) => {
+          console.error("Error fetching rate type: ", error);
+        });
+    },
+  },
+};

@@ -1,61 +1,57 @@
 <template>
-  <v-dialog max-width="400" v-model="isShow" overlay-opacity="0.2">
-    <v-card class="pa-5" rounded="lg" flat>
-      <!-- <v-card-title class="text-subtitle-1 font-weight-bold text-uppercase pa-0"
-        >Delete</v-card-title
-      > -->
-      <div>
-        <div class="d-flex justify-center ma-3">
-          <v-icon color="warning" size="150">mdi-delete-alert</v-icon>
-        </div>
-        <div :class="title">You are about to delete a record</div>
-        <div class="text-body-2 d-flex justify-center font-weight-medium">
-          This action cannot be undone
-        </div>
-        <div class="text-body-2 d-flex justify-center font-weight-medium">
-          Are you sure?
-        </div>
-        <div class="ma-3">
-          <v-row>
-            <v-col cols="6"
-              ><v-btn text block @click="cancelButton">Cancel</v-btn></v-col
-            >
-            <v-col cols="6"
-              ><v-btn color="warning" block @click="deleteButton" dark
-                >Delete</v-btn
-              ></v-col
-            >
-          </v-row>
-        </div>
-      </div>
+  <v-dialog max-width="450" v-model="dialog" overlay-opacity="0.2">
+    <v-card class="pa-8" rounded="lg" flat>
+      <v-card-title
+        class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0 mb-4"
+        >Delete Confirmation</v-card-title
+      >
+      <p class="py-2 py-sm-4 text-caption text-sm-body-2 font-weight-regular">
+        Permanently delete {{ deleteMeta.targetDeletion }}? This action cannot be undone.
+      </p>
+      <v-card-actions class="pa-0 mt-4">
+        <v-row dense>
+          <v-col cols="12" sm="6" order="last" order-sm="first"
+            ><v-btn text block color="warning" @click="cancelButton"
+              >Cancel</v-btn
+            ></v-col
+          >
+          <v-col cols="12" sm="6"
+            ><v-btn
+              text
+              block
+              color="primary"
+              class="lightBg"
+              @click="deleteButton"
+              >Proceed</v-btn
+            ></v-col
+          >
+        </v-row>
+      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
 <script>
-import { mapActions } from "vuex";
-
 export default {
   name: "DeleteDialog",
   data: () => ({
-    title: "ma-1 text-h6 font-weight-bold d-flex justify-center",
+    dialog: false
   }),
   props: {
     activator: {
       type: Boolean,
       required: true,
     },
+    deleteMeta: {
+      type: Object,
+    }
   },
   computed: {
-    isShow: function () {
-      return this.activator;
-    },
     size: function () {
       return this.$vuetify.breakpoint;
     },
   },
   methods: {
-    ...mapActions("guest", ["deleteGuest"]),
     cancelButton: function () {
       this.$emit("reset-activator");
     },
@@ -64,20 +60,24 @@ export default {
     },
   },
   watch: {
-    size: {
-      immediate: true,
-      deep: true,
-      handler(newVal) {
-        if (newVal.xs) {
-          this.title =
-            "ma-1 text-subtitle-1 font-weight-bold d-flex justify-center";
-        } else {
-          this.title = "ma-1 text-h6 font-weight-bold d-flex justify-center";
-        }
-      },
+    activator: {
+      handler: function (newVal) {
+        this.dialog = newVal;
+      }
     },
+    dialog: {
+      handler: function (newVal) {
+        if (!newVal) {
+          this.$emit("reset-activator");
+        }
+      }
+    }
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.transparent-bg {
+  background-color: transparent !important;
+}
+</style>

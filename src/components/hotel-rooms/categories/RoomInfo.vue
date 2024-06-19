@@ -14,10 +14,28 @@
       </div>
 
       <div class="d-flex">
-        <v-btn icon outlined color="primary"
-          ><v-icon small>mdi-pencil</v-icon></v-btn
-        >
-        <!-- Add Menu here -->
+        <v-menu left offset-x>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn v-on="on" v-bind="attrs" icon outlined color="primary"
+              ><v-icon small>mdi-pencil</v-icon></v-btn
+            >
+          </template>
+          <v-list dense class="py-0">
+            <v-list-item
+              :class="{
+                'menu-border': index < menuItems.length - 1,
+                'warning--text': iter.text === 'Remove category',
+              }"
+              v-for="(iter, index) in menuItems"
+              :key="index"
+              @click="iter.action()"
+            >
+              <v-list-item-title class="text-body-2 font-weight-regular">{{
+                iter.text
+              }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
     </div>
 
@@ -70,10 +88,12 @@
         :items-per-page="5"
         @click:row="(row) => assignValues(row)"
       ></v-data-table>
-      <div class="mt-2 text-caption grey--text text--darken-2 text-right">*click a row to view its discount range</div>
+      <div class="mt-2 text-caption grey--text text--darken-2 text-right">
+        *click a row to view its discount range
+      </div>
     </div>
 
-    <v-divider class="mb-5 mt-7" />
+    <!-- <v-divider class="mb-5 mt-7" />
     <div>
       <div class="d-flex justify-space-between mb-4 mb-md-0">
         <p class="text-overline font-weight-bold">Rooms List</p>
@@ -87,13 +107,25 @@
           <RoomListCard :room="iter" />
         </v-col>
       </v-row>
-    </div>
+    </div> -->
+    <rate-dialog
+      :activator="rateDialog"
+      :rateMeta="rateMeta"
+      @reset-activator="resetActivator"
+    />
+    <delete-dialog
+      :activator="deleteDialog"
+      @reset-activator="resetDeleteActivator"
+      :deleteMeta="deleteMeta"
+    />
   </div>
 </template>
 
 <script>
 import PriceSlot from "../../slots/PriceSlot.vue";
-import RoomListCard from "./RoomListCard.vue";
+// import RoomListCard from "./RoomListCard.vue";
+import RateDialog from "@/components/dialogs/RateDialog.vue";
+import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
 export default {
   name: "RoomInfo",
   props: {
@@ -101,9 +133,25 @@ export default {
   },
   components: {
     PriceSlot,
-    RoomListCard,
+    // RoomListCard,
+    RateDialog,
+    DeleteDialog,
   },
   data: () => ({
+    // Rate Dialog
+    rateDialog: false,
+    rateMeta: {
+      typeOfAction: "",
+      roomType: "",
+      rateType: "",
+      referenceNumber: "",
+    },
+    // Delete Dialog
+    deleteDialog: false,
+    deleteMeta: {
+      targetDeletion: "",
+    },
+    // Miscellaneous
     discountChip: "Regular Rate",
     discountDates: "",
     headers: [
@@ -172,6 +220,57 @@ export default {
 
       return `${formattedDateOne} - ${formattedDateTwo}`;
     },
+    activateDialog: function (meta) {
+      this.rateMeta = meta;
+      this.rateDialog = !this.rateDialog;
+    },
+    resetActivator: function () {
+      this.rateDialog = false;
+    },
+    activateDeleteDialog: function (meta) {
+      this.deleteMeta = meta;
+      this.deleteDialog = !this.deleteDialog;
+    },
+    resetDeleteActivator: function () {
+      this.deleteDialog = false;
+    },
+  },
+  computed: {
+    menuItems: function () {
+      return [
+        {
+          text: "Edit regular rate",
+          action: () => {
+            let meta = {
+              typeOfAction: "EDIT",
+              roomType: this.room.name,
+              rateType: "regular",
+            };
+            this.activateDialog(meta);
+          },
+        },
+        {
+          text: "Edit special rate",
+          action: () => {
+            let meta = {
+              typeOfAction: "EDIT",
+              roomType: this.room.name,
+              rateType: "special",
+            };
+            this.activateDialog(meta);
+          },
+        },
+        {
+          text: "Remove category",
+          action: () => {
+            let meta = {
+              targetDeletion: "category",
+            };
+            this.activateDeleteDialog(meta);
+          },
+        },
+      ];
+    },
   },
 };
 </script>
@@ -179,5 +278,8 @@ export default {
 <style scoped>
 .price-table {
   background-color: transparent;
+}
+.menu-border {
+  border-bottom: 1px solid #e6e2e2;
 }
 </style>
