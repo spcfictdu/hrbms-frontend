@@ -1,7 +1,20 @@
 <template>
   <div class="mt-10">
+    <v-alert
+      :value="isShowAlert"
+      :type="handleAlertType"
+      class="w-full"
+      transition="scroll-y-transition"
+    >
+      {{ categoryStatus.message ?? categoryStatus.message }}
+    </v-alert>
     <room-type-buttons @input-event="attachType" />
-    <RoomsList v-if="roomCategories" @redirect-event="redirect" @query-pagination="attachQuery" :roomCategories="roomCategories" />
+    <RoomsList
+      v-if="roomCategories"
+      @redirect-event="redirect"
+      @query-pagination="attachQuery"
+      :roomCategories="roomCategories"
+    />
   </div>
 </template>
 
@@ -16,7 +29,7 @@ export default {
   mixins: [assignParams],
   components: { RoomsList, RoomTypeButtons },
   data: () => ({
-    hello: "world",
+    isShowAlert: false,
   }),
   methods: {
     ...mapActions("roomCategories", ["fetchRoomCategories"]),
@@ -34,18 +47,43 @@ export default {
         name: "Room Details",
         params: { roomCategoryReferenceNumber: referenceNumber },
       });
-    }
+    },
+    triggerAlert: function (value) {
+      this.isShowAlert = value;
+    },
   },
   computed: {
     ...mapState("roomCategories", {
       roomCategories: "roomCategories",
+      categoryStatus: "categoryStatus",
     }),
+    handleAlertType() {
+      return this.categoryStatus.status !== ""
+        ? this.categoryStatus.status.toLowerCase()
+        : "success";
+    },
   },
   watch: {
     queryParams: {
       deep: true,
       handler: function (newVal) {
         this.fetchRoomCategories(newVal);
+      },
+    },
+    categoryStatus: {
+      immediate: true,
+      deep: true,
+      handler: function (newVal) {
+        if (
+          newVal.status.toLowerCase() === "success" ||
+          newVal.status.toLowerCase() === "error"
+        ) {
+          this.triggerAlert(true);
+          let interval = setInterval(() => {
+            this.triggerAlert(false);
+            clearInterval(interval);
+          }, 3000);
+        }
       },
     },
   },

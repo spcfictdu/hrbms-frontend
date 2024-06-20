@@ -2,10 +2,14 @@
   <div class="mt-10">
     <v-row>
       <v-col cols="12">
-        <RoomImages :images="roomImages"/>
+        <RoomImages :images="roomImages" />
       </v-col>
       <v-col cols="12">
-        <RoomDetails :category="roomCategory" />
+        <RoomDetails
+          :category="roomCategory"
+          @validation-event="assessRequestCall"
+          @delete-event="deleteRequestCategory"
+        />
       </v-col>
     </v-row>
   </div>
@@ -19,15 +23,69 @@ export default {
   name: "RoomDetailsView",
   components: { RoomImages, RoomDetails },
   data: () => ({
-    hello: "world",
     referenceNumber: null,
   }),
   methods: {
-    ...mapActions("roomCategories", ["fetchRoomCategory"]),
+    ...mapActions("roomCategories", [
+      "fetchRoomCategory",
+      "deleteRoomCategory",
+    ]),
+    ...mapActions("roomRates", [
+      "createSpecialRoomRate",
+      "deleteSpecialRoomRate",
+      "updateRegularRoomRate",
+      "updateSpecialRoomRate",
+    ]),
     // API Calls
     fetchRoomCategoryMethod: function () {
       this.referenceNumber = this.$route.params.roomCategoryReferenceNumber;
       this.fetchRoomCategory({
+        roomTypeReferenceNumber: this.referenceNumber,
+      });
+    },
+    assessRequestCall: function (payload) {
+      let newVal = { ...payload };
+
+      if (payload.status === "ADD" && payload.type === "SPECIAL") {
+        // Delete Values
+        delete newVal.status;
+        delete newVal.type;
+
+        this.createSpecialRoomRate({
+          payload: newVal,
+          roomTypeReferenceNumber: this.referenceNumber,
+        });
+      } else if (payload.status === "DELETE" && payload.type === "SPECIAL") {
+        this.deleteSpecialRoomRate({
+          roomTypeReferenceNumber: this.referenceNumber,
+          roomTypeRateReferenceNumber: payload.referenceNumber,
+        });
+      } else if (payload.status === "UPDATE" && payload.type === "REGULAR") {
+        // Delete Values
+        delete newVal.status;
+        delete newVal.type;
+        delete newVal.referenceNumber;
+
+        this.updateRegularRoomRate({
+          roomTypeReferenceNumber: this.referenceNumber,
+          roomTypeRateReferenceNumber: payload.referenceNumber,
+          payload: newVal,
+        });
+      } else if (payload.status === "UPDATE" && payload.type === "SPECIAL") {
+        // Delete Values
+        delete newVal.status;
+        delete newVal.type;
+        delete newVal.referenceNumber;
+
+        this.updateSpecialRoomRate({
+          roomTypeReferenceNumber: this.referenceNumber,
+          roomTypeRateReferenceNumber: payload.referenceNumber,
+          payload: newVal,
+        });
+      }
+    },
+    deleteRequestCategory: function () {
+      this.deleteRoomCategory({
         roomTypeReferenceNumber: this.referenceNumber,
       });
     },
@@ -38,7 +96,7 @@ export default {
     }),
     roomImages: function () {
       return this.roomCategory ? this.roomCategory.images : [];
-    }
+    },
   },
   created() {
     this.fetchRoomCategoryMethod();

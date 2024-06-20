@@ -19,11 +19,16 @@ export const roomCategories = {
   state: () => ({
     roomCategories: null,
     roomCategory: null,
+    categoryStatus: {
+      message: "",
+      status: "", //SUCCESS, ERROR
+    },
   }),
   getters: {},
   mutations: {
     SET_ROOM_CATEGORIES: (state, data) => (state.roomCategories = data),
     SET_ROOM_CATEGORY: (state, data) => (state.roomCategory = data),
+    SET_CATEGORY_STATUS: (state, data) => (state.categoryStatus = data),
   },
   actions: {
     fetchRoomCategories: function ({ commit }, queryParams = {}) {
@@ -47,6 +52,29 @@ export const roomCategories = {
         })
         .catch((error) => {
           console.error("Error fetching room category: ", error);
+        });
+    },
+    deleteRoomCategory: function (
+      { commit, _ },
+      { roomTypeReferenceNumber }
+    ) {
+      const url = `room-type/delete/${roomTypeReferenceNumber}`;
+      return this.$axios
+        .delete(url)
+        .then((response) => {
+          this.$router.push({ name: "Room Categories" });
+          commit("SET_CATEGORY_STATUS", {
+            message: response.data.message,
+            status: "SUCCESS",
+          });
+          // dispatch("fetchRoomCategories");
+        })
+        .catch((error) => {
+          console.error("Error deleting room category: ", error);
+          commit("SET_CATEGORY_STATUS", {
+            message: error.response.data.message,
+            status: "ERROR",
+          });
         });
     },
   },

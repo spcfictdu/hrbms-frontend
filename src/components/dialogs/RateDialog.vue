@@ -4,14 +4,17 @@
       <v-card class="pa-8" rounded="lg" flat>
         <v-card-title
           class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0 mb-4"
-          >{{ rateMeta.typeOfAction }} {{ rateMeta.roomType }} Room's
+          >{{ rateMeta.typeOfAction }} {{ rateMeta.roomType }} Rooms
           {{ rateMeta.rateType }} Rate
         </v-card-title>
 
         <!-- Special Rate -->
-        <div v-if="rateMeta.rateType === 'special'">
+        <div v-if="rateMeta.rateType === permissions.specialRateInputs">
           <v-row>
-            <v-col cols="12">
+            <v-col
+              cols="12"
+              v-if="permissions.specialRates.includes(rateMeta.typeOfAction)"
+            >
               <label-slot>
                 <template #label> Special Rates </template>
               </label-slot>
@@ -21,6 +24,7 @@
                 dense
                 :items="specialRateTypes"
                 item-text="referenceNumber"
+                v-model="specialRateSelection"
               >
                 <template #item="{ item }">
                   <div>
@@ -41,6 +45,8 @@
                 outlined
                 dense
                 v-model="discountName"
+                :readonly="readOnlyLock"
+                :rules="rules.discountName"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6">
@@ -57,19 +63,21 @@
               >
                 <template #activator="{ on, attrs }">
                   <v-text-field
-                    v-model="startDate"
+                    :value="formatDate(startDate)"
                     v-on="on"
                     v-bind="attrs"
                     outlined
                     dense
                     readonly
                     hide-details="auto"
+                    :rules="rules.startDate"
                   ></v-text-field>
                 </template>
                 <v-date-picker
                   v-model="startDate"
                   :min="minDate"
                   @input="menuStart = false"
+                  :readonly="readOnlyLock"
                 ></v-date-picker>
               </v-menu>
             </v-col>
@@ -87,19 +95,21 @@
               >
                 <template #activator="{ on, attrs }">
                   <v-text-field
-                    v-model="endDate"
+                    :value="formatDate(endDate)"
                     v-on="on"
                     v-bind="attrs"
                     outlined
                     dense
                     readonly
                     hide-details="auto"
+                    :rules="rules.endDate"
                   ></v-text-field>
                 </template>
                 <v-date-picker
                   v-model="endDate"
                   :min="minDate"
                   @input="menuEnd = false"
+                  :readonly="readOnlyLock"
                 ></v-date-picker>
               </v-menu>
             </v-col>
@@ -141,26 +151,14 @@
                 dense
                 hide-details="auto"
                 prefix="₱"
-                v-model="day.rate"
+                v-model.number="day.rate"
                 type="number"
+                :rules="rules.rate"
+                :readonly="readOnlyLock"
             /></v-col>
           </v-row>
         </div>
 
-        <!-- <div>
-          <v-row v-for="(day, index) in days" :key="index" class="ma-3">
-            <v-col cols="12">
-              <span class="text-body-1 ml-1">{{ day.day }}</span>
-              <v-text-field
-                outlined
-                dense
-                hide-details="auto"
-                prefix="₱"
-                v-model="day.rate"
-                type="number"
-            /></v-col>
-          </v-row>
-        </div> -->
         <v-card-actions class="mt-4 pa-0">
           <v-row dense>
             <v-col cols="12" sm="6" order="last" order-sm="first">
@@ -169,8 +167,13 @@
               >
             </v-col>
             <v-col cols="12" sm="6">
-              <v-btn block text color="primary" class="lightBg"
-                >Save Changes</v-btn
+              <v-btn
+                block
+                text
+                color="primary"
+                class="lightBg"
+                @click="submitButton"
+                >{{ titleForSubmitButton }}</v-btn
               >
             </v-col>
           </v-row>
@@ -182,6 +185,7 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
+import { format, parseISO } from "date-fns";
 import LabelSlot from "../slots/LabelSlot.vue";
 export default {
   name: "RateDialog",
@@ -198,17 +202,25 @@ export default {
     },
   },
   data: () => ({
-    dialog: null,
+    // Meta
+    dialog: false,
     minDate: new Date().toISOString().slice(0, 10),
+    menuStart: false,
+    menuEnd: false,
+    permissions: {
+      specialRates: ["DELETE", "EDIT"],
+      specialRateInputs: "special",
+    },
+
+    // Special and Regular Rate Selection
+    specialRateSelection: null,
+    localRateTypes: null,
+
+    // Local Payload
+    referenceNumber: null,
     discountName: null,
     startDate: null,
     endDate: null,
-    menuStart: false,
-    menuEnd: false,
-    payload: {
-      rates: {},
-    },
-    small: false,
     rates: [
       {
         day: "Sunday",
@@ -248,134 +260,214 @@ export default {
       return this.$vuetify.breakpoint;
     },
     specialRateTypes: function () {
-      return this.rateMeta.rateType === "special" && this.rateType
+      const meta = this.rateMeta;
+      const allowedTypeOfAction = ["EDIT", "DELETE"];
+      return meta.rateType === "special" &&
+        allowedTypeOfAction.includes(meta.typeOfAction) &&
+        this.rateType
         ? this.rateType.map((key) => ({
             discountName: key.discountName,
             referenceNumber: key.referenceNumber,
           }))
         : [];
     },
-    // validate() {
-    //   const errors = {};
-    //   errors.discountName = [(v) => !!v || "Discount Name is required"];
-    //   errors.startDate = [(v) => !!v || "Starting Discount Date is required"];
-    //   errors.endDate = [(v) => !!v || "Last Discount Date is required"];
-    //   errors.day.rate = [(v) => !!v || "Rate for this day is required"];
-    //   return errors;
-    // },
+    readOnlyLock: function () {
+      const meta = this.rateMeta;
+      return meta.typeOfAction === "DELETE" && meta.rateType === "special"
+        ? true
+        : false;
+    },
+    titleForSubmitButton: function () {
+      const meta = this.rateMeta;
+      const allowedTypeOfAction = ["EDIT", "ADD"];
+      return allowedTypeOfAction.includes(meta.typeOfAction)
+        ? "Save Changes"
+        : "Proceed";
+    },
+    rules() {
+      let errors = {};
+      const allowedTypeOfAction = ["EDIT", "ADD"];
+
+      if (allowedTypeOfAction.includes(this.rateMeta.typeOfAction)) {
+        errors.discountName = [(v) => !!v || "Discount name is required"];
+        errors.startDate = [(v) => !!v || "Starting discount date is required"];
+        errors.endDate = [(v) => !!v || "Ending discount date is required"];
+        errors.rate = [(v) => !!v || "Rate is required"];
+      }
+
+      return errors;
+    },
   },
   methods: {
     ...mapActions("rateTypeEnum", ["fetchRateType"]),
+    formatDate: function (date) {
+      return date ? format(parseISO(date), "MMMM dd, yyyy") : null;
+    },
     cancelButton: function () {
-      this.payload.rates = {};
       this.$emit("reset-activator");
+      this.resetRateTypes();
     },
     requestRateTypes: function (meta) {
-      if (meta.typeOfAction === "EDIT") {
+      const allowedTypeOfAction = ["EDIT", "DELETE"];
+      if (allowedTypeOfAction.includes(meta.typeOfAction)) {
         this.fetchRateType({
           roomType: meta.roomType,
           rateType: meta.rateType,
         });
       }
     },
-    assignRateTypes: function (rateType) {
-      const pricingData = rateType[0];
+    assignRateTypes: function () {
+      let pricingData = null;
 
+      if (this.rateMeta.rateType === "regular") {
+        pricingData = this.localRateTypes[0];
+        this.referenceNumber = pricingData.referenceNumber;
+      } else {
+        pricingData = this.localRateTypes.find(
+          (key) => key.referenceNumber === this.specialRateSelection
+        );
+
+        this.discountName = pricingData.discountName;
+        this.startDate = pricingData.startDate;
+        this.endDate = pricingData.endDate;
+        this.referenceNumber = pricingData.referenceNumber;
+      }
+
+      if (pricingData) {
+        this.rates.forEach((key) => {
+          switch (key.day) {
+            case "Sunday":
+              key.rate = pricingData.sunday;
+              break;
+            case "Monday":
+              key.rate = pricingData.monday;
+              break;
+            case "Tuesday":
+              key.rate = pricingData.tuesday;
+              break;
+            case "Wednesday":
+              key.rate = pricingData.wednesday;
+              break;
+            case "Thursday":
+              key.rate = pricingData.thursday;
+              break;
+            case "Friday":
+              key.rate = pricingData.friday;
+              break;
+            case "Saturday":
+              key.rate = pricingData.saturday;
+              break;
+          }
+        });
+      }
+    },
+    resetRateTypes: function () {
+      this.rates.forEach((key) => {
+        key.rate = null;
+      });
+
+      this.specialRateSelection = null;
+      this.discountName = null;
+      this.startDate = null;
+      this.endDate = null;
+
+      this.$refs.form.reset();
+    },
+    reassignRateTypes: function () {
+      let newVal = {};
       this.rates.forEach((key) => {
         switch (key.day) {
           case "Sunday":
-            key.rate = pricingData.sunday;
+            newVal.sunday = key.rate;
             break;
           case "Monday":
-            key.rate = pricingData.monday;
+            newVal.monday = key.rate;
             break;
           case "Tuesday":
-            key.rate = pricingData.tuesday;
+            newVal.tuesday = key.rate;
             break;
           case "Wednesday":
-            key.rate = pricingData.wednesday;
+            newVal.wednesday = key.rate;
             break;
           case "Thursday":
-            key.rate = pricingData.thursday;
+            newVal.thursday = key.rate;
             break;
           case "Friday":
-            key.rate = pricingData.friday;
+            newVal.friday = key.rate;
             break;
           case "Saturday":
-            key.rate = pricingData.saturday;
+            newVal.saturday = key.rate;
             break;
         }
       });
+      return newVal;
     },
-    // submitButton: function () {
-    //   if (this.$refs.editRateForm.validate()) {
-    //     if (this.regularFilled.editRateType === "SPECIAL") {
-    //       Object.assign(this.payload, { discountName: this.discountName });
-    //       Object.assign(this.payload, { startDate: this.startDate });
-    //       Object.assign(this.payload, { endDate: this.endDate });
-    //     }
+    submitButton: function () {
+      const meta = this.rateMeta;
+      const discountName = this.discountName;
+      const startDate = this.startDate;
+      const endDate = this.endDate;
+      const referenceNumber = this.referenceNumber;
 
-    //     this.days.forEach((item) => {
-    //       switch (item.day) {
-    //         case "Sunday":
-    //           Object.assign(this.payload.rates, { sunday: item.rate });
-    //         case "Monday":
-    //           Object.assign(this.payload.rates, { monday: item.rate });
-    //         case "Tuesday":
-    //           Object.assign(this.payload.rates, { tuesday: item.rate });
-    //         case "Wednesday":
-    //           Object.assign(this.payload.rates, { wednesday: item.rate });
-    //         case "Thursday":
-    //           Object.assign(this.payload.rates, { thursday: item.rate });
-    //         case "Friday":
-    //           Object.assign(this.payload.rates, { friday: item.rate });
-    //         case "Saturday":
-    //           Object.assign(this.payload.rates, { saturday: item.rate });
-    //         default:
-    //           return null;
-    //       }
-    //     });
+      let payload = {};
+      this.$refs.form.validate();
 
-    //     if (this.regularFilled.editRateType === "REGULAR") {
-    //       this.updateRegularRate({
-    //         data: this.payload,
-    //         regularRefNum: this.regularFilled.regurlarRateRefNum,
-    //         roomTypeRefNum: this.regularFilled.roomRefNum,
-    //       })
-    //         .then(() => {
-    //           this.$refs.editRateForm.reset();
-    //         })
-    //         .catch((error) => {
-    //           console.error("Error updating regular rates: ", error);
-    //         })
-    //         .finally(() => {
-    //           this.$emit("reset-activator");
-    //         });
-    //     } else {
-    //       this.updateSpecialRate({
-    //         data: this.payload,
-    //         specialRefNum: this.regularFilled.specialRateRefNum,
-    //         roomTypeRefNum: this.regularFilled.roomRefNum,
-    //       })
-    //         .then(() => {
-    //           this.$refs.editRateForm.resetValidation();
-    //           this.$refs.editRateForm.reset();
-    //         })
-    //         .catch((error) => {
-    //           console.error("Error updating special rates: ", error);
-    //         })
-    //         .finally(() => {
-    //           this.$emit("reset-activator");
-    //         });
-    //     }
-    //   }
-    // },
+      if (this.$refs.form.validate()) {
+        if (meta.typeOfAction === "ADD" && meta.rateType === "special") {
+          payload = {
+            status: "ADD",
+            type: "SPECIAL",
+            roomType: meta.roomType,
+            discountName: discountName,
+            startDate: startDate,
+            endDate: endDate,
+            rates: this.reassignRateTypes(),
+          };
+        } else if (
+          meta.typeOfAction === "DELETE" &&
+          meta.rateType === "special"
+        ) {
+          payload = {
+            status: "DELETE",
+            type: "SPECIAL",
+            referenceNumber: referenceNumber,
+          };
+        } else if (
+          meta.typeOfAction === "EDIT" &&
+          meta.rateType === "regular"
+        ) {
+          payload = {
+            status: "UPDATE",
+            type: "REGULAR",
+            referenceNumber: referenceNumber,
+            rates: this.reassignRateTypes(),
+          };
+        } else if (
+          meta.typeOfAction === "EDIT" &&
+          meta.rateType === "special"
+        ) {
+          payload = {
+            status: "UPDATE",
+            type: "SPECIAL",
+            referenceNumber: referenceNumber,
+            discountName: discountName,
+            startDate: startDate,
+            endDate: endDate,
+            rates: this.reassignRateTypes(),
+          };
+        }
+        this.$emit("validation-event", payload);
+        this.dialog = false;
+      }
+    },
   },
   watch: {
     dialog: {
       handler: function (newVal) {
         if (!newVal) {
           this.$emit("reset-activator");
+        } else {
+          this.resetRateTypes();
         }
       },
     },
@@ -392,12 +484,16 @@ export default {
     rateType: {
       deep: true,
       handler: function (newVal) {
-        this.assignRateTypes(newVal);
+        this.localRateTypes = newVal;
+        this.assignRateTypes();
       },
     },
-    specialRateTypes: {
+    specialRateSelection: {
+      deep: true,
       handler: function (newVal) {
-        console.log(newVal);
+        if (newVal) {
+          this.assignRateTypes();
+        }
       },
     },
   },

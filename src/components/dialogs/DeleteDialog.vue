@@ -56,7 +56,7 @@ export default {
       this.$emit("reset-activator");
     },
     deleteButton: function () {
-      this.$emit("delete-request");
+      this.$emit("delete-event");
     },
   },
   watch: {

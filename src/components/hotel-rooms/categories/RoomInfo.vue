@@ -24,7 +24,7 @@
             <v-list-item
               :class="{
                 'menu-border': index < menuItems.length - 1,
-                'warning--text': iter.text === 'Remove category',
+                'warning--text': iter.text.includes('Remove'),
               }"
               v-for="(iter, index) in menuItems"
               :key="index"
@@ -66,9 +66,10 @@
 
     <div>
       <div
-        class="d-flex flex-md-row flex-column justify-md-space-between align-md-center"
+        class="d-flex flex-sm-row flex-column justify-sm-space-between align-sm-center mb-4"
       >
-        <p class="text-overline font-weight-bold">Price Rates</p>
+        <p class="mb-0 text-overline font-weight-bold">Price Rates</p>
+
         <p class="text-caption font-weight-regular">
           {{ discountDates }}
           <span class="ml-md-2">
@@ -87,9 +88,40 @@
         :items="room.prices"
         :items-per-page="5"
         @click:row="(row) => assignValues(row)"
+        :options="{ page: page }"
       ></v-data-table>
-      <div class="mt-2 text-caption grey--text text--darken-2 text-right">
-        *click a row to view its discount range
+      <div
+        class="mt-2"
+        :class="{
+          'd-flex justify-space-between align-center': room.prices.length > 5,
+        }"
+      >
+        <div v-if="room.prices.length > 5">
+          <v-btn
+            class="mr-4"
+            :disabled="isFirstPage"
+            @click="prev()"
+            fab
+            text
+            x-small
+            color="grey darken-2"
+          >
+            <v-icon> mdi-chevron-left </v-icon>
+          </v-btn>
+          <v-btn
+            :disabled="isLastPage"
+            @click="next()"
+            fab
+            text
+            x-small
+            color="grey darken-2"
+          >
+            <v-icon> mdi-chevron-right </v-icon>
+          </v-btn>
+        </div>
+        <div class="text-caption grey--text text--darken-2 text-right">
+          *click a row to view its discount range
+        </div>
       </div>
     </div>
 
@@ -112,11 +144,13 @@
       :activator="rateDialog"
       :rateMeta="rateMeta"
       @reset-activator="resetActivator"
+      @validation-event="(e) => $emit('validation-event', e)"
     />
     <delete-dialog
       :activator="deleteDialog"
       @reset-activator="resetDeleteActivator"
       :deleteMeta="deleteMeta"
+      @delete-event="$emit('delete-event')"
     />
   </div>
 </template>
@@ -152,12 +186,14 @@ export default {
       targetDeletion: "",
     },
     // Miscellaneous
+    page: 1,
     discountChip: "Regular Rate",
     discountDates: "",
     headers: [
       {
         text: "Rates (in peso)",
         value: "rate",
+        width: "120",
       },
       {
         text: "Sun",
@@ -234,10 +270,36 @@ export default {
     resetDeleteActivator: function () {
       this.deleteDialog = false;
     },
+    next: function () {
+      this.page++;
+    },
+    prev: function () {
+      this.page--;
+    },
   },
   computed: {
+    numberOfPages: function () {
+      return this.room ? Math.ceil(this.room.prices.length / 5) : 0;
+    },
+    isLastPage: function () {
+      return this.numberOfPages === 1 || this.page === this.numberOfPages;
+    },
+    isFirstPage: function () {
+      return this.numberOfPages === 1 || this.page === 1;
+    },
     menuItems: function () {
       return [
+        {
+          text: "Add special rate",
+          action: () => {
+            let meta = {
+              typeOfAction: "ADD",
+              roomType: this.room.name,
+              rateType: "special",
+            };
+            this.activateDialog(meta);
+          },
+        },
         {
           text: "Edit regular rate",
           action: () => {
@@ -254,6 +316,17 @@ export default {
           action: () => {
             let meta = {
               typeOfAction: "EDIT",
+              roomType: this.room.name,
+              rateType: "special",
+            };
+            this.activateDialog(meta);
+          },
+        },
+        {
+          text: "Remove rate",
+          action: () => {
+            let meta = {
+              typeOfAction: "DELETE",
               roomType: this.room.name,
               rateType: "special",
             };
