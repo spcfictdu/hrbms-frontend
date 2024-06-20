@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-card elevation="0" class="sign-in-card mx-auto">
+    <v-card elevation="0" class="sign-in-card ma-auto">
       <v-avatar size="128" class="mt-n16 fcpc-logo">
         <v-img src="../../assets/FCPCLogo2.jpg" />
       </v-avatar>

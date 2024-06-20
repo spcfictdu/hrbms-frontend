@@ -3,6 +3,7 @@
     <CreateRoomForm
       @validation-event="createRequestCategory"
       :filledCategory="roomCategory"
+      :meta="meta"
     />
   </div>
 </template>
@@ -36,7 +37,7 @@ export default {
       } else {
         // For Creation
         this.referenceNumber = null;
-        this.meta.status = "ADD"
+        this.meta.status = "NEW"
       }
     },
     fetchRequestCategory: function (referenceNumber) {

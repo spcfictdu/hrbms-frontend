@@ -2,23 +2,27 @@
   <v-row>
     <v-col cols="12" md="5">
       <div class="room-large mb-2">
-        <v-img class="room-images lightBg" height="300" :src="imagesUrl[0]" />
+        <v-img
+          class="room-images lightBg"
+          height="300"
+          :src="imagesUrlPath[0]"
+        />
       </div>
       <div class="small-images-wrapper">
         <v-img
           class="room-images room-small lightBg"
           height="100"
-          :src="imagesUrl[1]"
+          :src="imagesUrlPath[1]"
         />
         <v-img
           class="room-images room-small lightBg"
           height="100"
-          :src="imagesUrl[2]"
+          :src="imagesUrlPath[2]"
         />
         <v-img
           class="room-images room-small lightBg"
           height="100"
-          :src="imagesUrl[3]"
+          :src="imagesUrlPath[3]"
         />
       </div>
     </v-col>
@@ -26,7 +30,9 @@
       <v-form lazy-validation ref="form">
         <div class="d-flex align-start justify-space-between mb-4 mb-md-0">
           <div>
-            <p class="text-h6 font-weight-bold">NEW ROOM CATEGORY</p>
+            <p class="text-h6 font-weight-bold">
+              {{ meta.status }} ROOM CATEGORY
+            </p>
           </div>
 
           <div class="d-none d-md-flex">
@@ -167,11 +173,12 @@
               :rules="rules.images"
               outlined
               dense
+              accept="image/*"
               @change="handleImageUpload"
             />
           </v-col>
 
-          <v-col cols="12" v-if="meta === 'ADD'">
+          <v-col cols="12" v-if="meta.status === 'NEW'">
             <v-divider />
             <title-slot>
               <template v-slot:title>Pricing</template>
@@ -290,23 +297,45 @@ export default {
       const rates = this.rates;
 
       let payload = {};
+      const meta = this.meta;
 
       this.$refs.form.validate();
 
       if (this.$refs.form.validate()) {
-        payload = {
-          name: category,
-          description: description,
-          bedSize: bedSize,
-          propertySize: propertySize,
-          capacity: maxOccupancy,
-          isNonSmoking: nonSmoking,
-          balconyOrTerrace: balconyOrTerrace,
-          amenities: amenities,
-          rates: this.reassignRateTypes(rates),
-          images: images,
-        };
-        this.$emit("validation-event", payload);
+        if (meta.status === "NEW") {
+          payload = {
+            name: category,
+            description: description,
+            bedSize: bedSize,
+            propertySize: propertySize,
+            capacity: maxOccupancy,
+            isNonSmoking: nonSmoking,
+            balconyOrTerrace: balconyOrTerrace,
+            amenities: amenities,
+            rates: this.reassignRateTypes(rates),
+            images: images,
+          };
+        } else if (meta.status === "UPDATE") {
+          payload = {
+            name: category,
+            description: description,
+            bedSize: bedSize,
+            propertySize: propertySize,
+            capacity: maxOccupancy,
+            isNonSmoking: nonSmoking,
+            balconyOrTerrace: balconyOrTerrace,
+            amenities: {
+              delete: this.amenityMutation(amenities).deleted,
+              add: this.amenityMutation(amenities).added,
+            },
+            images: {
+              delete: [],
+              add: [], // Files
+            },
+          };
+          console.log(payload);
+        }
+        // this.$emit("validation-event", payload);
       }
     },
     assignCategoryValues: function (newVal) {
@@ -318,6 +347,8 @@ export default {
       this.nonSmoking = newVal.IsNonSmoking;
       this.balconyOrTerrace = newVal.balconyOrTerrace;
       this.amenities = newVal.amenities;
+      this.imagesUrl = newVal.images;
+      this.images = newVal.images;
     },
     reassignRateTypes: function () {
       let newVal = {};
@@ -348,11 +379,26 @@ export default {
       });
       return newVal;
     },
+    amenityMutation: function (amenities) {
+      const oldVal = this.filledCategory.amenities;
+      const added = amenities.filter((item) => !oldVal.includes(item));
+      const deleted = oldVal.filter((item) => !amenities.includes(item));
+
+      return {
+        added: added,
+        deleted: deleted,
+      };
+    },
   },
   computed: {
     ...mapState("amenities", {
       amenitiesEnum: "amenities",
     }),
+    imagesUrlPath: function () {
+      return this.meta.status === "NEW"
+        ? this.imagesUrl
+        : this.imagesUrl.map((key) => `${this.$apiPath}/${key}`);
+    },
     rules: function () {
       let errors = {};
       errors.name = [(v) => !!v || "Category name is required"];
@@ -361,7 +407,10 @@ export default {
       errors.bedSize = [(v) => !!v || "Bed size is required"];
       errors.propertySize = [(v) => !!v || "Property size is required"];
       errors.amenities = [(v) => !!v.length > 0 || "Amenities is required"];
-      errors.images = [(v) => !!v || "Images is required"];
+      errors.images = [
+        (v) => !!v || "Images is required",
+        (v) => (v && v.length === 4) || "Four images are required",
+      ];
       errors.rate = [(v) => !!v || "Required"];
       return errors;
     },
