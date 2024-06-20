@@ -81,9 +81,9 @@ export default {
         if (newVal.status !== "") {
           this.status = newVal.status;
           this.triggerAlert(true);
-          let interval = setInterval(() => {
+          setTimeout(() => {
             this.triggerAlert(false);
-            clearInterval(interval);
+            newVal.status = "";
           }, 3000);
         }
       },
