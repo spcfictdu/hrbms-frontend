@@ -61,7 +61,7 @@
             rounded
             color="primary"
             class="d-none d-md-flex"
-            @click="redirect(addButton.route)"
+            @click="buttonFunction(addButton.route)"
           >
             <v-icon left>mdi-plus</v-icon>
             {{ addButton.name }}
@@ -72,7 +72,7 @@
             outlined
             elevation="0"
             color="primary"
-            @click="redirect(addButton.route)"
+            @click="buttonFunction(addButton.route)"
             class="d-flex d-md-none"
           >
             <v-icon left>mdi-plus</v-icon>{{ addButton.name }}
@@ -131,6 +131,9 @@
 
 <script>
 import { assignParams } from "@/mixins/FormattingFunctions";
+import { mapActions } from "vuex";
+
+mapActions;
 export default {
   name: "HotelRoomsHeader",
   mixins: [assignParams],
@@ -215,9 +218,25 @@ export default {
     },
   },
   methods: {
+    ...mapActions("amenities", ["triggerAmenityDialog"]),
     redirect: function (route) {
       this.activeButton = route.name;
+
+      // if (route.name === "Amenities") {
+      //   this.triggerAmenityDialog(true);
+      // }
+
       return this.$router.push({ name: route.route });
+    },
+    buttonFunction: function (route) {
+      if (route.name === "Categories") {
+        this.activeButton = route.name;
+        return this.$router.push({ name: route.route });
+      }
+
+      if (route.name === "Amenities") {
+        this.triggerAmenityDialog(true);
+      }
     },
     activateChip: function (chip) {
       this.activeChip = chip;

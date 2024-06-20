@@ -1,10 +1,10 @@
 <template>
-  <v-dialog v-model="isShow" max-width="600" overlay-opacity="0.2">
-    <v-form ref="editAmenityForm">
+  <v-dialog v-model="dialog" max-width="600" overlay-opacity="0.2">
+    <v-form ref="amenityForm">
       <v-card class="pa-8" rounded="lg" flat>
         <v-card-title
           class="transparent-bg text-subtitle-1 font-weight-bold text-uppercase pa-0"
-          >Edit Amenity</v-card-title
+          >{{ addAmenity ? "Add Amenity" : "Edit Amenity" }}</v-card-title
         >
         <div class="my-8">
           <div class="text-caption ml-1 mb-1">Amenity Name</div>
@@ -49,20 +49,22 @@
 
 <script>
 export default {
-  name: "EditAmenityDialog",
+  name: "AmenityDialog",
   data: () => ({
     amenityName: "",
+    dialog: false,
   }),
   props: {
     activator: {
       type: Boolean,
       required: true,
     },
+    addAmenity: {
+      type: Boolean,
+      required: true,
+    },
   },
   computed: {
-    isShow: function () {
-      return this.activator;
-    },
     validate() {
       const errors = {};
       errors.amenityName = [(v) => !!v || "Amenity Name is required"];
@@ -71,15 +73,35 @@ export default {
   },
   methods: {
     cancelButton: function () {
-      this.$refs.editAmenityForm.reset();
+      this.$refs.amenityForm.reset();
       this.$emit("reset-activator");
     },
     submitButton: function () {
-      if (this.$refs.editAmenityForm.validate()) {
-        this.$emit("update-request", this.amenityName);
-        this.$refs.editAmenityForm.reset();
+      if (this.$refs.amenityForm.validate()) {
+        if (!this.addAmenity) {
+          this.$emit("update-request", this.amenityName);
+        } else {
+          this.$emit("add-request", this.amenityName);
+        }
+        this.$refs.amenityForm.reset();
         this.amenityName = "";
       }
+    },
+  },
+  watch: {
+    activator: {
+      deep: true,
+      handler: function (value) {
+        this.dialog = value;
+      },
+    },
+    dialog: {
+      deep: true,
+      handler: function (value) {
+        if (!value) {
+          this.$emit("reset-activator");
+        }
+      },
     },
   },
 };

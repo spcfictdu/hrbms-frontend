@@ -15,7 +15,6 @@
           :right="isLarge"
           rounded
           :max-width="menuWidth"
-          :nudge-bottom="nudgeBottom"
         >
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -37,52 +36,55 @@
               {{ amenity.name }}
             </v-btn>
           </template>
-          <v-list dense>
-            <v-list-item-group>
-              <v-list-item v-for="(option, index) in options" :key="index">
-                <v-list-item-content
-                  class="pa-0"
-                  :class="index < options.length - 1 ? 'mt-2' : 'mt-0'"
-                >
-                  <v-list-item-title
-                    class="text-subtitle-2"
-                    :class="itemColor(option)"
-                    @click="selectedOption(option, amenity.referenceNumber)"
-                  >
-                    {{ option }}
-                  </v-list-item-title>
-                  <v-divider v-if="index < options.length - 1" class="mt-3" />
-                </v-list-item-content>
-              </v-list-item>
-            </v-list-item-group>
+          <v-list dense class="pa-0">
+            <v-list-item
+              v-for="(option, index) in options"
+              :key="index"
+              @click="selectedOption(option, amenity.referenceNumber)"
+              :class="{ 'menu-border': index < options.length - 1 }"
+            >
+              <v-list-item-title
+                class="text-subtitle-2 font-weight-regular"
+                :class="itemColor(option)"
+              >
+                {{ option }}
+              </v-list-item-title>
+            </v-list-item>
           </v-list>
         </v-menu>
       </v-col>
     </v-row>
     <DeleteDialog
       :activator="deleteDialog"
+      :delete-meta="deleteMeta"
       @reset-activator="resetActivator"
       @delete-request="deleteRequest"
     />
-    <EditAmenityDialog
-      :activator="editDialog"
+    <AmenityDialog
+      :activator="amenityDialogActivator"
+      :addAmenity="amenityDialog"
       @reset-activator="resetActivator"
       @update-request="updateRequest"
+      @add-request="addRequest"
     />
   </div>
 </template>
 
 <script>
-import DeleteDialog from '@/components/dialogs/DeleteDialog.vue';
-import EditAmenityDialog from '@/components/dialogs/EditAmenityDialog.vue';
+import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
+import AmenityDialog from "@/components/dialogs/AmenityDialog.vue";
+import { amenities } from "@/store/amenities/amenities";
 
 export default {
   name: "AmenitiesComponent",
-  components: { DeleteDialog, EditAmenityDialog },
+  components: { DeleteDialog, AmenityDialog },
   props: {
     amenities: {
       type: Array,
       required: true,
+    },
+    amenityDialog: {
+      type: Boolean,
     },
   },
   data: () => ({
@@ -94,9 +96,12 @@ export default {
     nudgeBottom: 30,
     selectedAmenity: null,
     deleteDialog: false,
-    editDialog: false,
+    amenityDialogActivator: false,
     selectedAmenityRefNum: null,
     options: ["Edit Amenity", "Delete Amenity"],
+    deleteMeta: {
+      targetDeletion: "",
+    },
   }),
   computed: {
     size() {
@@ -116,17 +121,19 @@ export default {
       if (option === "Delete Amenity") {
         this.deleteDialog = true;
         this.payload.refNum = selectedAmenityRefNum;
+        this.deleteMeta.targetDeletion = "amenity";
       } else if (option === "Edit Amenity") {
-        this.editDialog = true;
+        this.amenityDialogActivator = true;
         this.selectedAmenityRefNum = selectedAmenityRefNum;
       }
     },
     resetActivator: function () {
       if (this.deleteDialog === true) {
         this.deleteDialog = false;
-      } else if (this.editDialog === true) {
-        this.editDialog = false;
+      } else if (this.amenityDialogActivator === true) {
+        this.amenityDialogActivator = false;
         this.selectedAmenityRefNum = null;
+        this.$emit("close-dialog");
       }
       this.payload = {};
       this.selectedAmenity = null;
@@ -143,12 +150,25 @@ export default {
         payload: this.payload,
         referenceNum: this.selectedAmenityRefNum,
       });
-      this.editDialog = false;
+      this.amenityDialogActivator = false;
       this.payload = {};
       this.selectedAmenity = null;
     },
+    addRequest: function (amenityName) {
+      this.payload.name = amenityName;
+      this.$emit("add-event", this.payload);
+      this.amenityDialogActivator = false;
+      this.payload = {};
+      this.selectedAmenity = null;
+      this.$emit("close-dialog");
+    },
   },
   watch: {
+    amenityDialog: {
+      handler: function (value) {
+        this.amenityDialogActivator = value;
+      },
+    },
     size: {
       immediate: true,
       deep: true,
@@ -178,5 +198,9 @@ export default {
 <style scoped>
 .capitalizeText {
   text-transform: capitalize;
+}
+
+.menu-border {
+  border-bottom: 1px solid #e6e2e2;
 }
 </style>

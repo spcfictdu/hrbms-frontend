@@ -10,8 +10,11 @@
     </v-alert>
     <amenities-component
       :amenities="amenities"
+      :amenityDialog="amenityDialog"
       @delete-event="deleteEvent"
       @update-event="updateEvent"
+      @add-event="addEvent"
+      @close-dialog="closeAmenityDialog"
     />
   </div>
 </template>
@@ -27,7 +30,7 @@ export default {
     hello: "world",
     components: { AmenitiesComponent },
     alert: false,
-    status: "",
+    status: null,
   }),
   methods: {
     ...mapActions("amenities", [
@@ -35,7 +38,12 @@ export default {
       "createAmenity",
       "updateAmenity",
       "deleteAmenity",
+      "triggerAmenityDialog",
     ]),
+    addEvent: function (payload) {
+      this.createAmenity(payload);
+      payload = null;
+    },
     deleteEvent: function (referenceNumber) {
       this.deleteAmenity(referenceNumber);
       referenceNumber = null;
@@ -51,11 +59,15 @@ export default {
     triggerAlert: function (value) {
       this.alert = value;
     },
+    closeAmenityDialog: function () {
+      this.triggerAmenityDialog(false);
+    },
   },
   computed: {
     ...mapState("amenities", {
       amenities: "amenities",
       procedureStatus: "procedureStatus",
+      amenityDialog: "amenityDialog",
     }),
   },
   created() {

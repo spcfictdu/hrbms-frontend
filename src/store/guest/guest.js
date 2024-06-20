@@ -10,11 +10,16 @@ export const guest = {
   state: () => ({
     guests: [],
     guest: {},
+    deleteMessage: {
+      message: "",
+      status: "",
+    },
   }),
   getters: {},
   mutations: {
     SET_GUESTS: (state, data) => (state.guests = data),
     SET_GUEST: (state, data) => (state.guest = data),
+    SET_DELETE_STATUS: (state, data) => (state.deleteMessage = data),
   },
   actions: {
     fetchGuests: function ({ commit }, queryParams = {}) {
@@ -40,18 +45,27 @@ export const guest = {
           console.error("Error fetching guest: ", error);
         });
     },
-    deleteGuest: function ({ _ }, id) {
+    deleteGuest: function ({ commit }, id) {
       const url = `guest/delete/${id}`;
       return this.$axios
         .delete(url)
         .then((response) => {
-          console.log(response.data.message);
           this.$router.replace({
             name: "Guests",
           });
+          commit("SET_DELETE_STATUS", {
+            message: response.data.message,
+            status: "SUCCESS",
+          });
         })
         .catch((error) => {
-          console.error("Error deleting guest: ", error);
+          this.$router.replace({
+            name: "Guests",
+          });
+          commit("SET_DELETE_STATUS", {
+            message: error.response.data.message,
+            status: "ERROR",
+          });
         });
     },
   },
