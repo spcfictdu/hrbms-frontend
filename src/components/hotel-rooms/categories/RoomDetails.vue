@@ -58,6 +58,7 @@ export default {
     room: function () {
       const category = this.category;
       let room = {
+        referenceNumber: category.referenceNumber,
         name: category.name,
         price: category.price,
         maxOccupancy: category.capacity,

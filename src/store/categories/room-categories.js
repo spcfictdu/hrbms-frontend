@@ -28,7 +28,16 @@ export const roomCategories = {
   mutations: {
     SET_ROOM_CATEGORIES: (state, data) => (state.roomCategories = data),
     SET_ROOM_CATEGORY: (state, data) => (state.roomCategory = data),
-    SET_CATEGORY_STATUS: (state, data) => (state.categoryStatus = data),
+    SET_CATEGORY_STATUS: (state, data) => {
+      state.categoryStatus = data;
+      let interval = setInterval(() => {
+        state.categoryStatus = {
+          message: "",
+          status: "",
+        };
+        clearInterval(interval);
+      }, 3000);
+    },
   },
   actions: {
     fetchRoomCategories: function ({ commit }, queryParams = {}) {
@@ -54,10 +63,26 @@ export const roomCategories = {
           console.error("Error fetching room category: ", error);
         });
     },
-    deleteRoomCategory: function (
-      { commit, _ },
-      { roomTypeReferenceNumber }
-    ) {
+    createRoomCategory: function ({ commit }, payload) {
+      const url = `room-type/create`;
+      return this.$axios
+        .post(url, payload)
+        .then((response) => {
+          this.$router.push({ name: "Room Categories" });
+          commit("SET_CATEGORY_STATUS", {
+            message: response.data.message,
+            status: "SUCCESS",
+          });
+        })
+        .catch((error) => {
+          commit("SET_CATEGORY_STATUS", {
+            message: error.response.data.message,
+            status: "ERROR",
+          });
+          console.error("Error creating room category: ", error);
+        });
+    },
+    deleteRoomCategory: function ({ commit, _ }, { roomTypeReferenceNumber }) {
       const url = `room-type/delete/${roomTypeReferenceNumber}`;
       return this.$axios
         .delete(url)

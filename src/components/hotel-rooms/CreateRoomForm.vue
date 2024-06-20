@@ -30,7 +30,9 @@
           </div>
 
           <div class="d-none d-md-flex">
-            <v-btn color="primary" elevation="0" @click="requestRoomUpdate">Save</v-btn>
+            <v-btn color="primary" elevation="0" @click="requestRoomUpdate"
+              >Save</v-btn
+            >
           </div>
         </div>
 
@@ -41,6 +43,7 @@
             </label-slot>
             <v-text-field
               :rules="rules.name"
+              v-model="category"
               dense
               hide-details="auto"
               outlined
@@ -54,6 +57,7 @@
             </label-slot>
             <v-textarea
               :rules="rules.description"
+              v-model="description"
               rows="3"
               hide-details="auto"
               dense
@@ -67,6 +71,7 @@
               <template v-slot:label>Maximum Occupancy</template>
             </label-slot>
             <v-text-field
+              v-model.number="maxOccupancy"
               type="number"
               dense
               hide-details="auto"
@@ -81,6 +86,7 @@
               <template v-slot:label>Bed Size</template>
             </label-slot>
             <v-text-field
+              v-model="bedSize"
               dense
               hide-details="auto"
               :rules="rules.bedSize"
@@ -94,6 +100,7 @@
               <template v-slot:label>Property Size</template>
             </label-slot>
             <v-text-field
+              v-model="propertySize"
               dense
               hide-details="auto"
               :rules="rules.propertySize"
@@ -112,6 +119,7 @@
               <v-col cols="auto">
                 <v-checkbox
                   :ripple="false"
+                  v-model="nonSmoking"
                   label="Non-Smoking"
                   hide-details="auto"
                   dense
@@ -120,6 +128,7 @@
               <v-col cols="auto">
                 <v-checkbox
                   :ripple="false"
+                  v-model="balconyOrTerrace"
                   label="Balcony or Terrace Included"
                   hide-details="auto"
                   dense
@@ -133,7 +142,9 @@
               <template v-slot:label>Amenities</template>
             </label-slot>
             <v-autocomplete
-              :items="amenities"
+              :items="amenitiesEnum"
+              v-model="amenities"
+              item-text="name"
               multiple
               hide-details="auto"
               :rules="rules.amenities"
@@ -160,7 +171,7 @@
             />
           </v-col>
 
-          <v-col cols="12">
+          <v-col cols="12" v-if="meta === 'ADD'">
             <v-divider />
             <title-slot>
               <template v-slot:title>Pricing</template>
@@ -171,17 +182,19 @@
                   cols="12"
                   sm="3"
                   md=""
-                  v-for="(iter, index) in days"
+                  v-for="(iter, index) in rates"
                   :key="index"
                 >
                   <label-slot>
-                    <template v-slot:label>{{ iter }}</template>
+                    <template v-slot:label>{{ iter.day }}</template>
                   </label-slot>
                   <v-text-field
                     type="number"
                     dense
                     hide-details="auto"
                     outlined
+                    :rules="rules.rate"
+                    v-model.number="iter.rate"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -189,7 +202,13 @@
           </v-col>
 
           <v-col cols="12" class="d-flex d-md-none">
-            <v-btn block color="primary" elevation="0" @click="requestRoomUpdate">Save</v-btn>
+            <v-btn
+              block
+              color="primary"
+              elevation="0"
+              @click="requestRoomUpdate"
+              >Save</v-btn
+            >
           </v-col>
         </v-row>
       </v-form>
@@ -200,46 +219,140 @@
 <script>
 import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "CreateRoomForm",
   components: { LabelSlot, TitleSlot },
+  props: {
+    filledCategory: Object,
+    meta: Object,
+  },
   data: () => ({
-    images: [],
     imagesUrl: [],
-    categories: [
-      "Deluxe",
-      "Standard",
-      "Junior",
-      "Family",
-      "Superior",
-      "Presidential",
-    ],
 
-    amenities: ["Amenity One", "Amenity Two", "Amenity Three"],
-    days: [
-      "Sunday",
-      "Monday",
-      "Tuesday",
-      "Wednesday",
-      "Thursday",
-      "Friday",
-      "Saturday",
+    // Local Payload
+    category: null,
+    description: null,
+    maxOccupancy: null,
+    bedSize: null,
+    propertySize: null,
+    nonSmoking: false,
+    balconyOrTerrace: false,
+    amenities: [],
+    images: [],
+    rates: [
+      {
+        day: "Sunday",
+        rate: null,
+      },
+      {
+        day: "Monday",
+        rate: null,
+      },
+      {
+        day: "Tuesday",
+        rate: null,
+      },
+      {
+        day: "Wednesday",
+        rate: null,
+      },
+      {
+        day: "Thursday",
+        rate: null,
+      },
+      {
+        day: "Friday",
+        rate: null,
+      },
+      {
+        day: "Saturday",
+        rate: null,
+      },
     ],
   }),
   methods: {
+    ...mapActions("amenities", ["fetchAmenities"]),
     handleImageUpload: function (files) {
       this.uploads = files;
       this.imagesUrl = files.map((key) => URL.createObjectURL(key));
     },
     requestRoomUpdate: function () {
+      const category = this.category;
+      const description = this.description;
+      const maxOccupancy = this.maxOccupancy;
+      const bedSize = this.bedSize;
+      const propertySize = this.propertySize;
+      const nonSmoking = this.nonSmoking;
+      const balconyOrTerrace = this.balconyOrTerrace;
+      const amenities = this.amenities;
+      const images = this.images;
+      const rates = this.rates;
+
+      let payload = {};
+
       this.$refs.form.validate();
 
       if (this.$refs.form.validate()) {
-        console.log("Event call");
+        payload = {
+          name: category,
+          description: description,
+          bedSize: bedSize,
+          propertySize: propertySize,
+          capacity: maxOccupancy,
+          isNonSmoking: nonSmoking,
+          balconyOrTerrace: balconyOrTerrace,
+          amenities: amenities,
+          rates: this.reassignRateTypes(rates),
+          images: images,
+        };
+        this.$emit("validation-event", payload);
       }
+    },
+    assignCategoryValues: function (newVal) {
+      this.category = newVal.name;
+      this.description = newVal.description;
+      this.bedSize = newVal.bedSize;
+      this.propertySize = newVal.propertySize;
+      this.maxOccupancy = newVal.capacity;
+      this.nonSmoking = newVal.IsNonSmoking;
+      this.balconyOrTerrace = newVal.balconyOrTerrace;
+      this.amenities = newVal.amenities;
+    },
+    reassignRateTypes: function () {
+      let newVal = {};
+      this.rates.forEach((key) => {
+        switch (key.day) {
+          case "Sunday":
+            newVal.sunday = key.rate;
+            break;
+          case "Monday":
+            newVal.monday = key.rate;
+            break;
+          case "Tuesday":
+            newVal.tuesday = key.rate;
+            break;
+          case "Wednesday":
+            newVal.wednesday = key.rate;
+            break;
+          case "Thursday":
+            newVal.thursday = key.rate;
+            break;
+          case "Friday":
+            newVal.friday = key.rate;
+            break;
+          case "Saturday":
+            newVal.saturday = key.rate;
+            break;
+        }
+      });
+      return newVal;
     },
   },
   computed: {
+    ...mapState("amenities", {
+      amenitiesEnum: "amenities",
+    }),
     rules: function () {
       let errors = {};
       errors.name = [(v) => !!v || "Category name is required"];
@@ -247,12 +360,22 @@ export default {
       errors.maxOccupancy = [(v) => !!v || "Maximum occupancy is required"];
       errors.bedSize = [(v) => !!v || "Bed size is required"];
       errors.propertySize = [(v) => !!v || "Property size is required"];
-      errors.amenities = [(v) => !!v || "Amenities is required"];
+      errors.amenities = [(v) => !!v.length > 0 || "Amenities is required"];
       errors.images = [(v) => !!v || "Images is required"];
+      errors.rate = [(v) => !!v || "Required"];
       return errors;
     },
   },
-  watch: {},
+  watch: {
+    filledCategory: {
+      handler: function (newVal) {
+        this.assignCategoryValues(newVal);
+      },
+    },
+  },
+  created() {
+    this.fetchAmenities();
+  },
 };
 </script>
 

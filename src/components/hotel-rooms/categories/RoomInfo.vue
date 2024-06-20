@@ -323,6 +323,15 @@ export default {
           },
         },
         {
+          text: "Edit category",
+          action: () => {
+            this.$router.push({
+              name: "Create Room",
+              params: { roomCategoryReferenceNumber: this.room.referenceNumber },
+            });
+          },
+        },
+        {
           text: "Remove rate",
           action: () => {
             let meta = {

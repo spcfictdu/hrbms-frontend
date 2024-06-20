@@ -74,10 +74,7 @@ export default {
       immediate: true,
       deep: true,
       handler: function (newVal) {
-        if (
-          newVal.status.toLowerCase() === "success" ||
-          newVal.status.toLowerCase() === "error"
-        ) {
+        if (newVal.status !== "") {
           this.triggerAlert(true);
           let interval = setInterval(() => {
             this.triggerAlert(false);

@@ -4,7 +4,7 @@ import HotelRoomsView from "../../views/hotel-rooms/HotelRoomsView";
 import AmenitiesView from "../../views/hotel-rooms/AmenitiesView";
 import RoomDetailsView from "../../views/hotel-rooms/categories/RoomDetailsView";
 import CategoriesView from "../../views/hotel-rooms/CategoriesView";
-import CreateRoomView from "../../views/hotel-rooms/CreateRoomView.vue";
+import CreateRoomView from "../../views/hotel-rooms/categories/CreateRoomCategoryView.vue";
 import OccupiedRoomsView from "../../views/hotel-rooms/occupied/OccupiedRoomsView.vue";
 // import AvailabilityView from "../../views/hotel-rooms/AvailabilityView";
 import BookingView from "../../views/hotel-rooms/forms/BookingView";
@@ -61,9 +61,10 @@ export default [
         },
       },
       {
-        path: "create-room-category",
+        path: "create-room-category/:roomCategoryReferenceNumber?",
         name: "Create Room",
         component: CreateRoomView,
+        props: true,
         meta: {
           name: "Room Categories",
           hideAddButton: true,
