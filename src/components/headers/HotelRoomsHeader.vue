@@ -97,6 +97,8 @@
       </div>
     </div>
 
+    <v-divider :class="dividerMargin"/>
+
     <!-- <div class="d-flex flex-column flex-md-row align-center py-3">
       <div class="chip-wrapper order-last order-md-first">
         <v-chip
@@ -143,6 +145,7 @@ export default {
     search: "",
     searchTimeout: null,
     toHideFrom: ["Categories", "Booking", "Availability"],
+    dividerMargin: "mt-3",
     routes: [
       {
         name: "Amenities",
@@ -181,6 +184,9 @@ export default {
     },
     showControls() {
       return this.$route.meta.hideInputs ? false : true;
+    },
+    size() {
+      return this.$vuetify.breakpoint
     },
     chips: function () {
       const data = this.roomTypeEnum
@@ -257,6 +263,17 @@ export default {
     },
   },
   watch: {
+    size: {
+      immediate: true,
+      deep: true,
+      handler: function (value) {
+        if(value.xs) {
+          this.dividerMargin = "mt-1"
+        } else {
+          this.dividerMargin = "mt-3"
+        }
+      }
+    },
     queryParams: {
       deep: true,
       handler: function (newVal) {

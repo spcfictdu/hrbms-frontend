@@ -14,6 +14,7 @@
             dense
             :rules="validate.amenityName"
             hide-details="auto"
+            filled
           ></v-text-field>
         </div>
 
@@ -63,6 +64,9 @@ export default {
       type: Boolean,
       required: true,
     },
+    selectedAmenityName: {
+      type: String
+    }
   },
   computed: {
     validate() {
@@ -93,6 +97,7 @@ export default {
       deep: true,
       handler: function (value) {
         this.dialog = value;
+        this.amenityName = this.selectedAmenityName
       },
     },
     dialog: {

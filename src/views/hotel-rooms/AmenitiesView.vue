@@ -24,11 +24,9 @@ import AmenitiesComponent from "@/components/hotel-rooms/amenities/AmenitiesComp
 import { mapActions, mapState } from "vuex";
 
 export default {
-  components: { AmenitiesComponent },
   name: "AmenitiesView",
+  components: { AmenitiesComponent },
   data: () => ({
-    hello: "world",
-    components: { AmenitiesComponent },
     alert: false,
     status: null,
   }),

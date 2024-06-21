@@ -40,7 +40,9 @@
             <v-list-item
               v-for="(option, index) in options"
               :key="index"
-              @click="selectedOption(option, amenity.referenceNumber)"
+              @click="
+                selectedOption(option, amenity.referenceNumber, amenity.name)
+              "
               :class="{ 'menu-border': index < options.length - 1 }"
             >
               <v-list-item-title
@@ -63,6 +65,7 @@
     <AmenityDialog
       :activator="amenityDialogActivator"
       :addAmenity="amenityDialog"
+      :selectedAmenityName="selectedAmenityName"
       @reset-activator="resetActivator"
       @update-request="updateRequest"
       @add-request="addRequest"
@@ -73,7 +76,6 @@
 <script>
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
 import AmenityDialog from "@/components/dialogs/AmenityDialog.vue";
-import { amenities } from "@/store/amenities/amenities";
 
 export default {
   name: "AmenitiesComponent",
@@ -98,6 +100,7 @@ export default {
     deleteDialog: false,
     amenityDialogActivator: false,
     selectedAmenityRefNum: null,
+    selectedAmenityName: "",
     options: ["Edit Amenity", "Delete Amenity"],
     deleteMeta: {
       targetDeletion: "",
@@ -117,7 +120,11 @@ export default {
         return "warning--text";
       }
     },
-    selectedOption: function (option, selectedAmenityRefNum) {
+    selectedOption: function (
+      option,
+      selectedAmenityRefNum,
+      selectedAmenityName
+    ) {
       if (option === "Delete Amenity") {
         this.deleteDialog = true;
         this.payload.refNum = selectedAmenityRefNum;
@@ -125,6 +132,7 @@ export default {
       } else if (option === "Edit Amenity") {
         this.amenityDialogActivator = true;
         this.selectedAmenityRefNum = selectedAmenityRefNum;
+        this.selectedAmenityName = selectedAmenityName;
       }
     },
     resetActivator: function () {

@@ -76,7 +76,7 @@ export const amenities = {
       return this.$axios
         .delete(url)
         .then((response) => {
-          dispatch("fetchAmenities", refNum)
+          dispatch("fetchAmenities", refNum);
           console.log(response.data.message);
           commit("SET_PROCEDURE_STATUS", {
             message: response.data.message,
