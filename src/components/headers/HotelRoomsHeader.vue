@@ -61,7 +61,7 @@
             rounded
             color="primary"
             class="d-none d-md-flex"
-            @click="buttonFunction(addButton.route)"
+            @click="redirect(addButton)"
           >
             <v-icon left>mdi-plus</v-icon>
             {{ addButton.name }}
@@ -72,7 +72,7 @@
             outlined
             elevation="0"
             color="primary"
-            @click="buttonFunction(addButton.route)"
+            @click="redirect(addButton)"
             class="d-flex d-md-none"
           >
             <v-icon left>mdi-plus</v-icon>{{ addButton.name }}
@@ -96,8 +96,6 @@
         </v-chip>
       </div>
     </div>
-
-    <v-divider :class="dividerMargin"/>
 
     <!-- <div class="d-flex flex-column flex-md-row align-center py-3">
       <div class="chip-wrapper order-last order-md-first">
@@ -145,7 +143,6 @@ export default {
     search: "",
     searchTimeout: null,
     toHideFrom: ["Categories", "Booking", "Availability"],
-    dividerMargin: "mt-3",
     routes: [
       {
         name: "Amenities",
@@ -208,11 +205,15 @@ export default {
       switch (metaName) {
         case "Amenities":
           buttonData.name = "Amenity";
-          buttonData.route = { name: "Amenities", route: "Amenities" };
+          buttonData.action = () => {
+            this.triggerAmenityDialog(true);
+          };
           break;
         case "Occupied Rooms":
           buttonData.name = "Room";
-          buttonData.route = { name: "Occupied", route: "Create Room" };
+          buttonData.action = () => {
+
+          };
           break;
         case "Room Categories":
           buttonData.name = "Category";
@@ -228,20 +229,12 @@ export default {
     redirect: function (route) {
       this.activeButton = route.name;
 
-      // if (route.name === "Amenities") {
-      //   this.triggerAmenityDialog(true);
-      // }
-
-      return this.$router.push({ name: route.route });
-    },
-    buttonFunction: function (route) {
-      if (route.name === "Categories") {
-        this.activeButton = route.name;
-        return this.$router.push({ name: route.route });
-      }
-
-      if (route.name === "Amenities") {
-        this.triggerAmenityDialog(true);
+      if (route.route?.route) {
+        return this.$router.push({ name: route.route.route })
+      } else if (route.route) {
+        return this.$router.push({ name: route.route })
+      } else {
+        return route.action();
       }
     },
     activateChip: function (chip) {
