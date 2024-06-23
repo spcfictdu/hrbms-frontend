@@ -1,30 +1,7 @@
 <template>
   <v-row>
     <v-col cols="12" md="5">
-      <div class="room-large mb-2">
-        <v-img
-          class="room-images lightBg"
-          height="300"
-          :src="imagesUrlPath[0]"
-        />
-      </div>
-      <div class="small-images-wrapper">
-        <v-img
-          class="room-images room-small lightBg"
-          height="100"
-          :src="imagesUrlPath[1]"
-        />
-        <v-img
-          class="room-images room-small lightBg"
-          height="100"
-          :src="imagesUrlPath[2]"
-        />
-        <v-img
-          class="room-images room-small lightBg"
-          height="100"
-          :src="imagesUrlPath[3]"
-        />
-      </div>
+      <room-category-images :images="imagesUrlPath" />
     </v-col>
     <v-col cols="12" md="7">
       <v-form lazy-validation ref="form">
@@ -227,9 +204,10 @@
 import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 import { mapActions, mapState } from "vuex";
+import RoomCategoryImages from './categories/RoomCategoryImages.vue';
 export default {
   name: "CreateRoomForm",
-  components: { LabelSlot, TitleSlot },
+  components: { LabelSlot, TitleSlot, RoomCategoryImages },
   props: {
     filledCategory: Object,
     meta: Object,
@@ -429,22 +407,5 @@ export default {
 </script>
 
 <style scoped>
-.room-images {
-  border-radius: 3px;
-}
 
-.small-images-wrapper {
-  width: 100%;
-  display: grid;
-  column-gap: 0.5rem;
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.room-large {
-  min-height: 300px;
-}
-
-.room-small {
-  min-height: 100px;
-}
 </style>
