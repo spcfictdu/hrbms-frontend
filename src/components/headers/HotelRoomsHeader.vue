@@ -183,7 +183,7 @@ export default {
       return this.$route.meta.hideInputs ? false : true;
     },
     size() {
-      return this.$vuetify.breakpoint
+      return this.$vuetify.breakpoint;
     },
     chips: function () {
       const data = this.roomTypeEnum
@@ -212,7 +212,7 @@ export default {
         case "Occupied Rooms":
           buttonData.name = "Room";
           buttonData.action = () => {
-
+            this.triggerOccupiedDialog(true);
           };
           break;
         case "Room Categories":
@@ -226,13 +226,14 @@ export default {
   },
   methods: {
     ...mapActions("amenities", ["triggerAmenityDialog"]),
+    ...mapActions("occupied", ["triggerOccupiedDialog"]),
     redirect: function (route) {
       this.activeButton = route.name;
 
       if (route.route?.route) {
-        return this.$router.push({ name: route.route.route })
+        return this.$router.push({ name: route.route.route });
       } else if (route.route) {
-        return this.$router.push({ name: route.route })
+        return this.$router.push({ name: route.route });
       } else {
         return route.action();
       }
@@ -256,17 +257,6 @@ export default {
     },
   },
   watch: {
-    size: {
-      immediate: true,
-      deep: true,
-      handler: function (value) {
-        if(value.xs) {
-          this.dividerMargin = "mt-1"
-        } else {
-          this.dividerMargin = "mt-3"
-        }
-      }
-    },
     queryParams: {
       deep: true,
       handler: function (newVal) {

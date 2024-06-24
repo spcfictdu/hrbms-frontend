@@ -14,7 +14,6 @@
             dense
             :rules="validate.amenityName"
             hide-details="auto"
-            filled
           ></v-text-field>
         </div>
 

@@ -36,6 +36,7 @@ export default {
   components: { RoomCard },
   data: () => ({
     page: 1,
+    status: ["Available", "Occupied", "Unallocated", "Unclean"]
   }),
   methods: {},
   computed: {
