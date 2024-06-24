@@ -79,6 +79,9 @@ import { formatTime } from "@/mixins/FormattingFunctions";
 export default {
   name: "CheckInTemplate",
   mixins: [formatTime],
+  props: {
+    filledDate: String,
+  },
   data: () => ({
     payload: {
       checkIn: {
@@ -122,6 +125,13 @@ export default {
       const now = new Date().toISOString().slice(0, 10);
       const dateString = `${now}T${this.payload.checkIn.time}:00`;
       return this.payload.checkIn.time ? this.formatTime(dateString) : null;
+    },
+  },
+  watch: {
+    filledDate: {
+      handler: function (newVal) {
+        this.payload.checkIn.date = newVal;
+      },
     },
   },
 };

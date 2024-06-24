@@ -58,11 +58,17 @@
         <v-col cols="12" md="6">
           <!-- Check In -->
           <v-divider />
-          <check-in-template @emit-transaction="assignPayload" />
+          <check-in-template
+            :filledDate="payload.checkIn.date"
+            @emit-transaction="assignPayload"
+          />
 
           <!-- Check Out -->
           <v-divider />
-          <check-out-template @emit-transaction="assignPayload" />
+          <check-out-template
+            :filledDate="payload.checkOut.date"
+            @emit-transaction="assignPayload"
+          />
 
           <!-- Guests -->
           <v-divider />
@@ -131,6 +137,12 @@ export default {
         paymentType: null,
         amountReceived: 0,
       },
+      checkIn: {
+        date: null,
+      },
+      checkOut: {
+        date: null,
+      }
     },
     totalPayment: 0,
   }),
@@ -167,6 +179,16 @@ export default {
         roomType: this.queryResult.room.type,
         roomNumber: this.queryResult.room.details.roomNumber,
       };
+
+      if (
+        this.queryResult.room.details.checkInDate &&
+        this.queryResult.room.details.checkOutDate
+      ) {
+        query.dateRange = [
+          this.queryResult.room.details.checkInDate,
+          this.queryResult.room.details.checkOutDate,
+        ];
+      }
 
       if (this.payload.checkIn?.date && this.payload.checkOut?.date) {
         query.dateRange = [
@@ -263,6 +285,14 @@ export default {
         this.payload.room = {
           referenceNumber: newVal.room.details.referenceNumber,
         };
+        if (
+          newVal.room.details.checkInDate &&
+          newVal.room.details.checkOutDate
+        ) {
+          this.payload.checkIn.date = newVal.room.details.checkInDate;
+          this.payload.checkOut.date = newVal.room.details.checkOutDate;
+        }
+
         this.fetchQuery();
       },
     },

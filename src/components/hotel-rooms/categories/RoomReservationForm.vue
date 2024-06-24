@@ -9,24 +9,77 @@
           <label-slot>
             <template v-slot:label> Check-in Date </template>
           </label-slot>
-          <v-text-field
-            :rules="rules.checkInDate"
-            hide-details="auto"
-            outlined
-            dense
-          ></v-text-field>
+          <v-menu
+            :close-on-content-click="false"
+            offset-y
+            transition="scale-transition"
+            v-model="menu"
+            min-width="auto"
+            max-width="290"
+          >
+            <template #activator="{ on, attrs }">
+              <v-text-field
+                v-on="on"
+                v-bind="attrs"
+                outlined
+                dense
+                readonly
+                hide-details="auto"
+                :value="payload.checkInDate"
+                :rules="rules.checkInDate"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="payload.checkInDate"
+              :min="minDate"
+            ></v-date-picker>
+          </v-menu>
         </div>
 
         <div class="pb-4">
           <label-slot>
             <template v-slot:label> Check-out Date </template>
           </label-slot>
-          <v-text-field
-            :rules="rules.checkOutDate"
+          <v-menu
+            :close-on-content-click="false"
+            offset-y
+            transition="scale-transition"
+            v-model="menu_2"
+            min-width="auto"
+            max-width="290"
+          >
+            <template #activator="{ on, attrs }">
+              <v-text-field
+                v-on="on"
+                v-bind="attrs"
+                outlined
+                dense
+                readonly
+                hide-details="auto"
+                :value="payload.checkOutDate"
+                :rules="rules.checkOutDate"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              v-model="payload.checkOutDate"
+              :min="addPlusDay"
+            ></v-date-picker>
+          </v-menu>
+        </div>
+
+        <div class="pb-4">
+          <label-slot>
+            <template v-slot:label> Room Number </template>
+          </label-slot>
+          <v-autocomplete
+            :items="roomNumberEnum"
+            item-text="roomNumber"
             hide-details="auto"
-            outlined
             dense
-          ></v-text-field>
+            outlined
+            v-model="payload.roomNumber"
+            :rules="rules.roomNumber"
+          ></v-autocomplete>
         </div>
 
         <v-divider class="mt-4" />
@@ -37,24 +90,26 @@
         <div class="my-3 text-subtitle-2 font-weight-regular">
           <div class="d-flex justify-space-between align-center">
             <div>Room Total:</div>
-            <div>₱ 2000</div>
+            <div>₱ {{ roomTotalBill.roomTotal }}</div>
           </div>
 
           <div class="d-flex justify-space-between align-center">
             <div>Duration:</div>
-            <div>2 days</div>
+            <div>{{ roomTotalBill.duration }} {{ durationWord }}</div>
           </div>
 
           <div
             class="d-flex justify-space-between align-center primary--text font-weight-bold"
           >
             <div>Total:</div>
-            <div>₱ 2000</div>
+            <div>₱ {{ roomTotalBill.roomTotalWithExtraPerson }}</div>
           </div>
         </div>
 
         <v-card-actions class="px-0 pb-0 pt-4">
-          <v-btn block color="primary" @click="requestReservation">Make Reservation</v-btn>
+          <v-btn block color="primary" @click="requestReservation"
+            >Make Reservation</v-btn
+          >
         </v-card-actions>
       </v-form>
     </v-card>
@@ -63,24 +118,119 @@
 
 <script>
 import LabelSlot from "@/components/slots/LabelSlot.vue";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "RoomReservationForm",
   components: { LabelSlot },
-  data: () => ({}),
+  props: {
+    roomCategory: String,
+  },
+  data: () => ({
+    payload: {
+      checkInDate: null,
+      checkOutDate: null,
+      roomNumber: null,
+    },
+    menu: false,
+    menu_2: false,
+    minDate: new Date().toISOString().slice(0, 10),
+  }),
   methods: {
+    ...mapActions("roomEnum", ["fetchRoom"]),
+    ...mapActions("roomNumberEnum", ["fetchRoomNumbers"]),
     requestReservation: function () {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
-        console.log("Reservation Made");
+        let room = {
+          type: this.roomCategory,
+          details: {
+            referenceNumber: this.room[0].referenceNumber,
+            roomNumber: this.payload.roomNumber,
+            checkInDate: this.payload.checkInDate,
+            checkOutDate: this.payload.checkOutDate,
+          } 
+        }
+        this.$router.push({
+          name: "Booking",
+          query: {
+            room: JSON.stringify(room),
+          },
+        });
       }
-    }
+    },
+    requestQuery: function () {
+      let query = {
+        roomType: this.roomCategory,
+      };
+      if (
+        this.payload.checkInDate &&
+        this.payload.checkOutDate &&
+        this.payload.roomNumber
+      ) {
+        query.dateRange = [this.payload.checkInDate, this.payload.checkOutDate];
+        query.roomNumber = this.payload.roomNumber;
+        this.fetchRoom(query);
+      } else {
+        delete query.dateRange;
+        delete query.roomNumber;
+      }
+    },
+    requestRoomNumbers: function (newVal) {
+      const query = {
+        roomType: newVal.toUpperCase(),
+      };
+      this.fetchRoomNumbers(query);
+    },
   },
   computed: {
+    ...mapState("roomEnum", {
+      room: "room",
+    }),
+    ...mapState("roomNumberEnum", {
+      roomNumberEnum: "roomNumberEnum",
+    }),
     rules: function () {
       let errors = {};
       errors.checkInDate = [(v) => !!v || "Check-in Date is required"];
       errors.checkOutDate = [(v) => !!v || "Check-out Date is required"];
+      errors.roomNumber = [(v) => !!v || "Room number is required"];
       return errors;
+    },
+    addPlusDay: function () {
+      const startDate = new Date(this.payload.checkInDate);
+      startDate.setDate(startDate.getDate() + 1);
+      return startDate.toISOString().slice(0, 10);
+    },
+    roomTotalBill: function () {
+      const room = this.room ? this.room[0] : null;
+
+      const roomTotal = room ? room.roomTotal : 0;
+      const duration = room ? room.duration : 0;
+      const roomTotalWithExtraPerson = room ? room.roomTotalWithExtraPerson : 0;
+      return {
+        roomTotal: roomTotal,
+        duration: duration,
+        roomTotalWithExtraPerson: roomTotalWithExtraPerson,
+      };
+    },
+    durationWord: function () {
+      return this.roomTotalBill.duration <= 1 ? "day" : "days";
+    },
+  },
+  watch: {
+    payload: {
+      deep: true,
+      handler: function (newVal) {
+        if (newVal) {
+          this.requestQuery();
+        }
+      },
+    },
+    roomCategory: {
+      immediate: true,
+      handler: function (newVal) {
+        this.requestRoomNumbers(newVal);
+      },
     },
   },
 };

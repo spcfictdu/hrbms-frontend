@@ -22,7 +22,7 @@
         />
       </v-col>
       <v-col cols="12" md="4">
-        <room-reservation-form />
+        <room-reservation-form :roomCategory="room.name"/>
       </v-col>
     </v-row>
   </div>

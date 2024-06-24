@@ -98,4 +98,3 @@ export default {
 </script>
 
 <style scoped></style>
-../../../components/dashboard/BookingForm.vue../../../components/hotel-rooms/forms/BookingForm.vue
