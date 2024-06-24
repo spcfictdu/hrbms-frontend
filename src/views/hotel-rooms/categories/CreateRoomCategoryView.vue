@@ -1,7 +1,7 @@
 <template>
   <div class="mt-10">
     <CreateRoomForm
-      @validation-event="createRequestCategory"
+      @validation-event="assessRequestCategory"
       :filledCategory="roomCategory"
       :meta="meta"
     />
@@ -17,27 +17,36 @@ export default {
   data: () => ({
     referenceNumber: null,
     meta: {
-      status: ""
-    }
+      status: "",
+    },
   }),
   methods: {
     ...mapActions("roomCategories", [
       "fetchRoomCategory",
       "createRoomCategory",
+      "updateRoomCategory",
     ]),
-    createRequestCategory: function (payload) {
-      this.createRoomCategory(payload);
+    assessRequestCategory: function (payload) {
+      if (this.meta.status === "NEW") {
+        this.createRoomCategory(payload);
+      } else {
+        this.updateRoomCategory({
+          roomTypeReferenceNumber: this.referenceNumber,
+          payload: payload,
+        });
+      }
     },
     assessRouteParams: function () {
       const referenceNumber = this.$route.params.roomCategoryReferenceNumber;
       if (referenceNumber) {
         // For Updates
         this.referenceNumber = referenceNumber;
-        this.meta.status = "UPDATE"
+        this.meta.status = "UPDATE";
+        this.fetchRequestCategory(referenceNumber);
       } else {
         // For Creation
         this.referenceNumber = null;
-        this.meta.status = "NEW"
+        this.meta.status = "NEW";
       }
     },
     fetchRequestCategory: function (referenceNumber) {
@@ -54,15 +63,7 @@ export default {
   created() {
     this.assessRouteParams();
   },
-  watch: {
-    referenceNumber: {
-      handler: function (newVal) {
-        if (newVal) {
-          this.fetchRequestCategory(newVal);
-        }
-      },
-    },
-  },
+  watch: {},
 };
 </script>
 

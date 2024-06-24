@@ -13,7 +13,18 @@ export const roomRates = {
     },
   }),
   getter: {},
-  mutations: { SET_RATE_STATUS: (state, data) => (state.ratesStatus = data) },
+  mutations: {
+    SET_RATE_STATUS: (state, data) => {
+      state.ratesStatus = data;
+      let interval = setInterval(() => {
+        state.ratesStatus = {
+          message: "",
+          status: "",
+        };
+        clearInterval(interval);
+      }, 3000);
+    },
+  },
   actions: {
     createSpecialRoomRate: function (
       { commit },

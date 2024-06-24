@@ -1,7 +1,11 @@
 <template>
   <v-row>
     <v-col cols="12" md="5">
-      <room-category-images :images="imagesUrlPath" />
+      <room-category-images
+        :images="imagesUrl"
+        @delete-images-event="handleImageDeletion"
+        :deletedImage="deletedImage"
+      />
     </v-col>
     <v-col cols="12" md="7">
       <v-form lazy-validation ref="form">
@@ -152,6 +156,13 @@
               dense
               accept="image/*"
               @change="handleImageUpload"
+              :disabled="images.length === 4"
+              persistent-hint
+              :hint="
+                images.length > 0
+                  ? `Total Uploaded Files: ${images.length}`
+                  : ''
+              "
             />
           </v-col>
 
@@ -204,7 +215,7 @@
 import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 import { mapActions, mapState } from "vuex";
-import RoomCategoryImages from './categories/RoomCategoryImages.vue';
+import RoomCategoryImages from "./categories/RoomCategoryImages.vue";
 export default {
   name: "CreateRoomForm",
   components: { LabelSlot, TitleSlot, RoomCategoryImages },
@@ -213,7 +224,36 @@ export default {
     meta: Object,
   },
   data: () => ({
-    imagesUrl: [],
+    // Meta
+    imagesUrl: [
+      {
+        name: "Image 1",
+        file: null,
+        url: "",
+      },
+      {
+        name: "Image 2",
+        file: null,
+        url: "",
+      },
+      {
+        name: "Image 3",
+        file: null,
+        url: "",
+      },
+      {
+        name: "Image 4",
+        file: null,
+        url: "",
+      },
+    ],
+    deletedImage: null,
+    englishNumbers: {
+      1: "One",
+      2: "Two",
+      3: "Three",
+      4: "Four",
+    },
 
     // Local Payload
     category: null,
@@ -259,8 +299,20 @@ export default {
   methods: {
     ...mapActions("amenities", ["fetchAmenities"]),
     handleImageUpload: function (files) {
-      this.uploads = files;
-      this.imagesUrl = files.map((key) => URL.createObjectURL(key));
+      if (files.length > 0) {
+        // Push new item
+        files.forEach((item) => {
+          this.images.push(item);
+        });
+
+        const emptyVal = this.imagesUrl.filter((item) => item.url === "");
+        if (emptyVal) {
+          emptyVal.forEach((item, index) => {
+            item.file = files[index];
+            item.url = URL.createObjectURL(files[index]);
+          });
+        }
+      }
     },
     requestRoomUpdate: function () {
       const category = this.category;
@@ -307,26 +359,74 @@ export default {
               add: this.amenityMutation(amenities).added,
             },
             images: {
-              delete: [],
-              add: [], // Files
+              delete: this.imageMutation(images).deleted,
+              add: this.imageMutation(images).added,
             },
           };
-          console.log(payload);
         }
-        // this.$emit("validation-event", payload);
+
+        const formData = new FormData();
+
+        function appendFormData(formData, key, value) {
+          if (Array.isArray(value)) {
+            if (value.length === 0) {
+              formData.append(key, JSON.stringify([]));
+            } else {
+              value.forEach((item, index) => {
+                appendFormData(formData, `${key}[${index}]`, item);
+              });
+            }
+          } else if (typeof value === "object" && !(value instanceof File)) {
+            if (Object.keys(value).length === 0) {
+              formData.append(key, JSON.stringify({}));
+            } else {
+              for (const subKey in value) {
+                appendFormData(formData, `${key}[${subKey}]`, value[subKey]);
+              }
+            }
+          } else {
+            formData.append(key, value);
+          }
+        }
+
+        for (const key in payload) {
+          if (payload.hasOwnProperty(key)) {
+            appendFormData(formData, key, payload[key]);
+          }
+        }
+
+        this.$emit("validation-event", formData);
       }
     },
     assignCategoryValues: function (newVal) {
-      this.category = newVal.name;
-      this.description = newVal.description;
-      this.bedSize = newVal.bedSize;
-      this.propertySize = newVal.propertySize;
-      this.maxOccupancy = newVal.capacity;
-      this.nonSmoking = newVal.IsNonSmoking;
-      this.balconyOrTerrace = newVal.balconyOrTerrace;
-      this.amenities = newVal.amenities;
-      this.imagesUrl = newVal.images;
-      this.images = newVal.images;
+      if (this.meta.status === "UPDATE") {
+        this.category = newVal.name;
+        this.description = newVal.description;
+        this.bedSize = newVal.bedSize;
+        this.propertySize = newVal.propertySize;
+        this.maxOccupancy = newVal.capacity;
+        this.nonSmoking = newVal.isNonSmoking;
+        this.balconyOrTerrace = newVal.balconyOrTerrace;
+        this.amenities = newVal.amenities;
+        this.images = newVal.images;
+        this.imagesUrl.forEach((item, index) => {
+          item.url = `${this.$apiPath}/${newVal.images[index]}`;
+        });
+      } else if (this.meta.status === "NEW") {
+        this.category = null;
+        this.description = null;
+        this.bedSize = null;
+        this.propertySize = null;
+        this.maxOccupancy = null;
+        this.nonSmoking = false;
+        this.balconyOrTerrace = false;
+        this.amenities = [];
+        this.images = [];
+        this.imagesUrl.forEach((item) => {
+          item.url = "";
+          item.file = null;
+        });
+      }
     },
     reassignRateTypes: function () {
       let newVal = {};
@@ -361,22 +461,43 @@ export default {
       const oldVal = this.filledCategory.amenities;
       const added = amenities.filter((item) => !oldVal.includes(item));
       const deleted = oldVal.filter((item) => !amenities.includes(item));
-
       return {
         added: added,
         deleted: deleted,
       };
+    },
+    imageMutation: function (images) {
+      const oldVal = this.filledCategory.images;
+      const added = images.filter((item) => !oldVal.includes(item));
+      const deleted = oldVal.filter((item) => !images.includes(item));
+      return {
+        added: added,
+        deleted: deleted,
+      };
+    },
+    handleImageDeletion: function (newVal) {
+      const formattedVal = this.imagesUrl.filter((item) =>
+        newVal.includes(item.name)
+      );
+
+      formattedVal.forEach((item) => {
+        this.images = this.images.filter(
+          (item_file) => item.file !== item_file
+        );
+        this.images = this.images.filter(
+          (item_file) => item.url.replace(`${this.$apiPath}/`, "") !== item_file
+        );
+
+        item.url = "";
+        item.file = null;
+        this.deletedImage = item.name;
+      });
     },
   },
   computed: {
     ...mapState("amenities", {
       amenitiesEnum: "amenities",
     }),
-    imagesUrlPath: function () {
-      return this.meta.status === "NEW"
-        ? this.imagesUrl
-        : this.imagesUrl.map((key) => `${this.$apiPath}/${key}`);
-    },
     rules: function () {
       let errors = {};
       errors.name = [(v) => !!v || "Category name is required"];
@@ -386,8 +507,11 @@ export default {
       errors.propertySize = [(v) => !!v || "Property size is required"];
       errors.amenities = [(v) => !!v.length > 0 || "Amenities is required"];
       errors.images = [
-        (v) => !!v || "Images is required",
-        (v) => (v && v.length === 4) || "Four images are required",
+        (_) =>
+          this.images.length === 4 ||
+          `${this.englishNumbers[4 - this.images.length]} ${
+            4 - this.images.length <= 1 ? "image is" : "images are"
+          } required`,
       ];
       errors.rate = [(v) => !!v || "Required"];
       return errors;
@@ -396,7 +520,9 @@ export default {
   watch: {
     filledCategory: {
       handler: function (newVal) {
-        this.assignCategoryValues(newVal);
+        if (newVal) {
+          this.assignCategoryValues(newVal);
+        }
       },
     },
   },
@@ -406,6 +532,4 @@ export default {
 };
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

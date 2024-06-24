@@ -75,11 +75,11 @@ export const roomCategories = {
           });
         })
         .catch((error) => {
+          console.error("Error creating room category: ", error);
           commit("SET_CATEGORY_STATUS", {
             message: error.response.data.message,
             status: "ERROR",
           });
-          console.error("Error creating room category: ", error);
         });
     },
     deleteRoomCategory: function ({ commit, _ }, { roomTypeReferenceNumber }) {
@@ -96,6 +96,34 @@ export const roomCategories = {
         })
         .catch((error) => {
           console.error("Error deleting room category: ", error);
+          commit("SET_CATEGORY_STATUS", {
+            message: error.response.data.message,
+            status: "ERROR",
+          });
+        });
+    },
+    updateRoomCategory: function (
+      { commit },
+      { roomTypeReferenceNumber, payload }
+    ) {
+      // // Log the key/value pairs
+      // for (var pair of payload.entries()) {
+      //   console.log(pair[0] + " - " + pair[1]);
+      // }
+      const url = `room-type/update/${roomTypeReferenceNumber}`;
+      return this.$axios
+        .post(url, payload, {
+          // headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then((response) => {
+          this.$router.push({ name: "Room Categories" });
+          commit("SET_CATEGORY_STATUS", {
+            message: response.data.message,
+            status: "SUCCESS",
+          });
+        })
+        .catch((error) => {
+          console.error("Error updating room category: ", error);
           commit("SET_CATEGORY_STATUS", {
             message: error.response.data.message,
             status: "ERROR",

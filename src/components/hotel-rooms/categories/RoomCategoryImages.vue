@@ -1,12 +1,22 @@
 <template>
   <div>
-    <div class="room-images" :class="{ 'no-images': images.length === 0 }">
-      <div class="room-image" v-for="index in 4" :key="index">
+    <div class="room-images">
+      <div
+        class="room-image"
+        :class="{ 'no-images': images[index - 1].url === '' }"
+        v-for="index in 4"
+        :key="index"
+      >
         <div class="item-image">
-          <v-img class="image lightBg" :src="images[index - 1]" />
+          <v-img class="image lightBg" :src="images[index - 1]?.url" />
         </div>
         <div class="item-button">
-          <v-btn depressed :small="index - 1 > 0" fab color="warning"
+          <v-btn
+            depressed
+            :small="index - 1 > 0"
+            fab
+            color="warning"
+            @click="handleDeletedImages(images[index - 1].name)"
             ><v-icon :small="index - 1 > 0">mdi-trash-can</v-icon></v-btn
           >
         </div>
@@ -20,13 +30,17 @@ export default {
   name: "RoomCategoryImages",
   props: {
     images: Array,
+    deletedImage: String,
   },
   data: () => ({
     deletedImages: [],
   }),
   methods: {
-    handleDeletedImages: function (url) {
-      this.deletedImages.push(url);
+    handleDeletedImages: function (name) {
+      const boolean = this.deletedImages.find((item) => item.name === name);
+      if (!boolean) {
+        this.deletedImages.push(name);
+      }
     },
   },
   watch: {
@@ -34,6 +48,13 @@ export default {
       deeper: true,
       handler: function (newVal) {
         this.$emit("delete-images-event", newVal);
+      },
+    },
+    deletedImage: {
+      handler: function () {
+        this.deletedImages = this.deletedImages.filter(
+          (item) => item !== this.deletedImage
+        );
       },
     },
   },
@@ -61,11 +82,13 @@ export default {
 }
 
 .room-images .room-image .item-image .image {
-  min-height: 100px;
+  height: 100px;
+  max-height: 100px;
 }
 
 .room-images .room-image:first-child .item-image .image {
-  min-height: 300px;
+  height: 300px;
+  max-height: 300px;
 }
 
 /* Scale Image Action */
@@ -117,15 +140,15 @@ export default {
 }
 
 /* No Images */
-.room-images.no-images .room-image:hover .item-image {
+.room-images .room-image.no-images:hover .item-image {
   transform: none;
 }
 
-.room-images.no-images .room-image:hover .item-image::before {
+.room-images .room-image.no-images:hover .item-image::before {
   opacity: 0;
 }
 
-.room-images.no-images .room-image:hover .item-button {
+.room-images .room-image.no-images:hover .item-button {
   opacity: 0;
   transform: translateX(80%) translateY(80%);
 }
