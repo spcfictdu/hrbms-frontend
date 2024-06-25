@@ -142,7 +142,7 @@ export default {
       },
       checkOut: {
         date: null,
-      }
+      },
     },
     totalPayment: 0,
   }),
@@ -176,17 +176,14 @@ export default {
     },
     fetchQuery: function () {
       let query = {
-        roomType: this.queryResult.room.type,
-        roomNumber: this.queryResult.room.details.roomNumber,
+        roomType: this.queryResult.room,
+        roomNumber: this.queryResult.roomNumber,
       };
 
-      if (
-        this.queryResult.room.details.checkInDate &&
-        this.queryResult.room.details.checkOutDate
-      ) {
+      if (this.queryResult.checkInDate && this.queryResult.checkOutDate) {
         query.dateRange = [
-          this.queryResult.room.details.checkInDate,
-          this.queryResult.room.details.checkOutDate,
+          this.queryResult.checkInDate,
+          this.queryResult.checkOutDate,
         ];
       }
 
@@ -283,14 +280,11 @@ export default {
       immediate: true,
       handler: function (newVal) {
         this.payload.room = {
-          referenceNumber: newVal.room.details.referenceNumber,
+          referenceNumber: newVal.referenceNumber,
         };
-        if (
-          newVal.room.details.checkInDate &&
-          newVal.room.details.checkOutDate
-        ) {
-          this.payload.checkIn.date = newVal.room.details.checkInDate;
-          this.payload.checkOut.date = newVal.room.details.checkOutDate;
+        if (newVal.checkInDate && newVal.checkOutDate) {
+          this.payload.checkIn.date = newVal.checkInDate;
+          this.payload.checkOut.date = newVal.checkOutDate;
         }
 
         this.fetchQuery();

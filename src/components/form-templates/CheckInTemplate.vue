@@ -129,6 +129,7 @@ export default {
   },
   watch: {
     filledDate: {
+      immediate: true,
       handler: function (newVal) {
         this.payload.checkIn.date = newVal;
       },

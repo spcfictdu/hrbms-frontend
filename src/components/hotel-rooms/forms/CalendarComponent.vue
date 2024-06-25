@@ -198,7 +198,7 @@
                       class="d-flex text-caption font-weight-regular grey--text text--darken-2 text-capitalize"
                     >
                       <div class="mx-2 text-uppercase">
-                        {{ queryParams.roomType}}
+                        {{ queryParams.roomType }}
                       </div>
                       <v-divider vertical></v-divider>
                       <div class="mx-2">
@@ -375,16 +375,18 @@ export default {
       return `${formattedDate} - ${formattedTime}`;
     },
     pushToBooking: function () {
+      const room = this.filteredRoom(this.dropdownValue);
       let payload = {
-        room: {
           type: this.queryParams.roomType,
-          details: this.filteredRoom(this.dropdownValue),
-        },
+          referenceNumber: room.referenceNumber,
+          roomNumber: room.roomNumber,
       };
       this.$router.push({
         name: "Booking",
         query: {
-          room: JSON.stringify(payload),
+          room: payload.type,
+          referenceNumber: payload.referenceNumber,
+          roomNumber: payload.roomNumber,
         },
       });
     },

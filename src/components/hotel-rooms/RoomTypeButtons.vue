@@ -43,7 +43,7 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "RoomTypeButtons",
   data: () => ({
-    activeButton: "Junior Standard",
+    activeButton: "",
   }),
   props: {},
   methods: {

@@ -114,7 +114,7 @@
               color="white"
               @click="logout"
             >
-              <v-icon> mdi-logout-variant </v-icon>
+              <v-icon size="20"> mdi-logout-variant </v-icon>
             </v-btn>
           </div>
         </v-col>

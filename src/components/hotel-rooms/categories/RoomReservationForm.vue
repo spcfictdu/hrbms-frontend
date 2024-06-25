@@ -141,19 +141,21 @@ export default {
     requestReservation: function () {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
-        let room = {
+        let payload = {
           type: this.roomCategory,
-          details: {
-            referenceNumber: this.room[0].referenceNumber,
-            roomNumber: this.payload.roomNumber,
-            checkInDate: this.payload.checkInDate,
-            checkOutDate: this.payload.checkOutDate,
-          } 
-        }
+          referenceNumber: this.room[0].referenceNumber,
+          roomNumber: this.payload.roomNumber,
+          checkInDate: this.payload.checkInDate,
+          checkOutDate: this.payload.checkOutDate,
+        };
         this.$router.push({
           name: "Booking",
           query: {
-            room: JSON.stringify(room),
+            room: payload.type,
+            referenceNumber: payload.referenceNumber,
+            roomNumber: payload.roomNumber,
+            checkInDate: payload.checkInDate,
+            checkOutDate: payload.checkOutDate,
           },
         });
       }
@@ -203,10 +205,16 @@ export default {
     },
     roomTotalBill: function () {
       const room = this.room ? this.room[0] : null;
+      const payload = !!(
+        this.payload.checkInDate &&
+        this.payload.checkOutDate &&
+        this.payload.roomNumber
+      );
 
-      const roomTotal = room ? room.roomTotal : 0;
-      const duration = room ? room.duration : 0;
-      const roomTotalWithExtraPerson = room ? room.roomTotalWithExtraPerson : 0;
+      const roomTotal = payload && room ? room.roomTotal : 0;
+      const duration = payload && room ? room.duration : 0;
+      const roomTotalWithExtraPerson =
+        payload && room ? room.roomTotalWithExtraPerson : 0;
       return {
         roomTotal: roomTotal,
         duration: duration,

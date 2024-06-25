@@ -9,6 +9,8 @@ import authentication from "./authentication/authentication";
 
 Vue.use(VueRouter);
 
+
+
 const routes = [
   {
     path: "/",
@@ -38,11 +40,12 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
+  const routes = ["Sign In", "Guest Sign In"];
   let loggedIn = auth.user();
-  if (!loggedIn && to.name !== "Sign In") {
-    next({ name: "Sign In" });
-  } else if (loggedIn && to.name === "Sign In") {
-    return next({ name: "Rooms List" });
+  if (!loggedIn && !routes.includes(to.name)) {
+    next({ name: to.name });
+  } else if (loggedIn && routes.includes(to.name)) {
+    return next({ name: "Dashboard" });
   } else {
     next();
   }

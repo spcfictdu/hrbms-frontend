@@ -50,4 +50,4 @@ export default {
 };
 </script>
 
-<style scoped></style>../../components/hotel-rooms/forms/CalendarComponent.vue
+<style scoped></style>

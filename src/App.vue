@@ -1,21 +1,28 @@
 <template>
   <v-app
     class="bg-color"
-    :class="{ 'image-bg': $router.currentRoute.meta.name === 'Sign In' }"
+    :class="{
+      'image-bg': notAllowedRoutes.includes($router.currentRoute.meta.name),
+    }"
   >
     <div>
-      <Navigation v-if="$router.currentRoute.meta.name !== 'Sign In'" />
+      <Navigation
+        v-if="!notAllowedRoutes.includes($router.currentRoute.meta.name)"
+      />
       <div
         :class="{
-          'mt-n10 bg-color main-layout white py-5':
-            $router.currentRoute.meta.name !== 'Sign In',
+          'mt-n10 bg-color main-layout white py-5': !notAllowedRoutes.includes(
+            $router.currentRoute.meta.name
+          ),
         }"
       >
         <v-container class="pa-0 transparent-bg">
           <v-main
             class="mx-3"
             :class="{
-              'custom-main': $router.currentRoute.meta.name === 'Sign In',
+              'custom-main': notAllowedRoutes.includes(
+                $router.currentRoute.meta.name
+              ),
             }"
           >
             <router-view />
@@ -34,7 +41,7 @@ export default {
   name: "App",
   components: { Navigation },
   data: () => ({
-    //
+    notAllowedRoutes: ["Sign In", "Guest Sign In"],
   }),
 
   methods: {
@@ -42,8 +49,11 @@ export default {
   },
 
   mounted() {
-    if (!this.$auth.user() && (this.$router.currentRoute.name !== "Sign In")) {
-      this.logout();
+    if (
+      !this.$auth.user() &&
+      !this.notAllowedRoutes.includes(this.$router.currentRoute.name)
+    ) {
+      // this.logout();
     }
   },
 };

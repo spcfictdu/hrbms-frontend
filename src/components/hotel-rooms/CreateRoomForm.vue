@@ -230,21 +230,25 @@ export default {
         name: "Image 1",
         file: null,
         url: "",
+        old: null,
       },
       {
         name: "Image 2",
         file: null,
         url: "",
+        old: null,
       },
       {
         name: "Image 3",
         file: null,
         url: "",
+        old: null,
       },
       {
         name: "Image 4",
         file: null,
         url: "",
+        old: null,
       },
     ],
     deletedImage: null,
@@ -353,7 +357,7 @@ export default {
             propertySize: propertySize,
             capacity: maxOccupancy,
             isNonSmoking: nonSmoking,
-            balconyOrTerrace: balconyOrTerrace,
+            balconyOrTerrace: balconyOrTerrace ? 1 : 0,
             amenities: {
               delete: this.amenityMutation(amenities).deleted,
               add: this.amenityMutation(amenities).added,
@@ -361,8 +365,10 @@ export default {
             images: {
               delete: this.imageMutation(images).deleted,
               add: this.imageMutation(images).added,
+              update: this.imageMutation(images).updated,
             },
           };
+          console.log(payload);
         }
 
         const formData = new FormData();
@@ -411,6 +417,7 @@ export default {
         this.images = newVal.images;
         this.imagesUrl.forEach((item, index) => {
           item.url = `${this.$apiPath}/${newVal.images[index]}`;
+          item.old = newVal.images[index];
         });
       } else if (this.meta.status === "NEW") {
         this.category = null;
@@ -470,9 +477,18 @@ export default {
       const oldVal = this.filledCategory.images;
       const added = images.filter((item) => !oldVal.includes(item));
       const deleted = oldVal.filter((item) => !images.includes(item));
+      const updated = this.imagesUrl
+        .filter((item) => item.file)
+        .map((item) => {
+          return {
+            old: item.old,
+            new: item.file,
+          };
+        });
       return {
         added: added,
         deleted: deleted,
+        updated: updated,
       };
     },
     handleImageDeletion: function (newVal) {

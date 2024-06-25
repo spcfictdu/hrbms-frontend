@@ -74,7 +74,7 @@ export default {
       return value;
     },
     fetchTransactionFills: function () {
-      const referenceNumber = this.queryResult.room.details.referenceNumber;
+      const referenceNumber = this.queryResult.referenceNumber;
       this.fetchPreviousFormTransactions(referenceNumber);
     },
   },
@@ -86,9 +86,7 @@ export default {
       return this.previousTransactions ? this.previousTransactions : [];
     },
     queryResult() {
-      let query = this.$route.query.room;
-      let format = JSON.parse(query);
-      return format;
+      return this.$route.query;
     },
   },
   mounted() {
