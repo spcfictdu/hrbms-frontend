@@ -61,5 +61,45 @@ export const rooms = {
           console.error(error.response.data.message);
         });
     },
+    deleteRoom: function ({ commit, dispatch }, refNum) {
+      const url = `room/delete/${refNum}`;
+      return this.$axios
+        .delete(url)
+        .then((response) => {
+          dispatch("occupied/fetchRoomStatus", refNum, { root: true });
+          commit("SET_ALERT_PROPERTIES", {
+            message: response.data.message,
+            type: "success",
+          });
+          console.log(response.data.message);
+        })
+        .catch((error) => {
+          commit("SET_ALERT_PROPERTIES", {
+            message: error.response.data.message,
+            type: "error",
+          });
+          console.error(error.response.data.message);
+        });
+    },
+    editRoom: function ({ commit, dispatch }, { refNum, data }) {
+      const url = `room/update/${refNum}`;
+      return this.$axios
+        .put(url, data)
+        .then((response) => {
+          dispatch("occupied/fetchRoomStatus", refNum, { root: true });
+          commit("SET_ALERT_PROPERTIES", {
+            message: response.data.message,
+            type: "success",
+          });
+          console.log(response.data.message);
+        })
+        .catch((error) => {
+          commit("SET_ALERT_PROPERTIES", {
+            message: error.response.data.message,
+            type: "error",
+          });
+          console.error(error.response.data.message);
+        });
+    },
   },
 };

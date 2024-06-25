@@ -15,6 +15,8 @@
       @close-dialog="triggerDialog"
       @update-event="updateEvent"
       @add-room="addRoomEvent"
+      @edit-room="editRoomEvent"
+      @delete-room="deleteRoomEvent"
       v-if="roomStatus && roomCategories"
     />
   </div>
@@ -53,7 +55,7 @@ export default {
       "triggerOccupiedDialog",
     ]),
     ...mapActions("roomCategories", ["fetchRoomCategories"]),
-    ...mapActions("rooms", ["createRoom"]),
+    ...mapActions("rooms", ["createRoom", "deleteRoom", "editRoom"]),
     paginateRoomStatus: function (queryParams) {
       this.fetchRoomStatus(queryParams);
     },
@@ -62,6 +64,15 @@ export default {
     },
     addRoomEvent: function (payload) {
       this.createRoom(payload);
+    },
+    deleteRoomEvent: function (referenceNumber) {
+      this.deleteRoom(referenceNumber)
+    },
+    editRoomEvent: function ({referenceNumber, payload}) {
+      this.editRoom({
+        refNum: referenceNumber,
+        data: payload
+      })
     },
     triggerAlert: function (value) {
       this.alert = value;
@@ -91,7 +102,6 @@ export default {
         }
       },
     },
-    
   },
 };
 </script>
