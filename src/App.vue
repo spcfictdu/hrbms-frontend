@@ -2,7 +2,8 @@
   <v-app
     class="bg-color"
     :class="{
-      'image-bg': notAllowedRoutes.includes($router.currentRoute.meta.name),
+      'image-bg': $router.currentRoute.meta.name === 'Sign In',
+      'image-bg-2': $router.currentRoute.meta.name === 'Guest Sign In',
     }"
   >
     <div>
@@ -49,12 +50,12 @@ export default {
   },
 
   mounted() {
-    if (
-      !this.$auth.user() &&
-      !this.notAllowedRoutes.includes(this.$router.currentRoute.name)
-    ) {
-      // this.logout();
-    }
+    // if (
+    //   !this.$auth.user() &&
+    //   !this.notAllowedRoutes.includes(this.$router.currentRoute.name)
+    // ) {
+    //   // this.logout();
+    // }
   },
 };
 </script>
@@ -80,11 +81,23 @@ export default {
   background-size: cover;
 }
 
+.image-bg-2 {
+  background: url(./assets/bgImage-2.jpg) no-repeat center/cover;
+}
+
 .custom-main {
   height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0;
+}
+
+.custom-main-2 {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 4rem 0;
 }
 </style>

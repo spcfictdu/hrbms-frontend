@@ -40,11 +40,12 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const routes = ["Sign In", "Guest Sign In"];
+  const signInRoutes = ["Sign In", "Guest Sign In"];
   let loggedIn = auth.user();
-  if (!loggedIn && !routes.includes(to.name)) {
-    next({ name: to.name });
-  } else if (loggedIn && routes.includes(to.name)) {
+
+  if (!loggedIn && !signInRoutes.includes(to.name)) {
+    return next({ name: "Guest Sign In" });
+  } else if (loggedIn && signInRoutes.includes(to.name)) {
     return next({ name: "Dashboard" });
   } else {
     next();
