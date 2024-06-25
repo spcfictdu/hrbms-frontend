@@ -1,7 +1,7 @@
 <template>
   <v-dialog max-width="450" v-model="dialog" overlay-opacity="0.2">
     <v-form ref="roomForm">
-      <v-card class="pa-8" rounded="lg" flat v-if="!createRoom">
+      <v-card class="pa-8" rounded="lg" flat v-if="dialogFunction.changeRoomSatus">
         <v-card-title
           class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0 mb-4"
           >Change Room Status Confirmation</v-card-title
@@ -32,7 +32,7 @@
       <v-card class="pa-8" rounded="lg" flat v-else>
         <v-card-title
           class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0 mb-4"
-          >Add New Room</v-card-title
+          >{{ dialogFunction.createRoom ? 'Add New Room' : 'Edit Room'}}</v-card-title
         >
         <div class="my-8">
           <div class="mb-2">
@@ -103,22 +103,21 @@ export default {
       type: Object,
       required: true,
     },
-    createRoom: {
-      type: Boolean,
+    dialogFunction: {
+      type: Object,
       required: true,
     },
     roomCategories: {
       type: Array,
       required: true,
     },
+    roomDetails: {
+      type: Object,
+      required: true,
+    },
   },
   data: () => ({
     dialog: false,
-    roomDetails: {
-      roomNumber: null,
-      roomFloor: null,
-      roomType: "",
-    },
   }),
   computed: {
     categories: function () {
@@ -145,11 +144,16 @@ export default {
       this.$refs.roomForm.reset();
     },
     proceedButton: function () {
-      if (!this.createRoom) {
+      if (this.dialogFunction.changeRoomSatus) {
         this.$emit("update-request");
-      } else {
+      } else if (this.dialogFunction.createRoom) {
         if (this.$refs.roomForm.validate()) {
           this.$emit("add-request", this.roomDetails);
+          this.$refs.roomForm.reset();
+        }
+      } else {
+        if (this.$refs.roomForm.validate()) {
+          this.$emit("edit-room-request", this.roomDetails);
           this.$refs.roomForm.reset();
         }
       }
