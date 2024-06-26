@@ -6,7 +6,7 @@
           class="transparent-bg text-subtitle-1 font-weight-bold text-uppercase pa-0"
           >{{ addAmenity ? "Add Amenity" : "Edit Amenity" }}</v-card-title
         >
-        <div class="my-8">
+        <div class="mt-4 mb-8">
           <div class="text-caption ml-1 mb-1">Amenity Name</div>
           <v-text-field
             v-model="amenityName"

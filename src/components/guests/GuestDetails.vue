@@ -125,18 +125,24 @@
     </div>
     <DeleteDialog
       :activator="deleteDialog"
+      :deleteMeta="meta"
       @reset-activator="resetActivator"
-      @delete-guest="deleteEvent"
+      @delete-event="deleteRequest"
     />
   </v-container>
 </template>
 
 <script>
 import DeleteDialog from "../dialogs/DeleteDialog.vue";
-import { mapState, mapActions } from "vuex";
 export default {
   name: "GuestDetails",
   components: { DeleteDialog },
+  props: {
+    guest: {
+      type: Object,
+      required: true
+    }
+  },
   data: () => ({
     headers: [
       { text: "Status", value: "status" },
@@ -166,31 +172,23 @@ export default {
     detailCols: "auto",
     title: "text-h5 font-weight-bold",
     deleteDialog: false,
+    meta: {},
     confirmationRoute: ["RESERVED"],
     checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
   }),
   methods: {
-    ...mapActions("guest", ["fetchGuest", "deleteGuest"]),
     dialogActivator: function () {
-      this.deleteDialog = !this.deleteDialog;
+      this.meta.targetDeletion = "guest"
+      this.deleteDialog = true;
     },
     resetActivator: function () {
-      this.deleteDialog = !this.deleteDialog;
+      this.deleteDialog = false;
     },
-    deleteEvent: function () {
-      this.deleteGuest(this.guest.id)
-        .catch((error) => {
-          console.log("Error deleting guest: ", error);
-        })
-        .finally(() => {
+    deleteRequest: function () {
+      this.$emit("delete-event", this.guest.id)
+        .then(() => {
           this.resetActivator;
         });
-    },
-    fetchGuestDetails: function () {
-      const id = this.$route.params.id;
-      this.fetchGuest(id).catch((error) => {
-        console.error("Error fetching guest details: ", error);
-      });
     },
     pushToTransactionRoute: function (value) {
       console.log(value);
@@ -216,9 +214,6 @@ export default {
     },
   },
   computed: {
-    ...mapState("guest", {
-      guest: "guest",
-    }),
     size() {
       return this.$vuetify.breakpoint;
     },
@@ -251,9 +246,6 @@ export default {
 
       return guestDetails;
     },
-  },
-  created() {
-    this.fetchGuestDetails();
   },
   watch: {
     "guest.transactions": {

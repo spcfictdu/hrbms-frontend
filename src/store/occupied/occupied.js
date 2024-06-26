@@ -9,22 +9,22 @@ export const occupied = {
   namespaced: true,
   state: () => ({
     roomStatus: {},
-    messageProperties: {
-      type: "",
+    alertProperties: {
       message: "",
+      type: "",
     },
     createRoomDialog: false,
   }),
   getters: {},
   mutations: {
     SET_ROOM_STATUS: (state, data) => (state.roomStatus = data),
-    SET_MESSAGE_PROPERTIES: (state, data) => (state.messageProperties = data),
+    SET_ALERT_PROPERTIES: (state, data) => (state.alertProperties = data),
     SET_CREATE_ROOM_DIALOG: (state, data) => (state.createRoomDialog = data),
   },
   actions: {
     fetchRoomStatus: function ({ commit }, queryParams = {}) {
       const url = `room-status`;
-      const queryUrl = functions.query(url, queryParams)
+      const queryUrl = functions.query(url, queryParams);
       return this.$axios
         .get(queryUrl)
         .then((response) => {
@@ -41,15 +41,15 @@ export const occupied = {
         .put(url, data)
         .then((response) => {
           dispatch("fetchRoomStatus", roomRefNum);
-          commit("SET_MESSAGE_PROPERTIES", {
+          commit("SET_ALERT_PROPERTIES", {
             message: response.data.message,
             type: "success",
           });
           console.log(response.data.message);
         })
         .catch((error) => {
-          commit("SET_MESSAGE_PROPERTIES", {
-            message: response.data.message,
+          commit("SET_ALERT_PROPERTIES", {
+            message: error.response.data.message,
             type: "error",
           });
           console.error(error.response.data.message);
@@ -60,4 +60,3 @@ export const occupied = {
     },
   },
 };
-

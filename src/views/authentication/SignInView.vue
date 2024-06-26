@@ -25,9 +25,11 @@
         <v-text-field v-model="user.username" outlined label="Username" />
         <v-text-field
           v-model="user.password"
-          type="password"
+          :type="showPassword ? 'text' : 'password'"
           outlined
           label="Password"
+          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          @click:append="showPassword = !showPassword"
         />
 
         <v-btn
@@ -57,6 +59,7 @@ export default {
 
     isShowAlert: false,
     loading: false,
+    showPassword: false,
   }),
 
   computed: {

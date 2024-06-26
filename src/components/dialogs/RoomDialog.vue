@@ -3,7 +3,7 @@
     <v-form ref="roomForm">
       <v-card class="pa-8" rounded="lg" flat v-if="dialogFunction.changeRoomSatus">
         <v-card-title
-          class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0 mb-4"
+          class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0"
           >Change Room Status Confirmation</v-card-title
         >
         <p class="py-2 py-sm-4 text-caption text-sm-body-2 font-weight-regular">
@@ -29,12 +29,12 @@
           </v-row>
         </v-card-actions>
       </v-card>
-      <v-card class="pa-8" rounded="lg" flat v-else>
+      <v-card class="pa-8" rounded="lg" flat v-else-if="dialogFunction.createRoom || dialogFunction.editRoom">
         <v-card-title
           class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0 mb-4"
           >{{ dialogFunction.createRoom ? 'Add New Room' : 'Edit Room'}}</v-card-title
         >
-        <div class="my-8">
+        <div class="mt-4 mb-8">
           <div class="mb-2">
             <div class="text-caption ml-1 mb-1">Room Number</div>
             <v-text-field

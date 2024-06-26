@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row>
+    <v-row v-if="size.xs !== true">
       <v-col cols="3" v-for="(roomStatus, index) in buttonDisplay" :key="index">
         <v-btn
           height="75"
@@ -38,63 +38,189 @@
         </v-btn>
       </v-col>
     </v-row>
+    <v-row v-else>
+      <v-col cols="12" class="d-block d-sm-none">
+        <v-autocomplete
+          rounded
+          filled
+          background-color="white"
+          hide-details="auto"
+          label="Select a Room Status"
+          :items="buttonDisplay"
+          item-text="title"
+          item-value="title"
+          v-model="selectedStatus"
+        >
+          <template v-slot:item="{ item }">
+            <v-row>
+              <v-col>{{ item.title }}</v-col>
+            </v-row>
+          </template>
+        </v-autocomplete>
+      </v-col>
+    </v-row>
     <v-divider class="my-5" />
     <v-row>
-      <v-col cols="12">
+      <v-col class="text-h6 font-weight-bold ml-2" v-if="size.xs === true">
+        {{ mobileHeader }}
+      </v-col>
+      <v-col cols="12" :class="{ 'pt-0': size.xs === true }">
         <v-card
           elevation="0"
           v-for="(category, index) in categoriesContent"
           :key="index"
           class="mb-5"
         >
-          <v-card-title class="text-subtitle-1 font-weight-bold mb-3">
+          <v-card-title
+            :class="[
+              size.xs !== true
+                ? 'text-subtitle-1 font-weight-bold mb-3'
+                : 'text-subtitle-1 font-weight-bold pt-3',
+            ]"
+          >
             {{ category.title }}
           </v-card-title>
-          <v-card-text v-if="category.content.length > 0">
+          <div v-if="category.content.length > 0">
             <v-row
               v-for="(content, subIndex) in category.content"
               :key="subIndex"
-              :class="subIndex < category.content.length - 1 ? 'mb-3' : ''"
-              class="mx-3"
+              :class="[
+                subIndex < category.content.length - 1 ? 'mb-3' : '',
+                size.xs !== true ? 'mx-5' : 'mx-2',
+              ]"
             >
-              <v-col cols="2">ROOM {{ content.roomNumber }}</v-col>
-              <v-col cols="2">Floor 7</v-col>
-              <v-col>Guest: {{ content.guest }}</v-col>
-              <v-col class="d-flex justify-end" cols="2"
-                ><v-chip
-                  :color="chipColor(content.status)"
-                  dark
-                  small
-                  class="text-overline"
-                  >{{ content.status }}</v-chip
-                ></v-col
-              >
-              <v-col class="d-flex justify-end" cols="2"
-                ><v-menu offset-x right rounded>
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-btn icon v-bind="attrs" v-on="on"
-                      ><v-icon>mdi-dots-vertical</v-icon></v-btn
-                    >
-                  </template>
-                  <v-list dense class="pa-0">
-                    <v-list-item
-                      v-for="(option, optionsIndex) in statusOptions"
-                      :key="optionsIndex"
-                      :class="{
-                        'menu-border': index < statusOptions.length - 1,
-                        'warning--text': option === 'Delete',
-                      }"
-                      @click="changeRoomSatus(option, content)"
-                      ><v-list-item-title
-                        class="text-subtitle-2 font-weight-regular"
-                        >{{ option }}</v-list-item-title
-                      ></v-list-item
-                    >
-                  </v-list>
-                </v-menu></v-col
-              >
+              <template v-if="size.xs !== true">
+                <v-col
+                  :cols="
+                    selectedStatus === 'OCCUPIED' ||
+                    selectedStatus === 'UNCLEAN'
+                      ? 2
+                      : 3
+                  "
+                  class="text-subtitle-2"
+                  >ROOM {{ content.roomNumber }}</v-col
+                >
+                <v-col
+                  :cols="
+                    selectedStatus === 'OCCUPIED' ||
+                    selectedStatus === 'UNCLEAN'
+                      ? 2
+                      : 3
+                  "
+                  class="text-subtitle-2"
+                  >Floor {{ content.roomFloor }}</v-col
+                >
+                <v-col
+                  cols="4"
+                  v-if="
+                    selectedStatus === 'OCCUPIED' ||
+                    selectedStatus === 'UNCLEAN'
+                  "
+                  class="text-subtitle-2"
+                  >Guest: {{ content.guest }}</v-col
+                >
+                <v-col
+                  :class="
+                    selectedStatus === 'OCCUPIED' ||
+                    selectedStatus === 'UNCLEAN'
+                      ? 'd-flex justify-center'
+                      : 'd-flex justify-center'
+                  "
+                  cols="3"
+                  ><v-chip
+                    :color="chipColor(content.status)"
+                    dark
+                    small
+                    class="text-overline"
+                    >{{ content.status }}</v-chip
+                  ></v-col
+                >
+                <v-col
+                  class="d-flex justify-end"
+                  :cols="selectedStatus === 'OCCUPIED' || selectedStatus === 'UNCLEAN' ? 1 : 3"
+                  ><v-menu
+                    :offset-x="offsetX"
+                    :offset-y="offsetY"
+                    right
+                    rounded
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn icon v-bind="attrs" v-on="on"
+                        ><v-icon>mdi-dots-vertical</v-icon></v-btn
+                      >
+                    </template>
+                    <v-list dense class="pa-0">
+                      <v-list-item
+                        v-for="(option, optionsIndex) in statusOptions"
+                        :key="optionsIndex"
+                        :class="{
+                          'menu-border': index < statusOptions.length - 1,
+                          'warning--text': option === 'Delete',
+                        }"
+                        @click="changeRoomSatus(option, content)"
+                        ><v-list-item-title
+                          class="text-subtitle-2 font-weight-regular"
+                          >{{ option }}</v-list-item-title
+                        ></v-list-item
+                      >
+                    </v-list>
+                  </v-menu></v-col
+                >
+              </template>
+              <template v-else>
+                <v-col>
+                  <v-col cols="12" class="text-subtitle-2"
+                    >ROOM {{ content.roomNumber }}</v-col
+                  >
+                  <v-col cols="12" class="text-subtitle-2"
+                    >Floor {{ content.roomFloor }}</v-col
+                  >
+                  <v-col
+                    cols="12"
+                    class="text-subtitle-2"
+                    v-if="
+                      selectedStatus === 'OCCUPIED' ||
+                      selectedStatus === 'UNCLEAN'
+                    "
+                    >Guest: {{ content.guest }}</v-col
+                  >
+                  <v-col cols="12"
+                    ><v-chip
+                      :color="chipColor(content.status)"
+                      dark
+                      small
+                      class="text-overline"
+                      >{{ content.status }}</v-chip
+                    ></v-col
+                  >
+                </v-col>
+                <v-col class="d-flex justify-end" cols="1"
+                  ><v-menu offset-y right rounded>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn icon v-bind="attrs" v-on="on"
+                        ><v-icon>mdi-dots-vertical</v-icon></v-btn
+                      >
+                    </template>
+                    <v-list dense class="pa-0">
+                      <v-list-item
+                        v-for="(option, optionsIndex) in statusOptions"
+                        :key="optionsIndex"
+                        :class="{
+                          'menu-border': index < statusOptions.length - 1,
+                          'warning--text': option === 'Delete',
+                        }"
+                        @click="changeRoomSatus(option, content)"
+                        ><v-list-item-title
+                          class="text-subtitle-2 font-weight-regular"
+                          >{{ option }}</v-list-item-title
+                        ></v-list-item
+                      >
+                    </v-list>
+                  </v-menu></v-col
+                >
+              </template>
             </v-row>
-          </v-card-text>
+          </div>
           <v-card-text v-else>
             <v-row>
               <v-col cols="12" class="d-flex justify-center">
@@ -165,6 +291,8 @@ export default {
       roomType: "",
       status: "",
     },
+    offsetX: true,
+    offsetY: false,
   }),
   computed: {
     buttonDisplay() {
@@ -223,11 +351,23 @@ export default {
 
       switch (this.selectedStatus) {
         case "AVAILABLE":
-          return (options = ["Occupied", "Unclean", "Unallocated"]);
+          return (options = [
+            "Occupied",
+            "Unclean",
+            "Unallocated",
+            "Edit",
+            "Delete",
+          ]);
         case "OCCUPIED":
           return (options = ["Available", "Unclean", "Unallocated"]);
         case "UNCLEAN":
-          return (options = ["Available", "Occupied", "Unallocated"]);
+          return (options = [
+            "Available",
+            "Occupied",
+            "Unallocated",
+            "Edit",
+            "Delete",
+          ]);
         case "UNALLOCATED":
           return (options = [
             "Available",
@@ -240,6 +380,26 @@ export default {
     },
     size: function () {
       return this.$vuetify.breakpoint;
+    },
+    mobileHeader: function () {
+      let numberRooms = null;
+
+      this.buttonDisplay.forEach((category) => {
+        if (category.title === this.selectedStatus) {
+          numberRooms = category.value;
+        }
+      });
+
+      let remainingLetters = this.selectedStatus
+        .split("")
+        .slice(1, this.selectedStatus.length)
+        .join("")
+        .toLowerCase();
+      let firstLetter = this.selectedStatus.split("").slice(0, 1).join("");
+
+      let status = firstLetter + remainingLetters;
+
+      return numberRooms + " " + status + " Rooms";
     },
   },
   methods: {
@@ -366,15 +526,16 @@ export default {
         this.dialogFunction.createRoom = newVal;
       },
     },
-    // size: {
-    //   immediate: true,
-    //   deep: true,
-    //   handler: function (newVal) {
-    //     switch (newVal) {
-    //       case "md":
-    //     }
-    //   }
-    // }
+    size: {
+      immediate: true,
+      deep: true,
+      handler: function (newVal) {
+        if (newVal.sm === true) {
+          this.offsetX = false;
+          this.offsetY = true;
+        }
+      },
+    },
   },
 };
 </script>

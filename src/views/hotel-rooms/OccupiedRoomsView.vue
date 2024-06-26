@@ -6,7 +6,7 @@
       class="w-full"
       transition="scroll-y-transition"
     >
-      {{ alertProperties.message }}
+      {{ alertMessage }}
     </v-alert>
     <OccupiedRoomsComponent
       :roomStatus="roomStatus"
@@ -34,11 +34,12 @@ export default {
   data: () => ({
     alert: false,
     status: null,
+    alertMessage: ""
   }),
   computed: {
     ...mapState("occupied", {
       roomStatus: "roomStatus",
-      alertProperties: "messageProperties",
+      messageProperties: "alertProperties",
       createRoomDialog: "createRoomDialog",
     }),
     ...mapState("roomCategories", {
@@ -66,13 +67,13 @@ export default {
       this.createRoom(payload);
     },
     deleteRoomEvent: function (referenceNumber) {
-      this.deleteRoom(referenceNumber)
+      this.deleteRoom(referenceNumber);
     },
-    editRoomEvent: function ({referenceNumber, payload}) {
+    editRoomEvent: function ({ referenceNumber, payload }) {
       this.editRoom({
         refNum: referenceNumber,
-        data: payload
-      })
+        data: payload,
+      });
     },
     triggerAlert: function (value) {
       this.alert = value;
@@ -90,13 +91,35 @@ export default {
       immediate: true,
       deep: true,
       handler: function (value) {
+        console.log(value);
         if (value.type !== "") {
           this.status = value.type;
+          this.alertMessage = value.message;
           this.triggerAlert(true);
           setTimeout(() => {
             this.triggerAlert(false);
             value.type = "";
             value.message = "";
+            this.alertMessage = "";
+            this.status = null;
+          }, 3000);
+        }
+      },
+    },
+    messageProperties: {
+      immediate: true,
+      deep: true,
+      handler: function (value) {
+        console.log(value);
+        if (value.type !== "") {
+          this.status = value.type;
+          this.alertMessage = value.message;
+          this.triggerAlert(true);
+          setTimeout(() => {
+            this.triggerAlert(false);
+            value.type = "";
+            value.message = "";
+            this.alertMessage = "";
             this.status = null;
           }, 3000);
         }

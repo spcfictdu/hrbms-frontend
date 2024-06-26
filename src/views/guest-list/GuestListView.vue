@@ -7,10 +7,6 @@
     }"
     v-if="guests"
   >
-    <v-alert
-    :value="showAlert"
-    >
-    </v-alert>
     <GuestListTable :guests="guests" @query_params="paginationGuestTable" />
   </div>
 </template>
