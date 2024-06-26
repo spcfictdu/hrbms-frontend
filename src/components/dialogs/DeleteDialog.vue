@@ -2,7 +2,7 @@
   <v-dialog max-width="450" v-model="dialog" overlay-opacity="0.2">
     <v-card class="pa-8" rounded="lg" flat>
       <v-card-title
-        class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0 mb-4"
+        class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0"
         >Delete Confirmation</v-card-title
       >
       <p class="py-2 py-sm-4 text-caption text-sm-body-2 font-weight-regular">

@@ -16,7 +16,7 @@ export default [
   {
     path: "/guests/:id",
     name: "guest",
-    component: () => import("@/components/guests/GuestDetails.vue"),
+    component: () => import("@/views/guest-list/GuestDetailsView.vue"),
     meta: {
       selectedMainNav: "Guests",
     },

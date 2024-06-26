@@ -10,16 +10,16 @@ export const guest = {
   state: () => ({
     guests: [],
     guest: {},
-    deleteMessage: {
+    alertProperties: {
       message: "",
-      status: "",
+      type: "",
     },
   }),
   getters: {},
   mutations: {
     SET_GUESTS: (state, data) => (state.guests = data),
     SET_GUEST: (state, data) => (state.guest = data),
-    SET_DELETE_STATUS: (state, data) => (state.deleteMessage = data),
+    SET_ALERT_PROPERTIES: (state, data) => (state.alertProperties = data),
   },
   actions: {
     fetchGuests: function ({ commit }, queryParams = {}) {
@@ -53,18 +53,18 @@ export const guest = {
           this.$router.replace({
             name: "Guests",
           });
-          commit("SET_DELETE_STATUS", {
+          commit("SET_ALERT_PROPERTIES", {
             message: response.data.message,
-            status: "SUCCESS",
+            status: "success",
           });
         })
         .catch((error) => {
           this.$router.replace({
             name: "Guests",
           });
-          commit("SET_DELETE_STATUS", {
+          commit("SET_ALERT_PROPERTIES", {
             message: error.response.data.message,
-            status: "ERROR",
+            status: "error",
           });
         });
     },
