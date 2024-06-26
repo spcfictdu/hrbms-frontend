@@ -39,6 +39,15 @@ export default {
     ...mapState("transaction", {
       transactions: "transactions",
     }),
+    ...mapState("transaction", {
+      transactionStatus: "transactionStatus",
+      transactions: "transactions",
+    }),
+    handleAlertType() {
+      return this.transactionStatus.status !== ""
+          ? this.transactionStatus.status.toLowerCase()
+          : "success";
+    },
   },
   methods: {
     ...mapActions("transaction", ["fetchTransactions"]),
@@ -64,17 +73,6 @@ export default {
     },
     triggerPagination: function (query_params) {
       this.fetchTransactions(query_params);
-    },
-  },
-  computed: {
-    ...mapState("transaction", {
-      transactionStatus: "transactionStatus",
-      transactions: "transactions",
-    }),
-    handleAlertType() {
-      return this.transactionStatus.status !== ""
-        ? this.transactionStatus.status.toLowerCase()
-        : "success";
     },
   },
   watch: {

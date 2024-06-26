@@ -2,13 +2,15 @@
   <div>
     <v-card elevation="0" class="sign-in-card ma-auto">
       <v-avatar size="128" class="mt-n16 fcpc-logo">
-        <v-img src="../../assets/FCPCLogo2.jpg" />
+        <v-img src="../../assets/FCPCLogo2.jpg"/>
       </v-avatar>
       <v-card-title class="text-subtitle-1 text-sm-h5">{{
-        schoolName
-      }}</v-card-title>
+          schoolName
+        }}
+      </v-card-title>
       <v-card-subtitle class="text-subtitle-1 mt-2 font-weight-bold"
-        >SIGN IN</v-card-subtitle
+      >SIGN IN
+      </v-card-subtitle
       >
 
       <div class="alert-container">
@@ -18,24 +20,24 @@
       </div>
 
       <v-form
-        ref="form"
-        class="text-fields-container"
-        @submit.prevent="authenticateUser"
+          ref="form"
+          class="text-fields-container"
+          @submit.prevent="authenticateUser"
       >
-        <v-text-field v-model="user.username" outlined label="Username" />
+        <v-text-field v-model="user.username" outlined label="Username"/>
         <v-text-field
-          v-model="user.password"
-          type="password"
-          outlined
-          label="Password"
+            v-model="user.password"
+            type="password"
+            outlined
+            label="Password"
         />
 
         <v-btn
-          block
-          color="primary"
-          elevation="0"
-          :loading="loading"
-          type="submit"
+            block
+            color="primary"
+            elevation="0"
+            :loading="loading"
+            type="submit"
         >
           SIGN IN
         </v-btn>
@@ -46,6 +48,7 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
+
 export default {
   name: "SignInView",
   data: () => ({
@@ -54,7 +57,6 @@ export default {
       username: null,
       password: null,
     },
-
     isShowAlert: false,
     loading: false,
   }),

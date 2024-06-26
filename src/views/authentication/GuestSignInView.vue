@@ -1,9 +1,9 @@
 <template>
   <div>
-    <v-card elevation="0" class="sign-in-card ma-auto transition-fast-in-fast-out">
+    <v-card elevation="0" class="sign-in-card ma-auto">
       <div class="sign-in-container">
         <v-avatar size="128" class="mt-n16 fcpc-logo">
-          <v-img src="../../assets/FCPCLogo2.jpg" />
+          <v-img src="../../assets/FCPCLogo2.jpg"/>
         </v-avatar>
         <v-card-title class="sign-in-title">{{ schoolName }}</v-card-title>
         <v-card-subtitle class="text-caption font-weight-regular white--text">
@@ -18,63 +18,68 @@
       </div>
 
       <v-form
-        ref="form"
-        class="text-fields-container"
-        @submit.prevent="authenticateUser"
+          ref="form"
+          class="text-fields-container"
+          @submit.prevent="authenticateUser"
       >
-        <v-slide-x-transition mode="out-in">
+        <transition name="fade" mode="out-in">
           <div v-if="!isRegister" key="login">
             <div class="pb-4">
               <label-slot>
-                <template #label> Email </template>
+                <template #label> Email</template>
               </label-slot>
               <v-text-field
-                type="email"
-                v-model="user.username"
-                outlined
-                dense
-                rounded
-                hide-details="auto"
+                  type="email"
+                  v-model="user.username"
+                  outlined
+                  dense
+                  rounded
+                  hide-details="auto"
+                  :rules="rules.username"
               />
             </div>
 
             <div class="pb-4">
               <label-slot>
-                <template #label> Password </template>
+                <template #label> Password</template>
               </label-slot>
               <v-text-field
-                v-model="user.password"
-                type="password"
-                outlined
-                dense
-                rounded
-                hide-details="auto"
+                  v-model="user.password"
+                  type="password"
+                  outlined
+                  dense
+                  rounded
+                  hide-details="auto"
+                  :rules="rules.password"
               />
             </div>
           </div>
-        </v-slide-x-transition>
-
-        <v-slide-x-reverse-transition mode="out-in">
-          <register-form v-if="isRegister" key="register" />
-        </v-slide-x-reverse-transition>
+          <div v-else key="register">
+            <register-form @register-data="assignPayload"/>
+          </div>
+        </transition>
 
         <v-btn
-          class="mt-4"
-          block
-          color="primary"
-          depressed
-          rounded
-          :loading="loading"
-          type="submit"
+            class="mt-4"
+            block
+            color="primary"
+            depressed
+            rounded
+            :loading="loading"
+            type="submit"
         >
-          LOG IN
+          {{ accountStatusText.buttonText }}
         </v-btn>
 
         <p class="mt-4 mb-0 text-caption text-center">
           {{ accountStatusText.text }}?
-          <span class="primary--text font-weight-bold" @click="showRegister">{{
-            accountStatusText.buttonText
-          }}</span>
+          <span
+              style="cursor: pointer"
+              @click="showRegister"
+              class="primary--text font-weight-bold"
+          >{{ accountStatusText.anchorText }}
+          </span
+          >
         </p>
       </v-form>
     </v-card>
@@ -96,6 +101,9 @@ export default {
       username: null,
       password: null,
     },
+    payload: {
+      role: "GUEST",
+    },
     isShowAlert: false,
     loading: false,
   }),
@@ -105,21 +113,41 @@ export default {
       loginStatus: (state) => state.loginStatus,
       currentUser: (state) => state.currentUser,
     }),
-    accountStatusText() {
+    accountStatusText: function () {
       return this.isRegister
-        ? { text: "Already have an account", buttonText: "Sign In" }
-        : { text: "Don't have an account", buttonText: "Register" };
+          ? { text: "Already have an account", buttonText: "Register", anchorText: "Sign In" }
+          : { text: "Don't have an account", buttonText: "Log In", anchorText: "Register" };
     },
+    rules: function () {
+      let errors = {};
+      errors.username = [(v) => !!v || "Username is required"];
+      errors.password = [(v) => !!v || "Password is required"];
+      return errors;
+    }
   },
 
   methods: {
-    ...mapActions("authentication", ["login"]),
-
+    ...mapActions("authentication", ["login", "register"]),
+    assignPayload: function (payload) {
+      for (const key in payload) {
+        if (Object.hasOwnProperty.call(payload, key)) {
+          this.$set(this.payload, key, payload[key]);
+        }
+      }
+    },
     async authenticateUser() {
       if (this.$refs.form.validate()) {
         this.loading = true;
-        await this.login(this.user);
-        this.loading = false;
+
+        if (this.isRegister) {
+          await this.register(this.payload).finally(() => {
+            this.loading = false;
+          });
+        } else {
+          await this.login(this.user).finally(() => {
+            this.loading = false;
+          });
+        }
       }
     },
 
@@ -167,7 +195,7 @@ export default {
   width: 100%;
   max-height: 150px;
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-    url(../../assets/bgImage-3.png) no-repeat center/cover;
+  url(../../assets/bgImage-3.png) no-repeat center/cover;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -195,4 +223,17 @@ export default {
 .alert-container {
   width: 100%;
 }
+
+/* Ensure form-wrapper transitions height smoothly */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s, height 0.5s;
+}
+
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
+  height: auto; /* Ensures proper transition */
+}
+
 </style>

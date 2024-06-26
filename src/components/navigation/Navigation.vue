@@ -3,18 +3,18 @@
     <v-container :class="{ 'xl-padding': $vuetify.breakpoint.xl }">
       <v-row no-gutters>
         <v-col
-          cols="0"
-          sm="0"
-          md="3"
-          xl="4"
-          class="d-none d-md-flex justify-start"
+            cols="0"
+            sm="0"
+            md="3"
+            xl="4"
+            class="d-none d-md-flex justify-start"
         >
           <!-- Shows only on medium and up breakpoints -->
           <div
-            class="white--text d-none d-md-flex align-center w-full justify-start"
+              class="white--text d-none d-md-flex align-center w-full justify-start"
           >
             <v-avatar size="40">
-              <img src="../../assets/FCPCLogo.png" />
+              <img src="../../assets/FCPCLogo.png"/>
             </v-avatar>
             <div class="ml-2 d-none d-lg-flex flex-column">
               <p class="text-subtitle-2 pa-0 ma-0">{{ institution.acronym }}</p>
@@ -24,68 +24,70 @@
         </v-col>
 
         <v-col
-          cols="12"
-          sm="8"
-          md="6"
-          xl="4"
-          offset-sm="2"
-          offset-md="0"
-          class="d-md-flex align-center justify-center"
+            cols="12"
+            sm="8"
+            md="6"
+            xl="4"
+            offset-sm="2"
+            offset-md="0"
+            class="d-md-flex align-center justify-center"
         >
           <!-- Text variant -->
           <div
-            class="d-none d-md-flex flex-row align-center primary justify-center"
+              class="d-none d-md-flex flex-row align-center primary justify-center"
           >
             <v-btn
-              small
-              :plain="!isActive(route)"
-              :text="isActive(route)"
-              elevation="0"
-              class="white--text"
-              v-for="(route, index) in routes"
-              :key="'route' + index"
-              @click="redirect(route)"
-              >{{ route.name.toUpperCase() }}</v-btn
+                small
+                :plain="!isActive(route)"
+                :text="isActive(route)"
+                elevation="0"
+                class="white--text"
+                v-for="(route, index) in routes"
+                :key="'route' + index"
+                @click="redirect(route)"
+            >{{ route.name.toUpperCase() }}
+            </v-btn
             >
           </div>
 
           <!-- Icon variant -->
           <div
-            class="w-full d-flex d-md-none align-center justify-space-around mb-5 mt-2"
+              class="w-full d-flex d-md-none align-center justify-space-around mb-5 mt-2"
           >
             <div
-              class="d-flex flex-column align-center justify-space-around"
-              v-for="(route, index) in routes"
-              :key="'routeIcon' + index"
+                class="d-flex flex-column align-center justify-space-around"
+                v-for="(route, index) in routes"
+                :key="'routeIcon' + index"
             >
               <v-btn
-                fab
-                :outlined="!isActive(route)"
-                x-small
-                elevation="0"
-                color="white"
-                @click="redirect(route)"
+                  fab
+                  :outlined="!isActive(route)"
+                  x-small
+                  elevation="0"
+                  color="white"
+                  @click="redirect(route)"
               >
                 <v-icon :color="!isActive(route) ? 'white' : 'primary'">{{
-                  route.icon
-                }}</v-icon>
+                    route.icon
+                  }}
+                </v-icon>
               </v-btn>
 
               <p class="text-caption mb-0 mt-2 white--text">{{ route.name }}</p>
             </div>
 
-            <v-divider vertical class="white" />
+            <v-divider vertical class="white"/>
 
             <div class="d-flex flex-column align-center justify-end">
               <v-btn
-                fab
-                outlined
-                x-small
-                elevation="0"
-                color="white"
-                @click="logout"
+                  fab
+                  outlined
+                  x-small
+                  elevation="0"
+                  color="white"
+                  @click="triggerLogout"
               >
-                <v-icon> mdi-logout-variant </v-icon>
+                <v-icon> mdi-logout-variant</v-icon>
               </v-btn>
               <p class="text-caption mb-0 mt-2 white--text">Sign Out</p>
             </div>
@@ -93,28 +95,28 @@
         </v-col>
 
         <v-col
-          cols="0"
-          sm="0"
-          md="3"
-          xl="4"
-          class="d-none d-md-flex justify-end"
+            cols="0"
+            sm="0"
+            md="3"
+            xl="4"
+            class="d-none d-md-flex justify-end"
         >
           <!-- Shows only on medium and up breakpoints -->
           <div class="w-full d-none d-md-flex align-center justify-end">
             <p
-              class="text-subtitle-2 d-none d-lg-flex pa-0 ma-0 mr-2 white--text"
+                class="text-subtitle-2 d-none d-lg-flex pa-0 ma-0 mr-2 white--text"
             >
               Sign out
             </p>
             <v-btn
-              fab
-              outlined
-              small
-              elevation="0"
-              color="white"
-              @click="logout"
+                fab
+                outlined
+                small
+                elevation="0"
+                color="white"
+                @click="triggerLogout"
             >
-              <v-icon size="20"> mdi-logout-variant </v-icon>
+              <v-icon size="20"> mdi-logout-variant</v-icon>
             </v-btn>
           </div>
         </v-col>
@@ -125,6 +127,7 @@
 
 <script>
 import { mapActions } from "vuex";
+import { auth } from "@/utils/auth";
 
 export default {
   name: "Navigation",
@@ -172,8 +175,8 @@ export default {
   computed: {
     activeRouteButton: function () {
       return this.activeButton
-        ? this.activeButton
-        : this.$route.meta.selectedMainNav;
+          ? this.activeButton
+          : this.$route.meta.selectedMainNav;
     },
   },
 
@@ -187,13 +190,17 @@ export default {
 
     isActive: function (route) {
       if (
-        route.childRouteNames.includes(this.activeRouteButton) ||
-        this.activeRouteButton === route.name
+          route.childRouteNames.includes(this.activeRouteButton) ||
+          this.activeRouteButton === route.name
       ) {
         return true;
       }
       return false;
     },
+
+    triggerLogout: function () {
+      this.logout(auth.user().role);
+    }
   },
 
   mounted() {

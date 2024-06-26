@@ -2,82 +2,94 @@
   <div>
     <div class="pb-4">
       <label-slot>
-        <template #label> First Name </template>
+        <template #label> First Name</template>
       </label-slot>
       <v-text-field
-        v-model="payload.firstName"
-        outlined
-        dense
-        rounded
-        hide-details="auto"
+          v-model="payload.firstName"
+          outlined
+          dense
+          rounded
+          hide-details="auto"
+          @change="emitTransaction"
+          :rules="rules.firstName"
       />
     </div>
 
     <div class="pb-4">
       <label-slot>
-        <template #label> Middle Name </template>
+        <template #label> Middle Name</template>
       </label-slot>
       <v-text-field
-        v-model="payload.middleName"
-        outlined
-        dense
-        rounded
-        hide-details="auto"
+          v-model="payload.middleName"
+          outlined
+          dense
+          rounded
+          hide-details="auto"
+          @change="emitTransaction"
+          :rules="rules.middleName"
       />
     </div>
 
     <div class="pb-4">
       <label-slot>
-        <template #label> Last Name </template>
+        <template #label> Last Name</template>
       </label-slot>
       <v-text-field
-        v-model="payload.lastName"
-        outlined
-        dense
-        rounded
-        hide-details="auto"
+          v-model="payload.lastName"
+          outlined
+          dense
+          rounded
+          hide-details="auto"
+          @change="emitTransaction"
+          :rules="rules.lastName"
       />
     </div>
 
     <div class="pb-4">
       <label-slot>
-        <template #label> Mobile Number </template>
+        <template #label> Mobile Number</template>
       </label-slot>
       <v-text-field
-        type="number"
-        v-model="payload.mobileNumber"
-        outlined
-        dense
-        rounded
-        hide-details="auto"
+          type="number"
+          v-model="payload.mobileNumber"
+          outlined
+          dense
+          rounded
+          hide-details="auto"
+          @change="emitTransaction"
+          :rules="rules.mobileNumber"
       />
     </div>
 
     <div class="pb-4">
       <label-slot>
-        <template #label> Email </template>
+        <template #label> Email</template>
       </label-slot>
       <v-text-field
-        type="email"
-        v-model="payload.email"
-        outlined
-        dense
-        rounded
-        hide-details="auto"
+          type="email"
+          v-model="payload.email"
+          outlined
+          dense
+          rounded
+          hide-details="auto"
+          @change="emitTransaction"
+          :rules="rules.email"
       />
     </div>
 
     <div class="pb-4">
       <label-slot>
-        <template #label> Password </template>
+        <template #label> Password</template>
       </label-slot>
       <v-text-field
-        v-model="payload.password"
-        type="password"
-        outlined
-        dense
-        rounded
-        hide-details="auto"
+          v-model="payload.password"
+          type="password"
+          outlined
+          dense
+          rounded
+          hide-details="auto"
+          @change="emitTransaction"
+          :rules="rules.password"
       />
     </div>
   </div>
@@ -85,6 +97,7 @@
 
 <script>
 import LabelSlot from '@/components/slots/LabelSlot.vue';
+
 export default {
   name: "RegisterForm",
   components: { LabelSlot },
@@ -99,7 +112,21 @@ export default {
     }
   }),
   methods: {
-
+    emitTransaction: function () {
+      this.$emit("register-data", this.payload);
+    }
+  },
+  computed: {
+    rules: function () {
+      let errors = {};
+      errors.firstName = [(v) => !!v || "First name is required"];
+      errors.middleName = [];
+      errors.lastName = [(v) => !!v || "Last name is required"];
+      errors.mobileNumber = [(v) => !!v || "Mobile number is required"];
+      errors.email = [(v) => !!v || "email is required"];
+      errors.password = [(v) => !!v || "Password is required"];
+      return errors;
+    }
   }
 };
 </script>

@@ -6,31 +6,25 @@ import roomsList from "./hotel-rooms/rooms-list";
 import guestList from "./guest-list/guest-list";
 import transaction from "./transaction/transaction";
 import authentication from "./authentication/authentication";
+import publicRoutes from "./public/public-routes";
+import dashboardRoutes from "./dashboard/dashboard";
 
 Vue.use(VueRouter);
 
-
-
 const routes = [
-  {
-    path: "/",
-    name: "Dashboard",
-    component: () =>
-      import(
-        /* webpackChunkName: "index" */ "@/views/dashboard/DashboardView.vue"
-      ),
-  },
+  ...dashboardRoutes,
   ...roomsList,
   ...guestList,
   ...transaction,
   ...authentication,
+  ...publicRoutes,
 ];
 
 const router = new VueRouter({
   mode: "history",
   base: process.env.BASE_URL,
   routes,
-  scrollBehavior (to, from, savedPosition) {
+  scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
       return savedPosition
     } else {
@@ -40,10 +34,15 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  const signInRoutes = ["Sign In", "Guest Sign In"];
   let loggedIn = auth.user();
+  const signInRoutes = ["Sign In", "Guest Sign In"];
+  const allowedPublicRoutes = [
+    ...publicRoutes.map(({ name }) => name),
+    ...dashboardRoutes.filter(({ name }) => name === "Public Dashboard").map(({ name }) => name),
+    ...signInRoutes,
+  ];
 
-  if (!loggedIn && !signInRoutes.includes(to.name)) {
+  if (!loggedIn && !allowedPublicRoutes.includes(to.name)) {
     return next({ name: "Guest Sign In" });
   } else if (loggedIn && signInRoutes.includes(to.name)) {
     return next({ name: "Dashboard" });
