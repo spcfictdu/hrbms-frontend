@@ -13,6 +13,7 @@ export default [
     component: GuestSignInView,
     meta: {
       name: "Guest Sign In",
+      isLogin: true,
     },
   },
   {
@@ -21,6 +22,7 @@ export default [
     component: SignInView,
     meta: {
       name: "Sign In",
+      isLogin: true,
     },
   },
 ];

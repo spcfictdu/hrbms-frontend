@@ -1,17 +1,19 @@
 <template>
   <v-app
-    class="bg-color"
-    :class="{
+      class="bg-color"
+      :class="{
       'image-bg': $router.currentRoute.meta.name === 'Sign In',
       'image-bg-2': $router.currentRoute.meta.name === 'Guest Sign In',
     }"
   >
     <div>
+      <!-- Navigation -->
       <Navigation
-        v-if="!notAllowedRoutes.includes($router.currentRoute.meta.name)"
+          v-if="!$router.currentRoute.meta.isLogin && !$router.currentRoute.meta.isPublic"
       />
+      <PublicNavigation v-else-if="$router.currentRoute.meta.isPublic"/>
       <div
-        :class="{
+          :class="{
           'mt-n10 bg-color main-layout white py-5': !notAllowedRoutes.includes(
             $router.currentRoute.meta.name
           ),
@@ -19,14 +21,14 @@
       >
         <v-container class="pa-0 transparent-bg">
           <v-main
-            class="mx-3"
-            :class="{
+              class="mx-3"
+              :class="{
               'custom-main': notAllowedRoutes.includes(
                 $router.currentRoute.meta.name
               ),
             }"
           >
-            <router-view />
+            <router-view/>
           </v-main>
         </v-container>
       </div>
@@ -37,10 +39,11 @@
 <script>
 import Navigation from "./components/navigation/Navigation.vue";
 import { mapActions } from "vuex";
+import PublicNavigation from "./components/navigation/PublicNavigation.vue";
 
 export default {
   name: "App",
-  components: { Navigation },
+  components: { Navigation, PublicNavigation },
   data: () => ({
     notAllowedRoutes: ["Sign In", "Guest Sign In"],
   }),
@@ -75,10 +78,7 @@ export default {
 
 .image-bg {
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-    url(./assets/bgImage.jpg);
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: cover;
+  url(./assets/bgImage.jpg) no-repeat center center/cover;
 }
 
 .image-bg-2 {

@@ -5,16 +5,6 @@ Vue.use(VueRouter);
 
 export default [
   {
-    path: "/",
-    name: "Public Dashboard",
-    component: () => import(
-      /* webpackChunkName: "public-dashboard" */ "@/views/public/dashboard/PublicDashboardView.vue"
-      ),
-    meta: {
-      name: "Hotel Rooms",
-    }
-  },
-  {
     path: "/admin",
     name: "Dashboard",
     component: () => import(

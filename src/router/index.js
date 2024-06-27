@@ -6,7 +6,7 @@ import roomsList from "./hotel-rooms/rooms-list";
 import guestList from "./guest-list/guest-list";
 import transaction from "./transaction/transaction";
 import authentication from "./authentication/authentication";
-import publicRoutes from "./public/public-routes";
+import publicRoutes from "@/router/public-routes/public-routes";
 import dashboardRoutes from "./dashboard/dashboard";
 
 Vue.use(VueRouter);
@@ -37,8 +37,7 @@ router.beforeEach((to, from, next) => {
   let loggedIn = auth.user();
   const signInRoutes = ["Sign In", "Guest Sign In"];
   const allowedPublicRoutes = [
-    ...publicRoutes.map(({ name }) => name),
-    ...dashboardRoutes.filter(({ name }) => name === "Public Dashboard").map(({ name }) => name),
+    ...publicRoutes[0].children.filter(({ meta }) => meta.isPublic).map(({ name }) => name),
     ...signInRoutes,
   ];
 

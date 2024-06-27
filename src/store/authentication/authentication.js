@@ -111,6 +111,10 @@ export const authentication = {
           status: "ERROR",
         });
       }
+    },
+
+    clearUserData({ commit }) {
+      commit("SET_CURRENT_USER", null);
     }
   },
 };

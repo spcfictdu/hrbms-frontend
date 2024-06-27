@@ -18,7 +18,7 @@ export const auth = {
     const TYPE_RELOAD = 1;
 
     if (navType !== TYPE_RELOAD) {
-      store.dispatch("authentication/logout");
+      store.dispatch("authentication/clearUserData");
     } else {
       sessionStorage.setItem("isRefresh", "true");
     }
@@ -32,7 +32,7 @@ export const auth = {
       sessionStorage.removeItem("isRefresh");
     } else {
       // If it's not a refresh, clear the token and other data on initial load
-      store.dispatch("authentication/logout");
+      store.dispatch("authentication/clearUserData");
     }
   },
 };
