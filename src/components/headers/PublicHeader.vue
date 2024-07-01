@@ -41,9 +41,11 @@
     <v-divider/>
 
     <!-- Search Engine -->
-    <div class="mt-5">
+    <div class="my-6">
       <SearchEngine/>
     </div>
+
+    <v-divider />
 
   </v-container>
 </template>

@@ -7,7 +7,7 @@ export default [
   {
     path: "/",
     component: () => import(
-      /* webpackChunkName: public-routes */ "@/views/public/PublicHeaderView.vue"
+      /* webpackChunkName: "public-routes" */ "@/views/public/PublicHeaderView.vue"
       ),
     children: [
       {

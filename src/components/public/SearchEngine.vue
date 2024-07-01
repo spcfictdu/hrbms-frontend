@@ -1,51 +1,149 @@
 <template>
   <div>
-    <v-card flat class="card-container">
+    <v-card
+      flat
+      class="card-container py-6 px-6 py-md-8 px-md-12"
+      :class="{ 'xl-padding': $vuetify.breakpoint.lgAndUp }"
+    >
       <div class="mb-4">
-        <h1 class="white--text">BOOK YOUR STAY WITH US</h1>
+        <div class="text-h5 text-sm-h4 font-weight-bold white--text">BOOK YOUR STAY WITH US</div>
       </div>
       <div>
-        <v-card class="search-container d-flex justify-start align-center">
-          <div class="ml-6 pa-2 d-flex flex-column">
-            <div class="text-overline align-self-center">Check-In Date</div>
-            <div class="d-flex align-center overflow-hidden">
-              <i class="fi fi-sr-calendar-day calendar-icon"></i>
-              <v-text-field type="tel" v-model="queryParams.checkInDate" v-mask="'##/##/####'" solo
-                            hide-details="auto"
-                            flat
-                            class="ml-2 text-body-1 font-weight-bold"></v-text-field>
+        <v-card
+          class="search-container py-4 px-4 px-md-0 py-md-2 pr-md-2 d-flex flex-column flex-md-row justify-start align-start align-md-center"
+          :class="{ 'gap-spacing': $vuetify.breakpoint.smAndDown }"
+        >
+          <div
+            class="ml-0 pr-0 ml-md-6 pr-md-2 d-flex flex-grow-0 flex-md-grow-1 overflow-y-hidden"
+            :class="{ 'primary--text': isActive(menu) }"
+          >
+            <i class="fi fi-sr-calendar-day calendar-icon align-self-end"></i>
+            <div class="d-flex flex-column flex-grow-1 flex-md-grow-0">
+              <div class="d-none d-lg-flex mx-3 text-overline font-weight-bold">
+                Check-In Date
+              </div>
+              <div class="d-flex d-lg-none">
+                <p class="mx-3 mb-0 text-caption">Check-In Date</p>
+              </div>
+              <v-menu
+                :close-on-content-click="false"
+                offset-y
+                bottom
+                transition="scale-transition"
+                v-model="menu"
+                min-width="auto"
+                max-width="290"
+              >
+                <template #activator="{ on, attrs }">
+                  <v-text-field
+                    v-on="on"
+                    v-bind="attrs"
+                    :outlined="$vuetify.breakpoint.smAndDown"
+                    :flat="!$vuetify.breakpoint.smAndDown"
+                    :solo="!$vuetify.breakpoint.smAndDown"
+                    dense
+                    readonly
+                    hide-details="auto"
+                    :value="formattedDate(queryParams.checkInDate)"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="queryParams.checkInDate"
+                  :min="minDate"
+                ></v-date-picker>
+              </v-menu>
             </div>
           </div>
 
-          <v-divider vertical/>
+          <v-divider class="d-none d-md-flex hr-opacity" vertical />
 
-          <div class="ml-8 d-flex flex-column">
-            <div class="text-overline align-self-center">Check-Out Date</div>
-            <div>
-              <i class="fi fi-sr-calendar-day calendar-icon"></i>
+          <div
+            class="ml-0 pr-0 ml-md-6 pr-md-2 d-flex flex-grow-0 flex-md-grow-1 overflow-y-hidden"
+            :class="{ 'primary--text': isActive(menu_2) }"
+          >
+            <i class="fi fi-sr-calendar-day calendar-icon"></i>
+
+            <div class="d-flex flex-column flex-grow-1 flex-md-grow-0">
+              <div class="d-none d-lg-flex ml-3 text-overline font-weight-bold">
+                Check-Out Date
+              </div>
+              <div class="d-flex d-lg-none">
+                <p class="mx-3 mb-0 text-caption">Check-Out Date</p>
+              </div>
+              <v-menu
+                :close-on-content-click="false"
+                offset-y
+                bottom
+                transition="scale-transition"
+                v-model="menu_2"
+                min-width="auto"
+                max-width="290"
+              >
+                <template #activator="{ on, attrs }">
+                  <v-text-field
+                    v-on="on"
+                    v-bind="attrs"
+                    :outlined="$vuetify.breakpoint.smAndDown"
+                    :flat="!$vuetify.breakpoint.smAndDown"
+                    :solo="!$vuetify.breakpoint.smAndDown"
+                    dense
+                    readonly
+                    hide-details="auto"
+                    :value="formattedDate(queryParams.checkOutDate)"
+                  ></v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="queryParams.checkOutDate"
+                ></v-date-picker>
+              </v-menu>
             </div>
           </div>
 
-          <v-divider vertical/>
+          <v-divider class="d-none d-md-flex hr-opacity" vertical />
 
-          <div class="ml-8 d-flex flex-column">
-            <div class="text-overline align-self-center">Number of Guests</div>
-            <div>
-              <i class="fi fi-sr-calendar-day calendar-icon"></i>
+          <div
+            class="ml-0 pr-0 ml-md-6 pr-md-2 d-flex flex-grow-0 flex-md-grow-1 overflow-y-hidden"
+            :class="{ 'primary--text': isActive(guestInputState) }"
+          >
+            <i class="fi fi-sr-user calendar-icon"></i>
+            <div class="d-flex flex-column flex-grow-1 flex-md-grow-0">
+              <div class="d-none d-lg-flex ml-3 text-overline font-weight-bold">
+                Number of Guests
+              </div>
+              <div class="d-flex d-lg-none">
+                <p class="mx-3 mb-0 text-caption">Number of Guests</p>
+              </div>
+              <v-text-field
+                @focus="guestInputState = true"
+                @blur="guestInputState = false"
+                :outlined="$vuetify.breakpoint.smAndDown"
+                :flat="!$vuetify.breakpoint.smAndDown"
+                :solo="!$vuetify.breakpoint.smAndDown"
+                type="number"
+                hide-details="auto"
+                dense
+                v-model.number="queryParams.numberOfGuests"
+              ></v-text-field>
             </div>
           </div>
 
-          <v-divider vertical/>
+          <v-divider class="d-none d-md-flex hr-opacity" vertical />
 
-
-          <div class="ml-8 d-flex flex-column">
-            <v-btn large color="primary" class="text-capitalize font-weight-regular" style="font-size: 1rem">
-              <i class="fi fi-rr-search"></i>
+          <v-btn
+            :block="$vuetify.breakpoint.smAndDown"
+            depressed
+            color="primary"
+            class="mt-2 mt-md-0 ml-0 mr-0 ml-md-6 mr-md-4 overflow-hidden"
+            style="font-size: 1rem"
+          >
+            <i class="fi fi-rr-search search-icon"></i>
+            <div
+              class="ml-1 text-capitalize font-weight-regular"
+              style="font-size: 1.1rem"
+            >
               Search
-            </v-btn>
-          </div>
-
-
+            </div>
+          </v-btn>
         </v-card>
       </div>
     </v-card>
@@ -53,45 +151,33 @@
 </template>
 
 <script>
-import { mask } from 'vue-the-mask';
 import { parseISO, format } from "date-fns";
-
+import LabelSlot from "../slots/LabelSlot.vue";
 export default {
   name: "SearchEngine",
-  directives: { mask },
+  components: { LabelSlot },
   data: () => ({
     queryParams: {
-      checkInDate: format(parseISO(new Date().toISOString().slice(0, 10)), "MM/dd/yyyy"),
+      checkInDate: null,
       checkOutDate: null,
-      numberOfGuests: null,
+      numberOfGuests: 0,
     },
+    menu: false,
+    menu_2: false,
+    guestInputState: false,
+    minDate: new Date().toISOString().slice(0, 10),
   }),
   methods: {
-    validateDate(date) {
-      // Regex pattern to match the date format
-      const datePattern = /^(0[1-9]|1[0-2])\/(0[1-9]|[12][0-9]|3[01])\/(19|20)\d{2}$/;
-
-      if (!datePattern.test(date)) {
-        console.error('Invalid date format or range');
-        // handle invalid date input
-      } else {
-        console.log('Valid date format');
-        // handle valid date input
-      }
-    }
+    formattedDate: function (value) {
+      return value ? format(parseISO(value), "MM/dd/yyyy") : `Preferred Date?`;
+    },
+    isActive: function (state) {
+      return !!state;
+    },
   },
   computed: {},
-  watch: {
-    "queryParams.checkInDate": {
-      deep: true,
-      immediate: true,
-      handler: function (newVal) {
-        console.log(newVal)
-        this.validateDate(newVal);
-      }
-    }
-  }
-}
+  watch: {},
+};
 </script>
 
 <style scoped>
@@ -99,20 +185,42 @@ export default {
 
 .card-container {
   width: 100%;
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-  url(../../assets/bgImage-4.png) no-repeat center/cover;
-  padding: 32px 128px;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+    url(../../assets/bgImage-4.png) no-repeat center/cover;
   border-radius: 10px;
 }
 
+.xl-padding {
+  padding: 32px 128px;
+}
+
+.gap-spacing {
+  gap: 10px;
+}
+
 .search-container {
-  border-radius: 10px;
-  padding: 16px 16px 16px 0;
+  border-radius: 5px;
+  color: rgba(51, 51, 51, 0.7);
+
+}
+
+.search-container > div {
+  width: 100%;
 }
 
 .fi.calendar-icon {
   font-size: 25px;
-  color: #333;
-  margin-top: 16px;
+  margin-top: auto;
+  margin-right: 8px;
+  transform: translateY(5px);
+}
+
+.fi.search-icon {
+  margin-top: 4px;
+}
+
+.hr-opacity {
+  opacity: 0.8;
+  margin: 5px 0 5px 0;
 }
 </style>
