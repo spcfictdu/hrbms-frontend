@@ -23,7 +23,6 @@ export default {
   methods: {
     ...mapActions("availabilityCalendar", ["fetchAvailabilityCalendar"]),
     requestCalendar: function (queryParams) {
-      console.log(queryParams);
       this.fetchAvailabilityCalendar(queryParams);
     },
     pushToTransactionRoute: function (payload) {

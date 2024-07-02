@@ -55,10 +55,10 @@ export const rooms = {
         })
         .catch((error) => {
           commit("SET_ALERT_PROPERTIES", {
-            message: error.response.data.message,
+            message: error.response.data.results.roomNumber,
             type: "error",
           });
-          console.error(error.response.data.message);
+          console.error(error.response.data.results.roomNumber);
         });
     },
     deleteRoom: function ({ commit, dispatch }, refNum) {

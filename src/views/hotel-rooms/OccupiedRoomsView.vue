@@ -2,7 +2,7 @@
   <div class="mt-10">
     <v-alert
       :value="alert"
-      :type="status"
+      :type="type"
       class="w-full"
       transition="scroll-y-transition"
     >
@@ -17,6 +17,8 @@
       @add-room="addRoomEvent"
       @edit-room="editRoomEvent"
       @delete-room="deleteRoomEvent"
+      @query-pagination="paginateRoomStatus"
+      @input-event="attachType"
       v-if="roomStatus && roomCategories"
     />
   </div>
@@ -25,16 +27,17 @@
 <script>
 import OccupiedRoomsComponent from "@/components/hotel-rooms/occupied/OccupiedRoomsComponent.vue";
 import { mapState, mapActions } from "vuex";
-import TablePagination from "@/mixins/TablePagination";
+import { assignParams } from "@/mixins/FormattingFunctions";
 
 export default {
   name: "OccupiedRoomsView",
   components: { OccupiedRoomsComponent },
-  mixins: [TablePagination],
+  mixins: [assignParams],
   data: () => ({
     alert: false,
-    status: null,
-    alertMessage: ""
+    type: null,
+    alertMessage: "",
+    triggerEventFetch: false,
   }),
   computed: {
     ...mapState("occupied", {
@@ -42,11 +45,11 @@ export default {
       messageProperties: "alertProperties",
       createRoomDialog: "createRoomDialog",
     }),
-    ...mapState("roomCategories", {
-      roomCategories: "roomCategories",
-    }),
     ...mapState("rooms", {
       alertProperties: "alertProperties",
+    }),
+    ...mapState("roomTypeEnum", {
+      roomCategories: "roomTypeEnum",
     }),
   },
   methods: {
@@ -55,25 +58,36 @@ export default {
       "updateRoomStatus",
       "triggerOccupiedDialog",
     ]),
-    ...mapActions("roomCategories", ["fetchRoomCategories"]),
     ...mapActions("rooms", ["createRoom", "deleteRoom", "editRoom"]),
-    paginateRoomStatus: function (queryParams) {
-      this.fetchRoomStatus(queryParams);
+    ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
+    paginateRoomStatus: function (query_params) {
+      this.assignParams(query_params);
+    },
+    attachType: function ({ roomStatus, roomType }) {
+      const object = {
+        roomStatus: roomStatus,
+        roomType: roomType,
+      };
+      this.assignParams(object);
     },
     updateEvent: function ({ refNum, payload }) {
       this.updateRoomStatus({ roomRefNum: refNum, data: payload });
+      this.triggerEventFetch = true;
     },
     addRoomEvent: function (payload) {
       this.createRoom(payload);
+      this.triggerEventFetch = true;
     },
     deleteRoomEvent: function (referenceNumber) {
       this.deleteRoom(referenceNumber);
+      this.triggerEventFetch = true;
     },
     editRoomEvent: function ({ referenceNumber, payload }) {
       this.editRoom({
         refNum: referenceNumber,
         data: payload,
       });
+      this.triggerEventFetch = true;
     },
     triggerAlert: function (value) {
       this.alert = value;
@@ -83,17 +97,30 @@ export default {
     },
   },
   created() {
-    this.fetchRoomStatus();
-    this.fetchRoomCategories();
+    this.fetchRoomTypes();
   },
   watch: {
+    queryParams: {
+      deep: true,
+      handler: function (newVal) {
+        this.fetchRoomStatus(newVal);
+      },
+    },
+    roomStatus: {
+      deep: true,
+      handler: function () {
+        if (this.triggerEventFetch === true) {
+          this.fetchRoomStatus(this.queryParams);
+          this.triggerEventFetch = false;
+        }
+      },
+    },
     alertProperties: {
       immediate: true,
       deep: true,
       handler: function (value) {
-        console.log(value);
         if (value.type !== "") {
-          this.status = value.type;
+          this.type = value.type;
           this.alertMessage = value.message;
           this.triggerAlert(true);
           setTimeout(() => {
@@ -101,7 +128,7 @@ export default {
             value.type = "";
             value.message = "";
             this.alertMessage = "";
-            this.status = null;
+            this.type = null;
           }, 3000);
         }
       },
@@ -110,9 +137,8 @@ export default {
       immediate: true,
       deep: true,
       handler: function (value) {
-        console.log(value);
         if (value.type !== "") {
-          this.status = value.type;
+          this.type = value.type;
           this.alertMessage = value.message;
           this.triggerAlert(true);
           setTimeout(() => {
@@ -120,7 +146,7 @@ export default {
             value.type = "";
             value.message = "";
             this.alertMessage = "";
-            this.status = null;
+            this.type = null;
           }, 3000);
         }
       },

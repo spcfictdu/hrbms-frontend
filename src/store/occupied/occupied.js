@@ -1,9 +1,9 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import { functions } from "@/utils/functions";
 
 Vue.use(Vuex);
 
-import { functions } from "@/utils/functions";
 
 export const occupied = {
   namespaced: true,
