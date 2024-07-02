@@ -38,8 +38,9 @@
         </v-btn>
       </v-col>
     </v-row>
+    <!-- Mobile Filter -->
     <v-row v-else>
-      <v-col cols="12" class="d-block d-sm-none">
+      <v-col cols="12" class="d-block">
         <v-autocomplete
           rounded
           filled
@@ -58,36 +59,55 @@
           </template>
         </v-autocomplete>
       </v-col>
+      <v-col cols="12" class="d-block">
+        <v-autocomplete
+          rounded
+          filled
+          hide-details="auto"
+          label="Select a Room Category"
+          background-color="white"
+          :items="roomCategories"
+          item-text="roomType"
+          item-value="roomType"
+          v-model="selectedRoomType"
+        >
+        </v-autocomplete>
+      </v-col>
     </v-row>
     <v-divider class="my-5" />
+    <div style="max-width: 225px" v-if="size.xs !== true">
+      <v-autocomplete
+        class="d-block"
+        rounded
+        filled
+        hide-details="auto"
+        dense
+        background-color="lightBg"
+        :items="roomCategories"
+        item-text="roomType"
+        item-value="roomType"
+        v-model="selectedRoomType"
+      >
+      </v-autocomplete>
+    </div>
     <v-row>
+      <!-- Mobile Header -->
       <v-col class="text-h6 font-weight-bold ml-2" v-if="size.xs === true">
         {{ mobileHeader }}
       </v-col>
       <v-col cols="12" :class="{ 'pt-0': size.xs === true }">
-        <v-card
-          elevation="0"
-          v-for="(category, index) in categoriesContent"
-          :key="index"
-          class="mb-5"
-        >
-          <v-card-title
+        <v-card elevation="0" class="pb-6" :class="[size.xs !== true ? 'px-10' : 'px-5']">
+          <div
+            v-if="categoriesContent.content.length > 0"
             :class="[
               size.xs !== true
-                ? 'text-subtitle-1 font-weight-bold mb-3'
-                : 'text-subtitle-1 font-weight-bold pt-3',
+                ? 'text-subtitle-1 mt-10'
+                : 'text-subtitle-1 pt-3',
             ]"
           >
-            {{ category.title }}
-          </v-card-title>
-          <div v-if="category.content.length > 0">
             <v-row
-              v-for="(content, subIndex) in category.content"
-              :key="subIndex"
-              :class="[
-                subIndex < category.content.length - 1 ? 'mb-3' : '',
-                size.xs !== true ? 'mx-5' : 'mx-2',
-              ]"
+              v-for="(content, index) in categoriesContent.content"
+              :key="index"
             >
               <template v-if="size.xs !== true">
                 <v-col
@@ -137,7 +157,12 @@
                 >
                 <v-col
                   class="d-flex justify-end"
-                  :cols="selectedStatus === 'OCCUPIED' || selectedStatus === 'UNCLEAN' ? 1 : 3"
+                  :cols="
+                    selectedStatus === 'OCCUPIED' ||
+                    selectedStatus === 'UNCLEAN'
+                      ? 1
+                      : 3
+                  "
                   ><v-menu
                     :offset-x="offsetX"
                     :offset-y="offsetY"
@@ -164,9 +189,15 @@
                         ></v-list-item
                       >
                     </v-list>
-                  </v-menu></v-col
-                >
+                  </v-menu>
+                </v-col>
+                <v-col cols="12">
+                  <v-divider
+                    v-if="index < categoriesContent.content.length - 1" class="mt-n2"
+                  />
+                </v-col>
               </template>
+              <!-- Rooms View in Mobile -->
               <template v-else>
                 <v-col>
                   <v-col cols="12" class="text-subtitle-2"
@@ -224,19 +255,19 @@
           <v-card-text v-else>
             <v-row>
               <v-col cols="12" class="d-flex justify-center">
-                There are no {{ selectedStatus.toLowerCase() }} rooms in this
-                category.
+                {{ emptyRoomMessage }}
               </v-col>
             </v-row>
           </v-card-text>
         </v-card>
       </v-col>
     </v-row>
+    <v-pagination v-model="page" :length="paginationLastPage"></v-pagination>
     <RoomDialog
       :activator="dialogActivator"
       :dialogMeta="meta"
       :dialogFunction="dialogFunction"
-      :roomCategories="categoriesContent"
+      :roomCategories="roomCategories"
       :roomDetails="roomDetails"
       @reset-activator="resetActivator"
       @update-request="updateRequest"
@@ -255,17 +286,19 @@
 <script>
 import RoomDialog from "@/components/dialogs/RoomDialog.vue";
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
+import { assignParams } from "@/mixins/FormattingFunctions";
 
 export default {
   name: "OccupiedRoomsComponent",
   components: { RoomDialog, DeleteDialog },
+  mixins: [assignParams],
   props: {
     roomStatus: {
       type: Object,
       required: true,
     },
     roomCategories: {
-      type: Object,
+      type: Array,
       required: true,
     },
     createRoomDialog: {
@@ -275,6 +308,7 @@ export default {
   },
   data: () => ({
     selectedStatus: "AVAILABLE",
+    selectedRoomType: "JUNIOR STANDARD",
     payload: {},
     dialogActivator: false,
     meta: {},
@@ -293,6 +327,8 @@ export default {
     },
     offsetX: true,
     offsetY: false,
+    page: 1,
+    emptyRoomMessage: "",
   }),
   computed: {
     buttonDisplay() {
@@ -312,17 +348,14 @@ export default {
       return buttonData;
     },
     categoriesContent: function () {
-      let categories = [];
+      let categories = null;
 
-      Object.keys(this.roomCategories).forEach((outerKey) => {
-        if (outerKey.includes("roomTypes")) {
-          const roomTypes = this.roomCategories[outerKey];
-          Object.keys(roomTypes).forEach((indexKey) => {
-            categories.push({
-              title: roomTypes[indexKey]["name"],
-              content: [],
-            });
-          });
+      this.roomCategories.forEach((content) => {
+        if (this.selectedRoomType === content.roomType) {
+          categories = {
+            title: content.roomType,
+            content: [],
+          };
         }
       });
 
@@ -332,42 +365,28 @@ export default {
             const rooms = this.roomStatus[outerKey];
 
             Object.keys(rooms).forEach((indexKey) => {
-              categories.forEach((category) => {
-                if (
-                  rooms[indexKey]["roomType"] === category.title &&
-                  this.selectedStatus === rooms[indexKey]["status"]
-                ) {
-                  category.content.push(rooms[indexKey]);
+              if (this.selectedStatus === rooms[indexKey]["status"]) {
+                if (rooms[indexKey]["roomType"] === this.selectedRoomType) {
+                  categories.content.push(rooms[indexKey]);
                 }
-              });
+              }
             });
           }
         });
       }
       return categories;
     },
+
     statusOptions: function () {
       let options = [];
 
       switch (this.selectedStatus) {
         case "AVAILABLE":
-          return (options = [
-            "Occupied",
-            "Unclean",
-            "Unallocated",
-            "Edit",
-            "Delete",
-          ]);
+          return (options = ["Occupied", "Unclean", "Unallocated", "Edit"]);
         case "OCCUPIED":
           return (options = ["Available", "Unclean", "Unallocated"]);
         case "UNCLEAN":
-          return (options = [
-            "Available",
-            "Occupied",
-            "Unallocated",
-            "Edit",
-            "Delete",
-          ]);
+          return (options = ["Available", "Occupied", "Unallocated", "Edit"]);
         case "UNALLOCATED":
           return (options = [
             "Available",
@@ -400,6 +419,9 @@ export default {
       let status = firstLetter + remainingLetters;
 
       return numberRooms + " " + status + " Rooms";
+    },
+    paginationLastPage: function () {
+      return this.roomStatus ? this.roomStatus.pagination.lastPage : 1;
     },
   },
   methods: {
@@ -519,6 +541,70 @@ export default {
     },
   },
   watch: {
+    categoriesContent: {
+      immediate: true,
+      handler: function (value) {
+        console.log(value);
+      },
+    },
+    selectedStatus: {
+      immediate: true,
+      handler: function (status) {
+        this.$emit("input-event", {
+          roomStatus: status,
+          roomType: this.selectedRoomType,
+        });
+
+        this.emptyRoomMessage = "Loading...";
+        setTimeout(() => {
+          this.emptyRoomMessage =
+            "There are no " +
+            this.selectedStatus.toLowerCase() +
+            " rooms in this category";
+        }, 5000);
+      },
+    },
+    selectedRoomType: {
+      immediate: true,
+      handler: function (type) {
+        this.$emit("input-event", {
+          roomStatus: this.selectedStatus,
+          roomType: type,
+        });
+
+        this.emptyRoomMessage = "Loading...";
+        setTimeout(() => {
+          this.emptyRoomMessage =
+            "There are no " +
+            this.selectedStatus.toLowerCase() +
+            " rooms in this category.";
+        }, 5000);
+      },
+    },
+    page: {
+      immediate: true,
+      deep: true,
+      handler: function (newVal) {
+        const object = {
+          perPage: 5,
+          page: newVal,
+        };
+        this.assignParams(object);
+      },
+    },
+    "roomStatus.pagination": {
+      deep: true,
+      handler: function (newVal) {
+        this.page = newVal.currentPage;
+      },
+    },
+    queryParams: {
+      immediate: true,
+      deep: true,
+      handler: function (newVal) {
+        this.$emit("query-pagination", newVal);
+      },
+    },
     createRoomDialog: {
       immediate: true,
       handler: function (newVal) {

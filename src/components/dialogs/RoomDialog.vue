@@ -1,7 +1,12 @@
 <template>
   <v-dialog max-width="450" v-model="dialog" overlay-opacity="0.2">
     <v-form ref="roomForm">
-      <v-card class="pa-8" rounded="lg" flat v-if="dialogFunction.changeRoomSatus">
+      <v-card
+        class="pa-8"
+        rounded="lg"
+        flat
+        v-if="dialogFunction.changeRoomSatus"
+      >
         <v-card-title
           class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0"
           >Change Room Status Confirmation</v-card-title
@@ -29,10 +34,17 @@
           </v-row>
         </v-card-actions>
       </v-card>
-      <v-card class="pa-8" rounded="lg" flat v-else-if="dialogFunction.createRoom || dialogFunction.editRoom">
+      <v-card
+        class="pa-8"
+        rounded="lg"
+        flat
+        v-else-if="dialogFunction.createRoom || dialogFunction.editRoom"
+      >
         <v-card-title
           class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0 mb-4"
-          >{{ dialogFunction.createRoom ? 'Add New Room' : 'Edit Room'}}</v-card-title
+          >{{
+            dialogFunction.createRoom ? "Add New Room" : "Edit Room"
+          }}</v-card-title
         >
         <div class="mt-4 mb-8">
           <div class="mb-2">
@@ -43,6 +55,7 @@
               hide-details="auto"
               v-model="roomDetails.roomNumber"
               :rules="validate.roomNumber"
+              type="number"
             ></v-text-field>
           </div>
           <div class="mb-2">
@@ -53,18 +66,21 @@
               hide-details="auto"
               v-model="roomDetails.roomFloor"
               :rules="validate.roomFloor"
+              type="number"
             ></v-text-field>
           </div>
           <div>
             <div class="text-caption ml-1 mb-1">Room Type</div>
-            <v-select
+            <v-autocomplete
               outlined
               dense
               hide-details="auto"
-              :items="categories"
+              :items="roomCategories"
               v-model="roomDetails.roomType"
-              :rooms="validate.roomType"
-            ></v-select>
+              :rules="validate.roomType"
+              item-text="roomType"
+              item-value="roomType"
+            ></v-autocomplete>
           </div>
         </div>
         <v-card-actions class="pa-0 mt-4">
@@ -92,6 +108,8 @@
 </template>
 
 <script>
+import { roomCategories } from '@/store/categories/room-categories';
+
 export default {
   name: "RoomDialog",
   props: {
