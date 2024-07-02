@@ -20,12 +20,21 @@ export const authentication = {
     SET_LOGIN_STATUS: (state, data) => (state.loginStatus = data),
   },
   actions: {
-    async login({ commit }, data) {
+    async login({ commit }, { user, loginRole }) {
+      // Set Login Path for Backend
+      let loginPath = ""
+
+      if (loginRole === "ADMIN") {
+        loginPath = "user/admin/login";
+      } else if (loginRole === "GUEST") {
+        loginPath = "user/guest/login";
+      }
+
       try {
-        let url = "user/login";
+        const url = loginPath;
         let payload = {
-          username: data.username,
-          password: data.password,
+          username: user.username,
+          password: user.password,
         };
 
         let response = await this.$axios.post(url, payload);
