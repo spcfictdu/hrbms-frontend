@@ -104,6 +104,7 @@ export default {
     payload: {
       role: "GUEST",
     },
+    loginRole: "GUEST",
     isShowAlert: false,
     loading: false,
   }),
@@ -144,7 +145,10 @@ export default {
             this.loading = false;
           });
         } else {
-          await this.login(this.user).finally(() => {
+          await this.login({
+            user: this.user,
+            loginRole: this.loginRole,
+          }).finally(() => {
             this.loading = false;
           });
         }

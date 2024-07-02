@@ -54,7 +54,7 @@ export default {
       username: null,
       password: null,
     },
-
+    loginRole: "ADMIN",
     isShowAlert: false,
     loading: false,
   }),
@@ -72,7 +72,10 @@ export default {
     authenticateUser: async function () {
       if (this.$refs.form.validate()) {
         this.loading = true;
-        await this.login(this.user);
+        await this.login({
+          user: this.user,
+          loginRole: this.loginRole,
+        });
         this.loading = false;
       }
     },
