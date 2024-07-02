@@ -1,10 +1,10 @@
 <template>
   <v-row>
-    <v-col cols="6">
-      <v-img :src="sampleImage" alt="Card Image 1" class="image-container"></v-img>
+    <v-col cols="12" md="6">
+      <v-img :src="room.image" alt="Image 2" class="image-container"></v-img>
     </v-col>
-    <v-col cols="6">
-      <room-card />
+    <v-col cols="12" md="6" order="first" order-md="last">
+      <room-card :room="room.data"/>
     </v-col>
   </v-row>
 </template>
@@ -13,9 +13,9 @@
 import RoomCard from './RoomCard.vue';
 export default {
   name: "CardVariationOne",
+  props: { room: Object },
   components: { RoomCard },
   data: () => ({
-    sampleImage: require("../../../assets/bgImage-5.png"),
   }),
 };
 </script>

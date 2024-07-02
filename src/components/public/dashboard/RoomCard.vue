@@ -1,20 +1,18 @@
 <template>
   <v-card flat outlined class="card-container">
     <header>
-      <div class="text-h6 font-weight-bold text-uppercase">Executive Room</div>
+      <div class="text-h6 font-weight-bold text-uppercase">{{ room.name }}</div>
       <p class="text-subtitle-2 font-weight-regular">
-        <price-slot><template #price>1000</template></price-slot>
-        {{ ` | 2 max occupancy` }}
+        <price-slot
+          ><template #price>{{ room.price }}</template></price-slot
+        >
+        {{ ` | ${room.maxOccupancy} max occupancy` }}
       </p>
     </header>
 
     <section>
       <p class="mb-4 text-body-2 font-weight-regular">
-        Experience luxury in our Deluxe King Room, featuring a plush king-size
-        bed, a stylish seating area, and modern amenities like a flat-screen TV
-        and high-speed Wi-Fi. The marble en-suite bathroom offers a rejuvenating
-        rain shower and luxurious toiletries, complemented by stunning city
-        views through large windows.
+        {{ room.description }}
       </p>
     </section>
 
@@ -25,7 +23,7 @@
       <div class="grid-container">
         <div
           class="text-muted text-caption font-weight-regular"
-          v-for="(i, index) in roomCard.amenites"
+          v-for="(i, index) in room.amenities"
           :key="index"
         >
           {{ i }}
@@ -39,19 +37,9 @@
 import PriceSlot from "@/components/slots/PriceSlot.vue";
 export default {
   name: "RoomCard",
+  props: { room: Object },
   components: { PriceSlot },
-  data: () => ({
-    roomCard: {
-      amenites: [
-        "Wi-Fi Access",
-        "Coffee/Tea Maker",
-        "Flat-Screen Television",
-        "Mini-Bar",
-        "Room Service",
-        "In-Room Safe",
-      ],
-    },
-  }),
+  data: () => ({}),
 };
 </script>
 

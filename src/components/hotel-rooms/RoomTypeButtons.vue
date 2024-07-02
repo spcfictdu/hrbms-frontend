@@ -7,13 +7,14 @@
         class="d-none d-sm-block"
       >
         <v-btn
+          :ripple="false"
           depressed
           block
           height="40"
-          :color="i.roomType === activeButton ? 'accentTwo' : 'lightBg'"
+          :color="i.roomType === activeButton ? 'primary' : 'lightBg'"
           class="calendar-buttons text-subtitle-2"
           :class="{
-            'font-weight-bold': i.roomType === activeButton,
+            'font-weight-medium': i.roomType === activeButton,
             'font-weight-regular': i.roomType !== activeButton,
           }"
           @click="activeValue(i.roomType)"
@@ -64,12 +65,22 @@ export default {
   computed: {
     ...mapState("roomTypeEnum", ["roomTypeEnum"]),
     mappedRoomTypeEnum: function () {
-      return this.roomTypeEnum
-        ? this.roomTypeEnum.map((key) => ({
+      let roomTypes = [
+        {
+          roomType: "All Rooms",
+          referenceNumber: null,
+        },
+      ];
+
+      if (this.roomTypeEnum) {
+        this.roomTypeEnum.forEach((key) => {
+          roomTypes.push({
             roomType: this.capitalizeString(key.roomType),
             referenceNumber: key.referenceNumber,
-          }))
-        : [];
+          });
+        });
+      }
+      return roomTypes;
     },
   },
   watch: {
