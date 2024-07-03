@@ -110,7 +110,10 @@
 
             <div
               class="ml-0 pr-0 ml-md-6 pr-md-2 d-flex flex-grow-0 flex-md-grow-1 overflow-y-hidden"
-              :class="{ 'primary--text': isActive(guestInputState) }"
+              :class="{
+                'primary--text': isActive(guestInputState),
+                'warning--text': isActive(guestInputWarning),
+              }"
             >
               <i class="fi fi-sr-user calendar-icon"></i>
               <div class="d-flex flex-column flex-grow-1 flex-md-grow-0">
@@ -125,6 +128,7 @@
                 <v-text-field
                   @focus="guestInputState = true"
                   @blur="guestInputState = false"
+                  @input="validateGuests"
                   :outlined="$vuetify.breakpoint.smAndDown"
                   :flat="!$vuetify.breakpoint.smAndDown"
                   :solo="!$vuetify.breakpoint.smAndDown"
@@ -133,6 +137,7 @@
                   hide-details="auto"
                   dense
                   v-model.number="queryParams.numberOfGuests"
+                  oninput="if(this.value < 1) this.value = 0;"
                 ></v-text-field>
               </div>
             </div>
@@ -177,6 +182,7 @@ export default {
     menu: false,
     menu_2: false,
     guestInputState: false,
+    guestInputWarning: false,
     minDate: new Date().toISOString().slice(0, 10),
   }),
   methods: {
@@ -187,6 +193,7 @@ export default {
       return !!state;
     },
     submitQuery: function () {
+      this.validateGuests();
       if (this.$refs.form.validate()) {
         let queryPayload = { ...this.queryParams };
 
@@ -197,12 +204,30 @@ export default {
         this.$emit("queryParams", queryPayload);
       }
     },
+    validateGuests: function () {
+      if (this.queryParams.numberOfGuests <= 0) {
+        this.guestInputWarning = true;
+      } else {
+        this.guestInputWarning = false;
+      }
+    },
+    resetQuery: function () {
+      for (const key in this.queryParams) {
+        if (Object.hasOwnProperty.call(this.queryParams, key)) {
+          if (key === "numberOfGuests") {
+            this.$set(this.queryParams, key, 0);
+          } else {
+            this.$set(this.queryParams, key, null);
+          }
+
+        }
+      }
+    }
   },
   computed: {
     rules: function () {
       let errors = {};
-      errors.numberOfGuests = [(v) => v > 0 || "Test"];
-
+      errors.numberOfGuests = [(v) => v > 0 || ""];
       return errors;
     },
   },
