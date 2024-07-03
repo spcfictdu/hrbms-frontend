@@ -36,7 +36,7 @@
         </v-container>
       </div>
       <!-- Footer Component -->
-      <footer-component />
+      <footer-component v-if="$router.currentRoute.name === 'Public Dashboard'"/>
     </div>
   </v-app>
 </template>
