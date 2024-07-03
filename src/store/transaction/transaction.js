@@ -35,6 +35,10 @@ export const transaction = {
         })
         .catch((error) => {
           console.error("Error fetching transactions: ", error);
+          commit("SET_ALERT_PROPERTIES", {
+            message: error.response.data.message,
+            status: "error",
+          });
         });
     },
     fetchTransaction: function ({ commit, state }, referenceNumber) {

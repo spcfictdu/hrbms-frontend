@@ -16,6 +16,7 @@
               v-if="show && !$vuetify.breakpoint.xs"
               class="text-button"
               justify="space-around"
+              @click="searchFunction"
               ><v-icon left>mdi-magnify</v-icon>Search</v-btn
             >
             <v-btn
@@ -23,6 +24,7 @@
               icon
               v-if="show && $vuetify.breakpoint.xs"
               class="text-button"
+              @click="searchFunction"
               ><v-icon>mdi-magnify</v-icon></v-btn
             >
             <v-btn
@@ -49,17 +51,119 @@
             </v-col>
           </v-row>
           <v-row v-if="show" class="mx-3 text-subtitle-2">
-            <v-col
-              :cols="colsTextfield"
-              v-for="(header, index) in textfieldHeaders"
-              :key="index"
-            >
-              <span class="ml-2">{{ header }}</span>
-              <v-text-field outlined dense hide-details="auto"></v-text-field>
+            <v-col :cols="colsTextfield">
+              <span class="ml-2">First Name</span>
+              <v-text-field
+                outlined
+                dense
+                hide-details="auto"
+                v-model="searchFirstName"
+                clearable
+              ></v-text-field>
+            </v-col>
+            <v-col :cols="colsTextfield">
+              <span class="ml-2">Middle Name</span>
+              <v-text-field
+                outlined
+                dense
+                hide-details="auto"
+                v-model="searchMiddleName"
+                clearable
+              ></v-text-field>
+            </v-col>
+            <v-col :cols="colsTextfield">
+              <span class="ml-2">Last Name</span>
+              <v-text-field
+                outlined
+                dense
+                hide-details="auto"
+                v-model="searchLastName"
+                clearable
+              ></v-text-field>
+            </v-col>
+            <v-col :cols="colsTextfield">
+              <span class="ml-2">Reference</span>
+              <v-text-field
+                outlined
+                dense
+                hide-details="auto"
+                v-model="searchRefNum"
+                clearable
+              ></v-text-field>
+            </v-col>
+            <v-col :cols="colsTextfield">
+              <span class="ml-2">Check-in Date</span>
+              <v-menu
+                v-model="menuCheckIn"
+                :close-on-content-click="false"
+                offset-y
+                transition="scale-transition"
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="searchCheckIn"
+                    v-on="on"
+                    v-bind="attrs"
+                    outlined
+                    dense
+                    readonly
+                    hide-details="auto"
+                    clearable
+                  >
+                  </v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="searchCheckIn"
+                  @input="menuCheckIn = false"
+                >
+                </v-date-picker>
+              </v-menu>
+            </v-col>
+            <v-col :cols="colsTextfield">
+              <span class="ml-2">Check-out Date</span>
+              <v-menu
+                v-model="menuCheckOut"
+                :close-on-content-click="false"
+                offset-y
+                transition="scale-transition"
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="searchCheckOut"
+                    v-on="on"
+                    v-bind="attrs"
+                    outlined
+                    dense
+                    readonly
+                    hide-details="auto"
+                    clearable
+                  >
+                  </v-text-field>
+                </template>
+                <v-date-picker
+                  v-model="searchCheckOut"
+                  @input="menuCheckOut = false"
+                >
+                </v-date-picker>
+              </v-menu>
+            </v-col>
+            <v-col class="d-flex justify-end mt-n5">
+              <v-btn
+                class="mr-n4"
+                :ripple="false"
+                color="warning"
+                v-if="show"
+                @click="clearQuery"
+                text
+                >Clear</v-btn
+              >
             </v-col>
           </v-row>
           <v-data-table
             :headers="headers"
+            :search="search"
             :items="mappedTransactions"
             group-by="date"
             class="ma-5"
@@ -101,9 +205,17 @@ export default {
   props: {
     transactions: {
       required: true,
-    }
+    },
   },
   data: () => ({
+    searchFirstName: "",
+    searchMiddleName: "",
+    searchLastName: "",
+    searchRefNum: "",
+    searchCheckIn: "",
+    searchCheckOut: "",
+    menuCheckIn: false,
+    menuCheckOut: false,
     title: "text-h4 font-weight-black mb-1",
     total_transactions: 0,
     show: false,
@@ -173,6 +285,55 @@ export default {
       };
       this.$emit("route-event", routeParams);
     },
+    searchFunction: function () {
+      if (this.searchFirstName) {
+        this.query_params.firstName = this.searchFirstName;
+      }
+      if (this.searchMiddleName) {
+        this.query_params.middleName = this.searchMiddleName;
+      }
+      if (this.searchLastName) {
+        this.query_params.lastName = this.searchLastName;
+      }
+      if (this.searchRefNum) {
+        this.query_params.referenceNumber = this.searchRefNum;
+      }
+      if (this.searchCheckIn) {
+        this.query_params.checkInDate = this.searchCheckIn;
+      }
+      if (this.searchCheckOut) {
+        this.query_params.checkOutDate = this.searchCheckOut;
+      }
+
+      setTimeout(() => {
+        this.indeterminate = false;
+      }, 3000);
+      this.value = 100;
+
+      this.$emit("query-params", this.query_params);
+    },
+    clearQuery: function () {
+      this.searchFirstName = "";
+      this.searchMiddleName = "";
+      this.searchLastName = "";
+      this.searchRefNum = "";
+      this.searchCheckIn = "";
+      this.searchCheckOut = "";
+
+      delete this.query_params.firstName;
+      delete this.query_params.middleName;
+      delete this.query_params.lastName;
+      delete this.query_params.referenceNumber;
+      delete this.query_params.checkInDate;
+      delete this.query_params.checkOutDate;
+
+      setTimeout(() => {
+        this.indeterminate = false;
+      }, 3000);
+      this.value = 100;
+
+      this.$emit("query-params", this.query_params);
+    },
   },
   computed: {
     size() {
@@ -196,6 +357,80 @@ export default {
     },
   },
   watch: {
+    searchFirstName: {
+      handler: function () {
+        if (!this.searchFirstName) {
+          setTimeout(() => {
+            this.indeterminate = false;
+          }, 3000);
+          this.value = 100;
+
+          delete this.query_params.firstName;
+          this.$emit("query-params", this.query_params);
+        }
+      },
+    },
+    searchMiddleName: {
+      handler: function () {
+        if (!this.searchMiddleName) {
+          setTimeout(() => {
+            this.indeterminate = false;
+          }, 3000);
+          this.value = 100;
+
+          delete this.query_params.middleName;
+          this.$emit("query-params", this.query_params);
+        }
+      },
+    },
+    searchLastName: {
+      handler: function () {
+        if (!this.searchLastName) {
+          setTimeout(() => {
+            this.indeterminate = false;
+          }, 3000);
+          this.value = 100;
+          delete this.query_params.lastName;
+          this.$emit("query-params", this.query_params);
+        }
+      },
+    },
+    searchRefNum: {
+      handler: function () {
+        if (!this.searchRefNum) {
+          setTimeout(() => {
+            this.indeterminate = false;
+          }, 3000);
+          this.value = 100;
+          delete this.query_params.referenceNumber;
+          this.$emit("query-params", this.query_params);
+        }
+      },
+    },
+    searchCheckIn: {
+      handler: function () {
+        if (!this.searchCheckIn) {
+          setTimeout(() => {
+            this.indeterminate = false;
+          }, 3000);
+          this.value = 100;
+          delete this.query_params.checkInDate;
+          this.$emit("query-params", this.query_params);
+        }
+      },
+    },
+    searchCheckOut: {
+      handler: function () {
+        if (!this.searchCheckOut) {
+          setTimeout(() => {
+            this.indeterminate = false;
+          }, 3000);
+          this.value = 100;
+          delete this.query_params.checkOutDate;
+          this.$emit("query-params", this.query_params);
+        }
+      },
+    },
     transactions: {
       immediate: true,
       handler(value) {

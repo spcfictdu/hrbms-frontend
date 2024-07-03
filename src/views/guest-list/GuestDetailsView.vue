@@ -1,6 +1,11 @@
 <template>
   <div>
-    <GuestDetails :guest="guest" @delete-event="deleteEvent" />
+    <GuestDetails
+      :guest="guest"
+      @query-params="fetchGuestDetails"
+      @delete-guest="deleteEvent"
+      v-if="guest && guest.transactions"
+    />
   </div>
 </template>
 
@@ -22,9 +27,12 @@ export default {
     deleteEvent: function (guestID) {
       this.deleteGuest(guestID);
     },
-    fetchGuestDetails: function () {
+    fetchGuestDetails: function (query_params) {
       const id = this.$route.params.id;
-      this.fetchGuest(id)
+      this.fetchGuest({
+        id: id,
+        queryParams: query_params,
+      });
     },
   },
   created() {

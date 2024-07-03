@@ -5,7 +5,6 @@
       'px-sm-2 mx-md-n3 my-md-5 mx-sm-n3 my-sm-n3':
         $vuetify.breakpoint.lgAndDown,
     }"
-    v-if="transactions"
   >
     <v-alert
       :value="isShowAlert"
@@ -18,7 +17,8 @@
     <TransactionsTable
       :transactions="transactions"
       @route-event="pushToTransactionRoute"
-      @query_params="triggerPagination"
+      @query-params="triggerPagination"
+      v-if="transactions"
     />
   </div>
 </template>
@@ -45,8 +45,8 @@ export default {
     }),
     handleAlertType() {
       return this.transactionStatus.status !== ""
-          ? this.transactionStatus.status.toLowerCase()
-          : "success";
+        ? this.transactionStatus.status.toLowerCase()
+        : "success";
     },
   },
   methods: {
@@ -87,6 +87,8 @@ export default {
           this.triggerAlert(true);
           let interval = setInterval(() => {
             this.triggerAlert(false);
+            newVal.status = "";
+            newVal.message = "";
             clearInterval(interval);
           }, 3000);
         }
