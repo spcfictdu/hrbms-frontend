@@ -41,7 +41,7 @@
 
     <!-- Search Engine -->
     <div class="my-6">
-      <SearchEngine @queryParams="submitQuery" />
+      <SearchEngine ref="searchEngine" @queryParams="submitQuery" />
     </div>
 
     <v-divider />
@@ -128,6 +128,9 @@ export default {
       }
       return routes;
     },
+    routeSearchQuery: function () {
+      return JSON.stringify(this.$route.query) === "{}";
+    }
   },
   beforeRouteEnter(to, from, next) {
     if (Object.keys(to.query).length > 0) {
@@ -136,6 +139,16 @@ export default {
       next();
     }
   },
+  watch: {
+    routeSearchQuery: {
+      immediate: true,
+      handler: function (newVal) {
+        if (newVal) {
+          this.$refs.searchEngine.resetQuery();
+        }
+      }
+    }
+  }
 };
 </script>
 

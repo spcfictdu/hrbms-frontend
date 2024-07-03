@@ -1,14 +1,14 @@
 <template>
   <v-row>
     <v-col cols="12" md="6">
-      <room-card :room="room.data"/>
+      <room-card :room="room" />
     </v-col>
     <v-col cols="12" md="6">
       <div class="flex-container">
         <v-img
-          v-for="(image, index) in room.image"
+          v-for="(image, index) in room.images"
           :key="index"
-          :src="image"
+          :src="appendImagePath(image)"
           :alt="`Card Section Two ${index + 1}`"
           class="image-container"
         />
@@ -23,8 +23,12 @@ export default {
   name: "CardSectionTwo",
   props: { room: Object },
   components: { RoomCard },
-  data: () => ({
-  }),
+  data: () => ({}),
+  methods: {
+    appendImagePath: function (path) {
+      return `${this.$apiPath}/${path}`;
+    },
+  },
 };
 </script>
 

@@ -1,7 +1,14 @@
 <template>
   <v-row class="gap-size">
-    <div v-if="false">
-
+    <div style="width: 100%" v-if="rooms.isQuery">
+      <v-col
+        cols="12"
+        class="col-padding"
+        v-for="(room, index) in mappedFilteredRooms"
+        :key="'query' + index"
+      >
+        <room-card :room="room" />
+      </v-col>
     </div>
 
     <div style="width: 100%" v-else>
@@ -14,7 +21,7 @@
       <v-col
         cols="12"
         class="col-padding"
-        v-for="(room, index) in roomCategories"
+        v-for="(room, index) in rooms.results"
         :key="index"
       >
         <card-section-one :room="room" v-if="(index + 1) % 2 === 1" />
@@ -37,70 +44,66 @@ import CardSectionOne from "./CardSectionOne.vue";
 import TitleSection from "./TitleSection.vue";
 import CardSectionTwo from "./CardSectionTwo.vue";
 import AboutSection from "./AboutSection.vue";
+import RoomCard from "@/components/hotel-rooms/categories/RoomCard.vue";
 export default {
   name: "DashboardContent",
-  components: { TitleSection, CardSectionOne, CardSectionTwo, AboutSection },
+  props: { rooms: Object },
+  components: {
+    TitleSection,
+    CardSectionOne,
+    CardSectionTwo,
+    AboutSection,
+    RoomCard,
+  },
   data: () => ({
-    roomCategories: [
+    roomCard: [
       {
         image: require("../../../assets/bgImage-5.png"),
-        data: {
-          name: "Executive Room",
-          price: 1000,
-          maxOccupancy: 2,
-          description:
-            "Experience luxury in our Deluxe King Room, featuring a plush king-size bed, a stylish seating area, and modern amenities like a flat-screen TV and high-speed Wi-Fi. The marble en-suite bathroom offers a rejuvenating rain shower and luxurious toiletries, complemented by stunning city views through large windows.",
-          amenities: [
-            "Wi-Fi Access",
-            "Coffee/Tea Maker",
-            "Flat-Screen Television",
-            "Mini-Bar",
-            "Room Service",
-            "In-Room Safe",
-          ],
-        },
-      },
-      {
-        image: [
-          require("../../../assets/bgImage-5.png"),
-          require("../../../assets/bgImage-5.png"),
-        ],
-        data: {
-          name: "Deluve Room",
-          price: 800,
-          maxOccupancy: 3,
-          description:
-            "Experience luxury in our Deluxe King Room, featuring a plush king-size bed, a stylish seating area, and modern amenities like a flat-screen TV and high-speed Wi-Fi. The marble en-suite bathroom offers a rejuvenating rain shower and luxurious toiletries, complemented by stunning city views through large windows.",
-          amenities: [
-            "Wi-Fi Access",
-            "Coffee/Tea Maker",
-            "Flat-Screen Television",
-            "Mini-Bar",
-            "Room Service",
-            "In-Room Safe",
-          ],
-        },
+        name: "Deluxe Room",
+        price: 1000,
+        maxOccupancy: 2,
+        description:
+          "Experience luxury in our Deluxe King Room, featuring a plush king-size bed, a stylish seating area, and modern amenities like a flat-screen TV and high-speed Wi-Fi. The marble en-suite bathroom offers a rejuvenating rain shower and luxurious toiletries, complemented by stunning city views through large windows.",
+        totalRooms: 14,
+        referenceNumber: "",
       },
       {
         image: require("../../../assets/bgImage-5.png"),
-        data: {
-          name: "Superior Room",
-          price: 1200,
-          maxOccupancy: 4,
-          description:
-            "Experience luxury in our Deluxe King Room, featuring a plush king-size bed, a stylish seating area, and modern amenities like a flat-screen TV and high-speed Wi-Fi. The marble en-suite bathroom offers a rejuvenating rain shower and luxurious toiletries, complemented by stunning city views through large windows.",
-          amenities: [
-            "Wi-Fi Access",
-            "Coffee/Tea Maker",
-            "Flat-Screen Television",
-            "Mini-Bar",
-            "Room Service",
-            "In-Room Safe",
-          ],
-        },
+        name: "Superior Room",
+        price: 2000,
+        maxOccupancy: 4,
+        description:
+          "Experience luxury in our Deluxe King Room, featuring a plush king-size bed, a stylish seating area, and modern amenities like a flat-screen TV and high-speed Wi-Fi. The marble en-suite bathroom offers a rejuvenating rain shower and luxurious toiletries, complemented by stunning city views through large windows.",
+        totalRooms: 8,
+        referenceNumber: "",
+      },
+      {
+        image: require("../../../assets/bgImage-5.png"),
+        name: "Executive Room",
+        price: 1600,
+        maxOccupancy: 3,
+        description:
+          "Experience luxury in our Deluxe King Room, featuring a plush king-size bed, a stylish seating area, and modern amenities like a flat-screen TV and high-speed Wi-Fi. The marble en-suite bathroom offers a rejuvenating rain shower and luxurious toiletries, complemented by stunning city views through large windows.",
+        totalRooms: 12,
+        referenceNumber: "",
       },
     ],
   }),
+  computed: {
+    mappedFilteredRooms: function () {
+      return this.rooms.isQuery && this.rooms.results
+        ? this.rooms.results.data.map((key) => ({
+          image: key.image,
+          name: key.name,
+          price: key.rate,
+          maxOccupancy: key.capacity,
+          description: key.description,
+          totalRooms: key.roomsAvailable,
+          referenceNumber: key.referenceNumber,
+        }))
+        : [];
+    },
+  },
 };
 </script>
 

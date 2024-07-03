@@ -5,13 +5,13 @@
         <div class="text-title">About Us</div>
       </div>
       <p class="text-container text-muted text-body-2 font-weight-regular">
-        Welcome to [Hotel Name], where elegance and comfort await in the heart
+        Welcome to First City Providential College, where elegance and comfort await in the heart
         of the city. Our beautifully designed rooms and suites, exceptional
         dining, relaxing spa, and state-of-the-art fitness center create a
         perfect blend of luxury and convenience. Whether you're here for
         business or leisure, our dedicated team provides personalized service to
         ensure your stay is memorable and exceptional. Experience unparalleled
-        hospitality at [Hotel Name], where every detail is crafted to exceed
+        hospitality at First City Providential College, where every detail is crafted to exceed
         your expectations.
       </p>
     </div>
