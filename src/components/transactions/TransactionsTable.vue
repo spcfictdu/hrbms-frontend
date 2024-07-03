@@ -58,7 +58,6 @@
                 dense
                 hide-details="auto"
                 v-model="searchFirstName"
-                clearable
               ></v-text-field>
             </v-col>
             <v-col :cols="colsTextfield">
@@ -68,7 +67,6 @@
                 dense
                 hide-details="auto"
                 v-model="searchMiddleName"
-                clearable
               ></v-text-field>
             </v-col>
             <v-col :cols="colsTextfield">
@@ -78,7 +76,6 @@
                 dense
                 hide-details="auto"
                 v-model="searchLastName"
-                clearable
               ></v-text-field>
             </v-col>
             <v-col :cols="colsTextfield">
@@ -88,7 +85,6 @@
                 dense
                 hide-details="auto"
                 v-model="searchRefNum"
-                clearable
               ></v-text-field>
             </v-col>
             <v-col :cols="colsTextfield">
@@ -109,7 +105,6 @@
                     dense
                     readonly
                     hide-details="auto"
-                    clearable
                   >
                   </v-text-field>
                 </template>
@@ -138,7 +133,6 @@
                     dense
                     readonly
                     hide-details="auto"
-                    clearable
                   >
                   </v-text-field>
                 </template>
@@ -286,51 +280,88 @@ export default {
       this.$emit("route-event", routeParams);
     },
     searchFunction: function () {
+      let triggerIndeterminate = false;
+
       if (this.searchFirstName) {
         this.query_params.firstName = this.searchFirstName;
+        triggerIndeterminate = true;
       }
       if (this.searchMiddleName) {
         this.query_params.middleName = this.searchMiddleName;
+        triggerIndeterminate = true;
       }
       if (this.searchLastName) {
         this.query_params.lastName = this.searchLastName;
+        triggerIndeterminate = true;
       }
       if (this.searchRefNum) {
         this.query_params.referenceNumber = this.searchRefNum;
+        triggerIndeterminate = true;
       }
       if (this.searchCheckIn) {
         this.query_params.checkInDate = this.searchCheckIn;
+        triggerIndeterminate = true;
       }
       if (this.searchCheckOut) {
         this.query_params.checkOutDate = this.searchCheckOut;
+        triggerIndeterminate = true;
       }
 
-      setTimeout(() => {
-        this.indeterminate = false;
-      }, 3000);
-      this.value = 100;
+      console.log(triggerIndeterminate);
+
+      if (triggerIndeterminate === true) {
+        this.indeterminate = true;
+        setTimeout(() => {
+          this.indeterminate = false;
+        }, 3000);
+        this.value = 100;
+      }
 
       this.$emit("query-params", this.query_params);
     },
     clearQuery: function () {
-      this.searchFirstName = "";
-      this.searchMiddleName = "";
-      this.searchLastName = "";
-      this.searchRefNum = "";
-      this.searchCheckIn = "";
-      this.searchCheckOut = "";
+      let triggerIndeterminate = false;
+      if (this.searchFirstName) {
+        this.searchFirstName = "";
+        delete this.query_params.firstName;
+        triggerIndeterminate = true;
+      }
 
-      delete this.query_params.firstName;
-      delete this.query_params.middleName;
-      delete this.query_params.lastName;
-      delete this.query_params.referenceNumber;
-      delete this.query_params.checkInDate;
-      delete this.query_params.checkOutDate;
+      if (this.searchMiddleName) {
+        this.searchMiddleName = "";
+        delete this.query_params.middleName;
+        triggerIndeterminate = true;
+      }
 
-      setTimeout(() => {
-        this.indeterminate = false;
-      }, 3000);
-      this.value = 100;
+      if (this.searchLastName) {
+        this.searchLastName = "";
+        delete this.query_params.lastName;
+        triggerIndeterminate = true;
+      }
+
+      if (this.searchRefNum) {
+        this.searchRefNum = "";
+        delete this.query_params.referenceNumber;
+        triggerIndeterminate = true;
+      }
+      if (this.searchCheckIn) {
+        this.searchCheckIn = "";
+        delete this.query_params.checkInDate;
+        triggerIndeterminate = true;
+      }
+      if (this.searchCheckOut) {
+        this.searchCheckOut = "";
+        delete this.query_params.checkOutDate;
+        triggerIndeterminate = true;
+      }
+
+      if (triggerIndeterminate === true) {
+        this.indeterminate = true;
+        setTimeout(() => {
+          this.indeterminate = false;
+        }, 3000);
+        this.value = 100;
+      }
 
       this.$emit("query-params", this.query_params);
     },
@@ -359,7 +390,8 @@ export default {
   watch: {
     searchFirstName: {
       handler: function () {
-        if (!this.searchFirstName) {
+        if (!this.searchFirstName || this.searchFirstName === "") {
+          this.indeterminate = true;
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -372,7 +404,9 @@ export default {
     },
     searchMiddleName: {
       handler: function () {
-        if (!this.searchMiddleName) {
+        if (!this.searchMiddleName || this.searchMiddleName === "") {
+          this.indeterminate = true;
+
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -385,7 +419,9 @@ export default {
     },
     searchLastName: {
       handler: function () {
-        if (!this.searchLastName) {
+        if (!this.searchLastName || this.searchLastName === "") {
+          this.indeterminate = true;
+
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -397,7 +433,9 @@ export default {
     },
     searchRefNum: {
       handler: function () {
-        if (!this.searchRefNum) {
+        if (!this.searchRefNum || this.searchRefNum === "") {
+          this.indeterminate = true;
+
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -409,7 +447,9 @@ export default {
     },
     searchCheckIn: {
       handler: function () {
-        if (!this.searchCheckIn) {
+        if (!this.searchCheckIn || this.searchCheckIn === "") {
+          this.indeterminate = true;
+
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -421,7 +461,9 @@ export default {
     },
     searchCheckOut: {
       handler: function () {
-        if (!this.searchCheckOut) {
+        if (!this.searchCheckOut || this.searchCheckOut === "") {
+          this.indeterminate = true;
+
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);

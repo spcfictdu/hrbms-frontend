@@ -71,7 +71,6 @@ export default {
       }
     },
     submitQuery: function (queryParams) {
-      console.log(queryParams);
       this.assignParams(queryParams);
 
       return this.$router.push({ query: this.queryParams });

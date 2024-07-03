@@ -363,12 +363,6 @@ export default {
     },
   },
   watch: {
-    roomTypes: {
-      immediate: true,
-      handler(value) {
-        console.log(value);
-      },
-    },
   },
 };
 </script>

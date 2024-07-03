@@ -202,12 +202,12 @@ export default {
         }
       },
     },
-    payload: {
-      deep: true,
-      handler: function (newVal) {
-        console.log(newVal);
-      }
-    }
+    // payload: {
+    //   deep: true,
+    //   handler: function (newVal) {
+    //     console.log(newVal);
+    //   }
+    // }
   },
 };
 </script>

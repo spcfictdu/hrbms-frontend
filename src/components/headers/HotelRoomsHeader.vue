@@ -260,7 +260,6 @@ export default {
     queryParams: {
       deep: true,
       handler: function (newVal) {
-        console.log(newVal);
         return this.$router.replace({
           query: newVal,
         });

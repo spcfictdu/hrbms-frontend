@@ -111,7 +111,6 @@
                   outlined
                   hide-details="auto"
                   v-model="searchRefNum"
-                  clearable
                 ></v-text-field>
               </v-col>
               <v-col>
@@ -132,7 +131,7 @@
                       dense
                       readonly
                       hide-details="auto"
-                      clearable
+                      
                     >
                     </v-text-field>
                   </template>
@@ -161,7 +160,7 @@
                       dense
                       readonly
                       hide-details="auto"
-                      clearable
+                      
                     >
                     </v-text-field>
                   </template>
@@ -277,7 +276,6 @@ export default {
       this.deleteDialog = false;
     },
     pushToTransactionRoute: function (value) {
-      console.log(value);
       let payload = {
         status: value.status,
         referenceNumber: value.reference,
@@ -299,33 +297,56 @@ export default {
       }
     },
     searchFunction: function () {
+      let triggerIndeterminate = false;
+
       if (this.searchRefNum) {
         this.query_params.referenceNumber = this.searchRefNum;
+        triggerIndeterminate = true;
       }
       if (this.searchCheckIn) {
         this.query_params.checkInDate = this.searchCheckIn;
+        triggerIndeterminate = true;
       }
       if (this.searchCheckOut) {
         this.query_params.checkOutDate = this.searchCheckOut;
+        triggerIndeterminate = true;
       }
 
-      setTimeout(() => {
-        this.indeterminate = false;
-      }, 3000);
-      this.value = 100;
+      if (triggerIndeterminate === true) {
+        this.indeterminate = true;
+        setTimeout(() => {
+          this.indeterminate = false;
+        }, 3000);
+        this.value = 100;
+      }
 
       this.$emit("query-params", this.query_params);
     },
     clearQuery: function () {
-      this.searchRefNum = "";
-      this.searchCheckIn = "";
-      this.searchCheckOut = "";
+      let triggerIndeterminate = false;
+
+      if (this.searchRefNum) {
+        this.searchRefNum = "";
+        triggerIndeterminate = true;
+      }
+      if (this.searchCheckIn) {
+        this.searchCheckIn = "";
+        triggerIndeterminate = true;
+      }
+      if (this.searchCheckOut) {
+        this.searchCheckOut = "";
+        triggerIndeterminate = true;
+      }
+
       this.query_params = {};
 
-      setTimeout(() => {
-        this.indeterminate = false;
-      }, 3000);
-      this.value = 100;
+      if (triggerIndeterminate === true) {
+        this.indeterminate = true;
+        setTimeout(() => {
+          this.indeterminate = false;
+        }, 3000);
+        this.value = 100;
+      }
 
       this.$emit("query-params", this.query_params);
     },
@@ -360,7 +381,8 @@ export default {
     },
     searchRefNum: {
       handler: function () {
-        if (!this.searchRefNum) {
+        if (!this.searchRefNum || this.searchRefNum === "") {
+          this.indeterminate = true;
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -372,7 +394,8 @@ export default {
     },
     searchCheckIn: {
       handler: function () {
-        if (!this.searchCheckIn) {
+        if (!this.searchCheckIn || this.searchCheckIn === "") {
+          this.indeterminate = true;
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -384,7 +407,8 @@ export default {
     },
     searchCheckOut: {
       handler: function () {
-        if (!this.searchCheckOut) {
+        if (!this.searchCheckOut || this.searchCheckOut === "") {
+          this.indeterminate = true;
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);

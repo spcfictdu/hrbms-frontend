@@ -63,7 +63,6 @@
                 dense
                 hide-details="auto"
                 v-model="searchFirstName"
-                clearable
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
@@ -73,7 +72,6 @@
                 dense
                 hide-details="auto"
                 v-model="searchMiddleName"
-                clearable
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
@@ -83,7 +81,6 @@
                 dense
                 hide-details="auto"
                 v-model="searchLastName"
-                clearable
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
@@ -93,7 +90,6 @@
                 dense
                 hide-details="auto"
                 v-model="searchRef"
-                clearable
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
@@ -103,7 +99,7 @@
                 dense
                 hide-details="auto"
                 v-model="searchEmail"
-                clearable
+                :rules="rules.email"
               ></v-text-field>
             </v-col>
             <v-col cols="12" sm="6" md="4">
@@ -114,9 +110,10 @@
                 hide-details="auto"
                 type="number"
                 v-model="searchPhone"
-                clearable
                 counter
                 maxlength="11"
+                hide-spin-buttons
+                :rules="rules.phone"
               ></v-text-field>
             </v-col>
             <!-- Clear Button -->
@@ -193,6 +190,7 @@ export default {
     small: true,
     xSmall: false,
     guestClass: "text-h5 font-weight-black mb-1",
+    errors: {},
   }),
   props: {
     guests: {
@@ -202,31 +200,41 @@ export default {
   mixins: [TablePagination],
   methods: {
     searchFunction: function () {
+      let triggerIndeterminate = false;
+
       if (this.searchFirstName) {
         this.query_params.firstName = this.searchFirstName;
+        triggerIndeterminate = true;
       }
       if (this.searchMiddleName) {
         this.query_params.middleName = this.searchMiddleName;
+        triggerIndeterminate = true;
       }
       if (this.searchLastName) {
         this.query_params.lastName = this.searchLastName;
+        triggerIndeterminate = true;
       }
       if (this.searchRef) {
         this.query_params.referenceNumber = this.searchRef;
+        triggerIndeterminate = true;
       }
       if (this.searchEmail) {
         this.query_params.email = this.searchEmail;
+        triggerIndeterminate = true;
       }
       if (this.searchPhone) {
         this.query_params.phone = this.searchPhone;
+        triggerIndeterminate = true;
       }
 
-      this.indeterminate = true;
-
-      setTimeout(() => {
-        this.indeterminate = false;
-      }, 3000);
-      this.value = 100;
+      if (triggerIndeterminate === true) {
+        this.indeterminate = true;
+        setTimeout(() => {
+          this.indeterminate = false;
+          triggerIndeterminate = false;
+        }, 3000);
+        this.value = 100;
+      }
 
       this.$emit("query_params", this.query_params);
     },
@@ -237,28 +245,51 @@ export default {
       });
     },
     clearQuery: function () {
-      this.searchFirstName = "";
-      delete this.query_params.firstName;
+      let triggerIndeterminate = false;
+      if (this.searchFirstName) {
+        this.searchFirstName = "";
+        delete this.query_params.firstName;
+        triggerIndeterminate = true;
+      }
 
-      this.searchMiddleName = "";
-      delete this.query_params.middleName;
+      if (this.searchMiddleName) {
+        this.searchMiddleName = "";
+        delete this.query_params.middleName;
+        triggerIndeterminate = true;
+      }
 
-      this.searchLastName = "";
-      delete this.query_params.lastName;
+      if (this.searchLastName) {
+        this.searchLastName = "";
+        delete this.query_params.lastName;
+        triggerIndeterminate = true;
+      }
 
-      this.searchRef = "";
-      delete this.query_params.referenceNumber;
+      if (this.searchRef) {
+        this.searchRef = "";
+        delete this.query_params.referenceNumber;
+        triggerIndeterminate = true;
+      }
 
-      this.searchEmail = "";
-      delete this.query_params.email;
+      if (this.searchEmail) {
+        this.searchEmail = "";
+        delete this.query_params.email;
+        triggerIndeterminate = true;
+      }
 
-      this.searchPhone = "";
-      delete this.query_params.phone;
+      if (this.searchPhone) {
+        this.searchPhone = "";
+        delete this.query_params.phone;
+        triggerIndeterminate = true;
+      }
 
-      setTimeout(() => {
-        this.indeterminate = false;
-      }, 3000);
-      this.value = 100;
+      if (triggerIndeterminate === true) {
+        this.indeterminate = true;
+        setTimeout(() => {
+          this.indeterminate = false;
+          triggerIndeterminate = false;
+        }, 3000);
+        this.value = 100;
+      }
 
       this.$emit("query_params", this.query_params);
     },
@@ -267,12 +298,30 @@ export default {
     size: function () {
       return this.$vuetify.breakpoint;
     },
+    rules: function () {
+      const errors = {};
+
+      if (this.searchEmail.length > 0) {
+        errors.email = [(v) => /.+@.+\..+/.test(v) || "Invalid e-mail."];
+      } else {
+        delete errors.email;
+      }
+
+      if (this.searchPhone.length > 0) {
+        errors.phone = [(v) => v.length === 11 || "Invalid number"];
+      } else {
+        delete errors.phone
+      }
+      
+      return errors;
+    },
   },
 
   watch: {
     searchFirstName: {
       handler: function () {
-        if (!this.searchFirstName) {
+        if (!this.searchFirstName || this.searchFirstName === "") {
+          this.indeterminate = true;
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -284,7 +333,8 @@ export default {
     },
     searchMiddleName: {
       handler: function () {
-        if (!this.searchMiddleName) {
+        if (!this.searchMiddleName || this.searchMiddleName === "") {
+          this.indeterminate = true;
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -296,7 +346,8 @@ export default {
     },
     searchLastName: {
       handler: function () {
-        if (!this.searchLastName) {
+        if (!this.searchLastName || this.searchLastName === "") {
+          this.indeterminate = true;
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -308,7 +359,8 @@ export default {
     },
     searchRef: {
       handler: function () {
-        if (!this.searchRef) {
+        if (!this.searchRef || this.searchRef === "") {
+          this.indeterminate = true;
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -320,7 +372,8 @@ export default {
     },
     searchEmail: {
       handler: function () {
-        if (!this.searchEmail) {
+        if (!this.searchEmail || this.searchEmail === "") {
+          this.indeterminate = true;
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);
@@ -332,7 +385,8 @@ export default {
     },
     searchPhone: {
       handler: function () {
-        if (!this.searchPhone) {
+        if (!this.searchPhone || this.searchPhone === "") {
+          this.indeterminate = true;
           setTimeout(() => {
             this.indeterminate = false;
           }, 3000);

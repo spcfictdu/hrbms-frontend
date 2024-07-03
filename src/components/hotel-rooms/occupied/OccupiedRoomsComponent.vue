@@ -541,12 +541,6 @@ export default {
     },
   },
   watch: {
-    categoriesContent: {
-      immediate: true,
-      handler: function (value) {
-        console.log(value);
-      },
-    },
     selectedStatus: {
       immediate: true,
       handler: function (status) {

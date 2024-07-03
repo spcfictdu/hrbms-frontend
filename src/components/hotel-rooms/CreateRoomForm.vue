@@ -368,7 +368,7 @@ export default {
               update: this.imageMutation(images).updated,
             },
           };
-          console.log(payload);
+          // console.log(payload);
         }
 
         const formData = new FormData();
