@@ -12,6 +12,7 @@ import { rooms } from "./rooms/rooms";
 import { roomCategories } from "./categories/room-categories";
 import { amenities } from "./amenities/amenities";
 import { occupied } from "./occupied/occupied";
+import { publicRooms } from "./public/public-rooms";
 
 
 Vue.use(Vuex);
@@ -27,6 +28,7 @@ export default new Vuex.Store({
     roomCategories,
     amenities,
     occupied,
+    publicRooms,
 
     //Enums
     roomTypeEnum,
