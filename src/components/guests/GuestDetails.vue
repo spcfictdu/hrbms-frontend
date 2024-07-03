@@ -26,29 +26,42 @@
           >
         </v-col>
         <v-col cols="auto" v-else class="relative-position">
-          <v-btn icon outlined color="red" @click="dialogActivator" class="absolute-position"
+          <v-btn
+            icon
+            outlined
+            color="red"
+            @click="dialogActivator"
+            class="absolute-position"
             ><v-icon>mdi-trash-can-outline</v-icon></v-btn
           >
         </v-col>
       </v-row>
       <v-divider :class="classDivider"></v-divider>
       <v-row>
-        <v-col
-          :cols="detailCols"
-          v-for="(detail, index) in guestDetails"
-          :key="index"
-          class="text-body-2"
+        <v-col class="text-body-2">
+          <span class="font-weight-bold grey--text" :cols="detailCols"
+            >ADDRESS:</span
+          >
+          {{ guest.city }}, {{ guest.province }}</v-col
         >
-          <span class="font-weight-bold grey--text">{{ detail.title }}:</span>
-          <span> {{ detail.content }}</span>
-        </v-col>
+        <v-col class="text-body-2" :cols="detailCols"
+          ><span class="font-weight-bold grey--text">EMAIL:</span>
+          {{ guest.email }}</v-col
+        >
+        <v-col class="text-body-2" :cols="detailCols"
+          ><span class="font-weight-bold grey--text">PHONE:</span>
+          {{ guest.phone }}</v-col
+        >
+        <v-col class="text-body-2" :cols="detailCols"
+          ><span class="font-weight-bold grey--text">ID NUMBER:</span>
+          {{ guest.idNumber }}</v-col
+        >
       </v-row>
       <v-row>
         <v-col cols="12">
           <v-card elevation="0">
-            <v-card-title class="text-subtitle-2 font-weight-black ml-3"
-              >{{ guest.transactions.length }}
-              {{ guest.transactions.length < 1 ? "ITEMS" : "ITEM" }}
+            <v-card-title class="text-subtitle-2 font-weight-black ml-3">
+              {{ tableHeader }}
               <v-spacer></v-spacer>
               <v-btn
                 color="primary"
@@ -56,6 +69,7 @@
                 v-if="show && !$vuetify.breakpoint.xs"
                 class="text-button"
                 justify="space-around"
+                @click="searchFunction"
                 ><v-icon left>mdi-magnify</v-icon>Search</v-btn
               >
               <v-btn
@@ -63,6 +77,7 @@
                 icon
                 v-if="show && $vuetify.breakpoint.xs"
                 class="text-button"
+                @click="searchFunction"
                 ><v-icon>mdi-magnify</v-icon></v-btn
               >
               <v-btn
@@ -89,13 +104,80 @@
               </v-col>
             </v-row>
             <v-row v-if="show" class="mx-3 text-subtitle-2">
-              <v-col
-                v-for="(header, index) in textfieldHeaders"
-                :key="index"
-                :cols="textfieldCols"
-              >
-                <span class="ml-2">{{ header }}</span>
-                <v-text-field dense outlined hide-details="auto"></v-text-field>
+              <v-col>
+                <span class="ml-2">Reference</span>
+                <v-text-field
+                  dense
+                  outlined
+                  hide-details="auto"
+                  v-model="searchRefNum"
+                  clearable
+                ></v-text-field>
+              </v-col>
+              <v-col>
+                <span class="ml-2">Check-in Date</span>
+                <v-menu
+                  v-model="menuCheckIn"
+                  :close-on-content-click="false"
+                  offset-y
+                  transition="scale-transition"
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="searchCheckIn"
+                      v-on="on"
+                      v-bind="attrs"
+                      outlined
+                      dense
+                      readonly
+                      hide-details="auto"
+                      clearable
+                    >
+                    </v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="searchCheckIn"
+                    @input="menuCheckIn = false"
+                  >
+                  </v-date-picker>
+                </v-menu>
+              </v-col>
+              <v-col>
+                <span class="ml-2">Check-out Date</span>
+                <v-menu
+                  v-model="menuCheckOut"
+                  :close-on-content-click="false"
+                  offset-y
+                  transition="scale-transition"
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="searchCheckOut"
+                      v-on="on"
+                      v-bind="attrs"
+                      outlined
+                      dense
+                      readonly
+                      hide-details="auto"
+                      clearable
+                    >
+                    </v-text-field>
+                  </template>
+                  <v-date-picker
+                    v-model="searchCheckOut"
+                    @input="menuCheckOut = false"
+                  >
+                  </v-date-picker>
+                </v-menu>
+              </v-col>
+            </v-row>
+            <v-row v-if="show" class="mt-n5">
+              <v-col class="d-flex justify-end mr-3 pb-0">
+                <v-btn text color="warning" :ripple="false" @click="clearQuery">
+                  Clear
+                </v-btn>
               </v-col>
             </v-row>
             <v-row>
@@ -134,14 +216,15 @@
 
 <script>
 import DeleteDialog from "../dialogs/DeleteDialog.vue";
+
 export default {
   name: "GuestDetails",
   components: { DeleteDialog },
   props: {
     guest: {
       type: Object,
-      required: true
-    }
+      required: true,
+    },
   },
   data: () => ({
     headers: [
@@ -161,7 +244,6 @@ export default {
       confirmed: "confirmed",
     },
     show: false,
-    textfieldHeaders: ["Reference", "Check-in Date", "Check-out Date"],
     indeterminate: true,
     value: 0,
     classGuestName: "text-h6 font-weight-bold",
@@ -169,26 +251,30 @@ export default {
     small: true,
     xSmall: false,
     classDivider: "my-3",
-    detailCols: "auto",
+    detailCols: "3",
     title: "text-h5 font-weight-bold",
     deleteDialog: false,
     meta: {},
     confirmationRoute: ["RESERVED"],
     checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
+    menuCheckIn: false,
+    menuCheckOut: false,
+    searchRefNum: "",
+    searchCheckIn: "",
+    searchCheckOut: "",
+    query_params: {},
   }),
   methods: {
     dialogActivator: function () {
-      this.meta.targetDeletion = "guest"
+      this.meta.targetDeletion = "guest";
       this.deleteDialog = true;
     },
     resetActivator: function () {
       this.deleteDialog = false;
     },
     deleteRequest: function () {
-      this.$emit("delete-event", this.guest.id)
-        .then(() => {
-          this.resetActivator;
-        });
+      this.$emit("delete-guest", this.guest.id);
+      this.deleteDialog = false;
     },
     pushToTransactionRoute: function (value) {
       console.log(value);
@@ -212,39 +298,50 @@ export default {
         });
       }
     },
+    searchFunction: function () {
+      if (this.searchRefNum) {
+        this.query_params.referenceNumber = this.searchRefNum;
+      }
+      if (this.searchCheckIn) {
+        this.query_params.checkInDate = this.searchCheckIn;
+      }
+      if (this.searchCheckOut) {
+        this.query_params.checkOutDate = this.searchCheckOut;
+      }
+
+      setTimeout(() => {
+        this.indeterminate = false;
+      }, 3000);
+      this.value = 100;
+
+      this.$emit("query-params", this.query_params);
+    },
+    clearQuery: function () {
+      this.searchRefNum = "";
+      this.searchCheckIn = "";
+      this.searchCheckOut = "";
+      this.query_params = {};
+
+      setTimeout(() => {
+        this.indeterminate = false;
+      }, 3000);
+      this.value = 100;
+
+      this.$emit("query-params", this.query_params);
+    },
   },
   computed: {
     size() {
       return this.$vuetify.breakpoint;
     },
-    guestDetails() {
-      let guestDetails = [];
-
-      Object.keys(this.guest).forEach((detail) => {
-        if (detail.includes("city")) {
-          guestDetails.unshift({
-            title: "ADDRESS",
-            content: this.guest["city"] + ", " + this.guest["province"],
-          });
-        } else if (detail.includes("email")) {
-          guestDetails.push({
-            title: "EMAIL",
-            content: this.guest[detail],
-          });
-        } else if (detail.includes("phone")) {
-          guestDetails.push({
-            title: "PHONE",
-            content: this.guest[detail],
-          });
-        } else if (detail.includes("idNumber")) {
-          guestDetails.push({
-            title: "ID NUMBER",
-            content: this.guest[detail],
-          });
-        }
-      });
-
-      return guestDetails;
+    tableHeader: function () {
+      if (this.guest.transactions.length === 0) {
+        return "NO ITEMS FOUND";
+      } else if (this.guest.transactions.length === 1) {
+        return this.guest.transactions.length + " ITEM";
+      } else if (this.guest.transactions.length > 1) {
+        return this.guest.transactions.length + " ITEMS";
+      }
     },
   },
   watch: {
@@ -261,13 +358,48 @@ export default {
         }
       },
     },
+    searchRefNum: {
+      handler: function () {
+        if (!this.searchRefNum) {
+          setTimeout(() => {
+            this.indeterminate = false;
+          }, 3000);
+          this.value = 100;
+          delete this.query_params.referenceNumber;
+          this.$emit("query-params", this.query_params);
+        }
+      },
+    },
+    searchCheckIn: {
+      handler: function () {
+        if (!this.searchCheckIn) {
+          setTimeout(() => {
+            this.indeterminate = false;
+          }, 3000);
+          this.value = 100;
+          delete this.query_params.checkInDate;
+          this.$emit("query-params", this.query_params);
+        }
+      },
+    },
+    searchCheckOut: {
+      handler: function () {
+        if (!this.searchCheckOut) {
+          setTimeout(() => {
+            this.indeterminate = false;
+          }, 3000);
+          this.value = 100;
+          delete this.query_params.checkOutDate;
+          this.$emit("query-params", this.query_params);
+        }
+      },
+    },
     size: {
       immediate: true,
       deep: true,
       handler(newVal) {
         if (newVal.xs) {
-          this.classGuestName =
-            "font-weight-bold text-h6 text-center mt-n3";
+          this.classGuestName = "font-weight-bold text-h6 text-center mt-n3";
           this.textfieldCols = 12;
           this.small = false;
           this.xSmall = true;
@@ -289,7 +421,7 @@ export default {
           this.small = true;
           this.xSmall = false;
           this.classDivider = "my-3";
-          this.detailCols = "auto";
+          this.detailCols = "3";
           this.title = "text-h5 font-weight-bold";
         }
       },
@@ -305,12 +437,11 @@ export default {
 
 .absolute-position {
   position: absolute;
-
 }
 
-.relative-position{
+.relative-position {
   position: relative;
   right: 40px;
-  top: -15px
+  top: -15px;
 }
 </style>
