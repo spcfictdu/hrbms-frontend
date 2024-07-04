@@ -6,7 +6,10 @@ Vue.use(VueRouter);
 export default [
   {
     path: "/guest",
-    // Component here
+    component: () =>
+      import(
+        /* webpackChunkName: "guest-dashboard" */ "../../views/guest-user/GuestHeaderView"
+      ),
     children: [
       {
         path: "",
@@ -16,9 +19,10 @@ export default [
             /* webpackChunkName: "guest-dashboard" */ "@/views/dashboard/GuestDashboardView.vue"
           ),
         meta: {
-          isPublic: true,
+          isGuest: true,
           withSearchEngine: true,
-        }
+          name: 'Hotel Rooms'
+        },
       },
       // More Paths
     ],

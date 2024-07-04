@@ -11,10 +11,11 @@
       <Navigation
         v-if="
           !$router.currentRoute.meta.isLogin &&
-          !$router.currentRoute.meta.isPublic
+          !$router.currentRoute.meta.isPublic &&
+          !$router.currentRoute.meta.isGuest
         "
       />
-      <PublicNavigation v-else-if="$router.currentRoute.meta.isPublic" />
+      <PublicNavigation v-else-if="$router.currentRoute.meta.isPublic || $router.currentRoute.meta.isGuest" />
       <div
         :class="{
           'mt-n10 bg-color main-layout white py-5': !notAllowedRoutes.includes(
@@ -36,7 +37,7 @@
         </v-container>
       </div>
       <!-- Footer Component -->
-      <footer-component v-if="$router.currentRoute.name === 'Public Dashboard'"/>
+      <footer-component v-if="allowedFooterRoutes.includes($router.currentRoute.name)"/>
     </div>
   </v-app>
 </template>
@@ -46,11 +47,13 @@ import Navigation from "./components/navigation/Navigation.vue";
 import { mapActions } from "vuex";
 import PublicNavigation from "./components/navigation/PublicNavigation.vue";
 import FooterComponent from "./components/public/FooterComponent.vue";
+
 export default {
   name: "App",
   components: { Navigation, PublicNavigation, FooterComponent },
   data: () => ({
     notAllowedRoutes: ["Sign In", "Guest Sign In"],
+    allowedFooterRoutes: ["Public Dashboard", "Guest Dashboard"]
   }),
 
   methods: {

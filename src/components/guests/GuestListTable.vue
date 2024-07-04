@@ -16,6 +16,7 @@
             <v-spacer></v-spacer>
             <!-- Search Button -->
             <v-btn
+              class="mr-1"
               color="primary"
               rounded
               v-if="show && !$vuetify.breakpoint.xs"
@@ -30,6 +31,22 @@
               :ripple="false"
               @click="searchFunction"
               ><v-icon left>mdi-magnify</v-icon></v-btn
+            >
+            <v-btn
+              :ripple="false"
+              color="warning"
+              v-if="show && !$vuetify.breakpoint.xs"
+              @click="clearQuery"
+              rounded
+              ><v-icon left>mdi-cached</v-icon>Clear</v-btn
+            >
+            <v-btn
+              :ripple="false"
+              color="warning"
+              v-if="show && $vuetify.breakpoint.xs"
+              @click="clearQuery"
+              icon
+              ><v-icon left>mdi-cached</v-icon></v-btn
             >
             <v-btn
               fab
@@ -117,7 +134,7 @@
               ></v-text-field>
             </v-col>
             <!-- Clear Button -->
-            <v-col class="d-flex justify-end mt-n5 pt-0">
+            <!-- <v-col class="d-flex justify-end mt-n5 pt-0">
               <v-btn
                 class="mr-n4"
                 :ripple="false"
@@ -127,7 +144,7 @@
                 text
                 >Clear</v-btn
               >
-            </v-col>
+            </v-col> -->
           </v-row>
           <!-- Guest List -->
           <v-row>
@@ -310,9 +327,9 @@ export default {
       if (this.searchPhone.length > 0) {
         errors.phone = [(v) => v.length === 11 || "Invalid number"];
       } else {
-        delete errors.phone
+        delete errors.phone;
       }
-      
+
       return errors;
     },
   },

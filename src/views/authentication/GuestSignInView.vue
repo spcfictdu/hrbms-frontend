@@ -45,12 +45,14 @@
               </label-slot>
               <v-text-field
                   v-model="user.password"
-                  type="password"
                   outlined
                   dense
                   rounded
                   hide-details="auto"
                   :rules="rules.password"
+                  :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+                  @click:append="showPassword = !showPassword"
+                  :type="showPassword ? 'text' : 'password'"
               />
             </div>
           </div>
@@ -95,6 +97,7 @@ export default {
   name: "GuestSignInView",
   components: { LabelSlot, RegisterForm },
   data: () => ({
+    showPassword: false,
     isRegister: false,
     schoolName: "First City Providential College",
     user: {

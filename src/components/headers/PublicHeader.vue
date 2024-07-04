@@ -16,6 +16,7 @@
           v-for="(route, index) in routes"
           :key="'route' + index"
           @click="redirect(route)"
+          :color="route.name !== 'Log Out' ? '' : 'warning'"
           >{{ route.name.toUpperCase() }}
         </v-btn>
       </div>
@@ -32,6 +33,7 @@
           v-for="(route, index) in routes"
           :key="'route' + index"
           @click="redirect(route)"
+          :color="route.name !== 'Log Out' ? '' : 'warning'"
           >{{ route.name.toUpperCase() }}
         </v-btn>
       </div>
@@ -53,6 +55,9 @@
 <script>
 import SearchEngine from "@/components/public/SearchEngine.vue";
 import { assignParams } from "@/mixins/FormattingFunctions";
+import { mapActions } from "vuex";
+import { auth } from "@/utils/auth";
+
 export default {
   name: "PublicHeader",
   mixins: [assignParams],
@@ -61,12 +66,15 @@ export default {
     activeButton: null,
   }),
   methods: {
+    ...mapActions("authentication", ["logout"]),
+
     redirect: function (route) {
       this.activeButton = route.name;
 
       if (route.route?.route) {
         return this.$router.push({ name: route.route.route });
       } else if (route.route) {
+        this.$route.meta.name = route.name;
         return this.$router.push({ name: route.route });
       } else {
         return route.action();
@@ -129,7 +137,7 @@ export default {
           {
             name: "Log Out",
             action: () => {
-
+              this.logout(auth.user().role);
             },
           }
         );

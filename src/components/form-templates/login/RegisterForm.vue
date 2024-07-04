@@ -83,13 +83,15 @@
       </label-slot>
       <v-text-field
           v-model="payload.password"
-          type="password"
+          :type="showPassword ? 'text' : 'password'"
           outlined
           dense
           rounded
           hide-details="auto"
           @change="emitTransaction"
           :rules="rules.password"
+          @click:append="showPassword = !showPassword"
+          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
       />
     </div>
   </div>
@@ -102,6 +104,7 @@ export default {
   name: "RegisterForm",
   components: { LabelSlot },
   data: () => ({
+    showPassword: false,
     payload: {
       firstName: null,
       middleName: null,

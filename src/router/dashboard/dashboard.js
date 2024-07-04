@@ -8,7 +8,7 @@ export default [
     path: "/admin",
     name: "Dashboard",
     component: () => import(
-      /* webpackChunkName: "dashboard" */ "@/views/dashboard/DashboardView.vue"
+      /* webpackChunkName: "dashboard" */ "@/views/guest-user/dashboard/DashboardView.vue"
       ),
   },
 ];
