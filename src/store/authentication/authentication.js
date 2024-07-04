@@ -22,20 +22,22 @@ export const authentication = {
   actions: {
     async login({ commit }, { user, loginRole }) {
       // Set Login Path for Backend
-      let loginPath = ""
+      let loginPath = "";
+
+      let payload = {
+        password: user.password,
+      };
 
       if (loginRole === "ADMIN") {
         loginPath = "user/admin/login";
+        payload.username = user.username;
       } else if (loginRole === "GUEST") {
         loginPath = "user/guest/login";
+        payload.email = user.username;
       }
 
       try {
         const url = loginPath;
-        let payload = {
-          username: user.username,
-          password: user.password,
-        };
 
         let response = await this.$axios.post(url, payload);
         commit("SET_CURRENT_USER", response.data.results);
@@ -86,7 +88,7 @@ export const authentication = {
     async register({ commit }, data) {
       try {
         const url = "user/register";
-        const loginUrl = "user/login";
+        const loginUrl = "user/guest/login";
         let payload = {
           username: data.email,
           password: data.password,
@@ -94,15 +96,15 @@ export const authentication = {
           lastName: data.lastName,
           email: data.email,
           role: data.role,
-          mobile: data.mobileNumber,
-        }
+          mobileNumber: data.mobileNumber,
+        };
 
         let response = await this.$axios.post(url, payload);
         if (response.data.code === 200) {
           const loginPayload = {
-            username: payload.username,
+            email: payload.username,
             password: payload.password,
-          }
+          };
           let response = await this.$axios.post(loginUrl, loginPayload);
           if (response.data.code === 200) {
             commit("SET_CURRENT_USER", response.data.results);
@@ -112,7 +114,6 @@ export const authentication = {
             });
             await this.$router.push({ name: "Guest Dashboard" });
           }
-
         }
       } catch (error) {
         commit("SET_LOGIN_STATUS", {
@@ -124,6 +125,6 @@ export const authentication = {
 
     clearUserData({ commit }) {
       commit("SET_CURRENT_USER", null);
-    }
+    },
   },
 };

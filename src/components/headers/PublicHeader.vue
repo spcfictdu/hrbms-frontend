@@ -39,7 +39,7 @@
 
     <v-divider />
 
-    <div v-if="$router.currentRoute.name === 'Public Dashboard'">
+    <div v-if="$router.currentRoute.meta?.withSearchEngine">
       <!-- Search Engine -->
       <div class="my-6">
         <SearchEngine ref="searchEngine" @queryParams="submitQuery" />
@@ -125,6 +125,12 @@ export default {
           {
             name: "Account",
             route: "",
+          },
+          {
+            name: "Log Out",
+            action: () => {
+
+            },
           }
         );
       }

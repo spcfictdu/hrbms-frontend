@@ -17,8 +17,12 @@ export default [
         meta: {
           name: "Hotel Rooms",
           isPublic: true,
+          withSearchEngine: true,
         },
       },
+      // {
+        
+      // }
     ],
   }
 ]

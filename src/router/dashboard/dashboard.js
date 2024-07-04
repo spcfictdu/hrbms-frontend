@@ -11,12 +11,4 @@ export default [
       /* webpackChunkName: "dashboard" */ "@/views/dashboard/DashboardView.vue"
       ),
   },
-  {
-    path: "/guest",
-    name: "Guest Dashboard",
-    component: () => import(
-      /* webpackChunkName: "guest-dashboard" */ "@/views/dashboard/GuestDashboardView.vue"
-      ),
-  },
-
 ];

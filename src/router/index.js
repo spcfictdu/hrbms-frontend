@@ -8,6 +8,7 @@ import transaction from "./transaction/transaction";
 import authentication from "./authentication/authentication";
 import publicRoutes from "@/router/public-routes/public-routes";
 import dashboardRoutes from "./dashboard/dashboard";
+import guestUser from "./guest-user/guest-user";
 
 Vue.use(VueRouter);
 
@@ -18,6 +19,7 @@ const routes = [
   ...transaction,
   ...authentication,
   ...publicRoutes,
+  ...guestUser,
 ];
 
 const router = new VueRouter({
