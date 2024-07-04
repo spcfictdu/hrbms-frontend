@@ -2,6 +2,7 @@
   <div class="mt-6">
     <dashboard-component
       @input-event="assignButtonQuery"
+      @redirect-event="redirectToRoomCategory"
       :rooms="dashboardData"
     />
   </div>
@@ -55,6 +56,14 @@ export default {
         }
       }
       this.fetchFilteredRoom();
+    },
+    redirectToRoomCategory: function (referenceNumber) {
+      this.$router.push({
+        name: "Public Room Category",
+        params: {
+          referenceNumber: referenceNumber,
+        },
+      });
     },
   },
   computed: {

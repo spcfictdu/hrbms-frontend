@@ -9,11 +9,13 @@ export const publicRooms = {
   state: () => ({
     rooms: null,
     filteredRooms: null,
+    room: null,
   }),
   getters: {},
   mutations: {
     SET_ROOMS: (state, data) => (state.rooms = data),
     SET_FILTERED_ROOMS: (state, data) => (state.filteredRooms = data),
+    SET_ROOM: (state, data) => (state.room = data),
   },
   actions: {
     fetchPublicRooms: function ({ commit }) {
@@ -45,6 +47,17 @@ export const publicRooms = {
         })
         .catch((error) => {
           console.error("Error fetching filtered rooms", error);
+        });
+    },
+    fetchPublicRoom: function ({ commit }, referenceNumber) {
+      const url = `hotel-room/${referenceNumber}`;
+      return this.$axios
+        .get(url)
+        .then((response) => {
+          commit("SET_ROOM", response.data.results);
+        })
+        .catch((error) => {
+          console.error("Error fetching room", error);
         });
     },
   },

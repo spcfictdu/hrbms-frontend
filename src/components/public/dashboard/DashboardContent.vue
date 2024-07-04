@@ -7,7 +7,10 @@
         v-for="(room, index) in mappedFilteredRooms"
         :key="'query' + index"
       >
-        <room-card :room="room" />
+        <room-card
+          :room="room"
+          @redirect-event="(e) => $emit('redirect-event', e)"
+        />
       </v-col>
     </div>
 
@@ -55,52 +58,19 @@ export default {
     AboutSection,
     RoomCard,
   },
-  data: () => ({
-    roomCard: [
-      {
-        image: require("../../../assets/bgImage-5.png"),
-        name: "Deluxe Room",
-        price: 1000,
-        maxOccupancy: 2,
-        description:
-          "Experience luxury in our Deluxe King Room, featuring a plush king-size bed, a stylish seating area, and modern amenities like a flat-screen TV and high-speed Wi-Fi. The marble en-suite bathroom offers a rejuvenating rain shower and luxurious toiletries, complemented by stunning city views through large windows.",
-        totalRooms: 14,
-        referenceNumber: "",
-      },
-      {
-        image: require("../../../assets/bgImage-5.png"),
-        name: "Superior Room",
-        price: 2000,
-        maxOccupancy: 4,
-        description:
-          "Experience luxury in our Deluxe King Room, featuring a plush king-size bed, a stylish seating area, and modern amenities like a flat-screen TV and high-speed Wi-Fi. The marble en-suite bathroom offers a rejuvenating rain shower and luxurious toiletries, complemented by stunning city views through large windows.",
-        totalRooms: 8,
-        referenceNumber: "",
-      },
-      {
-        image: require("../../../assets/bgImage-5.png"),
-        name: "Executive Room",
-        price: 1600,
-        maxOccupancy: 3,
-        description:
-          "Experience luxury in our Deluxe King Room, featuring a plush king-size bed, a stylish seating area, and modern amenities like a flat-screen TV and high-speed Wi-Fi. The marble en-suite bathroom offers a rejuvenating rain shower and luxurious toiletries, complemented by stunning city views through large windows.",
-        totalRooms: 12,
-        referenceNumber: "",
-      },
-    ],
-  }),
+  data: () => ({}),
   computed: {
     mappedFilteredRooms: function () {
       return this.rooms.isQuery && this.rooms.results
         ? this.rooms.results.data.map((key) => ({
-          image: key.image,
-          name: key.name,
-          price: key.rate,
-          maxOccupancy: key.capacity,
-          description: key.description,
-          totalRooms: key.roomsAvailable,
-          referenceNumber: key.referenceNumber,
-        }))
+            image: key.image,
+            name: key.name,
+            price: key.rate,
+            maxOccupancy: key.capacity,
+            description: key.description,
+            totalRooms: key.roomsAvailable,
+            referenceNumber: key.referenceNumber,
+          }))
         : [];
     },
   },

@@ -77,12 +77,12 @@ export default {
             referenceNumber: category.rates.regular.referenceNumber,
           },
         ],
-        rooms: category.rooms.map((key) => ({
-          name: key.roomNumber,
-          floor: "Floor 1",
-          guest: key.guest ? key.guest : "None",
-          status: key.status,
-        })),
+        // rooms: category.rooms.map((key) => ({
+        //   name: key.roomNumber,
+        //   floor: "Floor 1",
+        //   guest: key.guest ? key.guest : "None",
+        //   status: key.status,
+        // })),
       };
 
       category.rates.special.forEach((key) => {

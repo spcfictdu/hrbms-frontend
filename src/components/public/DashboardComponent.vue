@@ -3,12 +3,18 @@
     <v-container>
       <v-row>
         <v-col cols="12" v-if="rooms.isQuery">
-          <room-type-buttons :withAllRooms="withAllRooms" @input-event="roomTypeEvent" />
+          <room-type-buttons
+            :withAllRooms="withAllRooms"
+            @input-event="roomTypeEvent"
+          />
         </v-col>
 
         <!-- Main Content -->
         <v-col cols="12">
-          <dashboard-content :rooms="rooms" />
+          <dashboard-content
+            :rooms="rooms"
+            @redirect-event="(e) => $emit('redirect-event', e)"
+          />
         </v-col>
       </v-row>
     </v-container>
@@ -30,8 +36,8 @@ export default {
       let query = {
         roomType: payload,
       };
-      this.$emit('input-event', query);
-    }
+      this.$emit("input-event", query);
+    },
   },
   computed: {},
 };

@@ -91,8 +91,12 @@
       </v-autocomplete>
     </div>
     <v-row>
+      <v-col cols="12">
+        <room-list-card />
+      </v-col>
+
       <!-- Mobile Header -->
-      <v-col class="text-h6 font-weight-bold ml-2" v-if="size.xs === true">
+      <!-- <v-col class="text-h6 font-weight-bold ml-2" v-if="size.xs === true">
         {{ mobileHeader }}
       </v-col>
       <v-col cols="12" :class="{ 'pt-0': size.xs === true }">
@@ -196,9 +200,9 @@
                     v-if="index < categoriesContent.content.length - 1" class="mt-n2"
                   />
                 </v-col>
-              </template>
-              <!-- Rooms View in Mobile -->
-              <template v-else>
+              </template> -->
+      <!-- Rooms View in Mobile -->
+      <!-- <template v-else>
                 <v-col>
                   <v-col cols="12" class="text-subtitle-2"
                     >ROOM {{ content.roomNumber }}</v-col
@@ -260,7 +264,7 @@
             </v-row>
           </v-card-text>
         </v-card>
-      </v-col>
+      </v-col> -->
     </v-row>
     <v-pagination v-model="page" :length="paginationLastPage"></v-pagination>
     <RoomDialog
@@ -286,11 +290,12 @@
 <script>
 import RoomDialog from "@/components/dialogs/RoomDialog.vue";
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
+import RoomListCard from "./RoomListCard.vue";
 import { assignParams } from "@/mixins/FormattingFunctions";
 
 export default {
   name: "OccupiedRoomsComponent",
-  components: { RoomDialog, DeleteDialog },
+  components: { RoomDialog, DeleteDialog, RoomListCard },
   mixins: [assignParams],
   props: {
     roomStatus: {
