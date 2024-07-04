@@ -16,8 +16,8 @@
 </template>
 
 <script>
-import RoomImages from "../../../components/hotel-rooms/categories/RoomImages.vue";
-import RoomDetails from "../../../components/hotel-rooms/categories/RoomDetails.vue";
+import RoomImages from "@/components/layouts/images/RoomImages.vue";
+import RoomDetails from "@/components/layouts/sections/RoomDetails.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "RoomDetailsView",

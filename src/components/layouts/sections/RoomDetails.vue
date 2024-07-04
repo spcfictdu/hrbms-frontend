@@ -29,8 +29,8 @@
 </template>
 
 <script>
-import RoomInfo from "./RoomInfo.vue";
-import RoomReservationForm from "./RoomReservationForm.vue";
+import RoomInfo from "@/components/hotel-rooms/categories/RoomInfo.vue";
+import RoomReservationForm from "@/components/hotel-rooms/categories/RoomReservationForm.vue";
 import { mapState } from "vuex";
 export default {
   name: "RoomDetails",
