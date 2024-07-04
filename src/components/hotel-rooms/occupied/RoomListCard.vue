@@ -1,51 +1,65 @@
 <template>
   <div>
-    <v-card flat>
+    <v-card flat class="card-border">
       <v-card-title class="text-subtitle-1">
-        <div class="w-full d-flex justify-space-between align-center">
+        <div
+            class="w-full d-flex flex-row justify-space-between align-center"
+        >
           <div
-            class="d-flex flex-column flex-sm-row justify-space-between align-start align-sm-center"
+              class="ml-3 d-none d-sm-flex text-body-1 text-uppercase font-weight-bold flex-grow-1"
           >
-            <div
-              class="text-body-1 text-uppercase font-weight-bold mr-0 mr-sm-5"
-            >
+            ROOM {{ room.name }}
+          </div>
+          <div class="d-none d-sm-flex flex-grow-1">Floor {{ room.floor }}</div>
+          <div class="d-none d-sm-flex text-caption text-sm-subtitle-1 flex-grow-1">
+            Guest: {{ room.guest }}
+          </div>
+
+          <!-- Mobile Breakpoint -->
+          <div class="ml-3 d-flex d-sm-none flex-column justify-center flex-grow-1">
+            <div class="text-body-1 text-uppercase font-weight-bold">
               ROOM {{ room.name }}
             </div>
-            <div class="d-none d-sm-block mr-0 mx-sm-5">{{ room.floor }}</div>
-            <div class="text-caption text-sm-subtitle-1 mx-0 mx-sm-5">
-              Guest: {{ room.guest }}
+            <div class="text-caption">
+              {{ room.guest }}
             </div>
           </div>
-          <div class="d-flex justify-space-between align-center">
-            <v-chip
-              small
-              class="mr-4 text-uppercase font-weight-bold white--text"
-              :color="chipColor(room.status)"
-              >{{ room.status }}</v-chip
-            >
 
-            <v-menu right offset-x>
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn v-on="on" v-bind="attrs" icon
-                  ><v-icon>mdi-dots-vertical</v-icon></v-btn
-                >
-              </template>
-              <v-list dense class="py-0">
-                <v-list-item
+          <!-- Chip -->
+          <div class="flex-shrink-1 flex-sm-shrink-0 flex-grow-0 flex-sm-grow-1 mr-2 mr-sm-0">
+            <v-chip
+                small
+                class="text-uppercase font-weight-bold white--text"
+                :color="chipColor(room.status)"
+            >{{ room.status }}
+            </v-chip>
+          </div>
+
+
+          <v-menu right offset-x>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn v-on="on" v-bind="attrs" icon
+              >
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn
+              >
+            </template>
+            <v-list dense class="py-0">
+              <v-list-item
                   :class="{
                     'menu-border': index < menuItems.length - 1,
                     'warning--text': iter.text === 'Remove room',
                   }"
                   v-for="(iter, index) in menuItems(room)"
                   :key="index"
-                >
-                  <v-list-item-title class="text-body-2 font-weight-regular">{{
+              >
+                <v-list-item-title class="text-body-2 font-weight-regular">{{
                     iter.text
-                  }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </div>
+                  }}
+                </v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </div>
       </v-card-title>
     </v-card>
@@ -123,6 +137,11 @@ export default {
 .w-full {
   width: 100%;
 }
+
+.card-border {
+  border: 1px solid rgba(51, 51, 51, 0.1);
+}
+
 .menu-border {
   border-bottom: 1px solid #e6e2e2;
 }

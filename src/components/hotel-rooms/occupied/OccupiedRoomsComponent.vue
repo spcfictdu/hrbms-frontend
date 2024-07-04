@@ -3,19 +3,19 @@
     <v-row v-if="size.xs !== true">
       <v-col cols="3" v-for="(roomStatus, index) in buttonDisplay" :key="index">
         <v-btn
-          height="75"
-          block
-          depressed
-          :color="selectedStatus === roomStatus.title ? 'accentTwo' : 'lightBg'"
-          @click="selectStatus(roomStatus.title)"
+            height="75"
+            block
+            depressed
+            :color="selectedStatus === roomStatus.title ? 'primary' : 'lightBg'"
+            @click="selectStatus(roomStatus.title)"
         >
           <v-row no-gutters>
             <v-col cols="12">
               <div
-                class="text-h6"
-                :class="
+                  class="text-h6"
+                  :class="
                   selectedStatus === roomStatus.title
-                    ? 'font-weight-bold'
+                    ? 'font-weight-medium'
                     : 'font-weight-regular'
                 "
               >
@@ -24,10 +24,10 @@
             </v-col>
             <v-col cols="12">
               <div
-                class="text-subtitle-2"
-                :class="
+                  class="text-subtitle-2"
+                  :class="
                   selectedStatus === roomStatus.title
-                    ? 'font-weight-bold'
+                    ? 'font-weight-medium'
                     : 'font-weight-regular'
                 "
               >
@@ -42,15 +42,15 @@
     <v-row v-else>
       <v-col cols="12" class="d-block">
         <v-autocomplete
-          rounded
-          filled
-          background-color="white"
-          hide-details="auto"
-          label="Select a Room Status"
-          :items="buttonDisplay"
-          item-text="title"
-          item-value="title"
-          v-model="selectedStatus"
+            rounded
+            filled
+            background-color="white"
+            hide-details="auto"
+            label="Select a Room Status"
+            :items="buttonDisplay"
+            item-text="title"
+            item-value="title"
+            v-model="selectedStatus"
         >
           <template v-slot:item="{ item }">
             <v-row>
@@ -61,38 +61,38 @@
       </v-col>
       <v-col cols="12" class="d-block">
         <v-autocomplete
-          rounded
-          filled
-          hide-details="auto"
-          label="Select a Room Category"
-          background-color="white"
-          :items="roomCategories"
-          item-text="roomType"
-          item-value="roomType"
-          v-model="selectedRoomType"
+            rounded
+            filled
+            hide-details="auto"
+            label="Select a Room Category"
+            background-color="white"
+            :items="roomCategories"
+            item-text="roomType"
+            item-value="roomType"
+            v-model="selectedRoomType"
         >
         </v-autocomplete>
       </v-col>
     </v-row>
-    <v-divider class="my-5" />
+    <v-divider class="my-5"/>
     <div style="max-width: 225px" v-if="size.xs !== true">
       <v-autocomplete
-        class="d-block"
-        rounded
-        filled
-        hide-details="auto"
-        dense
-        background-color="lightBg"
-        :items="roomCategories"
-        item-text="roomType"
-        item-value="roomType"
-        v-model="selectedRoomType"
+          class="d-block"
+          rounded
+          filled
+          hide-details="auto"
+          dense
+          background-color="lightBg"
+          :items="roomCategories"
+          item-text="roomType"
+          item-value="roomType"
+          v-model="selectedRoomType"
       >
       </v-autocomplete>
     </div>
-    <v-row>
-      <v-col cols="12">
-        <room-list-card />
+    <v-row class="mt-4" dense>
+      <v-col cols="12" v-for="(room, index) in mappedRoomStatuses" :key="index">
+        <room-list-card :room="room"/>
       </v-col>
 
       <!-- Mobile Header -->
@@ -266,23 +266,23 @@
         </v-card>
       </v-col> -->
     </v-row>
-    <v-pagination v-model="page" :length="paginationLastPage"></v-pagination>
+    <v-pagination class="mt-4" v-model="page" :length="paginationLastPage"></v-pagination>
     <RoomDialog
-      :activator="dialogActivator"
-      :dialogMeta="meta"
-      :dialogFunction="dialogFunction"
-      :roomCategories="roomCategories"
-      :roomDetails="roomDetails"
-      @reset-activator="resetActivator"
-      @update-request="updateRequest"
-      @add-request="addRoomRequest"
-      @edit-room-request="editRoomRequest"
+        :activator="dialogActivator"
+        :dialogMeta="meta"
+        :dialogFunction="dialogFunction"
+        :roomCategories="roomCategories"
+        :roomDetails="roomDetails"
+        @reset-activator="resetActivator"
+        @update-request="updateRequest"
+        @add-request="addRoomRequest"
+        @edit-room-request="editRoomRequest"
     />
     <DeleteDialog
-      :activator="deleteActivator"
-      :deleteMeta="meta"
-      @delete-event="deleteRoomRequest"
-      @reset-activator="resetActivator"
+        :activator="deleteActivator"
+        :deleteMeta="meta"
+        @delete-event="deleteRoomRequest"
+        @reset-activator="resetActivator"
     />
   </div>
 </template>
@@ -379,7 +379,19 @@ export default {
           }
         });
       }
+
+      console.log(categories);
       return categories;
+    },
+
+    mappedRoomStatuses: function () {
+      return this.roomStatus ? this.roomStatus.rooms.map((item) => ({
+        name: item.roomNumber,
+        floor: item.roomFloor,
+        guest: item.guest ? item.guest : "No Occupant",
+        status: item.status,
+        referenceNumber: item.roomReferenceNumber,
+      })) : []
     },
 
     statusOptions: function () {
@@ -415,10 +427,10 @@ export default {
       });
 
       let remainingLetters = this.selectedStatus
-        .split("")
-        .slice(1, this.selectedStatus.length)
-        .join("")
-        .toLowerCase();
+          .split("")
+          .slice(1, this.selectedStatus.length)
+          .join("")
+          .toLowerCase();
       let firstLetter = this.selectedStatus.split("").slice(0, 1).join("");
 
       let status = firstLetter + remainingLetters;
@@ -557,9 +569,9 @@ export default {
         this.emptyRoomMessage = "Loading...";
         setTimeout(() => {
           this.emptyRoomMessage =
-            "There are no " +
-            this.selectedStatus.toLowerCase() +
-            " rooms in this category";
+              "There are no " +
+              this.selectedStatus.toLowerCase() +
+              " rooms in this category";
         }, 5000);
       },
     },
@@ -574,9 +586,9 @@ export default {
         this.emptyRoomMessage = "Loading...";
         setTimeout(() => {
           this.emptyRoomMessage =
-            "There are no " +
-            this.selectedStatus.toLowerCase() +
-            " rooms in this category.";
+              "There are no " +
+              this.selectedStatus.toLowerCase() +
+              " rooms in this category.";
         }, 5000);
       },
     },
