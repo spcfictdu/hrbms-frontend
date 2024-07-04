@@ -54,7 +54,7 @@ export default {
           clearTimeout(this.searchTimeout);
   
           // Trigger Loading upon change for slow devices
-          this.loading = true;
+          // this.loading = true;
           
           this.searchTimeout = setTimeout(() => {
             this.query_params.search = value;

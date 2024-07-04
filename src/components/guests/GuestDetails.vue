@@ -131,7 +131,6 @@
                       dense
                       readonly
                       hide-details="auto"
-                      
                     >
                     </v-text-field>
                   </template>
@@ -160,7 +159,6 @@
                       dense
                       readonly
                       hide-details="auto"
-                      
                     >
                     </v-text-field>
                   </template>
@@ -183,7 +181,7 @@
               <v-col cols="12">
                 <v-data-table
                   :headers="headers"
-                  :items="guest.transactions"
+                  :items="guestTransactions"
                   class="ma-5"
                   @click:row="(v) => pushToTransactionRoute(v)"
                 >
@@ -215,6 +213,7 @@
 
 <script>
 import DeleteDialog from "../dialogs/DeleteDialog.vue";
+import { format, parseISO } from "date-fns";
 
 export default {
   name: "GuestDetails",
@@ -229,7 +228,7 @@ export default {
     headers: [
       { text: "Status", value: "status" },
       { text: "Reference", value: "reference" },
-      { text: "Occupants", value: "ocupants" },
+      { text: "Occupants", value: "occupants" },
       { text: "Check-in", value: "checkIn" },
       { text: "Check-out", value: "checkOut" },
       { text: "Booked", value: "booked" },
@@ -364,6 +363,20 @@ export default {
         return this.guest.transactions.length + " ITEMS";
       }
     },
+    guestTransactions: function () {
+      return this.guest.transactions
+        ? this.guest.transactions.map((content) => ({
+            status: content.status,
+            reference: content.reference,
+            occupants: content.ocupants,
+            checkIn: content.checkIn,
+            checkOut: content.checkOut,
+            booked: format(parseISO(content.booked), "yyyy-MM-dd"),
+            room: "Room " + content.room,
+            total: content.total,
+          }))
+        : [];
+    },
   },
   watch: {
     "guest.transactions": {
@@ -428,7 +441,7 @@ export default {
           this.small = false;
           this.xSmall = true;
           this.classDivider = "my-3";
-          this.detailCols = "12";
+          this.detailCols = 12;
         } else if (newVal.md || newVal.sm) {
           this.detailCols = 6;
           this.textfieldCols = 4;
@@ -445,7 +458,7 @@ export default {
           this.small = true;
           this.xSmall = false;
           this.classDivider = "my-3";
-          this.detailCols = "3";
+          this.detailCols = 3;
           this.title = "text-h5 font-weight-bold";
         }
       },
