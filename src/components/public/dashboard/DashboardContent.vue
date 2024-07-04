@@ -44,7 +44,7 @@ import CardSectionOne from "./CardSectionOne.vue";
 import TitleSection from "./TitleSection.vue";
 import CardSectionTwo from "./CardSectionTwo.vue";
 import AboutSection from "./AboutSection.vue";
-import RoomCard from "@/components/hotel-rooms/categories/RoomCard.vue";
+import RoomCard from "@/components/cards/RoomCard.vue";
 export default {
   name: "DashboardContent",
   props: { rooms: Object },

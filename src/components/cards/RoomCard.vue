@@ -69,7 +69,7 @@
 </template>
 
 <script>
-import PriceSlot from "../../slots/PriceSlot.vue";
+import PriceSlot from "../slots/PriceSlot.vue";
 export default {
   name: "RoomCard",
   props: { room: Object },

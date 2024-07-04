@@ -17,7 +17,7 @@
 
 <script>
 import DashboardContent from "./dashboard/DashboardContent.vue";
-import RoomTypeButtons from "@/components/hotel-rooms/RoomTypeButtons.vue";
+import RoomTypeButtons from "@/components/buttons/RoomTypeButtons.vue";
 export default {
   name: "DashboardComponent",
   components: { DashboardContent, RoomTypeButtons },

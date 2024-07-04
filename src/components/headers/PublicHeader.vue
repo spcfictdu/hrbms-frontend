@@ -39,12 +39,14 @@
 
     <v-divider />
 
-    <!-- Search Engine -->
-    <div class="my-6">
-      <SearchEngine ref="searchEngine" @queryParams="submitQuery" />
-    </div>
+    <div v-if="$router.currentRoute.name === 'Public Dashboard'">
+      <!-- Search Engine -->
+      <div class="my-6">
+        <SearchEngine ref="searchEngine" @queryParams="submitQuery" />
+      </div>
 
-    <v-divider />
+      <v-divider />
+    </div>
   </v-container>
 </template>
 
@@ -130,7 +132,7 @@ export default {
     },
     routeSearchQuery: function () {
       return JSON.stringify(this.$route.query) === "{}";
-    }
+    },
   },
   beforeRouteEnter(to, from, next) {
     if (Object.keys(to.query).length > 0) {
@@ -146,9 +148,9 @@ export default {
         if (newVal) {
           this.$refs.searchEngine.resetQuery();
         }
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 

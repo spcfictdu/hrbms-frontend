@@ -261,7 +261,7 @@
 
 <script>
 import CalendarFilterDialog from "../../dialogs/CalendarFilterDialog.vue";
-import RoomTypeButtons from "../RoomTypeButtons.vue";
+import RoomTypeButtons from "../../buttons/RoomTypeButtons.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "CalendarComponent",

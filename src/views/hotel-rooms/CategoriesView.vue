@@ -20,7 +20,7 @@
 
 <script>
 import RoomsList from "../../components/hotel-rooms/categories/RoomsList.vue";
-import RoomTypeButtons from "@/components/hotel-rooms/RoomTypeButtons.vue";
+import RoomTypeButtons from "@/components/buttons/RoomTypeButtons.vue";
 import { mapActions, mapState } from "vuex";
 import { assignParams } from "@/mixins/FormattingFunctions";
 
