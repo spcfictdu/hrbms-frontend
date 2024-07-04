@@ -8,7 +8,7 @@
     >
       {{ categoryStatus.message ?? categoryStatus.message }}
     </v-alert>
-    <room-type-buttons @input-event="attachType" />
+    <room-type-buttons :withAllRooms="withAllRooms" @input-event="attachType" />
     <RoomsList
       v-if="roomCategories"
       @redirect-event="redirect"
@@ -30,6 +30,7 @@ export default {
   components: { RoomsList, RoomTypeButtons },
   data: () => ({
     isShowAlert: false,
+    withAllRooms: true,
   }),
   methods: {
     ...mapActions("roomCategories", ["fetchRoomCategories"]),
@@ -37,9 +38,21 @@ export default {
       this.assignParams(params);
     },
     attachType: function (type) {
-      const object = {
+      let object = {
         roomType: type,
       };
+
+      for (const key in object) {
+        if (Object.hasOwnProperty.call(object, key)) {
+          const value = object[key];
+          if (value === "All Rooms") {
+            this.$set(object, key, null);
+          } else {
+            this.$set(object, key, value);
+          }
+        }
+      }
+
       this.assignParams(object);
     },
     redirect: function (referenceNumber) {
@@ -65,6 +78,7 @@ export default {
   },
   watch: {
     queryParams: {
+      immediate: true,
       deep: true,
       handler: function (newVal) {
         this.fetchRoomCategories(newVal);

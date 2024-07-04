@@ -43,10 +43,10 @@
 import { mapActions, mapState } from "vuex";
 export default {
   name: "RoomTypeButtons",
+  props: { withAllRooms: Boolean },
   data: () => ({
     activeButton: "",
   }),
-  props: {},
   methods: {
     ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
     capitalizeString(str) {
@@ -65,12 +65,14 @@ export default {
   computed: {
     ...mapState("roomTypeEnum", ["roomTypeEnum"]),
     mappedRoomTypeEnum: function () {
-      let roomTypes = [
-        {
+      let roomTypes = [];
+
+      if (this.withAllRooms) {
+        roomTypes.push({
           roomType: "All Rooms",
           referenceNumber: null,
-        },
-      ];
+        });
+      }
 
       if (this.roomTypeEnum) {
         this.roomTypeEnum.forEach((key) => {

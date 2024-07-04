@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-0">
     <!-- Room Types -->
-    <room-type-buttons @input-event="assignValue" />
+    <room-type-buttons :withAllRooms="withAllRooms" @input-event="assignValue" />
 
     <!-- Calendar Component Card -->
     <v-card class="pa-5" flat v-if="requirements">
@@ -305,6 +305,7 @@ export default {
       chevronRight: {},
       calendarBreakpoint: "",
     },
+    withAllRooms: false,
   }),
   methods: {
     ...mapActions("roomNumberEnum", ["fetchRoomNumbers"]),

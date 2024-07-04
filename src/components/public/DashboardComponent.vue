@@ -3,7 +3,7 @@
     <v-container>
       <v-row>
         <v-col cols="12" v-if="rooms.isQuery">
-          <room-type-buttons @input-event="roomTypeEvent" />
+          <room-type-buttons :withAllRooms="withAllRooms" @input-event="roomTypeEvent" />
         </v-col>
 
         <!-- Main Content -->
@@ -22,6 +22,9 @@ export default {
   name: "DashboardComponent",
   components: { DashboardContent, RoomTypeButtons },
   props: { rooms: Object },
+  data: () => ({
+    withAllRooms: true,
+  }),
   methods: {
     roomTypeEvent: function (payload) {
       let query = {
