@@ -108,8 +108,6 @@
 </template>
 
 <script>
-import { roomCategories } from '@/store/categories/room-categories';
-
 export default {
   name: "RoomDialog",
   props: {
@@ -121,14 +119,17 @@ export default {
       type: Object,
       required: true,
     },
+    // Compressed to Meta
     dialogFunction: {
       type: Object,
       required: true,
     },
+    // Remove, Call locally
     roomCategories: {
       type: Array,
       required: true,
     },
+    // Unrequired ing Prop
     roomDetails: {
       type: Object,
       required: true,
@@ -139,6 +140,7 @@ export default {
   }),
   computed: {
     categories: function () {
+      // Use Map or Remove entirely just the array directly from Enums
       let categories = [];
 
       this.roomCategories.forEach((room) => {
@@ -151,7 +153,7 @@ export default {
 
       errors.roomNumber = [(v) => !!v || "Room number is required"];
       errors.roomFloor = [(v) => !!v || "Room floor is required"];
-      errors.roomType = [(v) => !!v || "Room type is required"];
+      errors.roomType = [(v) => !!v || "Room type is required"]; // Make it dynamic whenever adding and updating
 
       return errors;
     },
@@ -162,6 +164,7 @@ export default {
       this.$refs.roomForm.reset();
     },
     proceedButton: function () {
+      // Centralized One Event
       if (this.dialogFunction.changeRoomSatus) {
         this.$emit("update-request");
       } else if (this.dialogFunction.createRoom) {

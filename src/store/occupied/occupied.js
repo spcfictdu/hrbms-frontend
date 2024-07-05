@@ -4,22 +4,30 @@ import { functions } from "@/utils/functions";
 
 Vue.use(Vuex);
 
-
 export const occupied = {
   namespaced: true,
   state: () => ({
-    roomStatus: {},
-    alertProperties: {
+    roomStatuses: null,
+    occupiedStatus: {
       message: "",
-      type: "",
+      status: "", //SUCCESS, ERROR
     },
-    createRoomDialog: false,
+    occupiedDialog: false,
   }),
   getters: {},
   mutations: {
-    SET_ROOM_STATUS: (state, data) => (state.roomStatus = data),
-    SET_ALERT_PROPERTIES: (state, data) => (state.alertProperties = data),
-    SET_CREATE_ROOM_DIALOG: (state, data) => (state.createRoomDialog = data),
+    SET_ROOM_STATUS: (state, data) => (state.roomStatuses = data),
+    SET_OCCUPIED_STATUS: (state, data) => {
+      state.occupiedStatus = data;
+      let interval = setInterval(() => {
+        state.occupiedStatus = {
+          message: "",
+          status: "",
+        };
+        clearInterval(interval);
+      }, 3000);
+    },
+    SET_OCCUPIED_DIALOG: (state, data) => (state.occupiedDialog = data),
   },
   actions: {
     fetchRoomStatus: function ({ commit }, queryParams = {}) {
@@ -41,22 +49,82 @@ export const occupied = {
         .put(url, data)
         .then((response) => {
           dispatch("fetchRoomStatus", roomRefNum);
-          commit("SET_ALERT_PROPERTIES", {
+          commit("SET_OCCUPIED_STATUS", {
             message: response.data.message,
-            type: "success",
+            status: "success",
           });
-          console.log(response.data.message);
         })
         .catch((error) => {
-          commit("SET_ALERT_PROPERTIES", {
+          commit("SET_OCCUPIED_STATUS", {
             message: error.response.data.message,
-            type: "error",
+            status: "error",
           });
           console.error(error.response.data.message);
         });
     },
-    triggerOccupiedDialog: function ({ commit }, value) {
-      commit("SET_CREATE_ROOM_DIALOG", value);
+
+    // Dialog
+    triggerOccupiedDialog: function ({ commit, state }) {
+      commit("SET_OCCUPIED_DIALOG", !state.occupiedDialog);
+    },
+
+    // Rooms Configuration
+    createRoom: function ({ commit, dispatch }, data) {
+      const url = `room/create`;
+      return this.$axios
+        .post(url, data)
+        .then((response) => {
+          dispatch("fetchRoomStatus", data);
+          commit("SET_OCCUPIED_STATUS", {
+            message: response.data.message,
+            status: "success",
+          });
+        })
+        .catch((error) => {
+          commit("SET_OCCUPIED_STATUS", {
+            message: error.response.data.message,
+            status: "error",
+          });
+          console.error("Error creating room", error.response.data.message);
+        });
+    },
+    deleteRoom: function ({ commit, dispatch }, refNum) {
+      const url = `room/delete/${refNum}`;
+      return this.$axios
+        .delete(url)
+        .then((response) => {
+          dispatch("fetchRoomStatus", refNum);
+          commit("SET_OCCUPIED_STATUS", {
+            message: response.data.message,
+            status: "success",
+          });
+        })
+        .catch((error) => {
+          commit("SET_OCCUPIED_STATUS", {
+            message: error.response.data.message,
+            status: "error",
+          });
+          console.error(error.response.data.message);
+        });
+    },
+    updateRoom: function ({ commit, dispatch }, { refNum, data }) {
+      const url = `room/update/${refNum}`;
+      return this.$axios
+        .put(url, data)
+        .then((response) => {
+          dispatch("fetchRoomStatus", refNum);
+          commit("SET_OCCUPIED_STATUS", {
+            message: response.data.message,
+            status: "success",
+          });
+        })
+        .catch((error) => {
+          commit("SET_OCCUPIED_STATUS", {
+            message: error.response.data.message,
+            status: "error",
+          });
+          console.error(error.response.data.message);
+        });
     },
   },
 };

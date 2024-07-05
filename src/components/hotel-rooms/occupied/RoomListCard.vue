@@ -112,7 +112,9 @@ export default {
       let menu = [
         {
           text: "Edit room details",
-          action: {},
+          action: () => {
+            
+          },
         },
         {
           text: "Remove room",

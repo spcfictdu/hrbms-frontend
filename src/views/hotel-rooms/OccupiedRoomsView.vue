@@ -1,17 +1,16 @@
 <template>
   <div class="mt-10">
     <v-alert
-      :value="alert"
-      :type="type"
+      :value="isShowAlert"
+      :type="handleAlertType"
       class="w-full"
       transition="scroll-y-transition"
     >
-      {{ alertMessage }}
+      {{ occupiedStatus.message ?? occupiedStatus.message }}
     </v-alert>
     <OccupiedRoomsComponent
-      :roomStatus="roomStatus"
-      :roomCategories="roomCategories"
-      :createRoomDialog="createRoomDialog"
+      :roomStatuses="roomStatuses"
+      :occupiedDialog="occupiedDialog"
       @close-dialog="triggerDialog"
       @update-event="updateEvent"
       @add-room="addRoomEvent"
@@ -19,7 +18,6 @@
       @delete-room="deleteRoomEvent"
       @query-pagination="paginateRoomStatus"
       @input-event="attachType"
-      v-if="roomStatus && roomCategories"
     />
   </div>
 </template>
@@ -34,32 +32,31 @@ export default {
   components: { OccupiedRoomsComponent },
   mixins: [assignParams],
   data: () => ({
-    alert: false,
-    type: null,
-    alertMessage: "",
+    isShowAlert: false,
     triggerEventFetch: false,
   }),
   computed: {
     ...mapState("occupied", {
-      roomStatus: "roomStatus",
-      messageProperties: "alertProperties",
-      createRoomDialog: "createRoomDialog",
+      roomStatuses: "roomStatuses",
+      occupiedStatus: "occupiedStatus",
+      occupiedDialog: "occupiedDialog",
     }),
-    ...mapState("rooms", {
-      alertProperties: "alertProperties",
-    }),
-    ...mapState("roomTypeEnum", {
-      roomCategories: "roomTypeEnum",
-    }),
+    handleAlertType() {
+      console.log(this.roomStatuses)
+      return this.occupiedStatus.status !== ""
+        ? this.occupiedStatus.status.toLowerCase()
+        : "success";
+    },
   },
   methods: {
     ...mapActions("occupied", [
       "fetchRoomStatus",
       "updateRoomStatus",
       "triggerOccupiedDialog",
+      "createRoom",
+      "deleteRoom",
+      "updateRoom",
     ]),
-    ...mapActions("rooms", ["createRoom", "deleteRoom", "editRoom"]),
-    ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
     paginateRoomStatus: function (query_params) {
       this.assignParams(query_params);
     },
@@ -90,14 +87,11 @@ export default {
       this.triggerEventFetch = true;
     },
     triggerAlert: function (value) {
-      this.alert = value;
+      this.isShowAlert = value;
     },
     triggerDialog: function () {
       this.triggerOccupiedDialog(false);
     },
-  },
-  created() {
-    this.fetchRoomTypes();
   },
   watch: {
     queryParams: {
@@ -115,38 +109,15 @@ export default {
         }
       },
     },
-    alertProperties: {
+    occupiedStatus: {
       immediate: true,
       deep: true,
-      handler: function (value) {
-        if (value.type !== "") {
-          this.type = value.type;
-          this.alertMessage = value.message;
+      handler: function (newVal) {
+        if (newVal.status !== "") {
           this.triggerAlert(true);
-          setTimeout(() => {
+          let interval = setInterval(() => {
             this.triggerAlert(false);
-            value.type = "";
-            value.message = "";
-            this.alertMessage = "";
-            this.type = null;
-          }, 3000);
-        }
-      },
-    },
-    messageProperties: {
-      immediate: true,
-      deep: true,
-      handler: function (value) {
-        if (value.type !== "") {
-          this.type = value.type;
-          this.alertMessage = value.message;
-          this.triggerAlert(true);
-          setTimeout(() => {
-            this.triggerAlert(false);
-            value.type = "";
-            value.message = "";
-            this.alertMessage = "";
-            this.type = null;
+            clearInterval(interval);
           }, 3000);
         }
       },

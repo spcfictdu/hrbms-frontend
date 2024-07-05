@@ -1,98 +1,93 @@
 <template>
   <div>
-    <v-row v-if="size.xs !== true">
-      <v-col cols="3" v-for="(roomStatus, index) in buttonDisplay" :key="index">
+    <v-row class="d-none d-sm-flex">
+      <v-col v-for="(item, index) in buttonDisplay" :key="index">
         <v-btn
-            height="75"
-            block
-            depressed
-            :color="selectedStatus === roomStatus.title ? 'primary' : 'lightBg'"
-            @click="selectStatus(roomStatus.title)"
+          height="75"
+          x-large
+          block
+          depressed
+          :color="selectedStatus === item.status ? 'primary' : 'lightBg'"
+          @click="selectStatus(item.status)"
         >
-          <v-row no-gutters>
-            <v-col cols="12">
-              <div
-                  class="text-h6"
-                  :class="
-                  selectedStatus === roomStatus.title
-                    ? 'font-weight-medium'
-                    : 'font-weight-regular'
-                "
-              >
-                {{ roomStatus.value }}
-              </div>
-            </v-col>
-            <v-col cols="12">
-              <div
-                  class="text-subtitle-2"
-                  :class="
-                  selectedStatus === roomStatus.title
-                    ? 'font-weight-medium'
-                    : 'font-weight-regular'
-                "
-              >
-                {{ roomStatus.title }}
-              </div>
-            </v-col>
-          </v-row>
+          <div class="d-flex flex-column align-center justify-center">
+            <div
+              class="text-h6"
+              :class="{
+                'font-weight-regular': selectedStatus !== item.status,
+                'font-weight-medium': selectedStatus === item.status,
+              }"
+            >
+              {{ item.count }}
+            </div>
+            <div
+              class="text-subtitle-2"
+              :class="{
+                'font-weight-regular': selectedStatus !== item.status,
+                'font-weight-medium': selectedStatus === item.status,
+              }"
+            >
+              {{ item.status }}
+            </div>
+          </div>
         </v-btn>
       </v-col>
     </v-row>
     <!-- Mobile Filter -->
-    <v-row v-else>
-      <v-col cols="12" class="d-block">
+    <v-row class="d-flex d-sm-none">
+      <v-col cols="12">
         <v-autocomplete
-            rounded
-            filled
-            background-color="white"
-            hide-details="auto"
-            label="Select a Room Status"
-            :items="buttonDisplay"
-            item-text="title"
-            item-value="title"
-            v-model="selectedStatus"
+          outlined
+          dense
+          hide-details="auto"
+          label="Room Status"
+          :items="buttonDisplay"
+          item-text="status"
+          item-value="status"
+          v-model="selectedStatus"
         >
           <template v-slot:item="{ item }">
+            <!-- Flex me ini -->
             <v-row>
-              <v-col>{{ item.title }}</v-col>
+              <v-col>{{ item.status }}</v-col>
             </v-row>
           </template>
         </v-autocomplete>
       </v-col>
-      <v-col cols="12" class="d-block">
+      <v-col cols="12">
         <v-autocomplete
-            rounded
-            filled
-            hide-details="auto"
-            label="Select a Room Category"
-            background-color="white"
-            :items="roomCategories"
-            item-text="roomType"
-            item-value="roomType"
-            v-model="selectedRoomType"
+          hide-details="auto"
+          dense
+          outlined
+          label="Room Category"
+          :items="roomTypeEnum"
+          item-text="roomType"
+          item-value="roomType"
+          v-model="selectedRoomType"
         >
         </v-autocomplete>
       </v-col>
     </v-row>
-    <v-divider class="my-5"/>
-    <div style="max-width: 225px" v-if="size.xs !== true">
+    <v-divider class="my-5" />
+    <div style="max-width: 225px" class="d-none d-sm-flex">
       <v-autocomplete
-          class="d-block"
-          rounded
-          filled
-          hide-details="auto"
-          dense
-          background-color="lightBg"
-          :items="roomCategories"
-          item-text="roomType"
-          item-value="roomType"
-          v-model="selectedRoomType"
+        class="d-block"
+        rounded
+        filled
+        hide-details="auto"
+        dense
+        background-color="lightBg"
+        :items="roomTypeEnum"
+        item-text="roomType"
+        item-value="roomType"
+        v-model="selectedRoomType"
       >
       </v-autocomplete>
     </div>
+
     <v-row class="mt-4" dense>
       <v-col cols="12" v-for="(room, index) in mappedRoomStatuses" :key="index">
-        <room-list-card :room="room"/>
+        <room-list-card :room="room" />
       </v-col>
 
       <!-- Mobile Header -->
@@ -266,23 +261,27 @@
         </v-card>
       </v-col> -->
     </v-row>
-    <v-pagination class="mt-4" v-model="page" :length="paginationLastPage"></v-pagination>
+    <v-pagination
+      class="mt-4"
+      v-model="page"
+      :length="paginationLastPage"
+    ></v-pagination>
     <RoomDialog
-        :activator="dialogActivator"
-        :dialogMeta="meta"
-        :dialogFunction="dialogFunction"
-        :roomCategories="roomCategories"
-        :roomDetails="roomDetails"
-        @reset-activator="resetActivator"
-        @update-request="updateRequest"
-        @add-request="addRoomRequest"
-        @edit-room-request="editRoomRequest"
+      :activator="dialogActivator"
+      :dialogMeta="meta"
+      :dialogFunction="dialogFunction"
+      :roomCategories="roomTypeEnum"
+      :roomDetails="roomDetails"
+      @reset-activator="resetActivator"
+      @update-request="updateRequest"
+      @add-request="addRoomRequest"
+      @edit-room-request="editRoomRequest"
     />
     <DeleteDialog
-        :activator="deleteActivator"
-        :deleteMeta="meta"
-        @delete-event="deleteRoomRequest"
-        @reset-activator="resetActivator"
+      :activator="deleteActivator"
+      :deleteMeta="meta"
+      @delete-event="deleteRoomRequest"
+      @reset-activator="resetActivator"
     />
   </div>
 </template>
@@ -292,24 +291,15 @@ import RoomDialog from "@/components/dialogs/RoomDialog.vue";
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
 import RoomListCard from "./RoomListCard.vue";
 import { assignParams } from "@/mixins/FormattingFunctions";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "OccupiedRoomsComponent",
   components: { RoomDialog, DeleteDialog, RoomListCard },
   mixins: [assignParams],
   props: {
-    roomStatus: {
-      type: Object,
-      required: true,
-    },
-    roomCategories: {
-      type: Array,
-      required: true,
-    },
-    createRoomDialog: {
-      type: Boolean,
-      required: true,
-    },
+    roomStatuses: Object,
+    occupiedDialog: Boolean,
   },
   data: () => ({
     selectedStatus: "AVAILABLE",
@@ -336,84 +326,36 @@ export default {
     emptyRoomMessage: "",
   }),
   computed: {
+    ...mapState("roomTypeEnum", {
+      roomTypeEnum: "roomTypeEnum",
+    }),
     buttonDisplay() {
       let buttonData = [];
+      const countData = this.roomStatuses?.roomStatusCount;
 
-      Object.keys(this.roomStatus).forEach((outerKey) => {
-        if (outerKey.includes("roomStatusCount")) {
-          const status = this.roomStatus[outerKey];
-          Object.keys(status).forEach((innerKey) => {
-            buttonData.push({
-              title: innerKey,
-              value: status[innerKey],
-            });
+      countData &&
+        Object.keys(countData).forEach((key) => {
+          buttonData.push({
+            count: countData[key],
+            status: key,
           });
-        }
-      });
-      return buttonData;
-    },
-    categoriesContent: function () {
-      let categories = null;
-
-      this.roomCategories.forEach((content) => {
-        if (this.selectedRoomType === content.roomType) {
-          categories = {
-            title: content.roomType,
-            content: [],
-          };
-        }
-      });
-
-      if (categories) {
-        Object.keys(this.roomStatus).forEach((outerKey) => {
-          if (outerKey === "rooms") {
-            const rooms = this.roomStatus[outerKey];
-
-            Object.keys(rooms).forEach((indexKey) => {
-              if (this.selectedStatus === rooms[indexKey]["status"]) {
-                if (rooms[indexKey]["roomType"] === this.selectedRoomType) {
-                  categories.content.push(rooms[indexKey]);
-                }
-              }
-            });
-          }
         });
-      }
 
-      console.log(categories);
-      return categories;
+      return buttonData;
     },
 
     mappedRoomStatuses: function () {
-      return this.roomStatus ? this.roomStatus.rooms.map((item) => ({
-        name: item.roomNumber,
-        floor: item.roomFloor,
-        guest: item.guest ? item.guest : "No Occupant",
-        status: item.status,
-        referenceNumber: item.roomReferenceNumber,
-      })) : []
+      return this.roomStatuses
+        ? this.roomStatuses.rooms.map((item) => ({
+            name: item.roomNumber,
+            floor: item.roomFloor,
+            guest: item.guest ? item.guest : "No Occupant",
+            status: item.status,
+            referenceNumber: item.roomReferenceNumber,
+          }))
+        : [];
     },
 
-    statusOptions: function () {
-      let options = [];
-
-      switch (this.selectedStatus) {
-        case "AVAILABLE":
-          return (options = ["Occupied", "Unclean", "Unallocated", "Edit"]);
-        case "OCCUPIED":
-          return (options = ["Available", "Unclean", "Unallocated"]);
-        case "UNCLEAN":
-          return (options = ["Available", "Occupied", "Unallocated", "Edit"]);
-        case "UNALLOCATED":
-          return (options = [
-            "Available",
-            "Occupied",
-            "Unclean",
-            "Edit",
-            "Delete",
-          ]);
-      }
-    },
     size: function () {
       return this.$vuetify.breakpoint;
     },
@@ -427,10 +369,10 @@ export default {
       });
 
       let remainingLetters = this.selectedStatus
-          .split("")
-          .slice(1, this.selectedStatus.length)
-          .join("")
-          .toLowerCase();
+        .split("")
+        .slice(1, this.selectedStatus.length)
+        .join("")
+        .toLowerCase();
       let firstLetter = this.selectedStatus.split("").slice(0, 1).join("");
 
       let status = firstLetter + remainingLetters;
@@ -442,18 +384,9 @@ export default {
     },
   },
   methods: {
+    ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
     selectStatus: function (status) {
       this.selectedStatus = status;
-    },
-    chipColor: function (chipName) {
-      switch (chipName) {
-        case "AVAILABLE":
-          return "available";
-        case "OCCUPIED":
-          return "occupied";
-        case "UNCLEAN":
-          return "unclean";
-      }
     },
     changeRoomSatus: function (selectedOption, roomDetails) {
       switch (selectedOption) {
@@ -569,9 +502,9 @@ export default {
         this.emptyRoomMessage = "Loading...";
         setTimeout(() => {
           this.emptyRoomMessage =
-              "There are no " +
-              this.selectedStatus.toLowerCase() +
-              " rooms in this category";
+            "There are no " +
+            this.selectedStatus.toLowerCase() +
+            " rooms in this category";
         }, 5000);
       },
     },
@@ -586,9 +519,9 @@ export default {
         this.emptyRoomMessage = "Loading...";
         setTimeout(() => {
           this.emptyRoomMessage =
-              "There are no " +
-              this.selectedStatus.toLowerCase() +
-              " rooms in this category.";
+            "There are no " +
+            this.selectedStatus.toLowerCase() +
+            " rooms in this category.";
         }, 5000);
       },
     },
@@ -616,7 +549,7 @@ export default {
         this.$emit("query-pagination", newVal);
       },
     },
-    createRoomDialog: {
+    occupiedDialog: {
       immediate: true,
       handler: function (newVal) {
         this.dialogActivator = newVal;
@@ -633,6 +566,9 @@ export default {
         }
       },
     },
+  },
+  created() {
+    this.fetchRoomTypes();
   },
 };
 </script>

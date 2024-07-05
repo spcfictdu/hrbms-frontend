@@ -1,6 +1,7 @@
 import Vue from "vue";
 import Vuex from "vuex";
 import { functions } from "@/utils/functions";
+import store from "..";
 
 Vue.use(Vuex);
 
@@ -18,7 +19,7 @@ export const rooms = {
   namespaced: true,
   state: () => ({
     rooms: null,
-    alertProperties: {
+    roomStatus: {
       message: "",
       type: "",
     },
@@ -26,7 +27,7 @@ export const rooms = {
   getters: {},
   mutations: {
     SET_ROOMS: (state, data) => (state.rooms = data),
-    SET_ALERT_PROPERTIES: (state, data) => (state.alertProperties = data),
+    SET_ROOM_STATUS: (state, data) => (state.roomStatus = data),
   },
   actions: {
     fetchRooms: function ({ commit }, queryParams = {}) {
@@ -39,66 +40,6 @@ export const rooms = {
         })
         .catch((error) => {
           console.error("Error fetching rooms", error);
-        });
-    },
-    createRoom: function ({ commit, dispatch }, data) {
-      const url = `room/create`;
-      return this.$axios
-        .post(url, data)
-        .then((response) => {
-          dispatch("occupied/fetchRoomStatus", data, { root: true });
-          commit("SET_ALERT_PROPERTIES", {
-            message: response.data.message,
-            type: "success",
-          });
-          console.log(response.data.message);
-        })
-        .catch((error) => {
-          commit("SET_ALERT_PROPERTIES", {
-            message: error.response.data.results.roomNumber,
-            type: "error",
-          });
-          console.error(error.response.data.results.roomNumber);
-        });
-    },
-    deleteRoom: function ({ commit, dispatch }, refNum) {
-      const url = `room/delete/${refNum}`;
-      return this.$axios
-        .delete(url)
-        .then((response) => {
-          dispatch("occupied/fetchRoomStatus", refNum, { root: true });
-          commit("SET_ALERT_PROPERTIES", {
-            message: response.data.message,
-            type: "success",
-          });
-          console.log(response.data.message);
-        })
-        .catch((error) => {
-          commit("SET_ALERT_PROPERTIES", {
-            message: error.response.data.message,
-            type: "error",
-          });
-          console.error(error.response.data.message);
-        });
-    },
-    editRoom: function ({ commit, dispatch }, { refNum, data }) {
-      const url = `room/update/${refNum}`;
-      return this.$axios
-        .put(url, data)
-        .then((response) => {
-          dispatch("occupied/fetchRoomStatus", refNum, { root: true });
-          commit("SET_ALERT_PROPERTIES", {
-            message: response.data.message,
-            type: "success",
-          });
-          console.log(response.data.message);
-        })
-        .catch((error) => {
-          commit("SET_ALERT_PROPERTIES", {
-            message: error.response.data.message,
-            type: "error",
-          });
-          console.error(error.response.data.message);
         });
     },
   },
