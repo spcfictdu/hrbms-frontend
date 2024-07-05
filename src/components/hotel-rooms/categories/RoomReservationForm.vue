@@ -142,22 +142,14 @@ export default {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
         let payload = {
-          type: this.roomCategory,
+          room: this.roomCategory,
           referenceNumber: this.room[0].referenceNumber,
           roomNumber: this.payload.roomNumber,
           checkInDate: this.payload.checkInDate,
           checkOutDate: this.payload.checkOutDate,
         };
-        this.$router.push({
-          name: "Booking",
-          query: {
-            room: payload.type,
-            referenceNumber: payload.referenceNumber,
-            roomNumber: payload.roomNumber,
-            checkInDate: payload.checkInDate,
-            checkOutDate: payload.checkOutDate,
-          },
-        });
+
+        this.$emit('reservation-event', payload);
       }
     },
     requestQuery: function () {

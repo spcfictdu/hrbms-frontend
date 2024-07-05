@@ -22,7 +22,10 @@
         />
       </v-col>
       <v-col cols="12" md="4">
-        <room-reservation-form :roomCategory="room.name"/>
+        <room-reservation-form
+          @reservation-event="(e) => $emit('reservation-event', e)"
+          :roomCategory="room.name"
+        />
       </v-col>
     </v-row>
   </div>

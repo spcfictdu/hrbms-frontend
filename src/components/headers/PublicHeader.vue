@@ -16,6 +16,7 @@
           v-for="(route, index) in routes"
           :key="'route' + index"
           @click="redirect(route)"
+          :ripple="false"
           :color="route.name !== 'Log Out' ? '' : 'warning'"
           >{{ route.name.toUpperCase() }}
         </v-btn>
@@ -30,6 +31,7 @@
           :plain="route.name !== activeRouteButton"
           :text="route.name === activeRouteButton"
           elevation="0"
+          :ripple="false"
           v-for="(route, index) in routes"
           :key="'route' + index"
           @click="redirect(route)"
@@ -128,11 +130,11 @@ export default {
         routes.push(
           {
             name: "Hotel Rooms",
-            route: "",
+            route: "Guest Dashboard",
           },
           {
             name: "Account",
-            route: "",
+            route: "Guest Account Details",
           },
           {
             name: "Log Out",

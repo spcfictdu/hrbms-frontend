@@ -7,6 +7,7 @@
       <v-col cols="12">
         <RoomDetails
           :category="roomCategory"
+          @reservation-event="requestReservation"
           @validation-event="assessRequestCall"
           @delete-event="deleteRequestCategory"
         />
@@ -87,6 +88,12 @@ export default {
     deleteRequestCategory: function () {
       this.deleteRoomCategory({
         roomTypeReferenceNumber: this.referenceNumber,
+      });
+    },
+    requestReservation: function (payload) {
+      this.$router.push({
+        name: "Booking",
+        query: payload,
       });
     },
   },

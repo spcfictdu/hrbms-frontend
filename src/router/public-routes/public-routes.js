@@ -38,6 +38,20 @@ export default [
           withSearchEngine: false,
         },
       },
+      {
+        path: "booking",
+        name: "Public Booking",
+        component: () =>
+          import(
+            /* webpackChunkName: "public-routes" */ "@/views/hotel-rooms/forms/BookingView.vue"
+          ),
+        props: true,
+        meta: {
+          name: "Booking",
+          isPublic: true,
+          withSearchEngine: false,
+        },
+      }
     ],
   },
 ];

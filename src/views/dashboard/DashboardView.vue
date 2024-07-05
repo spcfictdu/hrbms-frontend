@@ -9,7 +9,7 @@
 </template>
 
 <script>
-import CalendarComponent from "../../../components/hotel-rooms/forms/CalendarComponent.vue";
+import CalendarComponent from "../../components/hotel-rooms/forms/CalendarComponent.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "DashboardView",

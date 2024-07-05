@@ -16,12 +16,25 @@ export default [
         name: "Guest Dashboard",
         component: () =>
           import(
-            /* webpackChunkName: "guest-dashboard" */ "@/views/dashboard/GuestDashboardView.vue"
+            /* webpackChunkName: "guest-dashboard" */ "@/views/guest-user/dashboard/GuestDashboardView.vue"
           ),
         meta: {
           isGuest: true,
           withSearchEngine: true,
-          name: 'Hotel Rooms'
+          name: "Hotel Rooms",
+        },
+      },
+      {
+        path: "account",
+        name: "Guest Account Details",
+        component: () =>
+          import(
+            /* webpackChunkName: "guest-account" */ "@/views/guest-user/account/AccountView.vue"
+          ),
+        meta: {
+          isGuest: true,
+          withSearchEngine: false,
+          name: "Account",
         },
       },
       // More Paths

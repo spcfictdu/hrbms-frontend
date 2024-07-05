@@ -1,11 +1,11 @@
 <template>
   <div class="mt-6">
-    <v-row>
+    <v-row v-if="roomCategory">
       <v-col cols="12">
         <room-images-two :images="roomCategory.images" />
       </v-col>
       <v-col cols="12">
-        <room-details :category="roomCategory"/>
+        <room-details @reservation-event="requestReservation" :category="roomCategory" />
       </v-col>
     </v-row>
   </div>
@@ -30,6 +30,12 @@ export default {
     fetchRoomData: function (referenceNumber) {
       this.fetchPublicRoom(referenceNumber);
     },
+    requestReservation: function (payload) {
+      this.$router.push({
+        name: "Public Booking",
+        query: payload,
+      });
+    },
   },
   computed: {
     ...mapState("publicRooms", {
@@ -44,9 +50,9 @@ export default {
       immediate: true,
       handler: function (newVal) {
         this.fetchRoomData(newVal);
-      }
-    }
-  }
+      },
+    },
+  },
 };
 </script>
 

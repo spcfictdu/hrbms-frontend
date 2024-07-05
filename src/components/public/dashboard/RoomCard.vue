@@ -45,7 +45,7 @@ export default {
 
 <style scoped>
 .text-muted {
-  color: #555;
+  color: #555555;
 }
 
 .card-container {
