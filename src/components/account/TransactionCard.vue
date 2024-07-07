@@ -1,27 +1,28 @@
 <template>
   <div>
-    <v-card flat outlined class="card-container">
+    <v-card flat outlined class="card-container" v-if="accommodationData && accommodationData.length > 0">
       <div>
         <div class="text-body-1 text-sm-h6 text-uppercase font-weight-bold">
           Executive Room
         </div>
         <div class="d-flex align-center flex-wrap">
           <v-chip
-            color="primary"
-            x-small
-            class="chip-breakpoint font-weight-medium"
-            >JAN 01, 2025 - JAN 03, 2025</v-chip
+              color="primary"
+              x-small
+              class="chip-breakpoint font-weight-medium"
+          >JAN 01, 2025 - JAN 03, 2025
+          </v-chip
           >
           <div
-            class="mobile-breakpoint text-caption primary--text font-weight-bold"
+              class="mobile-breakpoint text-caption primary--text font-weight-bold"
           >
             JAN 01, 2025 - JAN 03, 2025
           </div>
           <div class="text-caption text-sm-subtitle-2 price-margin">
             <span class="font-weight-bold"
-              >PHP 1000<small class="font-weight-regular"
-                >/TOTAL PAYMENT</small
-              ></span
+            >PHP 1000<small class="font-weight-regular"
+            >/TOTAL PAYMENT</small
+            ></span
             >
           </div>
         </div>
@@ -35,32 +36,33 @@
         views through large windows.
       </p>
 
-      <v-divider />
+      <v-divider/>
 
       <section class="mt-4">
         <div class="text-overline font-weight-bold">Amenities:</div>
         <div class="grid-container">
           <div
-            class="text-muted text-caption font-weight-regular"
-            v-for="(i, index) in amenities"
-            :key="index"
+              class="text-muted text-caption font-weight-regular"
+              v-for="(i, index) in amenities"
+              :key="index"
           >
             {{ i }}
           </div>
         </div>
       </section>
     </v-card>
-    <!-- <v-card v-else flat outlined class="card-container transparent-bg d-flex justify-center align-center">
+    <v-card v-else flat outlined class="card-container transparent-bg d-flex justify-center align-center">
       <div>
-        You don’t have any reservations.
+        You don’t have any {{ selectedButton.toLowerCase() }}.
       </div>
-    </v-card> -->
+    </v-card>
   </div>
 </template>
 
 <script>
 export default {
   name: "TransactionCard",
+  props: { accommodationData: Array, selectedButton: String },
   data: () => ({
     amenities: [
       "Wi-Fi Access",
@@ -106,9 +108,11 @@ export default {
   .chip-breakpoint {
     display: none;
   }
+
   .mobile-breakpoint {
     display: flex;
   }
+
   .price-margin {
     margin-left: 0;
   }

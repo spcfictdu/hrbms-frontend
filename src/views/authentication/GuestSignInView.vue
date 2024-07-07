@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="route-container">
     <v-card elevation="0" class="sign-in-card ma-auto">
       <div class="sign-in-container">
         <v-avatar size="128" class="mt-n16 fcpc-logo">
@@ -127,7 +127,7 @@ export default {
       errors.username = [(v) => !!v || "Username is required"];
       errors.password = [(v) => !!v || "Password is required"];
       return errors;
-    }
+    },
   },
 
   methods: {
@@ -186,6 +186,17 @@ export default {
 </script>
 
 <style scoped>
+.route-container {
+  padding: 0;
+}
+
+/* Height Breakpoint */
+@media (max-height: 900px) {
+  .route-container {
+    padding: 80px 0;
+  }
+}
+
 .sign-in-card {
   opacity: 0.98;
   max-width: 400px;

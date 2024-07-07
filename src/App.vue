@@ -1,7 +1,7 @@
 <template>
   <v-app
-    class="bg-color"
-    :class="{
+      class="bg-color"
+      :class="{
       'image-bg': $router.currentRoute.meta.name === 'Sign In',
       'image-bg-2': $router.currentRoute.meta.name === 'Guest Sign In',
     }"
@@ -9,15 +9,15 @@
     <div>
       <!-- Navigation -->
       <Navigation
-        v-if="
+          v-if="
           !$router.currentRoute.meta.isLogin &&
           !$router.currentRoute.meta.isPublic &&
           !$router.currentRoute.meta.isGuest
         "
       />
-      <PublicNavigation v-else-if="$router.currentRoute.meta.isPublic || $router.currentRoute.meta.isGuest" />
+      <PublicNavigation v-else-if="$router.currentRoute.meta.isPublic || $router.currentRoute.meta.isGuest"/>
       <div
-        :class="{
+          :class="{
           'mt-n10 bg-color main-layout white py-5': !notAllowedRoutes.includes(
             $router.currentRoute.meta.name
           ),
@@ -25,14 +25,14 @@
       >
         <v-container class="pa-0 transparent-bg">
           <v-main
-            class="mx-3"
-            :class="{
+              class="mx-3"
+              :class="{
               'custom-main': notAllowedRoutes.includes(
                 $router.currentRoute.meta.name
               ),
             }"
           >
-            <router-view />
+            <router-view/>
           </v-main>
         </v-container>
       </div>
@@ -86,7 +86,7 @@ export default {
 
 .image-bg {
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
-    url(./assets/bgImage.jpg) no-repeat center center/cover;
+  url(./assets/bgImage.jpg) no-repeat center center/cover;
 }
 
 .image-bg-2 {
@@ -94,7 +94,7 @@ export default {
 }
 
 .custom-main {
-  height: 100dvh;
+  min-height: 100dvh;
   display: flex;
   align-items: center;
   justify-content: center;
