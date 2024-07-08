@@ -36,20 +36,52 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  let loggedIn = auth.user();
-  const signInRoutes = ["Sign In", "Guest Sign In"];
-  const allowedPublicRoutes = [
-    ...publicRoutes[0].children.filter(({ meta }) => meta.isPublic).map(({ name }) => name),
-    ...signInRoutes,
-  ];
+  const loggedIn = auth.user();
+  const userRole = auth.user().role;
 
-  if (!loggedIn && !allowedPublicRoutes.includes(to.name)) {
-    return next({ name: "Guest Sign In" });
-  } else if (loggedIn && signInRoutes.includes(to.name)) {
-    return next({ name: "Dashboard" });
+  if (!loggedIn && !allowedRoutes("PUBLIC").includes(to.name)) {
+     next({ name: "Guest Sign In" });
+  } else if (loggedIn && allowedRoutes("LOGIN").includes(to.name)) {
+    if (userRole === "GUEST") {
+       next({ name: "Guest Dashboard" });
+    } else if (userRole === "FRONT DESK") {
+       next({ name: "Dashboard" });
+    }
+  } else if (userRole === "GUEST" && !allowedRoutes("GUEST").includes(to.name)) {
+    next({ name: "Guest Dashboard" });
+  } else if (userRole === "ADMIN" && !allowedRoutes("ADMIN").includes(to.name)) {
+    next({ name: "Dashboard" });
   } else {
     next();
   }
 });
+
+function allowedRoutes (type) {
+ let data = [];
+  if (type === "LOGIN") {
+    // Sign In Routes
+    data = ["Sign In", "Guest Sign In"];
+  } else if (type === "PUBLIC") {
+    // Public Routes
+    data = [
+      ...publicRoutes[0].children.filter(({ meta }) => meta.isPublic).map(({ name }) => name),
+      ...signInRoutes,
+    ]
+  } else if (type === "GUEST") {
+    // Guest User Routes
+    data = [
+      ...guestUser[0].children.map(({name}) => name),
+    ]
+  } else if (type === "ADMIN") {
+    // Admin User Routes
+    data = [
+      ...dashboardRoutes.map(({name}) => name),
+      ...roomsList[0].children.map(({name}) => name),
+      ...guestList.map(({name}) => name),
+      ...transaction.map(({name}) => name),
+    ]
+  }
+ return data;
+}
 
 export default router;

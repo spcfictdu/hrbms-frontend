@@ -16,8 +16,8 @@ export const auth = {
     // navType === 1 is equals to tab refresh.
     const navType = event.currentTarget.performance.navigation.type;
     const TYPE_RELOAD = 1;
-
-    if (navType !== TYPE_RELOAD) {
+    
+    if (!navType === TYPE_RELOAD) {
       store.dispatch("authentication/clearUserData");
     } else {
       sessionStorage.setItem("isRefresh", "true");
