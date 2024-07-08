@@ -222,7 +222,16 @@ export default {
 
         }
       }
-    }
+    },
+    setQuery: function () {
+      const routeQuery = this.$route.query;
+      for (const key in routeQuery) {
+        if (Object.hasOwnProperty.call(routeQuery, key)) {
+          const value = routeQuery[key];
+          this.$set(this.queryParams, key, value);
+        }
+      }
+    },
   },
   computed: {
     rules: function () {

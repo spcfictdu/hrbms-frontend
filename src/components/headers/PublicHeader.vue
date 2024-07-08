@@ -69,7 +69,6 @@ export default {
   }),
   methods: {
     ...mapActions("authentication", ["logout"]),
-
     redirect: function (route) {
       this.activeButton = route.name;
 
@@ -86,6 +85,15 @@ export default {
       this.assignParams(queryParams);
 
       return this.$router.push({ query: this.queryParams });
+    },
+    routeSearchQueryHandler(newVal) {
+      if (this.$refs.searchEngine) {
+        if (newVal) {
+          this.$refs.searchEngine.resetQuery();
+        } else {
+          this.$refs.searchEngine.setQuery();
+        }
+      }
     },
   },
   computed: {
@@ -150,22 +158,27 @@ export default {
       return JSON.stringify(this.$route.query) === "{}";
     },
   },
+  watch: {
+    routeSearchQuery: {
+      immediate: true,
+      handler: function (newVal) {
+        this.routeSearchQueryHandler(newVal);
+      },
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      if (this.$refs.searchEngine) {
+        this.routeSearchQueryHandler(this.routeSearchQuery);
+      }
+    });
+  },
   beforeRouteEnter(to, from, next) {
     if (Object.keys(to.query).length > 0) {
       next({ path: to.path, query: {} });
     } else {
       next();
     }
-  },
-  watch: {
-    routeSearchQuery: {
-      immediate: true,
-      handler: function (newVal) {
-        if (newVal) {
-          this.$refs.searchEngine.resetQuery();
-        }
-      },
-    },
   },
 };
 </script>

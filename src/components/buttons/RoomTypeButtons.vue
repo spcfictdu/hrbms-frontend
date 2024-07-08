@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="mappedRoomTypeEnum.length > 1">
     <v-row dense justify="space-between" class="pb-4 pb-sm-8">
       <v-col
         v-for="(i, index) in mappedRoomTypeEnum"
@@ -45,7 +45,7 @@ export default {
   name: "RoomTypeButtons",
   props: { withAllRooms: Boolean },
   data: () => ({
-    activeButton: "",
+    activeButton: "All Rooms",
   }),
   methods: {
     ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
