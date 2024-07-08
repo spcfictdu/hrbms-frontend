@@ -5,13 +5,18 @@
         {{ headerData.fullName }}
       </div>
       <div
-          class="d-flex flex-column flex-sm-row justify-start text-caption text-md-subtitle-1 address--text"
+        class="d-flex flex-column flex-sm-row justify-start text-caption text-md-subtitle-1 address--text"
       >
         <div class="mr-5" v-if="headerData.province && headerData.city">
-          <span class="span-style">Address:</span> {{ headerData.city }}, {{ headerData.province }}
+          <span class="span-style">Address:</span> {{ headerData.city }},
+          {{ headerData.province }}
         </div>
-        <div class="mr-5"><span class="span-style">Email:</span> {{ headerData.email }}</div>
-        <div class="mr-5"><span class="span-style">Phone:</span> {{ headerData.phone }}</div>
+        <div class="mr-5">
+          <span class="span-style">Email:</span> {{ headerData.email }}
+        </div>
+        <div class="mr-5">
+          <span class="span-style">Phone:</span> {{ headerData.phone }}
+        </div>
       </div>
     </div>
     <div class="d-flex justify-end flex-grow-1">
@@ -23,30 +28,32 @@
         </template>
         <v-list class="py-0" dense>
           <v-list-item
-              :class="{
-                'menu-border': index < menuItems.length - 1,
-                'warning--text': iter.text === 'Log Out',
-              }"
-              v-for="(iter, index) in menuItems"
-              :key="index"
-              @click="iter.action()"
+            :class="{
+              'menu-border': index < menuItems.length - 1,
+              'warning--text': iter.text === 'Log Out',
+            }"
+            v-for="(iter, index) in menuItems"
+            :key="index"
+            @click="iter.action()"
           >
-            <v-list-item-title class="text-body-2 font-weight-regular">{{
-                iter.text
-              }}
+            <v-list-item-title class="text-body-2 font-weight-regular"
+              >{{ iter.text }}
             </v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
-
     </div>
   </div>
 </template>
 
 <script>
+import { mapActions } from "vuex";
 export default {
   name: "AccountHeader",
   props: { headerData: Object },
+  methods: {
+    ...mapActions("account", ["triggerPasswordDialog"]),
+  },
   data: () => ({}),
   computed: {
     menuItems: function () {
@@ -54,7 +61,7 @@ export default {
         {
           text: "Change Password",
           action: () => {
-            // Action
+            this.triggerPasswordDialog(true);
           },
         },
         {
@@ -63,15 +70,9 @@ export default {
             this.$router.push({ name: "Guest Edit Details" });
           },
         },
-        {
-          text: "Log Out",
-          action: () => {
-            // Action
-          },
-        },
       ];
       return menu;
-    }
+    },
   },
 };
 </script>

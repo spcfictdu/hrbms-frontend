@@ -1,30 +1,29 @@
 <template>
   <div class="mt-8" v-if="accountInfo">
-    <account-header :headerData="accountHeaderData"/>
-
-    <v-divider/>
-
-    <accommodation-component :accommodationData="accommodationData" @selected-button="filterData"/>
-
-    <!--  Change Password Dialog  -->
-    <password-dialog/>
+    <account-component
+      @selected-button="filterData"
+      @password-event="requestPasswordUpdate"
+      :alertStatus="accountStatus"
+      :headerData="accountHeaderData"
+      :accommodationData="accommodationData"
+    />
   </div>
 </template>
 
 <script>
-import AccountHeader from '@/components/account/AccountHeader.vue';
-import AccommodationComponent from '@/components/account/AccomodationComponent.vue';
-import PasswordDialog from "@/components/dialogs/PasswordDialog.vue";
-import { mapActions, mapState } from "vuex";
-
+import AccountComponent from "@/components/account/AccountComponent.vue";
+import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   name: "AccountView",
-  components: { AccountHeader, AccommodationComponent, PasswordDialog },
+  components: { AccountComponent },
   data: () => ({
-    accommodationData: null
+    accommodationData: null,
   }),
   methods: {
-    ...mapActions("account", ["fetchAccountInfo"]),
+    ...mapActions("account", ["fetchAccountInfo", "updateAccountPassword"]),
+    requestPasswordUpdate: function (payload) {
+      this.updateAccountPassword(payload);
+    },
     filterData: function (value) {
       switch (value) {
         case "Bookings":
@@ -39,35 +38,36 @@ export default {
         default:
           this.accommodationData = null;
       }
-    }
+    },
   },
   computed: {
     ...mapState("account", {
       accountInfo: "accountInfo",
+      accountStatus: "accountStatus",
+    }),
+    ...mapGetters("account", {
+      accountHolder: "accountHolder",
     }),
     accountHeaderData: function () {
-      const data = this.accountInfo?.accountInfo;
       let headerData = {};
 
-      if (this.accountInfo) {
+      if (this.accountHolder) {
         headerData = {
-          fullName: data.fullName,
-          phone: data.phone,
-          email: data.email,
-          city: data.address.city,
-          province: data.address.province,
+          fullName: this.accountHolder.fullName,
+          phone: this.accountHolder.phone,
+          email: this.accountHolder.email,
+          city: this.accountHolder.address.city,
+          province: this.accountHolder.address.province,
         };
         return headerData;
       }
       return null;
-    }
+    },
   },
   created() {
     this.fetchAccountInfo();
-  }
-}
+  },
+};
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -50,7 +50,7 @@
         <template #label> Mobile Number</template>
       </label-slot>
       <v-text-field
-          type="number"
+          type="tel"
           v-model="payload.mobileNumber"
           outlined
           dense
@@ -58,6 +58,8 @@
           hide-details="auto"
           @change="emitTransaction"
           :rules="rules.mobileNumber"
+          maxLength="11"
+          v-mask="'###########'"
       />
     </div>
 
@@ -98,11 +100,13 @@
 </template>
 
 <script>
+import { mask } from "vue-the-mask";
 import LabelSlot from '@/components/slots/LabelSlot.vue';
 
 export default {
   name: "RegisterForm",
   components: { LabelSlot },
+  directives: { mask },
   data: () => ({
     showPassword: false,
     payload: {
