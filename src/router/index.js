@@ -37,7 +37,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   const loggedIn = auth.user();
-  const userRole = auth.user().role;
+  const userRole = auth.user()?.role;
 
   if (!loggedIn && !allowedRoutes("PUBLIC").includes(to.name)) {
      next({ name: "Guest Sign In" });
@@ -65,7 +65,7 @@ function allowedRoutes (type) {
     // Public Routes
     data = [
       ...publicRoutes[0].children.filter(({ meta }) => meta.isPublic).map(({ name }) => name),
-      ...signInRoutes,
+      "Sign In", "Guest Sign In",
     ]
   } else if (type === "GUEST") {
     // Guest User Routes
