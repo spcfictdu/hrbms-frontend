@@ -8,15 +8,16 @@ export default [
     path: "/guest",
     component: () =>
       import(
-        /* webpackChunkName: "guest-dashboard" */ "../../views/guest-user/GuestHeaderView"
+        /* webpackChunkName: "guest" */ "../../views/guest-user/GuestHeaderView"
         ),
     children: [
+      // Hotel Rooms
       {
         path: "",
         name: "Guest Dashboard",
         component: () =>
           import(
-            /* webpackChunkName: "guest-dashboard" */ "@/views/guest-user/dashboard/GuestDashboardView.vue"
+            /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestDashboardView.vue"
             ),
         meta: {
           isGuest: true,
@@ -24,6 +25,34 @@ export default [
           name: "Hotel Rooms",
         },
       },
+      {
+        path: "room-details/:referenceNumber",
+        name: "Guest Room Category",
+        props: true,
+        component: () =>
+          import(
+            /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestRoomDetailsView.vue"
+            ),
+        meta: {
+          withSearchEngine: false,
+          name: "Hotel Rooms",
+        },
+      },
+      {
+        path: "booking",
+        name: "Guest Booking",
+        props: true,
+        component: () =>
+          import(
+            /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestBookingView.vue"
+            ),
+        meta: {
+          withSearchEngine: false,
+          name: "Booking",
+        },
+      },
+
+      // Account Section
       {
         path: "account",
         name: "Guest Account Details",

@@ -69,10 +69,10 @@
 
         <div class="pb-4">
           <label-slot>
-            <template v-slot:label> Room Number </template>
+            <template v-slot:label> {{ enumData.label }} </template>
           </label-slot>
           <v-autocomplete
-            :items="roomNumberEnum"
+            :items="enumData.enums"
             item-text="roomNumber"
             hide-details="auto"
             dense
@@ -138,6 +138,7 @@ export default {
   methods: {
     ...mapActions("roomEnum", ["fetchRoom"]),
     ...mapActions("roomNumberEnum", ["fetchRoomNumbers"]),
+    ...mapActions("availableRoomNumbersEnum", ["fetchAvailableRoomNumbers"]),
     requestReservation: function () {
       this.$refs.form.validate();
       if (this.$refs.form.validate()) {
@@ -149,7 +150,7 @@ export default {
           checkOutDate: this.payload.checkOutDate,
         };
 
-        this.$emit('reservation-event', payload);
+        this.$emit("reservation-event", payload);
       }
     },
     requestQuery: function () {
@@ -169,11 +170,22 @@ export default {
         delete query.roomNumber;
       }
     },
-    requestRoomNumbers: function (newVal) {
+    requestRoomNumbers: function () {
       const query = {
-        roomType: newVal.toUpperCase(),
+        roomType: this.roomCategory.toUpperCase(),
       };
       this.fetchRoomNumbers(query);
+    },
+    requestAvailableRoomNumbers: function () {
+      const query = {
+        roomType: this.roomCategory.toUpperCase(),
+      };
+
+      if (this.payload.checkInDate && this.payload.checkOutDate) {
+        query.checkInDate = this.payload.checkInDate;
+        query.checkOutDate = this.payload.checkOutDate;
+        this.fetchAvailableRoomNumbers(query);
+      }
     },
   },
   computed: {
@@ -183,6 +195,23 @@ export default {
     ...mapState("roomNumberEnum", {
       roomNumberEnum: "roomNumberEnum",
     }),
+    ...mapState("availableRoomNumbersEnum", {
+      availableRoomNumbersEnum: "availableRoomNumbersEnum",
+    }),
+    enumData: function () {
+      let data = {
+        label: "",
+        enums: null,
+      };
+      if (this.role === "GUEST") {
+        data.label = "Available Room Numbers";
+        data.enums = this.availableRoomNumbersEnum;
+      } else if (this.role === "FRONT DESK") {
+        data.label = "Room Number";
+        data.enums = this.roomNumberEnum;
+      }
+      return data;
+    },
     rules: function () {
       let errors = {};
       errors.checkInDate = [(v) => !!v || "Check-in Date is required"];
@@ -216,6 +245,9 @@ export default {
     durationWord: function () {
       return this.roomTotalBill.duration <= 1 ? "day" : "days";
     },
+    role: function () {
+      return this.$auth.user().role;
+    }
   },
   watch: {
     payload: {
@@ -224,14 +256,22 @@ export default {
         if (newVal) {
           this.requestQuery();
         }
+
+        // For Guest Only
+        if (this.role === "GUEST") {
+          this.requestAvailableRoomNumbers();
+        }
       },
     },
-    roomCategory: {
-      immediate: true,
+    role: {
+      deep: true, 
       handler: function (newVal) {
-        this.requestRoomNumbers(newVal);
-      },
-    },
+        // For Front Desk Only
+        if (newVal.isFrontDesk) {
+          this.requestRoomNumbers();
+        }
+      }
+    }
   },
 };
 </script>

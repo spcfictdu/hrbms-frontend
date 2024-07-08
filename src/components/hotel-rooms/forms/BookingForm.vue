@@ -1,6 +1,9 @@
 <template>
   <div v-if="this.room">
-    <div class="d-flex justify-end align-center mb-2">
+    <div
+      class="d-flex justify-end align-center mb-2"
+      v-if="$auth.user().role === 'FRONT DESK'"
+    >
       <div style="max-width: 300px">
         <v-select
           class="d-block"
@@ -212,9 +215,26 @@ export default {
         this.autoFilled = null;
       }
     },
+    assignGuestMeta: function () {
+      if (this.$auth.user().role === "GUEST") {
+        this.autoFilled = {
+          first_name: this.userInfo.firstName,
+          middle_name: this.userInfo.middleName,
+          last_name: this.userInfo.lastName,
+          phone_number: this.userInfo.phone,
+          email: this.userInfo.email,
+          city: this.userInfo.address.city,
+          province: this.userInfo.address.province,
+        };
+      }
+      console.log(this.autoFilled);
+    },
   },
   computed: {
     ...mapState("roomEnum", ["room"]),
+    ...mapState("account", {
+      userInfo: "userInfo",
+    }),
     showPayment() {
       return this.payload?.status === "CONFIRMED" ? true : false;
     },
@@ -288,6 +308,7 @@ export default {
         }
 
         this.fetchQuery();
+        this.assignGuestMeta();
       },
     },
     "payload.status": {

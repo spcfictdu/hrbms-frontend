@@ -2,6 +2,7 @@
   <div class="mt-6">
     <dashboard-component
       @input-event="assignButtonQuery"
+      @redirect-event="redirectToRoomCategory"
       :rooms="dashboardData"
     />
   </div>
@@ -11,7 +12,7 @@
 import DashboardComponent from "@/components/public/DashboardComponent.vue";
 import { mapActions, mapState } from "vuex";
 export default {
-  name: "GuestDashboardView.vue",
+  name: "GuestDashboardView",
   components: { DashboardComponent },
   data: () => ({
     queryParams: {},
@@ -55,6 +56,14 @@ export default {
         }
       }
       this.fetchFilteredRoom();
+    },
+    redirectToRoomCategory: function (referenceNumber) {
+      this.$router.push({
+        name: "Guest Room Category",
+        params: {
+          referenceNumber: referenceNumber,
+        },
+      });
     },
   },
   computed: {

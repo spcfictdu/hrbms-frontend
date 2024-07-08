@@ -134,7 +134,7 @@ export default {
             route: "Guest Sign In",
           }
         );
-      } else if (this.$route.meta.isGuest) {
+      } else if (this.$auth.user().role === "GUEST") {
         routes.push(
           {
             name: "Hotel Rooms",

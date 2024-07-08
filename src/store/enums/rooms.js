@@ -104,3 +104,29 @@ export const rateTypeEnum = {
     },
   },
 };
+
+export const availableRoomNumbersEnum = {
+  namespaced: true,
+  state: () => ({
+    availableRoomNumbersEnum: null,
+  }),
+  getters: {},
+  mutations: {
+    SET_AVAILABLE_ROOMS: (state, data) =>
+      (state.availableRoomNumbersEnum = data),
+  },
+  actions: {
+    fetchAvailableRoomNumbers: function ({ commit }, queryParams = {}) {
+      const url = `enum/guest/available-room-numbers`;
+      const queryUrl = functions.query(url, queryParams);
+      return this.$axios
+        .get(queryUrl)
+        .then((response) => {
+          commit("SET_AVAILABLE_ROOMS", response.data.results);
+        })
+        .catch((error) => {
+          console.error("Error fetching available rooms", error);
+        });
+    },
+  },
+};

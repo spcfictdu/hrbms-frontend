@@ -7,6 +7,7 @@ export const account = {
   namespaced: true,
   state: () => ({
     accountInfo: null,
+    userInfo: null,
     accountStatus: {
       message: "",
       status: "", //SUCCESS, ERROR
@@ -17,10 +18,11 @@ export const account = {
   getters: {
     accountHolder: (state) => {
       return state.accountInfo ? state.accountInfo.accountInfo : null;
-    }
+    },
   },
   mutations: {
     SET_ACCOUNT_INFO: (state, data) => (state.accountInfo = data),
+    SET_USER_INFO: (state, data) => (state.userInfo = data),
     SET_ACCOUNT_STATUS: (state, data) => {
       state.accountStatus = data;
       let interval = setInterval(() => {
@@ -43,6 +45,7 @@ export const account = {
         .get(url)
         .then((response) => {
           commit("SET_ACCOUNT_INFO", response.data.results);
+          commit("SET_USER_INFO", response.data.results.accountInfo);
         })
         .catch((error) => {
           console.error("Error fetching account information", error);
@@ -91,5 +94,8 @@ export const account = {
           });
         });
     },
+    removeUserInfo: function ({ commit }) {
+      commit("SET_USER_INFO", null);
+    }
   },
 };

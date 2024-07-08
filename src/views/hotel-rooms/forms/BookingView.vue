@@ -10,14 +10,12 @@
 
 <script>
 import BookingForm from "../../../components/hotel-rooms/forms/BookingForm.vue";
-import HotelRoomsHeader from "@/components/headers/HotelRoomsHeader.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "BookingView",
   data: () => ({}),
   components: {
     BookingForm,
-    HotelRoomsHeader,
   },
   methods: {
     ...mapActions("transaction", [

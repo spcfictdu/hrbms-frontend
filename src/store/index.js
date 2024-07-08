@@ -3,7 +3,6 @@ import Vuex from "vuex";
 import createPersistedState from "vuex-persistedstate";
 
 import { authentication } from "./authentication/authentication";
-import { roomTypeEnum, roomNumberEnum, roomEnum, rateTypeEnum } from "./enums/rooms";
 import { transaction } from "./transaction/transaction";
 import { guest } from "./guest/guest";
 import { availabilityCalendar } from "./calendar/availability-calendar";
@@ -15,6 +14,14 @@ import { occupied } from "./occupied/occupied";
 import { publicRooms } from "./public/public-rooms";
 import { account } from "@/store/account/account";
 
+// Enums
+import {
+  roomTypeEnum,
+  roomNumberEnum,
+  roomEnum,
+  rateTypeEnum,
+  availableRoomNumbersEnum,
+} from "./enums/rooms";
 
 Vue.use(Vuex);
 
@@ -37,10 +44,11 @@ export default new Vuex.Store({
     roomNumberEnum,
     roomEnum,
     rateTypeEnum,
+    availableRoomNumbersEnum,
   },
   plugins: [
     createPersistedState({
-      paths: ["authentication.currentUser"],
+      paths: ["authentication.currentUser", "account.userInfo"],
     }),
   ],
 });

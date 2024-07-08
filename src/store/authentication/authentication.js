@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from "vuex";
+import store from "..";
 
 Vue.use(Vuex);
 
@@ -49,6 +50,7 @@ export const authentication = {
         if (response.data.results.role !== "GUEST") {
           await this.$router.push({ name: "Dashboard" });
         } else {
+          store.dispatch("account/fetchAccountInfo");
           await this.$router.push({ name: "Guest Dashboard" });
         }
       } catch (error) {
@@ -77,10 +79,19 @@ export const authentication = {
         let url = "user/logout";
 
         await this.$axios.get(url, config);
+
+        // Remove Persisted State
         commit("SET_CURRENT_USER", null);
+        store.dispatch("account/removeUserInfo");
+
+        // Back To Login
         await this.$router.push({ name: routeName });
       } catch (error) {
+        // Remove Persisted State
         commit("SET_CURRENT_USER", null);
+        store.dispatch("account/removeUserInfo");
+        
+        // Back To Login
         await this.$router.push({ name: routeName });
       }
     },
