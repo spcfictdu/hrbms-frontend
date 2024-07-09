@@ -1,50 +1,10 @@
 <template>
   <v-dialog max-width="450" v-model="dialog" overlay-opacity="0.2">
     <v-form ref="roomForm">
-      <v-card
-        class="pa-8"
-        rounded="lg"
-        flat
-        v-if="dialogFunction.changeRoomSatus"
-      >
-        <v-card-title
-          class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0"
-          >Change Room Status Confirmation</v-card-title
-        >
-        <p class="py-2 py-sm-4 text-caption text-sm-body-2 font-weight-regular">
-          Change Room {{ dialogMeta.room }} status to {{ dialogMeta.status }}?
-        </p>
-        <v-card-actions class="pa-0 mt-4">
-          <v-row dense>
-            <v-col cols="12" sm="6" order="last" order-sm="first"
-              ><v-btn text block color="warning" @click="cancelButton"
-                >Cancel</v-btn
-              ></v-col
-            >
-            <v-col cols="12" sm="6"
-              ><v-btn
-                text
-                block
-                color="primary"
-                class="lightBg"
-                @click="proceedButton"
-                >Proceed</v-btn
-              ></v-col
-            >
-          </v-row>
-        </v-card-actions>
-      </v-card>
-      <v-card
-        class="pa-8"
-        rounded="lg"
-        flat
-        v-else-if="dialogFunction.createRoom || dialogFunction.editRoom"
-      >
+      <v-card class="pa-8" rounded="lg" flat>
         <v-card-title
           class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0 mb-4"
-          >{{
-            dialogFunction.createRoom ? "Add New Room" : "Edit Room"
-          }}</v-card-title
+          >{{ metaDialog.actionType }}</v-card-title
         >
         <div class="mt-4 mb-8">
           <div class="mb-2">
@@ -53,9 +13,10 @@
               outlined
               dense
               hide-details="auto"
-              v-model="roomDetails.roomNumber"
+              v-model="payload.roomNumber"
               :rules="validate.roomNumber"
               type="number"
+              hide-spin-buttons
             ></v-text-field>
           </div>
           <div class="mb-2">
@@ -64,9 +25,10 @@
               outlined
               dense
               hide-details="auto"
-              v-model="roomDetails.roomFloor"
+              v-model="payload.roomFloor"
               :rules="validate.roomFloor"
               type="number"
+              hide-spin-buttons
             ></v-text-field>
           </div>
           <div>
@@ -75,8 +37,8 @@
               outlined
               dense
               hide-details="auto"
-              :items="roomCategories"
-              v-model="roomDetails.roomType"
+              :items="roomTypeEnum"
+              v-model="payload.roomType"
               :rules="validate.roomType"
               item-text="roomType"
               item-value="roomType"
@@ -108,46 +70,52 @@
 </template>
 
 <script>
+import { mapActions, mapState } from "vuex";
+
 export default {
   name: "RoomDialog",
   props: {
-    activator: {
-      type: Boolean,
-      required: true,
-    },
-    dialogMeta: {
-      type: Object,
-      required: true,
-    },
-    // Compressed to Meta
-    dialogFunction: {
-      type: Object,
-      required: true,
-    },
-    // Remove, Call locally
-    roomCategories: {
-      type: Array,
-      required: true,
-    },
-    // Unrequired ing Prop
-    roomDetails: {
-      type: Object,
-      required: true,
-    },
+    activator: Boolean,
+    metaDialog: Object,
+    roomData: Object,
   },
   data: () => ({
     dialog: false,
-  }),
-  computed: {
-    categories: function () {
-      // Use Map or Remove entirely just the array directly from Enums
-      let categories = [];
-
-      this.roomCategories.forEach((room) => {
-        categories.push(room.title);
-      });
-      return categories;
+    payload: {
+      roomNumber: "",
+      roomFloor: "",
+      roomType: "",
     },
+  }),
+  methods: {
+    ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
+    cancelButton: function () {
+      this.$refs.roomForm.reset();
+      this.$emit("reset-activator");
+    },
+    proceedButton: function () {
+      if (this.metaDialog.actionType === "Edit room") {
+        if (this.$refs.roomForm.validate()) {
+          this.$emit("edit-event", this.payload);
+          this.$refs.roomForm.reset();
+        }
+      } else {
+        if (this.$refs.roomForm.validate()) {
+          this.$emit("add-request", this.payload);
+          this.$refs.roomForm.reset();
+        }
+      }
+    },
+    payloadContent: function () {
+      return (this.payload = {
+        roomNumber: this.roomData.roomNumber,
+        roomFloor: this.roomData.roomFloor,
+        roomType: this.roomData.roomType,
+      });
+    },
+  },
+  computed: {
+    ...mapState("roomTypeEnum", ["roomTypeEnum"]),
     validate: function () {
       const errors = {};
 
@@ -156,28 +124,6 @@ export default {
       errors.roomType = [(v) => !!v || "Room type is required"]; // Make it dynamic whenever adding and updating
 
       return errors;
-    },
-  },
-  methods: {
-    cancelButton: function () {
-      this.$emit("reset-activator");
-      this.$refs.roomForm.reset();
-    },
-    proceedButton: function () {
-      // Centralized One Event
-      if (this.dialogFunction.changeRoomSatus) {
-        this.$emit("update-request");
-      } else if (this.dialogFunction.createRoom) {
-        if (this.$refs.roomForm.validate()) {
-          this.$emit("add-request", this.roomDetails);
-          this.$refs.roomForm.reset();
-        }
-      } else {
-        if (this.$refs.roomForm.validate()) {
-          this.$emit("edit-room-request", this.roomDetails);
-          this.$refs.roomForm.reset();
-        }
-      }
     },
   },
   watch: {
@@ -190,6 +136,13 @@ export default {
       handler: function (newVal) {
         if (!newVal) {
           this.$emit("reset-activator");
+        }
+      },
+    },
+    roomData: {
+      handler: function () {
+        if (this.roomData) {
+          this.payloadContent();
         }
       },
     },

@@ -14,7 +14,7 @@
               color="primary"
               rounded
               v-if="show && !$vuetify.breakpoint.xs"
-              class="text-button"
+              class="text-button mr-1"
               justify="space-around"
               @click="searchFunction"
               ><v-icon left>mdi-magnify</v-icon>Search</v-btn
@@ -26,6 +26,22 @@
               class="text-button"
               @click="searchFunction"
               ><v-icon>mdi-magnify</v-icon></v-btn
+            >
+            <v-btn
+              :ripple="false"
+              color="warning"
+              v-if="show && !$vuetify.breakpoint.xs"
+              @click="clearQuery"
+              rounded
+              ><v-icon left>mdi-cached</v-icon>Clear</v-btn
+            >
+            <v-btn
+              :ripple="false"
+              color="warning"
+              v-if="show && $vuetify.breakpoint.xs"
+              @click="clearQuery"
+              icon
+              ><v-icon left>mdi-cached</v-icon></v-btn
             >
             <v-btn
               fab
@@ -142,17 +158,6 @@
                 >
                 </v-date-picker>
               </v-menu>
-            </v-col>
-            <v-col class="d-flex justify-end mt-n5">
-              <v-btn
-                class="mr-n4"
-                :ripple="false"
-                color="warning"
-                v-if="show"
-                @click="clearQuery"
-                text
-                >Clear</v-btn
-              >
             </v-col>
           </v-row>
           <v-data-table

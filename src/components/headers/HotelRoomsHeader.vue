@@ -212,7 +212,7 @@ export default {
         case "Occupied Rooms":
           buttonData.name = "Room";
           buttonData.action = () => {
-            this.triggerOccupiedDialog();
+            this.triggerOccupiedDialog(true);
           };
           break;
         case "Room Categories":

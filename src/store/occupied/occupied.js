@@ -43,12 +43,12 @@ export const occupied = {
           console.error("Error fetching room status: ", error);
         });
     },
-    updateRoomStatus: function ({ dispatch, commit }, { roomRefNum, data }) {
+    updateRoomStatus: function ({ dispatch, commit }, { roomRefNum, data, queryParams = {} }) {
       const url = `room-status/update/${roomRefNum}`;
       return this.$axios
         .put(url, data)
         .then((response) => {
-          dispatch("fetchRoomStatus", roomRefNum);
+          dispatch("fetchRoomStatus", queryParams);
           commit("SET_OCCUPIED_STATUS", {
             message: response.data.message,
             status: "success",
@@ -64,17 +64,17 @@ export const occupied = {
     },
 
     // Dialog
-    triggerOccupiedDialog: function ({ commit, state }) {
-      commit("SET_OCCUPIED_DIALOG", !state.occupiedDialog);
+    triggerOccupiedDialog: function ({ commit }, data) {
+      commit("SET_OCCUPIED_DIALOG", data);
     },
 
     // Rooms Configuration
-    createRoom: function ({ commit, dispatch }, data) {
+    createRoom: function ({ commit, dispatch }, {data, queryParams = {}}) {
       const url = `room/create`;
       return this.$axios
         .post(url, data)
         .then((response) => {
-          dispatch("fetchRoomStatus", data);
+          dispatch("fetchRoomStatus", queryParams);
           commit("SET_OCCUPIED_STATUS", {
             message: response.data.message,
             status: "success",
@@ -82,18 +82,18 @@ export const occupied = {
         })
         .catch((error) => {
           commit("SET_OCCUPIED_STATUS", {
-            message: error.response.data.message,
+            message: error.response.data.results.roomNumber,
             status: "error",
           });
           console.error("Error creating room", error.response.data.message);
         });
     },
-    deleteRoom: function ({ commit, dispatch }, refNum) {
+    deleteRoom: function ({ commit, dispatch }, {refNum, queryParams = {}}) {
       const url = `room/delete/${refNum}`;
       return this.$axios
         .delete(url)
         .then((response) => {
-          dispatch("fetchRoomStatus", refNum);
+          dispatch("fetchRoomStatus", queryParams);
           commit("SET_OCCUPIED_STATUS", {
             message: response.data.message,
             status: "success",
@@ -107,12 +107,12 @@ export const occupied = {
           console.error(error.response.data.message);
         });
     },
-    updateRoom: function ({ commit, dispatch }, { refNum, data }) {
+    updateRoom: function ({ commit, dispatch }, { refNum, data, queryParams = {} }) {
       const url = `room/update/${refNum}`;
       return this.$axios
         .put(url, data)
         .then((response) => {
-          dispatch("fetchRoomStatus", refNum);
+          dispatch("fetchRoomStatus", queryParams);
           commit("SET_OCCUPIED_STATUS", {
             message: response.data.message,
             status: "success",
