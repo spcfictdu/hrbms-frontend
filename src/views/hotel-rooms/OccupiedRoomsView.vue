@@ -12,10 +12,7 @@
       :roomStatuses="roomStatuses"
       :occupiedDialog="occupiedDialog"
       @close-dialog="triggerDialog"
-      @update-event="updateEvent"
-      @add-room="addRoomEvent"
-      @edit-room="editRoomEvent"
-      @delete-room="deleteRoomEvent"
+      @request-event="requestEvent"
       @query-pagination="paginateRoomStatus"
       @input-event="attachType"
     />
@@ -42,7 +39,6 @@ export default {
       occupiedDialog: "occupiedDialog",
     }),
     handleAlertType() {
-      console.log(this.roomStatuses)
       return this.occupiedStatus.status !== ""
         ? this.occupiedStatus.status.toLowerCase()
         : "success";
@@ -67,24 +63,39 @@ export default {
       };
       this.assignParams(object);
     },
-    updateEvent: function ({ refNum, payload }) {
-      this.updateRoomStatus({ roomRefNum: refNum, data: payload });
-      this.triggerEventFetch = true;
-    },
-    addRoomEvent: function (payload) {
-      this.createRoom(payload);
-      this.triggerEventFetch = true;
-    },
-    deleteRoomEvent: function (referenceNumber) {
-      this.deleteRoom(referenceNumber);
-      this.triggerEventFetch = true;
-    },
-    editRoomEvent: function ({ referenceNumber, payload }) {
-      this.editRoom({
-        refNum: referenceNumber,
-        data: payload,
-      });
-      this.triggerEventFetch = true;
+    requestEvent: function (payload) {
+      switch (payload.requestType) {
+        case "Change Room Status":
+          this.updateRoomStatus({
+            roomRefNum: payload.refNum,
+            data: payload.data,
+            queryParams: this.queryParams,
+          });
+          this.triggerEventFetch = true;
+          break;
+        case "Delete room":
+          this.deleteRoom({
+            refNum: payload.refNum,
+            queryParams: this.queryParams,
+          });
+          this.triggerEventFetch = true;
+          break;
+        case "Edit room":
+          this.updateRoom({
+            refNum: payload.refNum,
+            data: payload.data,
+            queryParams: this.queryParams,
+          });
+          this.triggerEventFetch = true;
+          break;
+        case "Add room":
+          this.createRoom({
+            data: payload.data,
+            queryParams: this.queryParams,
+          });
+          this.triggerEventFetch = true;
+          break;
+      }
     },
     triggerAlert: function (value) {
       this.isShowAlert = value;
@@ -100,17 +111,28 @@ export default {
         this.fetchRoomStatus(newVal);
       },
     },
-    roomStatus: {
+    roomStatuses: {
       deep: true,
-      handler: function () {
+      handler: function (newVal) {
         if (this.triggerEventFetch === true) {
           this.fetchRoomStatus(this.queryParams);
+          console.log("troth");
           this.triggerEventFetch = false;
         }
+        console.log(newVal);
       },
     },
+    // triggerEventFetch: {
+    //   deep: true,
+    //   handler: function (value) {
+    //     if (value) {
+    //       this.fetchRoomStatus(this.queryParams);
+    //       console.log("troth")
+    //     }
+    //     this.triggerEventFetch = false;
+    //   },
+    // },
     occupiedStatus: {
-      immediate: true,
       deep: true,
       handler: function (newVal) {
         if (newVal.status !== "") {

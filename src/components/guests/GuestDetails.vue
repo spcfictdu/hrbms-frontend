@@ -14,7 +14,7 @@
       </v-row>
       <v-divider v-if="!$vuetify.breakpoint.xs" :class="classDivider" />
       <v-row>
-        <v-col>
+        <v-col cols="11" sm="">
           <div :class="classGuestName">
             {{ guest.fullName }}
           </div>
@@ -67,7 +67,7 @@
                 color="primary"
                 rounded
                 v-if="show && !$vuetify.breakpoint.xs"
-                class="text-button"
+                class="text-button mr-1"
                 justify="space-around"
                 @click="searchFunction"
                 ><v-icon left>mdi-magnify</v-icon>Search</v-btn
@@ -80,6 +80,22 @@
                 @click="searchFunction"
                 ><v-icon>mdi-magnify</v-icon></v-btn
               >
+              <v-btn
+              :ripple="false"
+              color="warning"
+              v-if="show && !$vuetify.breakpoint.xs"
+              @click="clearQuery"
+              rounded
+              ><v-icon left>mdi-cached</v-icon>Clear</v-btn
+            >
+            <v-btn
+              :ripple="false"
+              color="warning"
+              v-if="show && $vuetify.breakpoint.xs"
+              @click="clearQuery"
+              icon
+              ><v-icon left>mdi-cached</v-icon></v-btn
+            >
               <v-btn
                 fab
                 outlined
@@ -104,16 +120,17 @@
               </v-col>
             </v-row>
             <v-row v-if="show" class="mx-3 text-subtitle-2">
-              <v-col>
+              <v-col :cols="textfieldCols">
                 <span class="ml-2">Reference</span>
                 <v-text-field
                   dense
                   outlined
                   hide-details="auto"
                   v-model="searchRefNum"
+                  :class="textfieldCols"
                 ></v-text-field>
               </v-col>
-              <v-col>
+              <v-col :cols="textfieldCols">
                 <span class="ml-2">Check-in Date</span>
                 <v-menu
                   v-model="menuCheckIn"
@@ -141,7 +158,7 @@
                   </v-date-picker>
                 </v-menu>
               </v-col>
-              <v-col>
+              <v-col :cols="textfieldCols">
                 <span class="ml-2">Check-out Date</span>
                 <v-menu
                   v-model="menuCheckOut"
@@ -168,13 +185,6 @@
                   >
                   </v-date-picker>
                 </v-menu>
-              </v-col>
-            </v-row>
-            <v-row v-if="show" class="mt-n5">
-              <v-col class="d-flex justify-end mr-3 pb-0">
-                <v-btn text color="warning" :ripple="false" @click="clearQuery">
-                  Clear
-                </v-btn>
               </v-col>
             </v-row>
             <v-row>
@@ -436,7 +446,7 @@ export default {
       deep: true,
       handler(newVal) {
         if (newVal.xs) {
-          this.classGuestName = "font-weight-bold text-h6 text-center mt-n3";
+          this.classGuestName = "d-flex justify-center font-weight-bold text-h6 text-center mt-n3";
           this.textfieldCols = 12;
           this.small = false;
           this.xSmall = true;
