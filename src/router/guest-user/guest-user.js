@@ -34,6 +34,7 @@ export default [
             /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestRoomDetailsView.vue"
             ),
         meta: {
+          isGuest: true,
           withSearchEngine: false,
           name: "Hotel Rooms",
         },
@@ -47,8 +48,37 @@ export default [
             /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestBookingView.vue"
             ),
         meta: {
+          isGuest: true,
           withSearchEngine: false,
           name: "Booking",
+        },
+      },
+      {
+        path: "confirmation/:referenceNumber",
+        name: "Guest Confirmation",
+        props: true,
+        component: () =>
+          import(
+            /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestConfirmationView.vue"
+            ),
+        meta: {
+          isGuest: true,
+          withSearchEngine: false,
+          name: "Booking",
+        },
+      },
+      {
+        path: "check-in-out/:referenceNumber",
+        name: "Guest CheckInOut",
+        props: true,
+        component: () =>
+          import(
+            /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestCheckInOutView.vue"
+            ),
+        meta: {
+          isGuest: true,
+          withSearchEngine: false,
+          name: "Check In & Out",
         },
       },
 

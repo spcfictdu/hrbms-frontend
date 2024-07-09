@@ -19,8 +19,8 @@ export default [
             /* webpackChunkName: "public-routes" */ "@/views/public/dashboard/PublicDashboardView.vue"
           ),
         meta: {
-          name: "Hotel Rooms",
           isPublic: true,
+          name: "Hotel Rooms",
           withSearchEngine: true,
         },
       },
@@ -33,13 +33,13 @@ export default [
           ),
         props: true,
         meta: {
-          name: "Hotel Rooms",
           isPublic: true,
+          name: "Hotel Rooms",
           withSearchEngine: false,
         },
       },
       {
-        path: "booking",
+        path: "pencil-booking",
         name: "Public Booking",
         component: () =>
           import(
@@ -47,11 +47,11 @@ export default [
           ),
         props: true,
         meta: {
-          name: "Booking",
           isPublic: true,
+          name: "Booking",
           withSearchEngine: false,
         },
-      }
+      },
     ],
   },
 ];

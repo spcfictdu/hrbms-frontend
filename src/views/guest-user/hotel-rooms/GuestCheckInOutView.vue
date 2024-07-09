@@ -9,13 +9,11 @@
 </template>
 
 <script>
-import ConfirmedDetails from "../../../components/hotel-rooms/forms/ConfirmedDetails.vue";
+import ConfirmedDetails from "@/components/hotel-rooms/forms/ConfirmedDetails.vue";
 import { mapActions, mapState } from "vuex";
 export default {
-  name: "CheckInAndOut",
-  components: {
-    ConfirmedDetails,
-  },
+  name: "GuestCheckInOutView",
+  components: { ConfirmedDetails },
   methods: {
     ...mapActions("transaction", ["fetchTransaction", "updateTransaction"]),
     fetchData: function () {
@@ -23,10 +21,10 @@ export default {
       this.fetchTransaction(referenceNumber);
     },
     requestUpdate: function (payload) {
-      this.updateTransaction(payload).then(() => {
+      this.updateTransaction(payload).then((response) => {
         if (payload.status === "RESERVED") {
           this.$router.push({
-            name: "CheckInOut",
+            name: "Guest CheckInOut",
             params: { referenceNumber: payload.referenceNumber },
           });
         } else {

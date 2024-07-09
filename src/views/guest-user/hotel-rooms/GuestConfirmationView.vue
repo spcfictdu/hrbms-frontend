@@ -1,7 +1,8 @@
 <template>
   <div class="mt-10">
-    <confirmed-details
-      @update-event="requestUpdate"
+    <confirmation-form
+      @delete-event="requestDelete"
+      @validation-event="requestUpdate"
       :result="transaction"
       v-if="transaction"
     />
@@ -9,24 +10,36 @@
 </template>
 
 <script>
-import ConfirmedDetails from "../../../components/hotel-rooms/forms/ConfirmedDetails.vue";
+import ConfirmationForm from "@/components/hotel-rooms/forms/ConfirmationForm.vue";
 import { mapActions, mapState } from "vuex";
 export default {
-  name: "CheckInAndOut",
-  components: {
-    ConfirmedDetails,
-  },
+  name: "GuestConfirmationView",
+  components: { ConfirmationForm },
   methods: {
-    ...mapActions("transaction", ["fetchTransaction", "updateTransaction"]),
+    ...mapActions("transaction", [
+      "fetchTransaction",
+      "deleteReservation",
+      "updateTransaction",
+    ]),
     fetchData: function () {
       const referenceNumber = this.$route.params.referenceNumber;
       this.fetchTransaction(referenceNumber);
+    },
+    requestDelete: function (payload) {
+      this.deleteReservation({
+        status: payload.status,
+        transactionRefNum: payload.transactionRefNum,
+      }).then(() => {
+        this.$router.replace({
+          name: "Guest Account",
+        });
+      });
     },
     requestUpdate: function (payload) {
       this.updateTransaction(payload).then(() => {
         if (payload.status === "RESERVED") {
           this.$router.push({
-            name: "CheckInOut",
+            name: "Guest CheckInOut",
             params: { referenceNumber: payload.referenceNumber },
           });
         } else {

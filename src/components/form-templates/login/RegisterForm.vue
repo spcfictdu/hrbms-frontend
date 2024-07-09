@@ -76,6 +76,7 @@
           hide-details="auto"
           @change="emitTransaction"
           :rules="rules.email"
+          autocomplete="username"
       />
     </div>
 
@@ -94,6 +95,7 @@
           :rules="rules.password"
           @click:append="showPassword = !showPassword"
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+          autocomplete="new-password"
       />
     </div>
   </div>
@@ -130,7 +132,7 @@ export default {
       errors.middleName = [];
       errors.lastName = [(v) => !!v || "Last name is required"];
       errors.mobileNumber = [(v) => !!v || "Mobile number is required"];
-      errors.email = [(v) => !!v || "email is required"];
+      errors.email = [(v) => !!v || "Email is required"];
       errors.password = [(v) => !!v || "Password is required"];
       return errors;
     }

@@ -5,15 +5,15 @@
     </title-slot>
 
     <v-row>
-      <v-col cols="12" md="6">
+      <v-col cols="12" md="0" v-if="$auth.user().role === 'ADMIN'">
         <v-btn
           depressed
           block
-          :color="buttonOne === activeButton ? 'accentTwo' : 'lightBg'"
+          :color="buttonOne === activeButton ? 'primary' : 'lightBg'"
           height="100%"
           class="text-capitalize py-2"
           :class="{
-            'font-weight-bold': buttonOne === activeButton,
+            'font-weight-medium': buttonOne === activeButton,
             'font-weight-regular': buttonOne !== activeButton,
           }"
           @click="assignActiveButton(buttonOne)"
@@ -22,15 +22,15 @@
           >Cash</v-btn
         >
       </v-col>
-      <v-col cols="12" md="6">
+      <v-col cols="12" md="0">
         <v-btn
           depressed
           block
-          :color="buttonTwo === activeButton ? 'accentTwo' : 'lightBg'"
+          :color="buttonTwo === activeButton ? 'primary' : 'lightBg'"
           height="100%"
           class="font-weight-regular text-capitalize py-2"
           :class="{
-            'font-weight-bold': buttonTwo === activeButton,
+            'font-weight-medium': buttonTwo === activeButton,
             'font-weight-regular': buttonTwo !== activeButton,
           }"
           @click="assignActiveButton(buttonTwo)"
@@ -72,7 +72,7 @@ export default {
     isGreater: {
       type: Number,
       required: true,
-    }
+    },
   },
   data: () => ({
     activeButton: "",

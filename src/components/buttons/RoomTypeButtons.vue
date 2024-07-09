@@ -45,7 +45,7 @@ export default {
   name: "RoomTypeButtons",
   props: { withAllRooms: Boolean },
   data: () => ({
-    activeButton: "All Rooms",
+    activeButton: "",
   }),
   methods: {
     ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),

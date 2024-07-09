@@ -206,7 +206,7 @@ export default {
       if (this.role === "GUEST") {
         data.label = "Available Room Numbers";
         data.enums = this.availableRoomNumbersEnum;
-      } else if (this.role === "FRONT DESK") {
+      } else if (this.role === "ADMIN") {
         data.label = "Room Number";
         data.enums = this.roomNumberEnum;
       }

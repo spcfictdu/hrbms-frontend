@@ -61,21 +61,7 @@ export const transaction = {
       return this.$axios
         .post(url, payload)
         .then((response) => {
-          if (response.data.results.status === "RESERVED") {
-            this.$router.push({
-              name: "Confirmation",
-              params: {
-                referenceNumber: response.data.results.referenceNumber,
-              },
-            });
-          } else {
-            this.$router.push({
-              name: "CheckInOut",
-              params: {
-                referenceNumber: response.data.results.referenceNumber,
-              },
-            });
-          }
+          return response;
         })
         .catch((error) => {
           console.error("Error creating transaction: ", error);
@@ -89,23 +75,19 @@ export const transaction = {
       return this.$axios
         .delete(url)
         .then((response) => {
-          this.$router.replace({
-            name: "Transactions",
-          });
           commit("SET_TRANSACTION_STATUS", {
             message: response.data.message,
             status: "SUCCESS",
           });
+          return response;
         })
         .catch((error) => {
           console.error("Error deleting reservation: ", error);
-          this.$router.push({
-            name: "Transactions",
-          });
           commit("SET_TRANSACTION_STATUS", {
             message: error.response.data.message,
             status: "ERROR",
           });
+          throw error;
         });
     },
     updateTransaction: function ({ dispatch }, payload) {
@@ -113,15 +95,7 @@ export const transaction = {
       return this.$axios
         .put(url, payload)
         .then((response) => {
-          console.log(response.data.message);
-          if (payload.status === "RESERVED") {
-            this.$router.push({
-              name: "CheckInOut",
-              params: { referenceNumber: payload.referenceNumber },
-            });
-          } else {
-            dispatch("fetchTransaction", payload.referenceNumber);
-          }
+          return response;
         })
         .catch((error) => {
           console.error("Error updating transaction: ", error);

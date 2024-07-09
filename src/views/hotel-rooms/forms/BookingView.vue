@@ -23,7 +23,23 @@ export default {
       "fetchPreviousFormTransactions",
     ]),
     requestPostTransaction: function (payload) {
-      this.createTransaction(this.createObject(payload));
+      this.createTransaction(this.createObject(payload)).then((response) => {
+        if (response.data.results.status === "RESERVED") {
+          this.$router.push({
+            name: "Confirmation",
+            params: {
+              referenceNumber: response.data.results.referenceNumber,
+            },
+          });
+        } else {
+          this.$router.push({
+            name: "CheckInOut",
+            params: {
+              referenceNumber: response.data.results.referenceNumber,
+            },
+          });
+        }
+      });
     },
     createObject: function (payload) {
       let value = {};

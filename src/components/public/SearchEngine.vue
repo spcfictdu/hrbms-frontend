@@ -10,7 +10,7 @@
           BOOK YOUR STAY WITH US
         </div>
       </div>
-      <v-form ref="form" lazy-validation>
+      <v-form ref="form" lazy-validation @submit.prevent="submitQuery">
         <div>
           <v-card
             class="search-container py-4 px-4 px-md-0 py-md-2 pr-md-2 d-flex flex-column flex-md-row justify-start align-start align-md-center"
@@ -55,7 +55,11 @@
                   <v-date-picker
                     v-model="queryParams.checkInDate"
                     :min="minDate"
-                  ></v-date-picker>
+                  >
+                    <v-btn block color="primary" @click="resetDates('CHECK IN')"
+                      >Clear</v-btn
+                    >
+                  </v-date-picker>
                 </v-menu>
               </div>
             </div>
@@ -99,9 +103,14 @@
                       :value="formattedDate(queryParams.checkOutDate)"
                     ></v-text-field>
                   </template>
-                  <v-date-picker
-                    v-model="queryParams.checkOutDate"
-                  ></v-date-picker>
+                  <v-date-picker v-model="queryParams.checkOutDate">
+                    <v-btn
+                      block
+                      color="primary"
+                      @click="resetDates('CHECK OUT')"
+                      >Clear</v-btn
+                    >
+                  </v-date-picker>
                 </v-menu>
               </div>
             </div>
@@ -145,6 +154,7 @@
             <v-divider class="d-none d-md-flex hr-opacity" vertical />
 
             <v-btn
+              type="submit"
               @click="submitQuery"
               :block="$vuetify.breakpoint.smAndDown"
               depressed
@@ -195,13 +205,7 @@ export default {
     submitQuery: function () {
       this.validateGuests();
       if (this.$refs.form.validate()) {
-        let queryPayload = { ...this.queryParams };
-
-        if (queryPayload.numberOfGuests === 0) {
-          queryPayload.numberOfGuests = null;
-        }
-
-        this.$emit("queryParams", queryPayload);
+        this.$emit("queryParams", this.queryParams);
       }
     },
     validateGuests: function () {
@@ -219,7 +223,6 @@ export default {
           } else {
             this.$set(this.queryParams, key, null);
           }
-
         }
       }
     },
@@ -230,6 +233,13 @@ export default {
           const value = routeQuery[key];
           this.$set(this.queryParams, key, value);
         }
+      }
+    },
+    resetDates: function (type) {
+      if (type === "CHECK IN") {
+        this.$set(this.queryParams, "checkInDate", null);
+      } else if (type === "CHECK OUT") {
+        this.$set(this.queryParams, "checkOutDate", null);
       }
     },
   },

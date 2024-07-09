@@ -28,18 +28,27 @@ export default {
     },
     assignRouteQuery: function () {
       const queries = ["numberOfGuests", "checkInDate", "checkOutDate"];
+      const routeQueries = Object.keys(this.routeQuery);
       for (const key in this.routeQuery) {
         if (Object.hasOwnProperty.call(this.routeQuery, key)) {
           const value = this.routeQuery[key];
-          if (value) {
-            this.$set(this.queryParams, key, value);
-          } else {
-            queries
-              .filter((item) => item !== key)
-              .forEach((item) => {
-                this.$delete(this.queryParams, item);
-              });
-          }
+
+          queries.forEach((query) => {
+            if (routeQueries.includes(query)) {
+              if (key === "numberOfGuests") {
+                this.$set(this.queryParams, "capacity", value);
+              } else {
+                this.$set(this.queryParams, key, value);
+              }
+            } else {
+              if (query === "numberOfGuests") {
+                this.$delete(this.queryParams, "capacity");
+              } else {
+                this.$delete(this.queryParams, query);
+              }
+
+            }
+          })
         }
       }
       this.fetchFilteredRoom();

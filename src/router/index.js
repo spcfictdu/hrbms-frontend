@@ -42,9 +42,10 @@ router.beforeEach((to, from, next) => {
   if (!loggedIn && !allowedRoutes("PUBLIC").includes(to.name)) {
      next({ name: "Guest Sign In" });
   } else if (loggedIn && allowedRoutes("LOGIN").includes(to.name)) {
+    console.log("CHECK");
     if (userRole === "GUEST") {
        next({ name: "Guest Dashboard" });
-    } else if (userRole === "FRONT DESK") {
+    } else if (userRole === "ADMIN") {
        next({ name: "Dashboard" });
     }
   } else if (userRole === "GUEST" && !allowedRoutes("GUEST").includes(to.name)) {

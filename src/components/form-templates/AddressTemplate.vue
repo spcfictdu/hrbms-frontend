@@ -67,20 +67,20 @@ export default {
   },
   watch: {
     fill: {
-      deep: true,
+      immediate: true,
       handler: function (newVal) {
         if (newVal) {
           this.payload.address = {
             province: newVal.province,
             city: newVal.city,
           };
+          this.$emit("emit-transaction", this.payload);
         } else {
           this.payload.address = {
             province: null,
             city: null,
           };
         }
-        this.$emit("emit-transaction", this.payload);
       },
     },
   },

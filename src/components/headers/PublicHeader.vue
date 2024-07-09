@@ -84,7 +84,11 @@ export default {
     submitQuery: function (queryParams) {
       this.assignParams(queryParams);
 
-      return this.$router.push({ query: this.queryParams });
+      this.$router.push({ query: this.queryParams }).catch((err) => {
+        if (err.name !== "NavigationDuplicated") {
+          throw err;
+        }
+      });
     },
     routeSearchQueryHandler(newVal) {
       if (this.$refs.searchEngine) {

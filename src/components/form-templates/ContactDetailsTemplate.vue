@@ -74,20 +74,20 @@ export default {
   },
   watch: {
     fill: {
-      deep: true,
+      immediate: true,
       handler: function (newVal) {
         if (newVal) {
           this.payload.contact = {
             phoneNumber: newVal.phone_number,
             email: newVal.email,
           };
+          this.$emit("emit-transaction", this.payload);
         } else {
           this.payload.contact = {
             phoneNumber: null,
             email: null,
           };
         }
-        this.$emit("emit-transaction", this.payload);
       },
     },
   },

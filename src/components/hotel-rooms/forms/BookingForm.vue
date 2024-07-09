@@ -2,7 +2,7 @@
   <div v-if="this.room">
     <div
       class="d-flex justify-end align-center mb-2"
-      v-if="$auth.user().role === 'FRONT DESK'"
+      v-if="$auth.user().role === 'ADMIN'"
     >
       <div style="max-width: 300px">
         <v-select
@@ -62,14 +62,14 @@
           <!-- Check In -->
           <v-divider />
           <check-in-template
-            :filledDate="payload.checkIn.date"
+            :fill="autoFilled"
             @emit-transaction="assignPayload"
           />
 
           <!-- Check Out -->
           <v-divider />
           <check-out-template
-            :filledDate="payload.checkOut.date"
+            :fill="autoFilled"
             @emit-transaction="assignPayload"
           />
 
@@ -216,8 +216,10 @@ export default {
       }
     },
     assignGuestMeta: function () {
+      // If Guest user, autofill the form
       if (this.$auth.user().role === "GUEST") {
         this.autoFilled = {
+          ...this.autoFilled,
           first_name: this.userInfo.firstName,
           middle_name: this.userInfo.middleName,
           last_name: this.userInfo.lastName,
@@ -227,7 +229,24 @@ export default {
           province: this.userInfo.address.province,
         };
       }
-      console.log(this.autoFilled);
+    },
+    assignDates: function (newVal) {
+      // If Query has Check Out Dates
+      if (newVal.checkInDate && newVal.checkOutDate) {
+        this.autoFilled = {
+          ...this.autoFilled,
+          checkInDate: newVal.checkInDate,
+          checkOutDate: newVal.checkOutDate,
+        };
+        // If user is Guest, time is filled out
+        if (this.$auth.user().role === "GUEST") {
+          this.autoFilled = {
+            ...this.autoFilled,
+            checkInTime: "14:00",
+            checkOutTime: "11:00",
+          };
+        }
+      }
     },
   },
   computed: {
@@ -302,13 +321,9 @@ export default {
         this.payload.room = {
           referenceNumber: newVal.referenceNumber,
         };
-        if (newVal.checkInDate && newVal.checkOutDate) {
-          this.payload.checkIn.date = newVal.checkInDate;
-          this.payload.checkOut.date = newVal.checkOutDate;
-        }
-
-        this.fetchQuery();
+        this.assignDates(newVal);
         this.assignGuestMeta();
+        this.fetchQuery();
       },
     },
     "payload.status": {

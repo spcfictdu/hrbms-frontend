@@ -36,6 +36,7 @@
                   rounded
                   hide-details="auto"
                   :rules="rules.username"
+                  autocomplete="username"
               />
             </div>
 
@@ -53,6 +54,7 @@
                   :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
                   @click:append="showPassword = !showPassword"
                   :type="showPassword ? 'text' : 'password'"
+                  autocomplete="current-password"
               />
             </div>
           </div>

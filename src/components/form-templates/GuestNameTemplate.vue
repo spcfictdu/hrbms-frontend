@@ -79,7 +79,7 @@ export default {
   },
   watch: {
     fill: {
-      deep: true,
+      immediate: true,
       handler: function (newVal) {
         if (newVal) {
           this.payload = {
@@ -87,6 +87,7 @@ export default {
             middleName: newVal.middle_name,
             lastName: newVal.last_name,
           };
+          this.$emit("emit-transaction", this.payload);
         } else {
           this.payload = {
             firstName: null,
@@ -94,7 +95,6 @@ export default {
             lastName: null,
           };
         }
-        this.$emit("emit-transaction", this.payload);
       },
     },
   },

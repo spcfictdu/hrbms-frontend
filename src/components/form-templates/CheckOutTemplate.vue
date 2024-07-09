@@ -61,6 +61,7 @@
             ></v-text-field>
           </template>
           <v-time-picker
+            v-if="!isDisabled"
             v-model="payload.checkOut.time"
             scrollable
             active-picker="HOUR"
@@ -80,7 +81,7 @@ export default {
   name: "CheckOutTemplate",
   mixins: [formatTime],
   props: {
-    filledDate: String,
+    fill: Object,
   },
   data: () => ({
     payload: {
@@ -126,12 +127,21 @@ export default {
       const dateString = `${now}T${this.payload.checkOut.time}:00`;
       return this.payload.checkOut.time ? this.formatTime(dateString) : null;
     },
+    isDisabled: function () {
+      return this.$auth.user()?.role !== "ADMIN" ? true : false;
+    },
   },
   watch: {
-    filledDate: {
+    fill: {
       immediate: true,
       handler: function (newVal) {
-        this.payload.checkOut.date = newVal;
+        if (newVal) {
+          this.payload.checkOut.date = newVal.checkOutDate;
+          this.payload.checkOut.time = newVal.checkOutTime;
+          this.$emit("emit-transaction", this.payload);
+        } else {
+          this.payload.checkOut.date = null;
+        }
       },
     },
   },

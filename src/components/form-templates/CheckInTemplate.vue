@@ -61,6 +61,7 @@
             ></v-text-field>
           </template>
           <v-time-picker
+            v-if="!isDisabled"
             v-model="payload.checkIn.time"
             scrollable
             active-picker="HOUR"
@@ -80,7 +81,7 @@ export default {
   name: "CheckInTemplate",
   mixins: [formatTime],
   props: {
-    filledDate: String,
+    fill: Object,
   },
   data: () => ({
     payload: {
@@ -110,6 +111,7 @@ export default {
     },
     emitTime: function () {
       this.menu_2 = false;
+      console.log(this.payload.checkIn.time);
       this.emitTransaction();
     },
   },
@@ -126,12 +128,21 @@ export default {
       const dateString = `${now}T${this.payload.checkIn.time}:00`;
       return this.payload.checkIn.time ? this.formatTime(dateString) : null;
     },
+    isDisabled: function () {
+      return this.$auth.user()?.role !== "ADMIN" ? true : false;
+    },
   },
   watch: {
-    filledDate: {
+    fill: {
       immediate: true,
       handler: function (newVal) {
-        this.payload.checkIn.date = newVal;
+        if (newVal) {
+          this.payload.checkIn.date = newVal.checkInDate;
+          this.payload.checkIn.time = newVal.checkInTime;
+          this.$emit("emit-transaction", this.payload);
+        } else {
+          this.payload.checkIn.date = null;
+        }
       },
     },
   },

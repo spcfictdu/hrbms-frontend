@@ -31,7 +31,7 @@
     </div>
     <slot name="button">
       <v-btn
-        v-if="showButton(status.type)"
+        v-if="$auth.user().role === 'ADMIN' && showButton(status.type)"
         class="mt-2 mt-sm-0"
         :block="$vuetify.breakpoint.xs ? true : false"
         @click="$emit('button-event')"
