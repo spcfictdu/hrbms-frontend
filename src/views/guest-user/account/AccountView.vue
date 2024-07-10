@@ -3,6 +3,7 @@
     <account-component
       @selected-button="filterData"
       @password-event="requestPasswordUpdate"
+      @transaction-event="redirect"
       :alertStatus="accountStatus"
       :headerData="accountHeaderData"
       :accommodationData="accommodationData"
@@ -18,6 +19,8 @@ export default {
   components: { AccountComponent },
   data: () => ({
     accommodationData: null,
+    confirmationRoute: ["RESERVED"],
+    checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
   }),
   methods: {
     ...mapActions("account", ["fetchAccountInfo", "updateAccountPassword"]),
@@ -38,6 +41,23 @@ export default {
         default:
           this.accommodationData = null;
       }
+    },
+    redirect: function (meta) {
+      // if (this.confirmationRoute.includes(meta.status)) {
+      //   this.$router.push({
+      //     name: "Guest Confirmation",
+      //     params: {
+      //       referenceNumber: meta.referenceNumber,
+      //     },
+      //   });
+      // } else if (this.checkInCheckOutRoute.includes(meta.status)) {
+      //   this.$router.push({
+      //     name: "Guest CheckInOut",
+      //     params: {
+      //       referenceNumber: meta.referenceNumber,
+      //     },
+      //   });
+      // }
     },
   },
   computed: {

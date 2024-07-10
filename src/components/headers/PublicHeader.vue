@@ -6,6 +6,8 @@
       <p class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-1">
         {{ $route.meta.name }}
       </p>
+      <!-- <div class="red--text">{{ $route.meta }}</div>
+      <div class="yellow--text">{{ $router.currentRoute.meta }}</div> -->
       <div class="w-full d-none d-sm-flex flex-row align-center justify-center">
         <!-- Nav Controls -->
         <v-btn

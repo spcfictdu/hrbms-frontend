@@ -9,7 +9,7 @@ export default [
     component: () =>
       import(
         /* webpackChunkName: "guest" */ "../../views/guest-user/GuestHeaderView"
-        ),
+      ),
     children: [
       // Hotel Rooms
       {
@@ -17,8 +17,8 @@ export default [
         name: "Guest Dashboard",
         component: () =>
           import(
-            /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestDashboardView.vue"
-            ),
+            /* webpackChunkName: "guest-dashboard" */ "@/views/guest-user/hotel-rooms/GuestDashboardView.vue"
+          ),
         meta: {
           isGuest: true,
           withSearchEngine: true,
@@ -31,8 +31,8 @@ export default [
         props: true,
         component: () =>
           import(
-            /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestRoomDetailsView.vue"
-            ),
+            /* webpackChunkName: "guest-room-details" */ "@/views/guest-user/hotel-rooms/GuestRoomDetailsView.vue"
+          ),
         meta: {
           isGuest: true,
           withSearchEngine: false,
@@ -42,11 +42,10 @@ export default [
       {
         path: "booking",
         name: "Guest Booking",
-        props: true,
         component: () =>
           import(
-            /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestBookingView.vue"
-            ),
+            /* webpackChunkName: "guest-booking" */ "@/views/guest-user/hotel-rooms/GuestBookingView.vue"
+          ),
         meta: {
           isGuest: true,
           withSearchEngine: false,
@@ -59,8 +58,8 @@ export default [
         props: true,
         component: () =>
           import(
-            /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestConfirmationView.vue"
-            ),
+            /* webpackChunkName: "guest-confirmation" */ "@/views/guest-user/hotel-rooms/GuestConfirmationView.vue"
+          ),
         meta: {
           isGuest: true,
           withSearchEngine: false,
@@ -73,8 +72,8 @@ export default [
         props: true,
         component: () =>
           import(
-            /* webpackChunkName: "guest" */ "@/views/guest-user/hotel-rooms/GuestCheckInOutView.vue"
-            ),
+            /* webpackChunkName: "guest-check-in-out" */ "@/views/guest-user/hotel-rooms/GuestCheckInOutView.vue"
+          ),
         meta: {
           isGuest: true,
           withSearchEngine: false,
@@ -89,7 +88,7 @@ export default [
         component: () =>
           import(
             /* webpackChunkName: "guest-account" */ "@/views/guest-user/account/AccountView.vue"
-            ),
+          ),
         meta: {
           isGuest: true,
           withSearchEngine: false,
@@ -101,8 +100,8 @@ export default [
         name: "Guest Edit Details",
         component: () =>
           import(
-            /* webpackChunkName: "guest-account" */ "@/views/guest-user/account/EditDetailsView.vue"
-            ),
+            /* webpackChunkName: "guest-edit-details" */ "@/views/guest-user/account/EditDetailsView.vue"
+          ),
         meta: {
           isGuest: true,
           withSearchEngine: false,

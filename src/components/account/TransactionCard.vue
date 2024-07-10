@@ -1,79 +1,93 @@
 <template>
   <div>
-    <v-card flat outlined class="card-container" v-if="accommodationData && accommodationData.length > 0">
+    <v-card
+      flat
+      outlined
+      class="card-container"
+      v-if="!isEmpty"
+      @click="transactionEvent(transaction)"
+      :ripple="false"
+    >
       <div>
         <div class="text-body-1 text-sm-h6 text-uppercase font-weight-bold">
-          Executive Room
+          {{ transaction.roomName }}
         </div>
         <div class="d-flex align-center flex-wrap">
           <v-chip
-              color="primary"
-              x-small
-              class="chip-breakpoint font-weight-medium"
-          >JAN 01, 2025 - JAN 03, 2025
-          </v-chip
-          >
+            color="primary"
+            x-small
+            class="chip-breakpoint font-weight-medium"
+            >{{ formatDate(transaction.checkInDate) }} -
+            {{ formatDate(transaction.checkOutDate) }}
+          </v-chip>
           <div
-              class="mobile-breakpoint text-caption primary--text font-weight-bold"
+            class="mobile-breakpoint text-caption primary--text font-weight-bold"
           >
-            JAN 01, 2025 - JAN 03, 2025
+            {{ formatDate(transaction.checkInDate) }} -
+            {{ formatDate(transaction.checkOutDate) }}
           </div>
           <div class="text-caption text-sm-subtitle-2 price-margin">
             <span class="font-weight-bold"
-            >PHP 1000<small class="font-weight-regular"
-            >/TOTAL PAYMENT</small
-            ></span
+              >PHP {{ transaction.amountReceived
+              }}<small class="font-weight-regular">/TOTAL PAYMENT</small></span
             >
           </div>
         </div>
       </div>
 
       <p class="mt-4 text-body-2">
-        Experience luxury in our Executive Room, featuring a plush king-size
-        bed, a stylish seating area, and modern amenities like a flat-screen TV
-        and high-speed Wi-Fi. The marble en-suite bathroom offers a rejuvenating
-        rain shower and luxurious toiletries, complemented by stunning city
-        views through large windows.
+        {{ transaction.roomDescription }}
       </p>
 
-      <v-divider/>
+      <v-divider />
 
       <section class="mt-4">
         <div class="text-overline font-weight-bold">Amenities:</div>
         <div class="grid-container">
           <div
-              class="text-muted text-caption font-weight-regular"
-              v-for="(i, index) in amenities"
-              :key="index"
+            class="text-muted text-caption font-weight-regular"
+            v-for="(i, index) in transaction.amenities"
+            :key="index"
           >
             {{ i }}
           </div>
         </div>
       </section>
     </v-card>
-    <v-card v-else flat outlined class="card-container transparent-bg d-flex justify-center align-center">
-      <div>
-        You don’t have any {{ selectedButton.toLowerCase() }}.
-      </div>
+    <v-card
+      v-else
+      flat
+      outlined
+      class="card-container transparent-bg d-flex justify-center align-center"
+    >
+      <div>You don’t have any {{ selectedButton.toLowerCase() }}.</div>
     </v-card>
   </div>
 </template>
 
 <script>
+import { format, parseISO } from "date-fns";
 export default {
   name: "TransactionCard",
-  props: { accommodationData: Array, selectedButton: String },
-  data: () => ({
-    amenities: [
-      "Wi-Fi Access",
-      "Coffee/Tea Maker",
-      "Flat-Screen Television",
-      "In-Room Safe",
-    ],
-    sample: [],
-  }),
-  methods: {},
-  computed: {},
+  props: { transaction: Object, selectedButton: String },
+  data: () => ({}),
+  methods: {
+    formatDate: function (date) {
+      return date ? format(parseISO(date), "MMM dd, yyyy").toUpperCase() : null;
+    },
+    transactionEvent: function (payload) {
+      let routeMeta = {
+        status: payload.status,
+        referenceNumber: payload.referenceNumber,
+      };
+      this.$emit("transaction-event", routeMeta);
+    },
+  },
+  computed: {
+    isEmpty: function () {
+      return JSON.stringify(this.transaction) === "{}" ? true : false;
+    },
+  },
 };
 </script>
 

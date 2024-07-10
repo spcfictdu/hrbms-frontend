@@ -19,6 +19,7 @@
     <accommodation-component
       :accommodationData="accommodationData"
       @selected-button="(e) => $emit('selected-button', e)"
+      @transaction-event="(e) => $emit('transaction-event', e)"
     />
 
     <!--  Password Dialog  -->

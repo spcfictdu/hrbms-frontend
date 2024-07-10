@@ -31,7 +31,7 @@ export default {
         transactionRefNum: payload.transactionRefNum,
       }).then(() => {
         this.$router.replace({
-          name: "Guest Account",
+          name: "Guest Account Details",
         });
       });
     },

@@ -42,7 +42,6 @@ router.beforeEach((to, from, next) => {
   if (!loggedIn && !allowedRoutes("PUBLIC").includes(to.name)) {
      next({ name: "Guest Sign In" });
   } else if (loggedIn && allowedRoutes("LOGIN").includes(to.name)) {
-    console.log("CHECK");
     if (userRole === "GUEST") {
        next({ name: "Guest Dashboard" });
     } else if (userRole === "ADMIN") {
@@ -82,6 +81,7 @@ function allowedRoutes (type) {
       ...transaction.map(({name}) => name),
     ]
   }
+  console.log(data);
  return data;
 }
 
