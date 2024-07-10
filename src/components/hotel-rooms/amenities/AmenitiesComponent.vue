@@ -13,7 +13,6 @@
           :offset-y="isSmall"
           :offset-x="isLarge"
           :right="isLarge"
-          rounded
           :max-width="menuWidth"
         >
           <template v-slot:activator="{ on, attrs }">

@@ -9,184 +9,19 @@
     >
       <v-row v-if="!$vuetify.breakpoint.xs">
         <v-col cols="12">
-          <div :class="title">Guest Details</div>
+          <div class="text-h5 font-weight-bold">Guest Details</div>
         </v-col>
       </v-row>
-      <v-divider v-if="!$vuetify.breakpoint.xs" :class="classDivider" />
-      <v-row>
-        <v-col cols="11" sm="">
-          <div :class="classGuestName">
-            {{ guest.fullName }}
-          </div>
-        </v-col>
-        <v-spacer v-if="!$vuetify.breakpoint.xs"></v-spacer>
-        <v-col cols="auto" v-if="!$vuetify.breakpoint.xs">
-          <v-btn outlined color="red" @click="dialogActivator"
-            >DELETE GUEST DETAILS</v-btn
-          >
-        </v-col>
-        <v-col cols="auto" v-else class="relative-position">
-          <v-btn
-            icon
-            outlined
-            color="red"
-            @click="dialogActivator"
-            class="absolute-position"
-            ><v-icon>mdi-trash-can-outline</v-icon></v-btn
-          >
-        </v-col>
-      </v-row>
-      <v-divider :class="classDivider"></v-divider>
-      <v-row>
-        <v-col class="text-body-2">
-          <span class="font-weight-bold grey--text" :cols="detailCols"
-            >ADDRESS:</span
-          >
-          {{ guest.city }}, {{ guest.province }}</v-col
-        >
-        <v-col class="text-body-2" :cols="detailCols"
-          ><span class="font-weight-bold grey--text">EMAIL:</span>
-          {{ guest.email }}</v-col
-        >
-        <v-col class="text-body-2" :cols="detailCols"
-          ><span class="font-weight-bold grey--text">PHONE:</span>
-          {{ guest.phone }}</v-col
-        >
-        <v-col class="text-body-2" :cols="detailCols"
-          ><span class="font-weight-bold grey--text">ID NUMBER:</span>
-          {{ guest.idNumber }}</v-col
-        >
-      </v-row>
+      <v-divider v-if="!$vuetify.breakpoint.xs" class="my-3" />
+      <GuestInfo :guest="guest" @delete-request="passDeleteRequest" />
       <v-row>
         <v-col cols="12">
           <v-card elevation="0">
-            <v-card-title class="text-subtitle-2 font-weight-black ml-3">
-              {{ tableHeader }}
-              <v-spacer></v-spacer>
-              <v-btn
-                color="primary"
-                rounded
-                v-if="show && !$vuetify.breakpoint.xs"
-                class="text-button mr-1"
-                justify="space-around"
-                @click="searchFunction"
-                ><v-icon left>mdi-magnify</v-icon>Search</v-btn
-              >
-              <v-btn
-                color="primary"
-                icon
-                v-if="show && $vuetify.breakpoint.xs"
-                class="text-button"
-                @click="searchFunction"
-                ><v-icon>mdi-magnify</v-icon></v-btn
-              >
-              <v-btn
-              :ripple="false"
-              color="warning"
-              v-if="show && !$vuetify.breakpoint.xs"
-              @click="clearQuery"
-              rounded
-              ><v-icon left>mdi-cached</v-icon>Clear</v-btn
-            >
-            <v-btn
-              :ripple="false"
-              color="warning"
-              v-if="show && $vuetify.breakpoint.xs"
-              @click="clearQuery"
-              icon
-              ><v-icon left>mdi-cached</v-icon></v-btn
-            >
-              <v-btn
-                fab
-                outlined
-                :small="small"
-                :x-small="xSmall"
-                @click="show = !show"
-                color="primary"
-                class="ml-2"
-              >
-                <v-icon>{{
-                  show ? "mdi-chevron-up" : "mdi-chevron-down"
-                }}</v-icon>
-              </v-btn>
-            </v-card-title>
-            <v-row>
-              <v-col cols="12">
-                <v-progress-linear
-                  color="amber"
-                  :indeterminate="indeterminate"
-                  :value="value"
-                ></v-progress-linear>
-              </v-col>
-            </v-row>
-            <v-row v-if="show" class="mx-3 text-subtitle-2">
-              <v-col :cols="textfieldCols">
-                <span class="ml-2">Reference</span>
-                <v-text-field
-                  dense
-                  outlined
-                  hide-details="auto"
-                  v-model="searchRefNum"
-                  :class="textfieldCols"
-                ></v-text-field>
-              </v-col>
-              <v-col :cols="textfieldCols">
-                <span class="ml-2">Check-in Date</span>
-                <v-menu
-                  v-model="menuCheckIn"
-                  :close-on-content-click="false"
-                  offset-y
-                  transition="scale-transition"
-                  min-width="auto"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="searchCheckIn"
-                      v-on="on"
-                      v-bind="attrs"
-                      outlined
-                      dense
-                      readonly
-                      hide-details="auto"
-                    >
-                    </v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="searchCheckIn"
-                    @input="menuCheckIn = false"
-                  >
-                  </v-date-picker>
-                </v-menu>
-              </v-col>
-              <v-col :cols="textfieldCols">
-                <span class="ml-2">Check-out Date</span>
-                <v-menu
-                  v-model="menuCheckOut"
-                  :close-on-content-click="false"
-                  offset-y
-                  transition="scale-transition"
-                  min-width="auto"
-                >
-                  <template v-slot:activator="{ on, attrs }">
-                    <v-text-field
-                      v-model="searchCheckOut"
-                      v-on="on"
-                      v-bind="attrs"
-                      outlined
-                      dense
-                      readonly
-                      hide-details="auto"
-                    >
-                    </v-text-field>
-                  </template>
-                  <v-date-picker
-                    v-model="searchCheckOut"
-                    @input="menuCheckOut = false"
-                  >
-                  </v-date-picker>
-                </v-menu>
-              </v-col>
-            </v-row>
+            <GuestCardHeader
+              :guest="guest"
+              @search-query="searchQuery"
+              @clear-query="clearQuery"
+            />
             <v-row>
               <v-col cols="12">
                 <v-data-table
@@ -212,22 +47,17 @@
         </v-col>
       </v-row>
     </div>
-    <DeleteDialog
-      :activator="deleteDialog"
-      :deleteMeta="meta"
-      @reset-activator="resetActivator"
-      @delete-event="deleteRequest"
-    />
   </v-container>
 </template>
 
 <script>
-import DeleteDialog from "../dialogs/DeleteDialog.vue";
+import GuestCardHeader from "./GuestCardHeader.vue";
+import GuestInfo from "./GuestInfo.vue";
 import { format, parseISO } from "date-fns";
 
 export default {
   name: "GuestDetails",
-  components: { DeleteDialog },
+  components: { GuestInfo, GuestCardHeader },
   props: {
     guest: {
       type: Object,
@@ -238,7 +68,7 @@ export default {
     headers: [
       { text: "Status", value: "status" },
       { text: "Reference", value: "reference" },
-      { text: "Occupants", value: "occupants" },
+      { text: "Occupants", value: "ocupants" },
       { text: "Check-in", value: "checkIn" },
       { text: "Check-out", value: "checkOut" },
       { text: "Booked", value: "booked" },
@@ -251,38 +81,13 @@ export default {
       reserved: "reserved",
       confirmed: "confirmed",
     },
-    show: false,
-    indeterminate: true,
-    value: 0,
-    classGuestName: "text-h6 font-weight-bold",
-    textfieldCols: 4,
-    small: true,
-    xSmall: false,
-    classDivider: "my-3",
-    detailCols: "3",
-    title: "text-h5 font-weight-bold",
-    deleteDialog: false,
-    meta: {},
+    title: "",
     confirmationRoute: ["RESERVED"],
     checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
-    menuCheckIn: false,
-    menuCheckOut: false,
-    searchRefNum: "",
-    searchCheckIn: "",
-    searchCheckOut: "",
-    query_params: {},
   }),
   methods: {
-    dialogActivator: function () {
-      this.meta.targetDeletion = "guest";
-      this.deleteDialog = true;
-    },
-    resetActivator: function () {
-      this.deleteDialog = false;
-    },
-    deleteRequest: function () {
-      this.$emit("delete-guest", this.guest.id);
-      this.deleteDialog = false;
+    passDeleteRequest: function (guestID) {
+      this.$emit("delete-guest", guestID);
     },
     pushToTransactionRoute: function (value) {
       let payload = {
@@ -305,80 +110,20 @@ export default {
         });
       }
     },
-    searchFunction: function () {
-      let triggerIndeterminate = false;
-
-      if (this.searchRefNum) {
-        this.query_params.referenceNumber = this.searchRefNum;
-        triggerIndeterminate = true;
-      }
-      if (this.searchCheckIn) {
-        this.query_params.checkInDate = this.searchCheckIn;
-        triggerIndeterminate = true;
-      }
-      if (this.searchCheckOut) {
-        this.query_params.checkOutDate = this.searchCheckOut;
-        triggerIndeterminate = true;
-      }
-
-      if (triggerIndeterminate === true) {
-        this.indeterminate = true;
-        setTimeout(() => {
-          this.indeterminate = false;
-        }, 3000);
-        this.value = 100;
-      }
-
-      this.$emit("query-params", this.query_params);
+    searchQuery: function (query_params) {
+      this.$emit("query-params", query_params);
     },
-    clearQuery: function () {
-      let triggerIndeterminate = false;
-
-      if (this.searchRefNum) {
-        this.searchRefNum = "";
-        triggerIndeterminate = true;
-      }
-      if (this.searchCheckIn) {
-        this.searchCheckIn = "";
-        triggerIndeterminate = true;
-      }
-      if (this.searchCheckOut) {
-        this.searchCheckOut = "";
-        triggerIndeterminate = true;
-      }
-
-      this.query_params = {};
-
-      if (triggerIndeterminate === true) {
-        this.indeterminate = true;
-        setTimeout(() => {
-          this.indeterminate = false;
-        }, 3000);
-        this.value = 100;
-      }
-
-      this.$emit("query-params", this.query_params);
+    clearQuery: function (query_params) {
+      this.$emit("query-params", query_params);
     },
   },
   computed: {
-    size() {
-      return this.$vuetify.breakpoint;
-    },
-    tableHeader: function () {
-      if (this.guest.transactions.length === 0) {
-        return "NO ITEMS FOUND";
-      } else if (this.guest.transactions.length === 1) {
-        return this.guest.transactions.length + " ITEM";
-      } else if (this.guest.transactions.length > 1) {
-        return this.guest.transactions.length + " ITEMS";
-      }
-    },
     guestTransactions: function () {
       return this.guest.transactions
         ? this.guest.transactions.map((content) => ({
             status: content.status,
             reference: content.reference,
-            occupants: content.ocupants,
+            ocupants: content.ocupants,
             checkIn: content.checkIn,
             checkOut: content.checkOut,
             booked: format(parseISO(content.booked), "yyyy-MM-dd"),
@@ -388,107 +133,12 @@ export default {
         : [];
     },
   },
-  watch: {
-    "guest.transactions": {
-      immediate: true,
-      handler(value) {
-        if (value.length) {
-          setTimeout(() => {
-            this.indeterminate = false;
-          }, 3000);
-          this.value = 100;
-        } else {
-          this.indeterminate = false;
-        }
-      },
-    },
-    searchRefNum: {
-      handler: function () {
-        if (!this.searchRefNum || this.searchRefNum === "") {
-          this.indeterminate = true;
-          setTimeout(() => {
-            this.indeterminate = false;
-          }, 3000);
-          this.value = 100;
-          delete this.query_params.referenceNumber;
-          this.$emit("query-params", this.query_params);
-        }
-      },
-    },
-    searchCheckIn: {
-      handler: function () {
-        if (!this.searchCheckIn || this.searchCheckIn === "") {
-          this.indeterminate = true;
-          setTimeout(() => {
-            this.indeterminate = false;
-          }, 3000);
-          this.value = 100;
-          delete this.query_params.checkInDate;
-          this.$emit("query-params", this.query_params);
-        }
-      },
-    },
-    searchCheckOut: {
-      handler: function () {
-        if (!this.searchCheckOut || this.searchCheckOut === "") {
-          this.indeterminate = true;
-          setTimeout(() => {
-            this.indeterminate = false;
-          }, 3000);
-          this.value = 100;
-          delete this.query_params.checkOutDate;
-          this.$emit("query-params", this.query_params);
-        }
-      },
-    },
-    size: {
-      immediate: true,
-      deep: true,
-      handler(newVal) {
-        if (newVal.xs) {
-          this.classGuestName = "d-flex justify-center font-weight-bold text-h6 text-center mt-n3";
-          this.textfieldCols = 12;
-          this.small = false;
-          this.xSmall = true;
-          this.classDivider = "my-3";
-          this.detailCols = 12;
-        } else if (newVal.md || newVal.sm) {
-          this.detailCols = 6;
-          this.textfieldCols = 4;
-          this.small = true;
-          this.xSmall = false;
-          this.classDivider = "my-3";
-          if (newVal.sm) {
-            this.title = "text-h6 font-weight-bold";
-            this.classGuestName = "text-subtitle-1 font-weight-bold";
-          }
-        } else {
-          this.classGuestName = "text-h6 font-weight-bold";
-          this.textfieldCols = 4;
-          this.small = true;
-          this.xSmall = false;
-          this.classDivider = "my-3";
-          this.detailCols = 3;
-          this.title = "text-h5 font-weight-bold";
-        }
-      },
-    },
-  },
+  watch: {},
 };
 </script>
 
 <style scoped>
 .xl-padding {
   padding: 0 288px 0 288px;
-}
-
-.absolute-position {
-  position: absolute;
-}
-
-.relative-position {
-  position: relative;
-  right: 40px;
-  top: -15px;
 }
 </style>

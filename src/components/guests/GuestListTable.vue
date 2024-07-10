@@ -133,18 +133,6 @@
                 :rules="rules.phone"
               ></v-text-field>
             </v-col>
-            <!-- Clear Button -->
-            <!-- <v-col class="d-flex justify-end mt-n5 pt-0">
-              <v-btn
-                class="mr-n4"
-                :ripple="false"
-                color="warning"
-                v-if="show"
-                @click="clearQuery"
-                text
-                >Clear</v-btn
-              >
-            </v-col> -->
           </v-row>
           <!-- Guest List -->
           <v-row>

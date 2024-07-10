@@ -47,9 +47,13 @@
           v-model="selectedStatus"
         >
           <template v-slot:item="{ item }">
-            <!-- Flex me ini -->
-            <v-row>
-              <v-col>{{ item.status }}</v-col>
+            <v-row class="py-1">
+              <v-col
+                ><div>{{ item.status }}</div>
+                <div class="text-subtitle-2">
+                  {{ item.count }} {{ item.count > 1 ? "rooms" : "room" }}
+                </div></v-col
+              >
             </v-row>
           </template>
         </v-autocomplete>
@@ -65,6 +69,16 @@
           item-value="roomType"
           v-model="selectedRoomType"
         >
+          <template v-slot:item="{ item }">
+            <v-row>
+              <v-col
+                ><div>{{ item.roomType }}</div>
+                <div class="text-subtitle-2">
+
+                </div></v-col
+              >
+            </v-row>
+          </template>
         </v-autocomplete>
       </v-col>
     </v-row>
@@ -164,29 +178,12 @@ export default {
           }))
         : [];
     },
-    mobileHeader: function () {
-      let numberRooms = null;
-
-      this.buttonDisplay.forEach((category) => {
-        if (category.title === this.selectedStatus) {
-          numberRooms = category.value;
-        }
-      });
-
-      let remainingLetters = this.selectedStatus
-        .split("")
-        .slice(1, this.selectedStatus.length)
-        .join("")
-        .toLowerCase();
-      let firstLetter = this.selectedStatus.split("").slice(0, 1).join("");
-
-      let status = firstLetter + remainingLetters;
-
-      return numberRooms + " " + status + " Rooms";
-    },
     paginationLastPage: function () {
       return this.roomStatuses ? this.roomStatuses.pagination.lastPage : 1;
     },
+    autocompleteRoomType: function () {
+
+    }
   },
   methods: {
     ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
