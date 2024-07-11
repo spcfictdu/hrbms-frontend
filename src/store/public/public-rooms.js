@@ -14,6 +14,7 @@ export const publicRooms = {
       title: "Rooms",
       loading: false,
     },
+    temporaryData: null,
   }),
   getters: {},
   mutations: {
@@ -21,6 +22,7 @@ export const publicRooms = {
     SET_FILTERED_ROOMS: (state, data) => (state.filteredRooms = data),
     SET_ROOM: (state, data) => (state.room = data),
     SET_LOADING: (state, data) => (state.meta.loading = data),
+    SET_TEMPORARY_DATA: (state, data) => (state.temporaryData = data),
   },
   actions: {
     fetchPublicRooms: function ({ commit }) {
@@ -58,6 +60,9 @@ export const publicRooms = {
         .catch((error) => {
           console.error("Error fetching room", error);
         });
+    },
+    storeTemporaryData: function ({ commit }, payload) {
+      return commit("SET_TEMPORARY_DATA", payload);
     },
     triggerLoading: function ({ commit }) {
       commit("SET_LOADING", true);

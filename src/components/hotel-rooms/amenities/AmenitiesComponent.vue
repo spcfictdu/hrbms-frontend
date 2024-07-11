@@ -20,12 +20,13 @@
               class="capitalizeText text-subtitle-2 font-weight-regular"
               depressed
               block
+              :ripple="false"
               :color="
-                selectedAmenity === amenity.name ? 'accentTwo' : 'lightBg'
+                selectedAmenity === amenity.name ? 'primary' : 'lightBg'
               "
               :class="
                 selectedAmenity === amenity.name
-                  ? 'font-weight-bold'
+                  ? 'font-weight-medium'
                   : 'font-weight-regular'
               "
               @click="selectAmenity(amenity.name)"

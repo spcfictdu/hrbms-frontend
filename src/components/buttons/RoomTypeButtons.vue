@@ -12,6 +12,7 @@
           block
           height="40"
           :color="i.roomType === activeButton ? 'primary' : 'lightBg'"
+          :loading="i.roomType === activeButton ? loadingButton : false"
           class="calendar-buttons text-subtitle-2"
           :class="{
             'font-weight-medium': i.roomType === activeButton,
@@ -43,7 +44,7 @@
 import { mapActions, mapState } from "vuex";
 export default {
   name: "RoomTypeButtons",
-  props: { withAllRooms: Boolean },
+  props: { withAllRooms: Boolean, meta: Object, },
   data: () => ({
     activeButton: "",
   }),
@@ -84,6 +85,9 @@ export default {
       }
       return roomTypes;
     },
+    loadingButton: function () {
+      return this.meta?.title === "Calendar" ? this.meta.loading : false;
+    }
   },
   watch: {
     activeButton: {

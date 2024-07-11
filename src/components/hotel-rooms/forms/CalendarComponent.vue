@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-0">
     <!-- Room Types -->
-    <room-type-buttons :withAllRooms="withAllRooms" @input-event="assignValue" />
+    <room-type-buttons :meta="meta" :withAllRooms="withAllRooms" @input-event="assignValue" />
 
     <!-- Calendar Component Card -->
     <v-card class="pa-5" flat v-if="requirements">
@@ -269,6 +269,7 @@ export default {
     calendarData: {
       required: true,
     },
+    meta: Object,
   },
   components: {
     CalendarFilterDialog,

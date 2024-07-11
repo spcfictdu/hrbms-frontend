@@ -1,0 +1,79 @@
+<template>
+  <div class="mt-10">
+    <booking-form
+      @validation-event="requestValidation"
+      :queryResult="queryResult"
+    />
+  </div>
+</template>
+
+<script>
+import BookingForm from "@/components/hotel-rooms/forms/BookingForm.vue";
+import { mapActions } from "vuex";
+export default {
+  name: "PublicBookingView",
+  components: { BookingForm },
+  data: () => ({}),
+  methods: {
+    ...mapActions("publicRooms", ["storeTemporaryData"]),
+    requestValidation: function (payload) {
+      this.storeTemporaryData(this.createObject(payload)).then(() => {
+        this.$router.replace({ name: "Guest Sign In" });
+      });
+    },
+    createObject: function (payload) {
+      let value = {};
+
+      if (payload.status === "RESERVED") {
+        value = {
+          status: payload.status,
+          guest: {
+            firstName: payload.firstName,
+            middleName: payload.middleName,
+            lastName: payload.lastName,
+            address: payload.address,
+            contact: {
+              email: payload.contact.email,
+              phoneNum: payload.contact.phoneNumber,
+            },
+            id: payload.id,
+            extraPerson: payload.guests,
+          },
+          checkIn: payload.checkIn,
+          checkOut: payload.checkOut,
+          room: payload.room,
+        };
+      } else {
+        value = {
+          status: payload.status,
+          guest: {
+            firstName: payload.firstName,
+            middleName: payload.middleName,
+            lastName: payload.lastName,
+            address: payload.address,
+            contact: {
+              email: payload.contact.email,
+              phoneNum: payload.contact.phoneNumber,
+            },
+            id: payload.id,
+            extraPerson: payload.guests,
+          },
+          payment: payload.payment,
+          checkIn: payload.checkIn,
+          checkOut: payload.checkOut,
+          room: payload.room,
+        };
+      }
+
+      return value;
+    },
+  },
+  computed: {
+    queryResult() {
+      return this.$route.query;
+    },
+  },
+};
+</script>
+
+<style scoped></style>

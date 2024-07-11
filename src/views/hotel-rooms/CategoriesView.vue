@@ -10,10 +10,10 @@
     </v-alert>
     <room-type-buttons :withAllRooms="withAllRooms" @input-event="attachType" />
     <RoomsList
-      v-if="roomCategories"
       @redirect-event="redirect"
       @query-pagination="attachQuery"
       :roomCategories="roomCategories"
+      :meta="meta"
     />
   </div>
 </template>
@@ -33,7 +33,7 @@ export default {
     withAllRooms: true,
   }),
   methods: {
-    ...mapActions("roomCategories", ["fetchRoomCategories"]),
+    ...mapActions("roomCategories", ["fetchRoomCategories", "triggerLoading"]),
     attachQuery: function (params) {
       this.assignParams(params);
     },
@@ -69,6 +69,7 @@ export default {
     ...mapState("roomCategories", {
       roomCategories: "roomCategories",
       categoryStatus: "categoryStatus",
+      meta: "meta",
     }),
     handleAlertType() {
       return this.categoryStatus.status !== ""
@@ -81,7 +82,9 @@ export default {
       immediate: true,
       deep: true,
       handler: function (newVal) {
-        this.fetchRoomCategories(newVal);
+        this.triggerLoading(true).then(() => {
+          this.fetchRoomCategories(newVal);
+        });
       },
     },
     categoryStatus: {

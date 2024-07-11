@@ -23,6 +23,10 @@ export const roomCategories = {
       message: "",
       status: "", //SUCCESS, ERROR
     },
+    meta: {
+      title: "Categories",
+      loading: false,
+    },
   }),
   getters: {},
   mutations: {
@@ -38,15 +42,20 @@ export const roomCategories = {
         clearInterval(interval);
       }, 3000);
     },
+    SET_LOADING: (state, data) => (state.meta.loading = data),
   },
   actions: {
-    fetchRoomCategories: function ({ commit }, queryParams = {}) {
+    triggerLoading: function ({ commit }, value) {
+      commit("SET_LOADING", value);
+    },
+    fetchRoomCategories: function ({ commit, dispatch }, queryParams = {}) {
       const url = `room-type`;
       const queryUrl = functions.query(url, queryParams);
       return this.$axios
         .get(queryUrl)
         .then((response) => {
           commit("SET_ROOM_CATEGORIES", response.data.results);
+          dispatch("triggerLoading", false);
         })
         .catch((error) => {
           console.error("Error fetching room categories", error);

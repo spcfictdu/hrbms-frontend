@@ -2,7 +2,7 @@
   <div v-if="this.room">
     <div
       class="d-flex justify-end align-center mb-2"
-      v-if="$auth.user().role === 'ADMIN'"
+      v-if="$auth.user()?.role === 'ADMIN'"
     >
       <div style="max-width: 300px">
         <v-select
@@ -97,11 +97,22 @@
           <booking-summary
             :isStatus="payload.status"
             :cardInformation="cardInformation"
-            @validation-event="submitForValidation"
+            @validation-event="handleConfirmationEvent"
           />
         </v-col>
       </v-row>
     </v-form>
+    <confirmation-dialog
+      :activator="confirmMeta.activator"
+      :metaDialog="confirmMeta"
+      @reset-activator="resetDialog('CONFIRM')"
+      @change-event="submitForValidation"
+    />
+    <warning-dialog
+      :activator="warningDialog"
+      @reset-activator="resetDialog('WARNING')"
+      @change-event="submitForValidation"
+    />
   </div>
 </template>
 
@@ -117,6 +128,8 @@ import GuestsTemplate from "@/components/form-templates/GuestsTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import GCashImageTransition from "@/components/hotel-rooms/forms/GCashImageTransition.vue";
+import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
+import WarningDialog from "@/components/dialogs/WarningDialog.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "BookingForm",
@@ -148,6 +161,13 @@ export default {
       },
     },
     totalPayment: 0,
+    confirmMeta: {
+      activator: false,
+      action: "Save",
+      actionType: "Reservation",
+      message: "",
+    },
+    warningDialog: false,
   }),
   components: {
     TransactionTemplate,
@@ -161,9 +181,25 @@ export default {
     BookingSummary,
     PaymentTemplate,
     GCashImageTransition,
+    ConfirmationDialog,
+    WarningDialog,
   },
   methods: {
     ...mapActions("roomEnum", ["fetchRoom"]),
+    triggerDialog: function (dialog) {
+      if (dialog === "CONFIRM") {
+        this.confirmMeta.activator = true;
+      } else if (dialog === "WARNING") {
+        this.warningDialog = true;
+      }
+    },
+    resetDialog: function (dialog) {
+      if (dialog === "CONFIRM") {
+        this.confirmMeta.activator = false;
+      } else if (dialog === "WARNING") {
+        this.warningDialog = false;
+      }
+    },
     assignPayload: function (payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
@@ -171,10 +207,22 @@ export default {
         }
       }
     },
-    submitForValidation: function () {
-      this.$refs.form.validate();
+    handleConfirmationEvent: function () {
       if (this.$refs.form.validate()) {
-        this.$emit("validation-event", this.payload);
+        if (this.$auth.user()) {
+          this.triggerDialog("CONFIRM");
+        } else {
+          this.triggerDialog("WARNING");
+        }
+      }
+    },
+    submitForValidation: function () {
+      this.$emit("validation-event", this.payload);
+
+      if (this.$auth.user()) {
+        this.resetDialog("CONFIRM");
+      } else {
+        this.resetDialog("WARNING");
       }
     },
     fetchQuery: function () {
@@ -217,7 +265,7 @@ export default {
     },
     assignGuestMeta: function () {
       // If Guest user, autofill the form
-      if (this.$auth.user().role === "GUEST") {
+      if (this.$auth.user()?.role === "GUEST") {
         this.autoFilled = {
           ...this.autoFilled,
           first_name: this.userInfo.firstName,
@@ -239,13 +287,22 @@ export default {
           checkOutDate: newVal.checkOutDate,
         };
         // If user is Guest, time is filled out
-        if (this.$auth.user().role === "GUEST") {
+        if (this.$auth.user()?.role === "GUEST" || !this.$auth.user()) {
           this.autoFilled = {
             ...this.autoFilled,
             checkInTime: "14:00",
             checkOutTime: "11:00",
           };
         }
+      }
+    },
+    assignConfirmationMessages: function () {
+      if (this.$auth.user()?.role === "ADMIN") {
+        this.confirmMeta.message =
+          "Are you sure you want to proceed with the reservation";
+      } else {
+        this.confirmMeta.message =
+          "Are you sure you want to proceed with the reservation? If you save the reservation, personnel will be automatically notified that the room is hosting guests";
       }
     },
   },
@@ -323,6 +380,7 @@ export default {
         };
         this.assignDates(newVal);
         this.assignGuestMeta();
+        this.assignConfirmationMessages();
         this.fetchQuery();
       },
     },

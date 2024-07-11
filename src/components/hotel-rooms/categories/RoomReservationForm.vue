@@ -203,12 +203,12 @@ export default {
         label: "",
         enums: null,
       };
-      if (this.role === "GUEST") {
-        data.label = "Available Room Numbers";
-        data.enums = this.availableRoomNumbersEnum;
-      } else if (this.role === "ADMIN") {
+      if (this.role === "ADMIN") {
         data.label = "Room Number";
         data.enums = this.roomNumberEnum;
+      } else {
+        data.label = "Available Room Numbers";
+        data.enums = this.availableRoomNumbersEnum;
       }
       return data;
     },
@@ -246,7 +246,7 @@ export default {
       return this.roomTotalBill.duration <= 1 ? "day" : "days";
     },
     role: function () {
-      return this.$auth.user().role;
+      return this.$auth.user() ? this.$auth.user().role : null;
     }
   },
   watch: {
@@ -258,7 +258,7 @@ export default {
         }
 
         // For Guest Only
-        if (this.role === "GUEST") {
+        if (this.role !== "ADMIN") {
           this.requestAvailableRoomNumbers();
         }
       },

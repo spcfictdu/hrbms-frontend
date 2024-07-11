@@ -13,7 +13,7 @@
         </p>
       </div>
 
-      <div class="d-flex" v-if="$auth.user().role === 'FRONT DESK'">
+      <div class="d-flex" v-if="$auth.user()?.role === 'FRONT DESK'">
         <v-menu left offset-x>
           <template v-slot:activator="{ on, attrs }">
             <v-btn v-on="on" v-bind="attrs" icon outlined color="primary"

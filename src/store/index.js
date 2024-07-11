@@ -48,7 +48,11 @@ export default new Vuex.Store({
   },
   plugins: [
     createPersistedState({
-      paths: ["authentication.currentUser", "account.userInfo"],
+      paths: [
+        "authentication.currentUser",
+        "account.userInfo",
+        "publicRooms.temporaryData",
+      ],
     }),
   ],
 });

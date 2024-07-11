@@ -90,7 +90,7 @@ export const authentication = {
         // Remove Persisted State
         commit("SET_CURRENT_USER", null);
         store.dispatch("account/removeUserInfo");
-        
+
         // Back To Login
         await this.$router.push({ name: routeName });
       }
@@ -101,7 +101,6 @@ export const authentication = {
         const url = "user/register";
         const loginUrl = "user/guest/login";
         let payload = {
-          username: data.email,
           password: data.password,
           firstName: data.firstName,
           lastName: data.lastName,
@@ -111,11 +110,13 @@ export const authentication = {
         };
 
         let response = await this.$axios.post(url, payload);
+
         if (response.data.code === 200) {
           const loginPayload = {
-            email: payload.username,
+            email: payload.email,
             password: payload.password,
           };
+
           let response = await this.$axios.post(loginUrl, loginPayload);
           if (response.data.code === 200) {
             commit("SET_CURRENT_USER", response.data.results);
@@ -123,7 +124,14 @@ export const authentication = {
               message: response.data.message,
               status: "SUCCESS",
             });
-            await this.$router.push({ name: "Guest Dashboard" });
+
+            // Fix
+            console.log(store.state("publicRooms/temporaryData"));
+            if (store.state("publicRooms.temporaryData")) {
+              await this.$router.push({ name: "Guest Booking" });
+            } else {
+              await this.$router.push({ name: "Guest Dashboard" });
+            }
           }
         }
       } catch (error) {

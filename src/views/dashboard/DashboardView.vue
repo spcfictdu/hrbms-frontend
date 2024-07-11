@@ -4,6 +4,7 @@
       @calendar-event="requestCalendar"
       :calendarData="calendar"
       @route-event="pushToTransactionRoute"
+      :meta="meta"
     />
   </div>
 </template>
@@ -21,9 +22,12 @@ export default {
     checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
   }),
   methods: {
-    ...mapActions("availabilityCalendar", ["fetchAvailabilityCalendar"]),
+    ...mapActions("availabilityCalendar", ["fetchAvailabilityCalendar", "triggerLoading"]),
     requestCalendar: function (queryParams) {
-      this.fetchAvailabilityCalendar(queryParams);
+      this.triggerLoading(true).then(() => {
+        this.fetchAvailabilityCalendar(queryParams);
+      })
+
     },
     pushToTransactionRoute: function (payload) {
       if (this.confirmationRoute.includes(payload.status)) {
@@ -44,7 +48,10 @@ export default {
     },
   },
   computed: {
-    ...mapState("availabilityCalendar", ["calendar"]),
+    ...mapState("availabilityCalendar", {
+      calendar: "calendar",
+      meta: "meta",
+    }),
   },
 };
 </script>
