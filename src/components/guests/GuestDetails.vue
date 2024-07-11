@@ -3,13 +3,13 @@
     <div
       :class="{
         'xl-padding mt-n6': $vuetify.breakpoint.xl,
-        'px-sm-2 mx-md-n3 my-md-5 mx-sm-n3 my-sm-n3':
+        'px-sm-2 mx-md-n3 my-md-5 mx-sm-n3 my-sm-n6':
           $vuetify.breakpoint.lgAndDown,
       }"
     >
       <v-row v-if="!$vuetify.breakpoint.xs">
         <v-col cols="12">
-          <div class="text-h5 font-weight-bold">Guest Details</div>
+          <div class="text-h5 text-sm-h6 font-weight-bold mb-1">Guest Details</div>
         </v-col>
       </v-row>
       <v-divider v-if="!$vuetify.breakpoint.xs" class="my-3" />
@@ -17,11 +17,7 @@
       <v-row>
         <v-col cols="12">
           <v-card elevation="0">
-            <GuestCardHeader
-              :guest="guest"
-              @search-query="searchQuery"
-              @clear-query="clearQuery"
-            />
+            <GuestCardHeader :guest="guest" @search-query="searchQuery" />
             <v-row>
               <v-col cols="12">
                 <v-data-table
@@ -113,8 +109,8 @@ export default {
     searchQuery: function (query_params) {
       this.$emit("query-params", query_params);
     },
-    clearQuery: function (query_params) {
-      this.$emit("query-params", query_params);
+    size: function () {
+      return this.$vuetify.breakpoint;
     },
   },
   computed: {
@@ -133,7 +129,8 @@ export default {
         : [];
     },
   },
-  watch: {},
+  watch: {
+  },
 };
 </script>
 

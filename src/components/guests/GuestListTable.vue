@@ -16,39 +16,44 @@
             <v-spacer></v-spacer>
             <!-- Search Button -->
             <div v-if="show" class="d-flex">
-              <v-btn
-                :ripple="false"
-                color="warning"
-                @click="clearQuery"
-                rounded
-                class="d-none d-sm-flex mr-2"
-                outlined
-                >Clear</v-btn
-              >
-              <v-btn
-                :ripple="false"
-                color="warning"
-                v-if="show && $vuetify.breakpoint.xs"
-                @click="clearQuery"
-                icon
-                class="d-flex d-sm-none"
-                ><v-icon>mdi-cached</v-icon></v-btn
-              >
-              <v-btn
-                color="primary"
-                rounded
-                class="d-none d-sm-flex"
-                @click="searchFunction"
-                ><v-icon left>mdi-magnify</v-icon>Search</v-btn
-              >
-              <v-btn
-                color="primary"
-                class="d-flex d-sm-none"
-                icon
-                :ripple="false"
-                @click="searchFunction"
-                ><v-icon left>mdi-magnify</v-icon></v-btn
-              >
+              <div class="mr-2">
+                <v-btn
+                  :ripple="false"
+                  color="warning"
+                  @click="clearQuery"
+                  rounded
+                  class="d-none d-sm-flex"
+                  outlined
+                  >Clear</v-btn
+                >
+                <v-btn
+                  :ripple="false"
+                  color="warning"
+                  v-if="show && $vuetify.breakpoint.xs"
+                  @click="clearQuery"
+                  icon
+                  class="d-flex d-sm-none"
+                  ><v-icon>mdi-cached</v-icon></v-btn
+                >
+              </div>
+
+              <div>
+                <v-btn
+                  color="primary"
+                  rounded
+                  class="d-none d-sm-flex"
+                  @click="searchFunction"
+                  ><v-icon left>mdi-magnify</v-icon>Search</v-btn
+                >
+                <v-btn
+                  color="primary"
+                  class="d-flex d-sm-none"
+                  icon
+                  :ripple="false"
+                  @click="searchFunction"
+                  ><v-icon left>mdi-magnify</v-icon></v-btn
+                >
+              </div>
             </div>
             <v-btn
               fab

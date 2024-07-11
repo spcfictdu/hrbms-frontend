@@ -168,37 +168,15 @@ export default {
   }),
   methods: {
     searchFunction: function () {
-      let triggerIndeterminate = false;
-
       if (this.query_params) {
         this.$emit("search-query", this.query_params);
         this.loadingAction();
-        triggerIndeterminate = false;
       }
     },
     clearFunction: function () {
-      let triggerIndeterminate = false;
-
-      if (this.searchRefNum) {
-        this.searchRefNum = "";
-        triggerIndeterminate = true;
-      }
-      if (this.searchCheckIn) {
-        this.searchCheckIn = "";
-        triggerIndeterminate = true;
-      }
-      if (this.searchCheckOut) {
-        this.searchCheckOut = "";
-        triggerIndeterminate = true;
-      }
-
       this.query_params = {};
-
-      if (triggerIndeterminate === true) {
-        this.loadingAction();
-      }
-
-      this.$emit("clear-query", this.query_params);
+      this.$emit("search-query", this.query_params);
+      this.loadingAction();
     },
     loadingAction: function () {
       this.indeterminate = true;
@@ -237,6 +215,7 @@ export default {
           this.loadingAction();
         } else {
           this.indeterminate = false;
+          this.indeterminateValue = 0;
         }
       },
     },
@@ -260,7 +239,6 @@ export default {
 
         Object.keys(newVal).forEach((key) => {
           if (query.includes(key)) {
-            console.log(key);
             if (!newVal[key] || newVal[key] === "") {
               delete newVal[key];
             }
