@@ -26,6 +26,7 @@
     <password-dialog
       :passwordDialog="passwordDialog"
       :alertStatus="alertStatus"
+      @cancel-event="resetPasswordDialog(false)"
       @reset-dialog="resetPasswordDialog"
       @password-event="(e) => $emit('password-event', e)"
     />

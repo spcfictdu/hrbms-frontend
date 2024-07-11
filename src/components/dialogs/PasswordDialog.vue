@@ -63,7 +63,7 @@
         <v-card-actions class="pa-0 mt-4">
           <v-row dense>
             <v-col cols="12" sm="6" order="last" order-sm="first">
-              <v-btn text block color="warning">Cancel </v-btn>
+              <v-btn text block color="warning" @click="handleCancelEvent">Cancel</v-btn>
             </v-col>
             <v-col cols="12" sm="6">
               <v-btn
@@ -113,6 +113,9 @@ export default {
         }
       }
       this.$refs.form.reset();
+    },
+    handleCancelEvent: function () {
+      this.$emit('cancel-event');
     },
   },
   computed: {

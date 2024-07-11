@@ -116,7 +116,7 @@
         :block="$vuetify.breakpoint.xs"
         outlined
         color="primary"
-        @click="handleCancel"
+        @click="handleCancelEvent"
         >Cancel
       </v-btn>
       <v-btn

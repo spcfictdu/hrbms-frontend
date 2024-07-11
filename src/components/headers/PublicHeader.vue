@@ -75,9 +75,17 @@ export default {
       this.activeButton = route.name;
 
       if (route.route?.route) {
-        return this.$router.push({ name: route.route.route });
+        return this.$router.push({ name: route.route.route }).catch((err) => {
+          if (err.name !== "NavigationDuplicated") {
+            throw err;
+          }
+        });
       } else if (route.route) {
-        return this.$router.push({ name: route.route });
+        return this.$router.push({ name: route.route }).catch((err) => {
+          if (err.name !== "NavigationDuplicated") {
+            throw err;
+          }
+        });
       } else {
         return route.action();
       }
