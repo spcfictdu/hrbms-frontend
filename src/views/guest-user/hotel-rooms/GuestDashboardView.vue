@@ -4,6 +4,7 @@
       @input-event="assignButtonQuery"
       @redirect-event="redirectToRoomCategory"
       :rooms="dashboardData"
+      :meta="meta"
     />
   </div>
 </template>
@@ -22,9 +23,12 @@ export default {
     ...mapActions("publicRooms", [
       "fetchPublicRooms",
       "fetchFilteredPublicRoom",
+      "triggerLoading",
     ]),
     fetchFilteredRoom: function () {
-      this.fetchFilteredPublicRoom(this.queryParams);
+      this.triggerLoading().then(() => {
+        this.fetchFilteredPublicRoom(this.queryParams);
+      });
     },
     assignRouteQuery: function () {
       const queries = ["numberOfGuests", "checkInDate", "checkOutDate"];
@@ -46,9 +50,8 @@ export default {
               } else {
                 this.$delete(this.queryParams, query);
               }
-
             }
-          })
+          });
         }
       }
       this.fetchFilteredRoom();
@@ -79,6 +82,7 @@ export default {
     ...mapState("publicRooms", {
       publicRooms: "rooms",
       publicFilteredRooms: "filteredRooms",
+      meta: "meta",
     }),
     roomSearchQuery: function () {
       return JSON.stringify(this.$route.query) === "{}";

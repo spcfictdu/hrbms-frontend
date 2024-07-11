@@ -1,16 +1,24 @@
 <template>
   <v-row class="gap-size">
     <div style="width: 100%" v-if="rooms.isQuery">
-      <v-col
-        cols="12"
-        class="col-padding"
-        v-for="(room, index) in mappedFilteredRooms"
-        :key="'query' + index"
-      >
-        <room-card
-          :room="room"
-          @redirect-event="(e) => $emit('redirect-event', e)"
-        />
+      <div style="width: 100%" v-if="mappedFilteredRooms.length > 0">
+        <v-col
+          cols="12"
+          class="col-padding"
+          v-for="(room, index) in mappedFilteredRooms"
+          :key="'query' + index"
+        >
+          <!-- Data Found -->
+          <room-card
+            :room="room"
+            @redirect-event="(e) => $emit('redirect-event', e)"
+          />
+        </v-col>
+      </div>
+
+      <!-- No Data Found -->
+      <v-col v-else>
+        <no-data-found-card :meta="meta" />
       </v-col>
     </div>
 
@@ -48,15 +56,17 @@ import TitleSection from "./TitleSection.vue";
 import CardSectionTwo from "./CardSectionTwo.vue";
 import AboutSection from "./AboutSection.vue";
 import RoomCard from "@/components/cards/RoomCard.vue";
+import NoDataFoundCard from "@/components/cards/NoDataFoundCard.vue";
 export default {
   name: "DashboardContent",
-  props: { rooms: Object },
+  props: { rooms: Object, meta: Object },
   components: {
     TitleSection,
     CardSectionOne,
     CardSectionTwo,
     AboutSection,
     RoomCard,
+    NoDataFoundCard,
   },
   data: () => ({}),
   computed: {

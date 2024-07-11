@@ -10,9 +10,10 @@
         </v-col>
 
         <!-- Main Content -->
-        <v-col cols="12">
+        <v-col cols="12" >
           <dashboard-content
             :rooms="rooms"
+            :meta="meta"
             @redirect-event="(e) => $emit('redirect-event', e)"
           />
         </v-col>
@@ -27,7 +28,7 @@ import RoomTypeButtons from "@/components/buttons/RoomTypeButtons.vue";
 export default {
   name: "DashboardComponent",
   components: { DashboardContent, RoomTypeButtons },
-  props: { rooms: Object },
+  props: { rooms: Object, meta: Object },
   data: () => ({
     withAllRooms: true,
   }),

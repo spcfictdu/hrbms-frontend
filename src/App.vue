@@ -6,7 +6,7 @@
       'image-bg-2': $router.currentRoute.meta.name === 'Guest Sign In',
     }"
   >
-    <div>
+    <div class="container-height">
       <!-- Navigation -->
       <!-- Exists in Admin & Not Login -->
       <Navigation v-if="$auth.user()?.role === 'ADMIN'" />
@@ -21,7 +21,7 @@
 
       <div
         :class="{
-          'mt-n10 bg-color main-layout white py-5': !notAllowedRoutes.includes(
+          'flex-grow-1 mt-n10 bg-color main-layout white py-5': !notAllowedRoutes.includes(
             $router.currentRoute.name
           ),
         }"
@@ -83,6 +83,12 @@ export default {
 
 .bg-color {
   background-color: #f9f6ff !important;
+}
+
+.container-height {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
 }
 
 .transparent-bg {
