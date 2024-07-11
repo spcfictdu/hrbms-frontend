@@ -141,7 +141,8 @@ export default {
               },
             };
             this.metaDialog = {
-              actionType: "Change Room Status",
+              action: "Change Room Status",
+              actionType: "Confirmation",
               message: `Change Room ${room.name} status to available`,
               confirmActivator: true,
             };
@@ -158,7 +159,8 @@ export default {
               },
             };
             this.metaDialog = {
-              actionType: "Change Room Status",
+              action: "Change Room Status",
+              actionType: "Confirmation",
               message: `Change Room ${room.name} status to occupied`,
               confirmActivator: true,
             };
@@ -175,7 +177,8 @@ export default {
               },
             };
             this.metaDialog = {
-              actionType: "Change Room Status",
+              action: "Change Room Status",
+              actionType: "Confirmation",
               message: `Change Room ${room.name} status to unclean`,
               confirmActivator: true,
             };
@@ -192,7 +195,8 @@ export default {
               },
             };
             this.metaDialog = {
-              actionType: "Change Room Status",
+              action: "Change Room Status",
+              actionType: "Confirmation",
               message: `Change Room ${room.name} status to unallocated`,
               confirmActivator: true,
             };

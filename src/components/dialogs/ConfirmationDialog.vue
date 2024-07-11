@@ -4,7 +4,7 @@
       <v-card class="pa-8" rounded="lg" flat>
         <v-card-title
           class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0"
-          >{{ metaDialog.actionType }} Confirmation</v-card-title
+          >{{ metaDialog.action }} {{ metaDialog.actionType }}</v-card-title
         >
         <p class="py-2 py-sm-4 text-caption text-sm-body-2 font-weight-regular">
           {{ metaDialog.message }}?
@@ -34,7 +34,6 @@
 </template>
 
 <script>
-
 export default {
   name: "ConfirmationDialog",
   props: {
