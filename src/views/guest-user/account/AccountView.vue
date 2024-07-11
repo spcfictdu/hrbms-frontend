@@ -43,21 +43,21 @@ export default {
       }
     },
     redirect: function (meta) {
-      // if (this.confirmationRoute.includes(meta.status)) {
-      //   this.$router.push({
-      //     name: "Guest Confirmation",
-      //     params: {
-      //       referenceNumber: meta.referenceNumber,
-      //     },
-      //   });
-      // } else if (this.checkInCheckOutRoute.includes(meta.status)) {
-      //   this.$router.push({
-      //     name: "Guest CheckInOut",
-      //     params: {
-      //       referenceNumber: meta.referenceNumber,
-      //     },
-      //   });
-      // }
+      if (this.confirmationRoute.includes(meta.status)) {
+        this.$router.push({
+          name: "Guest Confirmation",
+          params: {
+            referenceNumber: meta.referenceNumber,
+          },
+        });
+      } else if (this.checkInCheckOutRoute.includes(meta.status)) {
+        this.$router.push({
+          name: "Guest CheckInOut",
+          params: {
+            referenceNumber: meta.referenceNumber,
+          },
+        });
+      }
     },
   },
   computed: {

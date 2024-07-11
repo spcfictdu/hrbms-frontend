@@ -37,10 +37,10 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   const loggedIn = auth.user();
-  const userRole = auth.user()?.role;
+  const userRole = auth.user() ? auth.user().role : null;
 
   if (!loggedIn && !allowedRoutes("PUBLIC").includes(to.name)) {
-     next({ name: "Guest Sign In" });
+     next({ name: "Guest Dashboard" });
   } else if (loggedIn && allowedRoutes("LOGIN").includes(to.name)) {
     if (userRole === "GUEST") {
        next({ name: "Guest Dashboard" });
@@ -81,7 +81,6 @@ function allowedRoutes (type) {
       ...transaction.map(({name}) => name),
     ]
   }
-  console.log(data);
  return data;
 }
 

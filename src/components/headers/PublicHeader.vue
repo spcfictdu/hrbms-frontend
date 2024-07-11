@@ -77,7 +77,6 @@ export default {
       if (route.route?.route) {
         return this.$router.push({ name: route.route.route });
       } else if (route.route) {
-        this.$route.meta.name = route.name;
         return this.$router.push({ name: route.route });
       } else {
         return route.action();

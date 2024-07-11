@@ -39,6 +39,8 @@ export default [
           name: "Hotel Rooms",
         },
       },
+      
+      // Transactional Routes
       {
         path: "booking",
         name: "Guest Booking",
