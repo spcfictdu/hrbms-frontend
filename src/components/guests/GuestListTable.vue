@@ -72,6 +72,13 @@ export default {
   }),
   methods: {
     searchFunction: function (query_params) {
+      if (this.query_params.perPage) {
+        query_params.perPage = this.query_params.perPage;
+      }
+      this.query_params.page = 1;
+
+      console.log("parameters from header: ", query_params);
+
       this.$emit("query_params", query_params);
     },
     selectGuest: function (row) {
@@ -99,6 +106,13 @@ export default {
         } else {
           this.guestClass = "text-h5 font-weight-bold mb-1";
         }
+      },
+    },
+    query_params: {
+      immediate: true,
+      deep: true,
+      handler: function (newVal) {
+        console.log("query_params: ", newVal);
       },
     },
   },

@@ -236,6 +236,7 @@ export default {
       },
     },
     query_params: {
+      immediate: true,
       deep: true,
       handler: function (newVal) {
         let query = [

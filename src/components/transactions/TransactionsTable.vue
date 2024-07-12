@@ -117,7 +117,11 @@ export default {
       this.$emit("route-event", routeParams);
     },
     searchFunction: function (query_params) {
-      this.$emit("query-params", query_params);
+      if (this.query_params.perPage) {
+        query_params.perPage = this.query_params.perPage;
+      }
+
+      this.$emit("query_params", query_params);
     },
   },
   computed: {

@@ -17,7 +17,7 @@
     <TransactionsTable
       :transactions="transactions"
       @route-event="pushToTransactionRoute"
-      @query-params="triggerPagination"
+      @query_params="triggerPagination"
       v-if="transactions"
     />
   </div>

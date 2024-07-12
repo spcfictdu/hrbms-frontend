@@ -46,6 +46,7 @@ export default {
           // Trigger Loading upon change for slow devices
           this.loading = true;
           this.$emit("query_params", this.query_params);
+          console.log(value)
         },
       },
       search: {
