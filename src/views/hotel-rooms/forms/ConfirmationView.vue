@@ -22,37 +22,48 @@ export default {
       "fetchTransaction",
       "deleteReservation",
       "updateTransaction",
+      "triggerLoading",
     ]),
     fetchData: function () {
       const referenceNumber = this.$route.params.referenceNumber;
       this.fetchTransaction(referenceNumber);
     },
     requestDelete: function (payload) {
-      this.deleteReservation({
-        status: payload.status,
-        transactionRefNum: payload.transactionRefNum,
-      })
-        .then(() => {
-          this.$router.replace({
-            name: "Transactions",
-          });
+      this.triggerLoading({
+        title: "Delete Reservation",
+        loading: true,
+      }).then(() => {
+        this.deleteReservation({
+          status: payload.status,
+          transactionRefNum: payload.transactionRefNum,
         })
-        .catch(() => {
-          this.$router.push({
-            name: "Transactions",
+          .then(() => {
+            this.$router.replace({
+              name: "Transactions",
+            });
+          })
+          .catch(() => {
+            this.$router.push({
+              name: "Transactions",
+            });
           });
-        });
+      });
     },
     requestUpdate: function (payload) {
-      this.updateTransaction(payload).then(() => {
-        if (payload.status === "RESERVED") {
-          this.$router.push({
-            name: "CheckInOut",
-            params: { referenceNumber: payload.referenceNumber },
-          });
-        } else {
-          this.fetchTransaction(payload.referenceNumber);
-        }
+      this.triggerLoading({
+        title: "Update Reservation",
+        loading: true,
+      }).then(() => {
+        this.updateTransaction(payload).then(() => {
+          if (payload.status === "RESERVED") {
+            this.$router.push({
+              name: "CheckInOut",
+              params: { referenceNumber: payload.referenceNumber },
+            });
+          } else {
+            this.fetchTransaction(payload.referenceNumber);
+          }
+        });
       });
     },
   },

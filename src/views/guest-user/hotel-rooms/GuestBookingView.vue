@@ -19,28 +19,34 @@ export default {
     ...mapActions("transaction", [
       "createTransaction",
       "fetchPreviousFormTransactions",
+      "triggerLoading",
     ]),
     ...mapActions("publicRooms", ["clearTempData"]),
     requestPostTransaction: function (payload) {
-      this.createTransaction(this.createObject(payload)).then((response) => {
-        // Clear Temp Data
-        this.clearTempData();
+      this.triggerLoading({
+        title: "Create Transaction",
+        loading: true,
+      }).then(() => {
+        this.createTransaction(this.createObject(payload)).then((response) => {
+          // Clear Temp Data
+          this.clearTempData();
 
-        if (response.data.results.status === "RESERVED") {
-          this.$router.push({
-            name: "Guest Confirmation",
-            params: {
-              referenceNumber: response.data.results.referenceNumber,
-            },
-          });
-        } else {
-          this.$router.push({
-            name: "Guest CheckInOut",
-            params: {
-              referenceNumber: response.data.results.referenceNumber,
-            },
-          });
-        }
+          if (response.data.results.status === "RESERVED") {
+            this.$router.push({
+              name: "Guest Confirmation",
+              params: {
+                referenceNumber: response.data.results.referenceNumber,
+              },
+            });
+          } else {
+            this.$router.push({
+              name: "Guest CheckInOut",
+              params: {
+                referenceNumber: response.data.results.referenceNumber,
+              },
+            });
+          }
+        });
       });
     },
     createObject: function (payload) {

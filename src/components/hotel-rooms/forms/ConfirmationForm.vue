@@ -1,6 +1,10 @@
 <template>
   <div v-if="room">
-    <header-booking-slot @button-event="requestCancel" :headerData="headerData">
+    <header-booking-slot
+      @button-event="requestCancel"
+      :headerData="headerData"
+      :loadingMeta="meta"
+    >
     </header-booking-slot>
     <v-form ref="form" lazy-validation>
       <v-row>
@@ -29,6 +33,7 @@
             :isStatus="payload.status"
             :cardInformation="cardInformation"
             @validation-event="requestUpdateOnTransaction"
+            :loadingMeta="meta"
           />
         </v-col>
       </v-row>
@@ -123,6 +128,9 @@ export default {
   },
   computed: {
     ...mapState("roomEnum", ["room"]),
+    ...mapState("transaction", {
+      meta: "meta",
+    }),
     headerData() {
       let status = {};
       let button = {};

@@ -102,6 +102,7 @@
           <v-divider />
           <booking-summary
             :isStatus="payload.status"
+            :loadingMeta="loadingMeta"
             :cardInformation="cardInformation"
             @validation-event="handleConfirmationEvent"
           />
@@ -300,6 +301,9 @@ export default {
     ...mapState("roomEnum", ["room"]),
     ...mapState("account", {
       userInfo: "userInfo",
+    }),
+    ...mapState("transaction", {
+      loadingMeta: "meta",
     }),
     showPayment() {
       return this.payload?.status === "CONFIRMED" ? true : false;

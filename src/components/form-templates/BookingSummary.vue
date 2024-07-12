@@ -8,6 +8,7 @@
       <total-bill-card
         @validation-event="$emit('validation-event')"
         :totalInformation="totalInformation"
+        :loadingMeta="loadingMeta"
       >
       </total-bill-card>
     </div>
@@ -27,6 +28,7 @@ export default {
       type: Object,
       required: true,
     },
+    loadingMeta: Object,
   },
   data: () => ({}),
   components: {

@@ -13,7 +13,11 @@ export const transaction = {
     previousTransactions: null,
     transactionStatus: {
       message: "",
-      status: "", //SUCCESS, ERROR
+      status: "", // SUCCESS, ERROR
+    },
+    meta: {
+      title: "", // Transaction Type
+      loading: false,
     },
   }),
   getters: {},
@@ -23,8 +27,19 @@ export const transaction = {
     SET_TRANSACTION_STATUS: (state, data) => (state.transactionStatus = data),
     SET_PREVIOUS_TRANSACTIONS: (state, data) =>
       (state.previousTransactions = data),
+    SET_META: (state, data) => (state.meta = data),
   },
   actions: {
+    triggerLoading: function ({ commit }, data) {
+      // Data is an Object
+      commit("SET_META", data);
+    },
+    resetLoading: function ({ commit }) {
+      commit("SET_META", {
+        title: "",
+        loading: false,
+      });
+    },
     fetchTransactions: function ({ commit }, queryParams = {}) {
       const url = `transaction`;
       const queryUrl = functions.query(url, queryParams);
@@ -56,11 +71,12 @@ export const transaction = {
           console.error("Error fetching transaction: ", error);
         });
     },
-    createTransaction: function ({ _ }, payload) {
+    createTransaction: function ({ dispatch }, payload) {
       const url = `transaction/create`;
       return this.$axios
         .post(url, payload)
         .then((response) => {
+          dispatch("resetLoading");
           return response;
         })
         .catch((error) => {
@@ -68,7 +84,7 @@ export const transaction = {
         });
     },
     deleteReservation: function (
-      { commit, state },
+      { commit, dispatch },
       { status, transactionRefNum }
     ) {
       const url = `transaction/reservation/delete/${status}/${transactionRefNum}`;
@@ -79,6 +95,7 @@ export const transaction = {
             message: response.data.message,
             status: "SUCCESS",
           });
+          dispatch("resetLoading");
           return response;
         })
         .catch((error) => {
@@ -95,6 +112,7 @@ export const transaction = {
       return this.$axios
         .put(url, payload)
         .then((response) => {
+          dispatch("resetLoading");
           return response;
         })
         .catch((error) => {

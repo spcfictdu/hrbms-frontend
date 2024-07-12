@@ -53,11 +53,11 @@ export default {
     fill: {
       immediate: true,
       handler: function (newVal) {
-        if (newVal?.extraPerson) {
+        if (typeof newVal?.extraPerson === 'number') {
           this.payload.guests = newVal.extraPerson;
           this.$emit("emit-transaction", this.payload);
         } else {
-          this.payload.guests = null;
+          this.payload.guests = 0;
         }
       },
     },

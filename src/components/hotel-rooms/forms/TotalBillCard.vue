@@ -101,6 +101,7 @@
 
     <v-card-actions class="pa-0">
       <v-btn
+        :loading="loadingButton"
         block
         depressed
         :outlined="totalInformation.button.outlined"
@@ -116,6 +117,17 @@
 <script>
 export default {
   name: "TotalBillCard",
-  props: ["totalInformation"],
+  props: ["totalInformation", "loadingMeta"],
+  data: () => ({
+    loadingTransactions: ["Create Transaction", "Update Reservation"],
+  }),
+  computed: {
+    loadingButton: function () {
+      return this.loadingMeta &&
+        this.loadingTransactions.includes(this.loadingMeta.title)
+        ? this.loadingMeta.loading
+        : false;
+    },
+  },
 };
 </script>

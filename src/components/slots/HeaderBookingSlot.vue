@@ -23,7 +23,7 @@
         >
           <span class="font-weight-bold text-uppercase">From:</span>
           {{ `${formatDate(from.date)} (${formatTime(from.date)})` }} |
-          
+
           <span class="font-weight-bold text-uppercase">To:</span>
           {{ `${formatDate(to.date)} (${formatTime(to.date)})` }}
         </div>
@@ -38,6 +38,7 @@
         :outlined="button.style.outlined"
         :color="button.style.color"
         :disabled="button.disabled"
+        :loading="loadingButton"
         >{{ button.title }}</v-btn
       >
     </slot>
@@ -48,8 +49,11 @@
 import { formatDate, formatTime } from "@/mixins/FormattingFunctions";
 export default {
   name: "HeaderBookingSlot",
-  props: ["headerData"],
+  props: ["headerData", "loadingMeta"],
   mixins: [formatDate, formatTime],
+  data: () => ({
+    loadingTransactions: ["Delete Transaction", "Time Transaction"],
+  }),
   methods: {
     getColor: function (status) {
       let color = null;
@@ -85,6 +89,12 @@ export default {
     },
     client() {
       return this.headerData.client;
+    },
+    loadingButton: function () {
+      return this.loadingMeta &&
+        this.loadingTransactions.includes(this.loadingMeta.title)
+        ? this.loadingMeta.loading
+        : false;
     },
   },
 };

@@ -5,7 +5,7 @@
     </title-slot>
 
     <v-row>
-      <v-col cols="12" md="0" v-if="$auth.user().role === 'ADMIN'">
+      <v-col cols="12" :md="isAdmin ? 6 : 0" v-if="isAdmin">
         <v-btn
           depressed
           block
@@ -22,7 +22,7 @@
           >Cash</v-btn
         >
       </v-col>
-      <v-col cols="12" md="0">
+      <v-col cols="12" :md="isAdmin ? 6 : 0">
         <v-btn
           depressed
           block
@@ -112,16 +112,20 @@ export default {
       ];
       return errors;
     },
+    isAdmin: function () {
+      return this.$auth.user()?.role === "ADMIN";
+    },
   },
   watch: {
     fill: {
       immediate: true,
       handler: function (newVal) {
-        if (newVal?.payload) {
+        if (newVal?.payment) {
           this.payload.payment = {
             paymentType: newVal.payment.paymentType,
             amountReceived: newVal.payment.amountReceived,
           };
+          this.activeButton = newVal.payment.paymentType;
           this.$emit("emit-transaction", this.payload);
         } else {
           this.payload.payment = {

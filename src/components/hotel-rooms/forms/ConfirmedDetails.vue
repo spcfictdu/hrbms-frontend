@@ -3,6 +3,7 @@
     <header-booking-slot
       @button-event="requestUpdateOnTime"
       :headerData="headerData"
+      :loadingMeta="meta"
     />
 
     <v-row>
@@ -194,6 +195,9 @@ export default {
   },
   computed: {
     ...mapState("roomEnum", ["room"]),
+    ...mapState("transaction", {
+      meta: "meta",
+    }),
     headerData() {
       let status = {};
       let button = {};
