@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="roomStatuses">
     <v-row class="d-none d-sm-flex">
       <v-col v-for="(item, index) in buttonDisplay" :key="index">
         <v-btn
@@ -282,7 +282,4 @@ export default {
 </script>
 
 <style scoped>
-.menu-border {
-  border-bottom: 1px solid #e6e2e2;
-}
 </style>

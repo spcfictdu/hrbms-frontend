@@ -1,48 +1,43 @@
 <template>
   <div>
-    <v-row>
-      <v-col cols="11" sm="8">
+    <div class="d-flex flex-row">
+      <div class="d-flex flex-column">
         <div :class="classGuestName">
           {{ guest.fullName }}
         </div>
-      </v-col>
-      <v-col cols="4" v-if="!$vuetify.breakpoint.xs" class="d-flex justify-end">
+        <div
+          class="d-flex flex-column flex-sm-row justify-start text-caption text-md-subtitle-1 address--text"
+        >
+          <div class="mr-5">
+            <span class="span-style">Address:</span> {{ guest.city }},
+            {{ guest.province }}
+          </div>
+          <div class="mr-5">
+            <span class="span-style">Email:</span> {{ guest.email }}
+          </div>
+          <div class="mr-5">
+            <span class="span-style">Phone:</span> {{ guest.phone }}
+          </div>
+          <div class="mr-5">
+            <span class="span-style">ID Number:</span> {{ guest.idNumber }}
+          </div>
+        </div>
+      </div>
+      <div class="d-flex flex-column" v-if="!$vuetify.breakpoint.xs">
         <v-btn outlined color="red" @click="triggerActivator"
           >DELETE GUEST DETAILS</v-btn
         >
-      </v-col>
-      <v-col cols="auto" v-else class="relative-position">
+      </div>
+      <div v-else class="d-flex flex-row justify-end flex-grow-1">
         <v-btn
           icon
           outlined
           color="red"
           @click="triggerActivator"
-          class="absolute-position"
           ><v-icon>mdi-trash-can-outline</v-icon></v-btn
         >
-      </v-col>
-    </v-row>
-    <v-divider class="my-3"></v-divider>
-    <v-row>
-      <v-col class="text-body-2">
-        <span class="font-weight-bold grey--text" cols="12" sm="6" lg="3"
-          >ADDRESS:</span
-        >
-        {{ guest.city }}, {{ guest.province }}</v-col
-      >
-      <v-col class="text-body-2" cols="12" sm="6" lg="3"
-        ><span class="font-weight-bold grey--text">EMAIL:</span>
-        {{ guest.email }}</v-col
-      >
-      <v-col class="text-body-2" cols="12" sm="6" lg="3"
-        ><span class="font-weight-bold grey--text">PHONE:</span>
-        {{ guest.phone }}</v-col
-      >
-      <v-col class="text-body-2" cols="12" sm="6" lg="3"
-        ><span class="font-weight-bold grey--text">ID NUMBER:</span>
-        {{ guest.idNumber }}</v-col
-      >
-    </v-row>
+      </div>
+    </div>
     <DeleteDialog
       :activator="metaDialog.deleteActivator"
       :deleteMeta="metaDialog"
@@ -53,7 +48,7 @@
 </template>
 
 <script>
-import DeleteDialog from '../dialogs/DeleteDialog.vue';
+import DeleteDialog from "../dialogs/DeleteDialog.vue";
 
 export default {
   name: "GuestInfo",
@@ -79,7 +74,7 @@ export default {
       };
     },
     resetActivator: function () {
-      this.metaDialog = {}
+      this.metaDialog = {};
     },
   },
   computed: {
@@ -93,10 +88,9 @@ export default {
       deep: true,
       handler: function (newVal) {
         if (newVal.xs) {
-          this.classGuestName =
-            "font-weight-bold text-body-2 mt-n3";
+          this.classGuestName = "font-weight-bold text-body-1 mt-n3";
         } else {
-          this.classGuestName = "text-h6 font-weight-bold";
+          this.classGuestName = "text-h6 font-weight-bold mb-2";
         }
       },
     },
@@ -105,13 +99,12 @@ export default {
 </script>
 
 <style scoped>
-.absolute-position {
-  position: absolute;
+.address--text {
+  color: #555555;
 }
 
-.relative-position {
-  position: relative;
-  right: 40px;
-  top: -15px;
+.span-style {
+  text-transform: uppercase;
+  font-weight: bold;
 }
 </style>

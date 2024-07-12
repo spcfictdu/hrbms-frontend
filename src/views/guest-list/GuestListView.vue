@@ -20,6 +20,7 @@
 <script>
 import GuestListTable from "@/components/guests/GuestListTable.vue";
 import { mapActions, mapState } from "vuex";
+
 export default {
   name: "GuestListView",
   components: { GuestListTable },

@@ -66,7 +66,7 @@ export default {
       {
         text: "Name",
         value: "name",
-        width: '180px'
+        width: "180px",
       },
       {
         text: "Status",

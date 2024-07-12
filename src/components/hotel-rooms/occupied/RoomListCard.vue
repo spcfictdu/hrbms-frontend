@@ -47,12 +47,12 @@
             </template>
             <v-list dense class="py-0">
               <v-list-item
-                :class="{
-                  'menu-border': index < menuItems.length - 1,
-                  'warning--text': iter.text === 'Delete room',
-                }"
                 v-for="(iter, index) in menuItems(room)"
                 :key="index"
+                class="menu-border"
+                :class="{
+                  'warning--text': iter.text === 'Delete room'
+                }"
                 @click="executeMenuItem(iter)"
               >
                 <v-list-item-title class="text-body-2 font-weight-regular"
@@ -208,14 +208,14 @@ export default {
             this.payload = {
               refNum: room.referenceNumber,
               requestType: "Edit room",
-            },
+            };
             this.roomData = {
               roomNumber: room.name,
               roomFloor: room.floor,
               roomType: room.type,
             };
             this.metaDialog = {
-              actionType: "Edit room",
+              action: "Edit room",
               roomActivator: true,
             };
           },
@@ -226,9 +226,9 @@ export default {
             this.payload = {
               refNum: room.referenceNumber,
               requestType: "Delete room",
-            },
+            };
             this.metaDialog = {
-              actionType: "Delete room",
+              action: "Delete room",
               targetDeletion: "room",
               deleteActivator: true,
             };
@@ -260,7 +260,6 @@ export default {
           menu = menu.filter((item) => item.text !== "Make unallocated");
           break;
       }
-
       return menu;
     },
     executeMenuItem: function (item) {
@@ -269,7 +268,7 @@ export default {
       }
     },
     requestType: function (requestData) {
-      switch (this.metaDialog.actionType) {
+      switch (this.metaDialog.action) {
         case "Change Room Status":
           this.$emit("request-type", this.payload);
           this.resetActivator();
@@ -279,7 +278,7 @@ export default {
           this.resetActivator();
           break;
         case "Edit room":
-          this.payload.data = requestData
+          this.payload.data = requestData;
           this.$emit("request-type", this.payload);
           this.resetActivator();
           break;
@@ -294,7 +293,8 @@ export default {
       return this.$vuetify.breakpoint;
     },
   },
-  watch: {},
+  watch: {
+  },
 };
 </script>
 

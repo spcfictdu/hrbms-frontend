@@ -11,9 +11,7 @@
     <amenities-component
       :amenities="amenities"
       :amenityDialog="amenityDialog"
-      @delete-event="deleteEvent"
-      @update-event="updateEvent"
-      @add-event="addEvent"
+      @request-event="requestEvent"
       @close-dialog="closeAmenityDialog"
     />
   </div>
@@ -38,21 +36,20 @@ export default {
       "deleteAmenity",
       "triggerAmenityDialog",
     ]),
-    addEvent: function (payload) {
-      this.createAmenity(payload);
-      payload = null;
-    },
-    deleteEvent: function (referenceNumber) {
-      this.deleteAmenity(referenceNumber);
-      referenceNumber = null;
-    },
-    updateEvent: function ({ payload, referenceNum }) {
-      this.updateAmenity({
-        refNum: referenceNum,
-        data: payload,
-      });
-      payload = null;
-      referenceNum = null;
+    requestEvent: function (payload) {
+      switch (payload.requestType) {
+        case 'Add Amenity':
+          this.createAmenity(payload.data);
+          break;
+        case 'Delete Amenity':
+          this.deleteAmenity(payload.refNum);
+          break;
+        case 'Edit Amenity':
+          this.updateAmenity({
+            refNum: payload.refNum,
+            data: payload.data,
+          })
+      }
     },
     triggerAlert: function (value) {
       this.alert = value;
