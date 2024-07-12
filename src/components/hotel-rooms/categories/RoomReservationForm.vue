@@ -140,7 +140,6 @@ export default {
     ...mapActions("roomNumberEnum", ["fetchRoomNumbers"]),
     ...mapActions("availableRoomNumbersEnum", ["fetchAvailableRoomNumbers"]),
     requestReservation: function () {
-      this.$refs.form.validate();
       if (this.$refs.form.validate()) {
         let payload = {
           room: this.roomCategory,
@@ -264,10 +263,10 @@ export default {
       },
     },
     role: {
-      deep: true, 
+      immediate: true, 
       handler: function (newVal) {
         // For Front Desk Only
-        if (newVal.isFrontDesk) {
+        if (newVal === "ADMIN") {
           this.requestRoomNumbers();
         }
       }

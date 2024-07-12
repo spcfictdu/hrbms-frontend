@@ -3,6 +3,7 @@
     <booking-form
       @validation-event="requestValidation"
       :queryResult="queryResult"
+      :guestAutofill="guestAutofill"
     />
   </div>
 </template>
@@ -17,7 +18,11 @@ export default {
   methods: {
     ...mapActions("publicRooms", ["storeTemporaryData"]),
     requestValidation: function (payload) {
-      this.storeTemporaryData(this.createObject(payload)).then(() => {
+      // Add Query and Data
+      let temporaryData = this.createObject(payload);
+      temporaryData.query = this.$route.query;
+
+      this.storeTemporaryData(temporaryData).then(() => {
         this.$router.replace({ name: "Guest Sign In" });
       });
     },
@@ -71,6 +76,16 @@ export default {
   computed: {
     queryResult() {
       return this.$route.query;
+    },
+    guestAutofill: function () {
+      let fill = {};
+      if (!this.$auth.user()) {
+        fill = {
+          checkInTime: "14:00",
+          checkOutTime: "11:00",
+        };
+      }
+      return fill;
     },
   },
 };

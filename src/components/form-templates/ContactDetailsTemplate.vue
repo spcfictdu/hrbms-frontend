@@ -10,7 +10,7 @@
           <template v-slot:label> Phone Number </template>
         </label-slot>
         <v-text-field
-          type="number"
+          type="tel"
           dense
           hide-details="auto"
           outlined
@@ -76,17 +76,15 @@ export default {
     fill: {
       immediate: true,
       handler: function (newVal) {
-        if (newVal) {
+        if (newVal?.phone_number && newVal?.email) {
           this.payload.contact = {
             phoneNumber: newVal.phone_number,
             email: newVal.email,
           };
           this.$emit("emit-transaction", this.payload);
         } else {
-          this.payload.contact = {
-            phoneNumber: null,
-            email: null,
-          };
+          this.payload.contact.phoneNumber = null;
+          this.payload.contact.email = null;
         }
       },
     },

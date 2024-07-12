@@ -73,6 +73,7 @@ export default {
       type: Number,
       required: true,
     },
+    fill: Object,
   },
   data: () => ({
     activeButton: "",
@@ -110,6 +111,25 @@ export default {
         (v) => v >= this.isGreater || "Amount should be greater than total",
       ];
       return errors;
+    },
+  },
+  watch: {
+    fill: {
+      immediate: true,
+      handler: function (newVal) {
+        if (newVal?.payload) {
+          this.payload.payment = {
+            paymentType: newVal.payment.paymentType,
+            amountReceived: newVal.payment.amountReceived,
+          };
+          this.$emit("emit-transaction", this.payload);
+        } else {
+          this.payload.payment = {
+            paymentType: null,
+            amountReceived: null,
+          };
+        }
+      },
     },
   },
 };

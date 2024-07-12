@@ -29,6 +29,7 @@
           <transaction-template
             :statuses="statuses"
             @emit-transaction="assignPayload"
+            :fill="autoFilled"
           />
 
           <!-- Guest Name -->
@@ -54,7 +55,10 @@
 
           <!-- ID -->
           <v-divider />
-          <identification-template @emit-transaction="assignPayload" />
+          <identification-template
+            @emit-transaction="assignPayload"
+            :fill="autoFilled"
+          />
         </v-col>
 
         <!-- Right Column -->
@@ -77,6 +81,7 @@
           <v-divider />
           <guests-template
             :guestsEnums="guestsEnums"
+            :fill="autoFilled"
             @emit-transaction="assignPayload"
           />
 
@@ -84,6 +89,7 @@
           <div v-if="showPayment" class="pb-8">
             <v-divider />
             <payment-template
+              :fill="autoFilled"
               :isGreater="totalPayment"
               @emit-transaction="assignPayload"
             />
@@ -133,7 +139,7 @@ import WarningDialog from "@/components/dialogs/WarningDialog.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "BookingForm",
-  props: ["queryResult", "fillResult"],
+  props: ["queryResult", "fillResult", "guestAutofill"],
   data: () => ({
     valid: true,
     autofill: "",
@@ -255,45 +261,29 @@ export default {
     },
     filterGuest: function (newVal) {
       if (newVal) {
-        const autofilledObject = this.fillResult.guests.filter(
-          (item) => item.full_name === newVal
-        );
+        const autofilledObject = this.fillResult.guests
+          .filter((item) => item.full_name === newVal)
+          .map((item) => ({
+            city: item.city,
+            email: item.email,
+            first_name: item.first_name,
+            last_name: item.last_name,
+            middle_name: item.middle_name,
+            phone_number: item.phone_number,
+            province: item.province,
+          }));
         this.autoFilled = autofilledObject[0];
       } else {
         this.autoFilled = null;
       }
     },
-    assignGuestMeta: function () {
-      // If Guest user, autofill the form
-      if (this.$auth.user()?.role === "GUEST") {
-        this.autoFilled = {
-          ...this.autoFilled,
-          first_name: this.userInfo.firstName,
-          middle_name: this.userInfo.middleName,
-          last_name: this.userInfo.lastName,
-          phone_number: this.userInfo.phone,
-          email: this.userInfo.email,
-          city: this.userInfo.address.city,
-          province: this.userInfo.address.province,
-        };
-      }
-    },
     assignDates: function (newVal) {
-      // If Query has Check Out Dates
       if (newVal.checkInDate && newVal.checkOutDate) {
         this.autoFilled = {
           ...this.autoFilled,
           checkInDate: newVal.checkInDate,
           checkOutDate: newVal.checkOutDate,
         };
-        // If user is Guest, time is filled out
-        if (this.$auth.user()?.role === "GUEST" || !this.$auth.user()) {
-          this.autoFilled = {
-            ...this.autoFilled,
-            checkInTime: "14:00",
-            checkOutTime: "11:00",
-          };
-        }
       }
     },
     assignConfirmationMessages: function () {
@@ -314,6 +304,8 @@ export default {
     showPayment() {
       return this.payload?.status === "CONFIRMED" ? true : false;
     },
+
+    // Receipt
     cardInformation() {
       const room = this.room ? this.room[0] : null;
 
@@ -379,7 +371,6 @@ export default {
           referenceNumber: newVal.referenceNumber,
         };
         this.assignDates(newVal);
-        this.assignGuestMeta();
         this.assignConfirmationMessages();
         this.fetchQuery();
       },
@@ -421,6 +412,15 @@ export default {
       deep: true,
       handler: function (newVal) {
         this.filterGuest(newVal);
+      },
+    },
+    guestAutofill: {
+      immediate: true,
+      handler: function (newVal) {
+        this.autoFilled = {
+          ...this.autoFilled,
+          ...newVal,
+        };
       },
     },
   },

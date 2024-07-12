@@ -118,17 +118,20 @@ export const authentication = {
           };
 
           let response = await this.$axios.post(loginUrl, loginPayload);
+
           if (response.data.code === 200) {
+            store.dispatch("account/fetchAccountInfo");
             commit("SET_CURRENT_USER", response.data.results);
             commit("SET_LOGIN_STATUS", {
               message: response.data.message,
               status: "SUCCESS",
             });
 
-            // Fix
-            console.log(store.state("publicRooms/temporaryData"));
-            if (store.state("publicRooms.temporaryData")) {
-              await this.$router.push({ name: "Guest Booking" });
+            if (store.state.publicRooms.temporaryData) {
+              await this.$router.push({
+                name: "Guest Booking",
+                query: store.state.publicRooms.temporaryData.query,
+              });
             } else {
               await this.$router.push({ name: "Guest Dashboard" });
             }
@@ -144,6 +147,7 @@ export const authentication = {
 
     clearUserData({ commit }) {
       commit("SET_CURRENT_USER", null);
+      store.dispatch("publicRooms/clearTempData");
     },
   },
 };

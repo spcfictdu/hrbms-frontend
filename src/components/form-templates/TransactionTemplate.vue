@@ -28,7 +28,7 @@ import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "TransactionTemplate",
-  props: ["statuses"],
+  props: ["statuses", "fill"],
   data: () => ({
     payload: {
       status: null,
@@ -48,6 +48,17 @@ export default {
       const errors = {};
       errors.status = [(v) => !!v || "Status is required"];
       return errors;
+    },
+  },
+  watch: {
+    fill: {
+      immediate: true,
+      handler: function (newVal) {
+        if (newVal?.status) {
+          this.payload.status = newVal.status;
+          this.$emit("emit-transaction", this.payload);
+        } 
+      },
     },
   },
 };

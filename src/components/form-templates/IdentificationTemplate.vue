@@ -41,6 +41,7 @@ import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "IdentificationTemplate",
+  props: ["fill"],
   data: () => ({
     payload: {
       id: {
@@ -67,6 +68,25 @@ export default {
       return errors;
     },
   },
+  watch: {
+    fill: {
+      immediate: true,
+      handler: function (newVal) {
+        if (newVal?.id) {
+          this.payload.id = {
+            type: newVal.id.type,
+            number: newVal.id.number,
+          };
+          this.$emit("emit-transaction", this.payload);
+        } else {
+          this.payload.id = {
+            type: null,
+            number: null,
+          };
+        }
+      },
+    },
+  }
 };
 </script>
 

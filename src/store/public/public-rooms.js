@@ -70,6 +70,9 @@ export const publicRooms = {
     resetLoading: function ({ commit }) {
       commit("SET_LOADING", false);
     },
+    clearTempData({ commit }) {
+      commit("SET_TEMPORARY_DATA", null);
+    },
   },
 };
 
