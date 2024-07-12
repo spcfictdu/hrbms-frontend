@@ -57,18 +57,16 @@
       </v-col>
     </v-row>
     <DeleteDialog
-      :activator="deleteDialog"
-      :delete-meta="deleteMeta"
+      :activator="metaDialog.deleteActivator"
+      :delete-meta="metaDialog"
       @reset-activator="resetActivator"
-      @delete-request="deleteRequest"
+      @delete-event="requestAction"
     />
     <AmenityDialog
-      :activator="amenityDialogActivator"
-      :addAmenity="amenityDialog"
-      :selectedAmenityName="selectedAmenityName"
+      :activator="metaDialog.amenityDialogActivator"
+      :metaDialog="metaDialog"
       @reset-activator="resetActivator"
-      @update-request="updateRequest"
-      @add-request="addRequest"
+      @amenity-request="requestAction"
     />
   </div>
 </template>
@@ -94,17 +92,9 @@ export default {
     isSmall: false,
     isLarge: true,
     menuWidth: 150,
-    menuHeight: 120,
-    nudgeBottom: 30,
     selectedAmenity: null,
-    deleteDialog: false,
-    amenityDialogActivator: false,
-    selectedAmenityRefNum: null,
-    selectedAmenityName: "",
     options: ["Edit Amenity", "Delete Amenity"],
-    deleteMeta: {
-      targetDeletion: "",
-    },
+    metaDialog: {},
   }),
   computed: {
     size() {
@@ -125,56 +115,56 @@ export default {
       selectedAmenityRefNum,
       selectedAmenityName
     ) {
-      if (option === "Delete Amenity") {
-        this.deleteDialog = true;
-        this.payload.refNum = selectedAmenityRefNum;
-        this.deleteMeta.targetDeletion = "amenity";
-      } else if (option === "Edit Amenity") {
-        this.amenityDialogActivator = true;
-        this.selectedAmenityRefNum = selectedAmenityRefNum;
-        this.selectedAmenityName = selectedAmenityName;
+      switch (option) {
+        case "Delete Amenity":
+          this.metaDialog = {
+            deleteActivator: true,
+            targetDeletion: "amenity",
+          };
+          this.payload = {
+            refNum: selectedAmenityRefNum,
+            requestType: "Delete Amenity",
+          };
+          break;
+        case "Edit Amenity":
+          this.metaDialog = {
+            action: "Edit Amenity",
+            amenityDialogActivator: true,
+            amenityName: selectedAmenityName,
+          };
+          this.payload = {
+            refNum: selectedAmenityRefNum,
+            requestType: "Edit Amenity",
+          };
+          break;
       }
     },
     resetActivator: function () {
-      if (this.deleteDialog === true) {
-        this.deleteDialog = false;
-      } else if (this.amenityDialogActivator === true) {
-        this.amenityDialogActivator = false;
-        this.selectedAmenityRefNum = null;
+      if (this.metaDialog.action === "Add Amenity") {
         this.$emit("close-dialog");
       }
-      this.payload = {};
-      this.selectedAmenity = null;
+      this.metaDialog = {};
     },
-    deleteRequest: function () {
-      this.$emit("delete-event", this.payload.refNum);
-      this.payload = {};
-      this.deleteDialog = false;
-      this.selectedAmenity = null;
-    },
-    updateRequest: function (amenityName) {
-      this.payload.name = amenityName;
-      this.$emit("update-event", {
-        payload: this.payload,
-        referenceNum: this.selectedAmenityRefNum,
-      });
-      this.amenityDialogActivator = false;
-      this.payload = {};
-      this.selectedAmenity = null;
-    },
-    addRequest: function (amenityName) {
-      this.payload.name = amenityName;
-      this.$emit("add-event", this.payload);
-      this.amenityDialogActivator = false;
-      this.payload = {};
-      this.selectedAmenity = null;
-      this.$emit("close-dialog");
+    requestAction: function (requestData) {
+      if (this.metaDialog.action === "Add Amenity" || this.metaDialog.action === "Edit Amenity") {
+        this.payload.data = requestData
+      }
+      this.$emit("request-event", this.payload);
+      this.resetActivator();
     },
   },
   watch: {
     amenityDialog: {
       handler: function (value) {
-        this.amenityDialogActivator = value;
+        if (value) {
+          this.metaDialog = {
+            action: "Add Amenity",
+            amenityDialogActivator: true,
+          };
+          this.payload = {
+            requestType: "Add Amenity",
+          };
+        }
       },
     },
     size: {
@@ -185,17 +175,14 @@ export default {
           this.isSmall = true;
           this.isLarge = false;
           this.menuWidth = 300;
-          this.nudgeBottom = 0;
         } else if (newVal.xs) {
           this.isSmall = true;
           this.isLarge = false;
           this.menuWidth = 500;
-          this.nudgeBottom = 0;
         } else {
           this.isSmall = false;
           this.isLarge = true;
           this.menuWidth = 150;
-          this.nudgeBottom = 30;
         }
       },
     },

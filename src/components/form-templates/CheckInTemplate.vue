@@ -111,7 +111,6 @@ export default {
     },
     emitTime: function () {
       this.menu_2 = false;
-      console.log(this.payload.checkIn.time);
       this.emitTransaction();
     },
   },

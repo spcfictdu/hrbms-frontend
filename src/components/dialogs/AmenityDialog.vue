@@ -4,12 +4,12 @@
       <v-card class="pa-8" rounded="lg" flat>
         <v-card-title
           class="transparent-bg text-subtitle-1 font-weight-bold text-uppercase pa-0"
-          >{{ addAmenity ? "Add Amenity" : "Edit Amenity" }}</v-card-title
+          >{{ metaDialog.action }}</v-card-title
         >
         <div class="mt-4 mb-8">
           <div class="text-caption ml-1 mb-1">Amenity Name</div>
           <v-text-field
-            v-model="amenityName"
+            v-model="payload.name"
             outlined
             dense
             :rules="validate.amenityName"
@@ -51,21 +51,14 @@
 export default {
   name: "AmenityDialog",
   data: () => ({
-    amenityName: "",
+    payload: {
+      name: "",
+    },
     dialog: false,
   }),
   props: {
-    activator: {
-      type: Boolean,
-      required: true,
-    },
-    addAmenity: {
-      type: Boolean,
-      required: true,
-    },
-    selectedAmenityName: {
-      type: String
-    }
+    activator: Boolean,
+    metaDialog: Object,
   },
   computed: {
     validate() {
@@ -81,13 +74,8 @@ export default {
     },
     submitButton: function () {
       if (this.$refs.amenityForm.validate()) {
-        if (!this.addAmenity) {
-          this.$emit("update-request", this.amenityName);
-        } else {
-          this.$emit("add-request", this.amenityName);
-        }
+        this.$emit("amenity-request", this.payload);
         this.$refs.amenityForm.reset();
-        this.amenityName = "";
       }
     },
   },
@@ -96,7 +84,9 @@ export default {
       deep: true,
       handler: function (value) {
         this.dialog = value;
-        this.amenityName = this.selectedAmenityName
+        if (this.metaDialog.action === "Edit Amenity") {
+          this.payload.name = this.metaDialog.amenityName;
+        }
       },
     },
     dialog: {

@@ -168,15 +168,30 @@ export default {
   }),
   methods: {
     searchFunction: function () {
-      if (this.query_params) {
+      if (Object.keys(this.query_params).length !== 0) {
         this.$emit("search-query", this.query_params);
         this.loadingAction();
       }
     },
     clearFunction: function () {
-      this.query_params = {};
-      this.$emit("search-query", this.query_params);
-      this.loadingAction();
+      let query = [
+        "firstName",
+        "middleName",
+        "lastName",
+        "referenceNumber",
+        "checkInDate",
+        "checkOutDate",
+      ];
+
+      if (Object.keys(this.query_params).length !== 0) {
+        Object.keys(this.query_params).forEach((key) => {
+          if (query.includes(key)) {
+            delete this.query_params[key];
+          }
+        });
+        this.$emit("search-query", this.query_params);
+        this.loadingAction();
+      }
     },
     loadingAction: function () {
       this.indeterminate = true;

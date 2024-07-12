@@ -1,8 +1,9 @@
 <template>
   <div>
-    <v-card-title class="text-subtitle-2 font-weight-black ml-3">
-      {{ transactions.pagination.total }} TRANSACTIONS
+    <v-card-title class="text-subtitle-2 font-weight-black ml-3"
+      >{{ guests.pagination.total }} GUESTS
       <v-spacer></v-spacer>
+      <!-- Search Button -->
       <div v-if="show" class="d-flex">
         <div class="mr-2">
           <v-btn
@@ -10,17 +11,18 @@
             color="warning"
             @click="clearQuery"
             rounded
-            outlined
             class="d-none d-sm-flex"
+            outlined
             >Clear</v-btn
           >
           <v-btn
             :ripple="false"
             color="warning"
-            class="d-flex d-sm-none"
+            v-if="show && $vuetify.breakpoint.xs"
             @click="clearQuery"
             icon
-            ><v-icon left>mdi-cached</v-icon></v-btn
+            class="d-flex d-sm-none"
+            ><v-icon>mdi-cached</v-icon></v-btn
           >
         </div>
 
@@ -34,14 +36,14 @@
           >
           <v-btn
             color="primary"
-            icon
             class="d-flex d-sm-none"
+            icon
+            :ripple="false"
             @click="searchFunction"
-            ><v-icon>mdi-magnify</v-icon></v-btn
+            ><v-icon left>mdi-magnify</v-icon></v-btn
           >
         </div>
       </div>
-
       <v-btn
         fab
         outlined
@@ -63,7 +65,8 @@
         ></v-progress-linear>
       </v-col>
     </v-row>
-    <v-row v-if="show" class="mx-3 text-subtitle-2">
+    <!-- Search Fields -->
+    <v-row v-if="show" class="mx-3 text-subtitle-2 relative-position">
       <v-col cols="12" sm="6" md="4">
         <span class="ml-2">First Name</span>
         <v-text-field
@@ -92,7 +95,7 @@
         ></v-text-field>
       </v-col>
       <v-col cols="12" sm="6" md="4">
-        <span class="ml-2">Reference</span>
+        <span class="ml-2">Booking Reference</span>
         <v-text-field
           outlined
           dense
@@ -101,66 +104,28 @@
         ></v-text-field>
       </v-col>
       <v-col cols="12" sm="6" md="4">
-        <span class="ml-2">Check-in Date</span>
-        <v-menu
-          v-model="menuCheckIn"
-          :close-on-content-click="false"
-          offset-y
-          transition="scale-transition"
-          min-width="auto"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              v-model="query_params.checkInDate"
-              v-on="on"
-              v-bind="attrs"
-              outlined
-              dense
-              readonly
-              hide-details="auto"
-            >
-            </v-text-field>
-          </template>
-          <v-date-picker
-            v-model="query_params.checkInDate"
-            @input="menuCheckIn = false"
-          >
-            <v-btn color="primary" block @click="clearDate('Check In')"
-              >Clear</v-btn
-            >
-          </v-date-picker>
-        </v-menu>
+        <span class="ml-2">Email</span>
+        <v-text-field
+          outlined
+          dense
+          hide-details="auto"
+          v-model="query_params.email"
+          :rules="rules.email"
+        ></v-text-field>
       </v-col>
       <v-col cols="12" sm="6" md="4">
-        <span class="ml-2">Check-out Date</span>
-        <v-menu
-          v-model="menuCheckOut"
-          :close-on-content-click="false"
-          offset-y
-          transition="scale-transition"
-          min-width="auto"
-        >
-          <template v-slot:activator="{ on, attrs }">
-            <v-text-field
-              v-model="query_params.checkOutDate"
-              v-on="on"
-              v-bind="attrs"
-              outlined
-              dense
-              readonly
-              hide-details="auto"
-            >
-            </v-text-field>
-          </template>
-          <v-date-picker
-            v-model="query_params.checkOutDate"
-            @input="menuCheckOut = false"
-          >
-            <v-btn color="primary" block @click="clearDate('Check Out')"
-              >Clear</v-btn
-            >
-          </v-date-picker>
-        </v-menu>
+        <span class="ml-2">Phone</span>
+        <v-text-field
+          outlined
+          dense
+          hide-details="auto"
+          type="number"
+          v-model="query_params.phone"
+          counter
+          maxlength="11"
+          hide-spin-buttons
+          :rules="rules.phone"
+        ></v-text-field>
       </v-col>
     </v-row>
   </div>
@@ -170,9 +135,9 @@
 import TablePagination from "@/mixins/TablePagination";
 
 export default {
-  name: "TrasactionsCardHeader",
+  name: "GuestListCardHeader",
   props: {
-    transactions: {
+    guests: {
       type: Object,
       required: true,
     },
@@ -180,12 +145,10 @@ export default {
   mixins: [TablePagination],
   data: () => ({
     show: false,
-    menuCheckIn: false,
-    menuCheckOut: false,
-    small: true,
-    xSmall: false,
     indeterminate: true,
     indeterminateValue: 0,
+    small: true,
+    xSmall: false,
   }),
   methods: {
     searchFunction: function () {
@@ -200,8 +163,8 @@ export default {
         "middleName",
         "lastName",
         "referenceNumber",
-        "checkInDate",
-        "checkOutDate",
+        "email",
+        "phone",
       ];
 
       if (Object.keys(this.query_params).length !== 0) {
@@ -221,20 +184,41 @@ export default {
       }, 3000);
       this.indeterminateValue = 100;
     },
-    clearDate: function (dateType) {
-      if (dateType === "Check In") {
-        this.query_params.checkInDate = "";
-      } else {
-        this.query_params.checkOutDate = "";
-      }
-    },
   },
   computed: {
-    size() {
+    size: function () {
       return this.$vuetify.breakpoint;
+    },
+    rules: function () {
+      const errors = {};
+
+      if (this.query_params.email) {
+        errors.email = [(v) => /.+@.+\..+/.test(v) || "Invalid e-mail."];
+      } else {
+        delete errors.email;
+      }
+
+      if (this.query_params.phone) {
+        errors.phone = [(v) => v.length === 11 || "Invalid number"];
+      } else {
+        delete errors.phone;
+      }
+
+      return errors;
     },
   },
   watch: {
+    "guests.guests": {
+      immediate: true,
+      handler(value) {
+        if (value) {
+          this.loadingAction();
+        } else {
+          this.indeterminate = false;
+          this.indeterminateValue = 0;
+        }
+      },
+    },
     size: {
       immediate: true,
       deep: true,
@@ -251,17 +235,6 @@ export default {
         }
       },
     },
-    transactions: {
-      immediate: true,
-      handler(value) {
-        if (value.data.length) {
-          this.loadingAction();
-        } else {
-          this.indeterminate = false;
-          this.indeterminateValue = 0;
-        }
-      },
-    },
     query_params: {
       deep: true,
       handler: function (newVal) {
@@ -270,8 +243,8 @@ export default {
           "middleName",
           "lastName",
           "referenceNumber",
-          "checkInDate",
-          "checkOutDate",
+          "email",
+          "phone",
         ];
 
         Object.keys(newVal).forEach((key) => {
@@ -281,6 +254,10 @@ export default {
             }
           }
         });
+
+        if (Object.keys(newVal).length === 0) {
+          this.$emit("query-request", this.query_params);
+        }
       },
     },
   },

@@ -9,36 +9,34 @@
     >
       <v-row v-if="!$vuetify.breakpoint.xs">
         <v-col cols="12">
-          <div class="text-h5 text-sm-h6 font-weight-bold mb-1">Guest Details</div>
+          <div class="text-h5 text-sm-h6 font-weight-bold mb-1">
+            Guest Details
+          </div>
         </v-col>
       </v-row>
       <v-divider v-if="!$vuetify.breakpoint.xs" class="my-3" />
-      <GuestInfo :guest="guest" @delete-request="passDeleteRequest" />
+      <GuestInfo :guest="guest" @delete-request="passDeleteRequest" class="mb-5"/>
       <v-row>
         <v-col cols="12">
           <v-card elevation="0">
-            <GuestCardHeader :guest="guest" @search-query="searchQuery" />
-            <v-row>
-              <v-col cols="12">
-                <v-data-table
-                  :headers="headers"
-                  :items="guestTransactions"
-                  class="ma-5"
-                  @click:row="(v) => pushToTransactionRoute(v)"
+            <GuestCardHeader :guest="guest" @search-query="searchQuery"/>
+            <v-data-table
+              :headers="headers"
+              :items="guestTransactions"
+              class="ma-5"
+              @click:row="(v) => pushToTransactionRoute(v)"
+            >
+              <template v-slot:[`item.status`]="{ item }">
+                <v-chip
+                  :color="statusColors[item.status.toLowerCase()]"
+                  dark
+                  small
+                  class="text-overline"
                 >
-                  <template v-slot:[`item.status`]="{ item }">
-                    <v-chip
-                      :color="statusColors[item.status.toLowerCase()]"
-                      dark
-                      small
-                      class="text-overline"
-                    >
-                      {{ item.status }}
-                    </v-chip>
-                  </template>
-                </v-data-table>
-              </v-col>
-            </v-row>
+                  {{ item.status }}
+                </v-chip>
+              </template>
+            </v-data-table>
           </v-card>
         </v-col>
       </v-row>
@@ -129,8 +127,7 @@ export default {
         : [];
     },
   },
-  watch: {
-  },
+  watch: {},
 };
 </script>
 

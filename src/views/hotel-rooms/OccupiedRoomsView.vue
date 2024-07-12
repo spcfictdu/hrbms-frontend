@@ -116,7 +116,6 @@ export default {
       handler: function (newVal) {
         if (this.triggerEventFetch === true) {
           this.fetchRoomStatus(this.queryParams);
-          console.log("troth");
           this.triggerEventFetch = false;
         }
         console.log(newVal);
