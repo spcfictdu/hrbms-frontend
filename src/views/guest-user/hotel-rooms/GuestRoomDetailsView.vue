@@ -6,6 +6,7 @@
       </v-col>
       <v-col cols="12">
         <room-details
+          :queryFill="routeQuery"
           @reservation-event="requestReservation"
           :category="roomCategory"
         />
@@ -40,6 +41,9 @@ export default {
     }),
     referenceNumber: function () {
       return this.$route.params.referenceNumber;
+    },
+    routeQuery: function () {
+      return this.$route.query;
     },
   },
   watch: {

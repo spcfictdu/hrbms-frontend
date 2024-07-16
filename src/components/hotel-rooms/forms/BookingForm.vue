@@ -118,7 +118,7 @@
     <warning-dialog
       :activator="warningDialog"
       @reset-activator="resetDialog('WARNING')"
-      @change-event="submitForValidation"
+      @change-event="submitForValidationWarning"
     />
   </div>
 </template>
@@ -145,16 +145,6 @@ export default {
     valid: true,
     autofill: "",
     autoFilled: null,
-    statuses: [
-      {
-        status: "For Reservation",
-        value: "RESERVED",
-      },
-      {
-        status: "For Booking",
-        value: "CONFIRMED",
-      },
-    ],
     payload: {
       payment: {
         paymentType: null,
@@ -223,13 +213,20 @@ export default {
         }
       }
     },
+    submitForValidationWarning: function (action) {
+      let payload = {
+        payload: this.payload,
+        action: action,
+      };
+
+      this.$emit("validation-event", payload);
+      this.resetDialog("WARNING");
+    },
     submitForValidation: function () {
       this.$emit("validation-event", this.payload);
 
       if (this.$auth.user()) {
         this.resetDialog("CONFIRM");
-      } else {
-        this.resetDialog("WARNING");
       }
     },
     fetchQuery: function () {
@@ -365,6 +362,22 @@ export default {
     },
     guestsEnums() {
       return this.room ? this.room[0].extraPersonCapacity : [];
+    },
+    statuses: function () {
+      let statuses = [
+        {
+          status: "For Reservation",
+          value: "RESERVED",
+        },
+      ];
+
+      if (this.$auth.user()?.role === "ADMIN") {
+        statuses.push({
+          status: "For Booking",
+          value: "CONFIRMED",
+        });
+      }
+      return statuses;
     },
   },
   watch: {

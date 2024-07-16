@@ -7,23 +7,20 @@
           >Please Note</v-card-title
         >
         <p class="py-2 py-sm-4 text-caption text-sm-body-2 font-weight-regular">
-          This reservation is a <strong>“Pencil Booking”</strong> and does not secure your
-          reservation. Others may still book the room by paying it first. To
-          ensure your reservation, we recommend completing the payment.
+          This reservation is a <strong>“Pencil Booking”</strong> and does not
+          secure your reservation. Others may still book the room by paying it
+          first. To ensure your reservation, we recommend completing the
+          payment.
         </p>
         <v-card-actions class="pa-0 mt-4">
           <v-row dense justify="center" justify-sm="end">
             <v-col cols="12" sm="auto" order="last" order-sm="first"
-              ><v-btn block outlined color="primary" @click="cancelButton"
+              ><v-btn block outlined color="primary" @click="notRegisterButton"
                 >Maybe Later</v-btn
               ></v-col
             >
             <v-col cols="12" sm="auto"
-              ><v-btn
-                block
-                depressed
-                color="primary"
-                @click="proceedButton"
+              ><v-btn block depressed color="primary" @click="registerButton"
                 >Register Now</v-btn
               ></v-col
             >
@@ -44,11 +41,11 @@ export default {
     dialog: false,
   }),
   methods: {
-    cancelButton: function () {
-      this.$emit("reset-activator");
+    notRegisterButton: function () {
+      this.$emit("change-event", "MAYBE");
     },
-    proceedButton: function () {
-      this.$emit("change-event");
+    registerButton: function () {
+      this.$emit("change-event", "REGISTER");
     },
   },
   computed: {},

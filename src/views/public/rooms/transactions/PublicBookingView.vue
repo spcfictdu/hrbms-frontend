@@ -17,14 +17,28 @@ export default {
   data: () => ({}),
   methods: {
     ...mapActions("publicRooms", ["storeTemporaryData"]),
+    ...mapActions("transaction", ["createTransaction", "triggerLoading"]),
     requestValidation: function (payload) {
-      // Add Query and Data
-      let temporaryData = this.createObject(payload);
-      temporaryData.query = this.$route.query;
+      if (payload.action === "REGISTER") {
+        // Add Query and Data
+        let temporaryData = this.createObject(payload.payload);
+        temporaryData.query = this.$route.query;
 
-      this.storeTemporaryData(temporaryData).then(() => {
-        this.$router.replace({ name: "Guest Sign In" });
-      });
+        this.storeTemporaryData(temporaryData).then(() => {
+          this.$router.replace({ name: "Guest Sign In" });
+        });
+      } else {
+        this.triggerLoading({
+          title: "Create Transaction",
+          loading: true,
+        }).then(() => {
+          this.createTransaction(this.createObject(payload.payload)).then(
+            () => {
+              this.$router.replace({ name: "Public Dashboard" });
+            }
+          );
+        });
+      }
     },
     createObject: function (payload) {
       let value = {};

@@ -124,6 +124,7 @@ export default {
   components: { LabelSlot },
   props: {
     roomCategory: String,
+    queryFill: Object,
   },
   data: () => ({
     payload: {
@@ -246,7 +247,7 @@ export default {
     },
     role: function () {
       return this.$auth.user() ? this.$auth.user().role : null;
-    }
+    },
   },
   watch: {
     payload: {
@@ -263,14 +264,23 @@ export default {
       },
     },
     role: {
-      immediate: true, 
+      immediate: true,
       handler: function (newVal) {
         // For Front Desk Only
         if (newVal === "ADMIN") {
           this.requestRoomNumbers();
         }
-      }
-    }
+      },
+    },
+    queryFill: {
+      immediate: true,
+      handler: function (newVal) {
+        if (newVal && JSON.stringify(newVal) !== "{}") {
+          this.payload.checkInDate = newVal.checkInDate;
+          this.payload.checkOutDate = newVal.checkOutDate;
+        }
+      },
+    },
   },
 };
 </script>

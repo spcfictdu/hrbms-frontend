@@ -179,7 +179,7 @@ export default {
       },
     },
   },
-  mounted() {
+  beforeUpdate() {
     this.$nextTick(() => {
       if (this.$refs.searchEngine) {
         this.routeSearchQueryHandler(this.routeSearchQuery);

@@ -25,6 +25,7 @@
         <room-reservation-form
           @reservation-event="(e) => $emit('reservation-event', e)"
           :roomCategory="room.name"
+          :queryFill="queryFill"
         />
       </v-col>
     </v-row>
@@ -40,6 +41,7 @@ export default {
   components: { RoomInfo, RoomReservationForm },
   props: {
     category: Object,
+    queryFill: Object,
   },
   data: () => ({
     isShowAlert: false,

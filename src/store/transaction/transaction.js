@@ -76,8 +76,10 @@ export const transaction = {
       return this.$axios
         .post(url, payload)
         .then((response) => {
-          dispatch("resetLoading");
-          return response;
+          if (response) {
+            dispatch("resetLoading");
+            return response;
+          }
         })
         .catch((error) => {
           console.error("Error creating transaction: ", error);

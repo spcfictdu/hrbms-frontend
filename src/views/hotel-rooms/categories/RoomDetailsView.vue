@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-10">
+  <div class="mt-10" v-if="roomCategory">
     <v-row>
       <v-col cols="12">
         <RoomImages :images="roomImages" />

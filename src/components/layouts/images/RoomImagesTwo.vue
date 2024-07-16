@@ -4,8 +4,8 @@
       <v-img class="room-images" max-height="400" :src="imagePath(images[0])" />
     </v-col>
     <v-col cols="12" md="4" class="grid-container">
-      <v-img class="room-images" max-height="196" :src="imagePath(images[1])" />
-      <v-img class="room-images" max-height="196" :src="imagePath(images[2])" />
+      <img class="room-images grid-images" :src="imagePath(images[1])" />
+      <img class="room-images grid-images" :src="imagePath(images[2])" />
     </v-col>
   </v-row>
 </template>
@@ -29,10 +29,9 @@ export default {
   display: grid;
   grid-template-rows: 1fr;
   row-gap: 8px;
-  height: 100%;
 }
 
-@media(max-width: 959px) {
+@media (max-width: 959px) {
   .grid-container {
     grid-template-columns: 1fr 1fr;
     column-gap: 8px;
@@ -44,5 +43,10 @@ export default {
   height: 100%;
   border-radius: 10px;
   object-fit: cover;
+}
+
+.grid-images {
+  height: 196px;
+  max-height: 196px;
 }
 </style>

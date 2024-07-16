@@ -64,7 +64,10 @@ export default {
   computed: {
     rules() {
       const errors = {};
-      errors.phoneNumber = [(v) => !!v || "Phone number is required"];
+      errors.phoneNumber = [
+        (v) => !!v || "Phone number is required",
+        (v) => (v && v.length === 11) || "Phone number has 11 characters",
+      ];
       errors.email = [
         (v) => !!v || "Email is required",
         (v) => /.+@.+\..+/.test(v) || "Email must be valid",

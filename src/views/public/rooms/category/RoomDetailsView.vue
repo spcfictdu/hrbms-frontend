@@ -5,7 +5,11 @@
         <room-images-two :images="roomCategory.images" />
       </v-col>
       <v-col cols="12">
-        <room-details @reservation-event="requestReservation" :category="roomCategory" />
+        <room-details
+          :queryFill="routeQuery"
+          @reservation-event="requestReservation"
+          :category="roomCategory"
+        />
       </v-col>
     </v-row>
   </div>
@@ -43,6 +47,9 @@ export default {
     }),
     referenceNumber: function () {
       return this.$route.params.referenceNumber;
+    },
+    routeQuery: function () {
+      return this.$route.query;
     },
   },
   watch: {

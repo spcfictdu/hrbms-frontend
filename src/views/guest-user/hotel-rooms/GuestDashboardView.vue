@@ -70,12 +70,25 @@ export default {
       this.fetchFilteredRoom();
     },
     redirectToRoomCategory: function (referenceNumber) {
-      this.$router.push({
+      let queryData = {};
+      for (const key in this.routeQuery) {
+        if (Object.hasOwnProperty.call(this.routeQuery, key)) {
+          const value = this.routeQuery[key];
+          if (key !== "numberOfGuests") {
+            this.$set(queryData, key, value);
+          }
+        }
+      }
+
+      const routeData = {
         name: "Guest Room Category",
         params: {
           referenceNumber: referenceNumber,
         },
-      });
+        query: queryData,
+      };
+
+      this.$router.push(routeData);
     },
   },
   computed: {
