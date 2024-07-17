@@ -15,16 +15,26 @@
         </v-col>
       </v-row>
       <v-divider v-if="!$vuetify.breakpoint.xs" class="my-3" />
-      <GuestInfo :guest="guest" @delete-request="passDeleteRequest" class="mb-5"/>
+      <GuestInfo
+        :guest="guest"
+        @delete-request="passDeleteRequest"
+        class="mb-5"
+      />
       <v-row>
         <v-col cols="12">
           <v-card elevation="0">
-            <GuestCardHeader :guest="guest" @search-query="searchQuery"/>
+            <GuestCardHeader :guest="guest" @search-query="searchQuery" />
             <v-data-table
               :headers="headers"
               :items="guestTransactions"
               class="ma-5"
+              item-key="reference"
+              :footer-props="{
+                itemsPerPage: [5, 10, 15],
+              }"
               @click:row="(v) => pushToTransactionRoute(v)"
+              :options.sync="options"
+              disable-sort
             >
               <template v-slot:[`item.status`]="{ item }">
                 <v-chip
@@ -48,10 +58,12 @@
 import GuestCardHeader from "./GuestCardHeader.vue";
 import GuestInfo from "./GuestInfo.vue";
 import { format, parseISO } from "date-fns";
+import TablePagination from "@/mixins/TablePagination";
 
 export default {
   name: "GuestDetails",
   components: { GuestInfo, GuestCardHeader },
+  mixins: [TablePagination],
   props: {
     guest: {
       type: Object,
@@ -105,7 +117,15 @@ export default {
       }
     },
     searchQuery: function (query_params) {
-      this.$emit("query-params", query_params);
+      if (this.query_params.perPage) {
+        query_params.perPage = this.query_params.perPage;
+      }
+
+      if (this.query_params.page) {
+        delete this.query_params.page;
+      }
+
+      this.assignParams(query_params);
     },
     size: function () {
       return this.$vuetify.breakpoint;

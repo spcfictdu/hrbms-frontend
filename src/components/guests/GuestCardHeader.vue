@@ -186,7 +186,7 @@ export default {
       if (Object.keys(this.query_params).length !== 0) {
         Object.keys(this.query_params).forEach((key) => {
           if (query.includes(key)) {
-            delete this.query_params[key];
+            this.$set(this.query_params, key, null)
           }
         });
         this.$emit("search-query", this.query_params);
@@ -255,7 +255,8 @@ export default {
         Object.keys(newVal).forEach((key) => {
           if (query.includes(key)) {
             if (!newVal[key] || newVal[key] === "") {
-              delete newVal[key];
+              // delete newVal[key];
+              this.$set(newVal, key, null)
             }
           }
         });

@@ -2,7 +2,7 @@
   <div>
     <GuestDetails
       :guest="guest"
-      @query-params="fetchGuestDetails"
+      @query_params="fetchGuestDetails"
       @delete-guest="deleteEvent"
       v-if="guest && guest.transactions"
     />

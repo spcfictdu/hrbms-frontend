@@ -14,6 +14,7 @@
           <v-data-table
             :headers="headers"
             :items="mappedTransactions"
+            item-key="reference"
             group-by="date"
             class="ma-5"
             @click:row="(v) => requestRouteEvent(v)"
@@ -22,7 +23,7 @@
             }"
             :server-items-length="transactions.pagination.total"
             :options.sync="options"
-            :disable-sort="$vuetify.breakpoint.smAndDown"
+            disable-sort
           >
             <template v-slot:[`item.status`]="{ item }">
               <v-chip
@@ -107,6 +108,7 @@ export default {
       reserved: "reserved",
       confirmed: "confirmed",
     },
+    transactionList: [],
   }),
   methods: {
     requestRouteEvent: function (value) {
@@ -121,7 +123,11 @@ export default {
         query_params.perPage = this.query_params.perPage;
       }
 
-      this.$emit("query_params", query_params);
+      if (this.query_params.page) {
+        delete this.query_params.page;
+      }
+
+      this.assignParams(query_params);
     },
   },
   computed: {

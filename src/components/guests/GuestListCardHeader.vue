@@ -111,6 +111,7 @@
           hide-details="auto"
           v-model="query_params.email"
           :rules="rules.email"
+          ref="textfieldRef"
         ></v-text-field>
       </v-col>
       <v-col cols="12" sm="6" md="4">
@@ -120,11 +121,12 @@
           dense
           hide-details="auto"
           type="number"
-          v-model="query_params.phone"
+          v-model="query_params.phoneNumber"
           counter
           maxlength="11"
           hide-spin-buttons
           :rules="rules.phone"
+          ref="textfieldRef"
         ></v-text-field>
       </v-col>
     </v-row>
@@ -152,9 +154,11 @@ export default {
   }),
   methods: {
     searchFunction: function () {
-      if (Object.keys(this.query_params).length !== 0) {
-        this.$emit("query-request", this.query_params);
-        this.loadingAction();
+      if (this.$refs.textfieldRef.validate()) {
+        if (Object.keys(this.query_params).length !== 0) {
+          this.$emit("query-request", this.query_params);
+          this.loadingAction();
+        }
       }
     },
     clearQuery: function () {
@@ -164,18 +168,20 @@ export default {
         "lastName",
         "referenceNumber",
         "email",
-        "phone",
+        "phoneNumber",
       ];
 
       if (Object.keys(this.query_params).length !== 0) {
         Object.keys(this.query_params).forEach((key) => {
           if (query.includes(key)) {
-            delete this.query_params[key];
+            this.$set(this.query_params, key, null);
+            // delete this.query_params[key];
           }
         });
         this.$emit("query-request", this.query_params);
         this.loadingAction();
       }
+      this.$refs.textfieldRef.reset();
     },
     loadingAction: function () {
       this.indeterminate = true;
@@ -193,13 +199,17 @@ export default {
       const errors = {};
 
       if (this.query_params.email) {
-        errors.email = [(v) => /.+@.+\..+/.test(v) || "Invalid e-mail."];
+        errors.email = [
+          (v) => /.+@.+\..+/.test(v) || "Please put a valid e-mail.",
+        ];
       } else {
         delete errors.email;
       }
 
-      if (this.query_params.phone) {
-        errors.phone = [(v) => v.length === 11 || "Invalid number"];
+      if (this.query_params.phoneNumber) {
+        errors.phone = [
+          (v) => v.length === 11 || "Please put a valid phone number",
+        ];
       } else {
         delete errors.phone;
       }
@@ -245,20 +255,21 @@ export default {
           "lastName",
           "referenceNumber",
           "email",
-          "phone",
+          "phoneNumber",
         ];
 
         Object.keys(newVal).forEach((key) => {
           if (query.includes(key)) {
             if (!newVal[key] || newVal[key] === "") {
-              delete newVal[key];
+              // delete newVal[key];
+              this.$set(newVal, key, null);
             }
           }
         });
 
-        if (Object.keys(newVal).length === 0) {
-          this.$emit("query-request", this.query_params);
-        }
+        // if (Object.keys(newVal).length === 0) {
+        //   this.$emit("query-request", this.query_params);
+        // }
       },
     },
   },

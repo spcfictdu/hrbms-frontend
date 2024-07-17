@@ -23,6 +23,7 @@
           </div>
         </div>
       </div>
+      <v-spacer/>
       <div class="d-flex flex-column" v-if="!$vuetify.breakpoint.xs">
         <v-btn outlined color="red" @click="triggerActivator"
           >DELETE GUEST DETAILS</v-btn

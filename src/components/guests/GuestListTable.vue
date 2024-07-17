@@ -26,6 +26,7 @@
             }"
             :options.sync="options"
             :server-items-length="guests.pagination.total"
+            disable-sort
           >
           </v-data-table>
         </v-card>
@@ -75,11 +76,12 @@ export default {
       if (this.query_params.perPage) {
         query_params.perPage = this.query_params.perPage;
       }
-      this.query_params.page = 1;
 
-      console.log("parameters from header: ", query_params);
+      if (this.query_params.page) {
+        delete this.query_params.page
+      }
 
-      this.$emit("query_params", query_params);
+      this.assignParams(query_params);
     },
     selectGuest: function (row) {
       this.$router.push({
@@ -106,13 +108,6 @@ export default {
         } else {
           this.guestClass = "text-h5 font-weight-bold mb-1";
         }
-      },
-    },
-    query_params: {
-      immediate: true,
-      deep: true,
-      handler: function (newVal) {
-        console.log("query_params: ", newVal);
       },
     },
   },

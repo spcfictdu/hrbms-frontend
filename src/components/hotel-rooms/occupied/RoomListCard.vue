@@ -216,6 +216,7 @@ export default {
             };
             this.metaDialog = {
               action: "Edit room",
+              actionType: "Edit room",
               roomActivator: true,
             };
           },

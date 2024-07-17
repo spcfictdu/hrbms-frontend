@@ -96,8 +96,8 @@ export default {
     },
   },
   created() {
-    this.fetchTransactions();
-  },
+    this.fetchTransactions()
+  }
 };
 </script>
 

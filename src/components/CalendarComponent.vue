@@ -388,11 +388,11 @@ export default {
         this.updateRange();
       },
     },
-    type: {
-      handler(value) {
-        console.log(this.formatEvents.includes(value) && this.type !== "day");
-      },
-    },
+    // type: {
+    //   handler(value) {
+    //     console.log(this.formatEvents.includes(value) && this.type !== "day");
+    //   },
+    // },
   },
 };
 </script>

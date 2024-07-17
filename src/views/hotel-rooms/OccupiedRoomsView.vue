@@ -113,24 +113,13 @@ export default {
     },
     roomStatuses: {
       deep: true,
-      handler: function (newVal) {
+      handler: function () {
         if (this.triggerEventFetch === true) {
           this.fetchRoomStatus(this.queryParams);
           this.triggerEventFetch = false;
         }
-        console.log(newVal);
       },
     },
-    // triggerEventFetch: {
-    //   deep: true,
-    //   handler: function (value) {
-    //     if (value) {
-    //       this.fetchRoomStatus(this.queryParams);
-    //       console.log("troth")
-    //     }
-    //     this.triggerEventFetch = false;
-    //   },
-    // },
     occupiedStatus: {
       deep: true,
       handler: function (newVal) {
