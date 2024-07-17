@@ -215,7 +215,7 @@ export default {
 
           setTimeout(() => {
             this.meta = {
-              title: "rooms in this section",
+              title: "rooms in this category",
               loading: false,
             };
           }, 3000);
