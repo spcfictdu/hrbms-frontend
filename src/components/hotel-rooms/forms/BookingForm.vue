@@ -262,6 +262,7 @@ export default {
         const autofilledObject = this.fillResult.guests
           .filter((item) => item.full_name === newVal)
           .map((item) => ({
+            id: item.id,
             city: item.city,
             email: item.email,
             first_name: item.first_name,
@@ -271,8 +272,10 @@ export default {
             province: item.province,
           }));
         this.autoFilled = autofilledObject[0];
+        this.payload.accountId = autofilledObject[0].id;
       } else {
         this.autoFilled = null;
+        delete this.payload.accountId;
       }
     },
     assignDates: function (newVal) {

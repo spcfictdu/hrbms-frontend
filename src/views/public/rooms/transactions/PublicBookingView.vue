@@ -33,8 +33,10 @@ export default {
           loading: true,
         }).then(() => {
           this.createTransaction(this.createObject(payload.payload)).then(
-            () => {
-              this.$router.replace({ name: "Public Dashboard" });
+            (response) => {
+              if (response) {
+                this.$router.replace({ name: "Public Dashboard" });
+              }
             }
           );
         });

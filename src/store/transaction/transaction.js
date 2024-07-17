@@ -83,6 +83,8 @@ export const transaction = {
         })
         .catch((error) => {
           console.error("Error creating transaction: ", error);
+          dispatch("resetLoading");
+          throw error;
         });
     },
     deleteReservation: function (
@@ -101,11 +103,12 @@ export const transaction = {
           return response;
         })
         .catch((error) => {
-          console.error("Error deleting reservation: ", error);
           commit("SET_TRANSACTION_STATUS", {
             message: error.response.data.message,
             status: "ERROR",
           });
+          console.error("Error deleting reservation: ", error);
+          dispatch("resetLoading");
           throw error;
         });
     },
@@ -119,6 +122,8 @@ export const transaction = {
         })
         .catch((error) => {
           console.error("Error updating transaction: ", error);
+          dispatch("resetLoading");
+          throw error;
         });
     },
     fetchPreviousFormTransactions: function ({ commit }, referenceNumber) {

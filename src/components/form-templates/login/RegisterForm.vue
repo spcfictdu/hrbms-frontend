@@ -5,13 +5,13 @@
         <template #label> First Name</template>
       </label-slot>
       <v-text-field
-          v-model="payload.firstName"
-          outlined
-          dense
-          rounded
-          hide-details="auto"
-          @change="emitTransaction"
-          :rules="rules.firstName"
+        v-model="payload.firstName"
+        outlined
+        dense
+        rounded
+        hide-details="auto"
+        @change="emitTransaction"
+        :rules="rules.firstName"
       />
     </div>
 
@@ -20,13 +20,13 @@
         <template #label> Middle Name</template>
       </label-slot>
       <v-text-field
-          v-model="payload.middleName"
-          outlined
-          dense
-          rounded
-          hide-details="auto"
-          @change="emitTransaction"
-          :rules="rules.middleName"
+        v-model="payload.middleName"
+        outlined
+        dense
+        rounded
+        hide-details="auto"
+        @change="emitTransaction"
+        :rules="rules.middleName"
       />
     </div>
 
@@ -35,13 +35,13 @@
         <template #label> Last Name</template>
       </label-slot>
       <v-text-field
-          v-model="payload.lastName"
-          outlined
-          dense
-          rounded
-          hide-details="auto"
-          @change="emitTransaction"
-          :rules="rules.lastName"
+        v-model="payload.lastName"
+        outlined
+        dense
+        rounded
+        hide-details="auto"
+        @change="emitTransaction"
+        :rules="rules.lastName"
       />
     </div>
 
@@ -50,16 +50,16 @@
         <template #label> Mobile Number</template>
       </label-slot>
       <v-text-field
-          type="tel"
-          v-model="payload.mobileNumber"
-          outlined
-          dense
-          rounded
-          hide-details="auto"
-          @change="emitTransaction"
-          :rules="rules.mobileNumber"
-          maxLength="11"
-          v-mask="'###########'"
+        type="tel"
+        v-model="payload.mobileNumber"
+        outlined
+        dense
+        rounded
+        hide-details="auto"
+        @change="emitTransaction"
+        :rules="rules.mobileNumber"
+        maxLength="11"
+        v-mask="'###########'"
       />
     </div>
 
@@ -68,15 +68,15 @@
         <template #label> Email</template>
       </label-slot>
       <v-text-field
-          type="email"
-          v-model="payload.email"
-          outlined
-          dense
-          rounded
-          hide-details="auto"
-          @change="emitTransaction"
-          :rules="rules.email"
-          autocomplete="username"
+        type="email"
+        v-model="payload.email"
+        outlined
+        dense
+        rounded
+        hide-details="auto"
+        @change="emitTransaction"
+        :rules="rules.email"
+        autocomplete="username"
       />
     </div>
 
@@ -85,17 +85,17 @@
         <template #label> Password</template>
       </label-slot>
       <v-text-field
-          v-model="payload.password"
-          :type="showPassword ? 'text' : 'password'"
-          outlined
-          dense
-          rounded
-          hide-details="auto"
-          @change="emitTransaction"
-          :rules="rules.password"
-          @click:append="showPassword = !showPassword"
-          :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
-          autocomplete="new-password"
+        v-model="payload.password"
+        :type="showPassword ? 'text' : 'password'"
+        outlined
+        dense
+        rounded
+        hide-details="auto"
+        @change="emitTransaction"
+        :rules="rules.password"
+        @click:append="showPassword = !showPassword"
+        :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
+        autocomplete="new-password"
       />
     </div>
   </div>
@@ -103,7 +103,7 @@
 
 <script>
 import { mask } from "vue-the-mask";
-import LabelSlot from '@/components/slots/LabelSlot.vue';
+import LabelSlot from "@/components/slots/LabelSlot.vue";
 
 export default {
   name: "RegisterForm",
@@ -118,12 +118,12 @@ export default {
       mobileNumber: null,
       email: null,
       password: null,
-    }
+    },
   }),
   methods: {
     emitTransaction: function () {
       this.$emit("register-data", this.payload);
-    }
+    },
   },
   computed: {
     rules: function () {
@@ -131,12 +131,15 @@ export default {
       errors.firstName = [(v) => !!v || "First name is required"];
       errors.middleName = [];
       errors.lastName = [(v) => !!v || "Last name is required"];
-      errors.mobileNumber = [(v) => !!v || "Mobile number is required"];
+      errors.mobileNumber = [
+        (v) => !!v || "Mobile number is required",
+        (v) => (v && v.length === 11) || "Mobile number has 11 characters",
+      ];
       errors.email = [(v) => !!v || "Email is required"];
       errors.password = [(v) => !!v || "Password is required"];
       return errors;
-    }
-  }
+    },
+  },
 };
 </script>
 

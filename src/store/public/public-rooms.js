@@ -50,7 +50,9 @@ export const publicRooms = {
           console.error("Error fetching filtered rooms", error);
         });
     },
-    fetchPublicRoom: function ({ commit }, referenceNumber) {
+    fetchPublicRoom: function ({ commit, state }, referenceNumber) {
+      state.room = null;
+      
       const url = `hotel-room/${referenceNumber}`;
       return this.$axios
         .get(url)

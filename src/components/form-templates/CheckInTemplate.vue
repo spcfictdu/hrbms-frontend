@@ -135,9 +135,9 @@ export default {
     fill: {
       immediate: true,
       handler: function (newVal) {
-        if (newVal?.checkInDate && newVal?.checkInTime) {
+        if (newVal?.checkInDate || newVal?.checkInTime) {
           this.payload.checkIn.date = newVal.checkInDate;
-          this.payload.checkIn.time = newVal.checkInTime;
+          this.payload.checkIn.time = newVal?.checkInTime;
           this.$emit("emit-transaction", this.payload);
         } else {
           this.payload.checkIn.date = null;

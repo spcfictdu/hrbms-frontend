@@ -1,6 +1,5 @@
 <template>
   <v-card
-
     flat
     outlined
     class="card-container transparent-bg d-flex justify-center align-center"
