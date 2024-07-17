@@ -73,10 +73,8 @@
             <v-row>
               <v-col
                 ><div>{{ item.roomType }}</div>
-                <div class="text-subtitle-2">
-
-                </div></v-col
-              >
+                <div class="text-subtitle-2"></div
+              ></v-col>
             </v-row>
           </template>
         </v-autocomplete>
@@ -108,11 +106,9 @@
         />
       </v-col>
     </v-row>
-    <v-row class="mt-7 pb-6" v-else>
-      <v-col cols="12" class="d-flex justify-center">
-        {{ emptyRoomMessage }}
-      </v-col>
-    </v-row>
+    <v-col v-else>
+      <NoDataFoundCard :meta="meta" />
+    </v-col>
 
     <v-pagination
       class="mt-4"
@@ -129,6 +125,7 @@
 </template>
 
 <script>
+import NoDataFoundCard from "@/components/cards/NoDataFoundCard.vue";
 import RoomDialog from "@/components/dialogs/RoomDialog.vue";
 import RoomListCard from "./RoomListCard.vue";
 import { assignParams } from "@/mixins/FormattingFunctions";
@@ -136,7 +133,7 @@ import { mapActions, mapState } from "vuex";
 
 export default {
   name: "OccupiedRoomsComponent",
-  components: { RoomListCard, RoomDialog },
+  components: { RoomListCard, RoomDialog, NoDataFoundCard },
   mixins: [assignParams],
   props: {
     roomStatuses: Object,
@@ -145,10 +142,13 @@ export default {
   data: () => ({
     selectedStatus: "AVAILABLE",
     selectedRoomType: "JUNIOR STANDARD",
-    emptyRoomMessage: "",
     page: 1,
     metaDialog: {},
     payload: {},
+    meta: {
+      title: "",
+      loading: false,
+    },
   }),
   computed: {
     ...mapState("roomTypeEnum", ["roomTypeEnum"]),
@@ -181,9 +181,6 @@ export default {
     paginationLastPage: function () {
       return this.roomStatuses ? this.roomStatuses.pagination.lastPage : 1;
     },
-    autocompleteRoomType: function () {
-
-    }
   },
   methods: {
     ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
@@ -207,6 +204,29 @@ export default {
     },
   },
   watch: {
+    roomStatuses: {
+      deep: true,
+      handler: function (value) {
+        if (value.rooms.length === 0) {
+          this.meta = {
+            title: "rooms",
+            loading: true,
+          };
+
+          setTimeout(() => {
+            this.meta = {
+              title: "rooms in this section",
+              loading: false,
+            };
+          }, 3000);
+        } else {
+          this.meta = {
+            title: "",
+            loading: false,
+          };
+        }
+      },
+    },
     selectedStatus: {
       immediate: true,
       handler: function (status) {
@@ -214,14 +234,6 @@ export default {
           roomStatus: status,
           roomType: this.selectedRoomType,
         });
-
-        this.emptyRoomMessage = "Loading...";
-        setTimeout(() => {
-          this.emptyRoomMessage =
-            "There are no " +
-            this.selectedStatus.toLowerCase() +
-            " rooms in this category.";
-        }, 3000);
       },
     },
     selectedRoomType: {
@@ -231,14 +243,6 @@ export default {
           roomStatus: this.selectedStatus,
           roomType: type,
         });
-
-        this.emptyRoomMessage = "Loading...";
-        setTimeout(() => {
-          this.emptyRoomMessage =
-            "There are no " +
-            this.selectedStatus.toLowerCase() +
-            " rooms in this category.";
-        }, 3000);
       },
     },
     page: {
@@ -281,5 +285,4 @@ export default {
 };
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>
