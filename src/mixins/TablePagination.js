@@ -20,7 +20,6 @@ export default {
         }
       }
       // Trigger Loading upon change for slow devices and for filter
-      this.loading = true;
       this.$emit("query_params", this.query_params);
       this.options.page = 1;
     },

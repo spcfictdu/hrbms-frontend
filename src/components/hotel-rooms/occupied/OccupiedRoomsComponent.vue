@@ -205,6 +205,7 @@ export default {
   },
   watch: {
     roomStatuses: {
+      immediate: true,
       deep: true,
       handler: function (value) {
         if (value.rooms.length === 0) {

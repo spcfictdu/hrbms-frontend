@@ -133,7 +133,7 @@ export default {
   },
   computed: {
     guestTransactions: function () {
-      return this.guest.transactions
+      return Array.isArray(this.guest.transactions)
         ? this.guest.transactions.map((content) => ({
             status: content.status,
             reference: content.reference,
@@ -144,7 +144,19 @@ export default {
             room: "Room " + content.room,
             total: content.total,
           }))
-        : [];
+        : Object.keys(this.guest.transactions).map((content) => ({
+            status: this.guest.transactions[content]["status"],
+            reference: this.guest.transactions[content]["reference"],
+            ocupants: this.guest.transactions[content]["ocupants"],
+            checkIn: this.guest.transactions[content]["checkIn"],
+            checkOut: this.guest.transactions[content]["checkOut"],
+            booked: format(
+              parseISO(this.guest.transactions[content]["booked"]),
+              "yyyy-MM-dd"
+            ),
+            room: "Room " + this.guest.transactions[content]["room"],
+            total: this.guest.transactions[content]["total"],
+          }));
     },
   },
   watch: {},

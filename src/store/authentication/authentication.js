@@ -103,6 +103,7 @@ export const authentication = {
         let payload = {
           password: data.password,
           firstName: data.firstName,
+          middleName: data.middleName,
           lastName: data.lastName,
           email: data.email,
           role: data.role,

@@ -226,7 +226,7 @@ export default {
     "guest.transactions": {
       immediate: true,
       handler(value) {
-        if (value.length) {
+        if (value) {
           this.loadingAction();
         } else {
           this.indeterminate = false;
@@ -255,7 +255,6 @@ export default {
         Object.keys(newVal).forEach((key) => {
           if (query.includes(key)) {
             if (!newVal[key] || newVal[key] === "") {
-              // delete newVal[key];
               this.$set(newVal, key, null)
             }
           }
