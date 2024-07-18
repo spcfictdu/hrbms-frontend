@@ -17,7 +17,6 @@
       <v-divider v-if="!$vuetify.breakpoint.xs" class="my-3" />
       <GuestInfo
         :guest="guest"
-        @delete-request="passDeleteRequest"
         class="mb-5"
       />
       <v-row>
@@ -92,9 +91,6 @@ export default {
     checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
   }),
   methods: {
-    passDeleteRequest: function (guestID) {
-      this.$emit("delete-guest", guestID);
-    },
     pushToTransactionRoute: function (value) {
       let payload = {
         status: value.status,

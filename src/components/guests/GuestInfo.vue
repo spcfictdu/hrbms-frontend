@@ -23,37 +23,14 @@
           </div>
         </div>
       </div>
-      <v-spacer/>
-      <div class="d-flex flex-column" v-if="!$vuetify.breakpoint.xs">
-        <v-btn outlined color="red" @click="triggerActivator"
-          >DELETE GUEST DETAILS</v-btn
-        >
-      </div>
-      <div v-else class="d-flex flex-row justify-end flex-grow-1">
-        <v-btn
-          icon
-          outlined
-          color="red"
-          @click="triggerActivator"
-          ><v-icon>mdi-trash-can-outline</v-icon></v-btn
-        >
-      </div>
+      <v-spacer />
     </div>
-    <DeleteDialog
-      :activator="metaDialog.deleteActivator"
-      :deleteMeta="metaDialog"
-      @reset-activator="resetActivator"
-      @delete-event="deleteRequest"
-    />
   </div>
 </template>
 
 <script>
-import DeleteDialog from "../dialogs/DeleteDialog.vue";
-
 export default {
   name: "GuestInfo",
-  components: { DeleteDialog },
   props: {
     guest: {
       type: Object,
@@ -62,22 +39,8 @@ export default {
   },
   data: () => ({
     classGuestName: "",
-    metaDialog: {},
   }),
-  methods: {
-    deleteRequest: function () {
-      this.$emit("delete-request", this.guest.id);
-    },
-    triggerActivator: function () {
-      this.metaDialog = {
-        targetDeletion: "guest",
-        deleteActivator: true,
-      };
-    },
-    resetActivator: function () {
-      this.metaDialog = {};
-    },
-  },
+  methods: {},
   computed: {
     size: function () {
       return this.$vuetify.breakpoint;

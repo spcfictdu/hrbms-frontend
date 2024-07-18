@@ -3,7 +3,6 @@
     <GuestDetails
       :guest="guest"
       @query_params="fetchGuestDetails"
-      @delete-guest="deleteEvent"
       v-if="guest && guest.transactions"
     />
   </div>
@@ -23,10 +22,7 @@ export default {
     }),
   },
   methods: {
-    ...mapActions("guest", ["fetchGuest", "deleteGuest"]),
-    deleteEvent: function (guestID) {
-      this.deleteGuest(guestID);
-    },
+    ...mapActions("guest", ["fetchGuest"]),
     fetchGuestDetails: function (query_params) {
       const id = this.$route.params.id;
       this.fetchGuest({
