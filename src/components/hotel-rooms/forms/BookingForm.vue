@@ -423,9 +423,9 @@ export default {
     "payload.guests": {
       deep: true,
       handler: function (newVal) {
-        if (newVal) {
+        if (newVal || newVal === 0) {
           this.fetchQuery();
-        }
+        } 
       },
     },
     autofill: {
