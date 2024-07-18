@@ -72,6 +72,10 @@ export default {
         this.$emit("selected-button", newVal);
       },
     },
+    accommodationData: {
+      immediate: true,
+      deep: true,
+    }
   },
 };
 </script>

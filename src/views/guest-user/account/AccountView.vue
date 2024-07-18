@@ -87,6 +87,12 @@ export default {
   created() {
     this.fetchAccountInfo();
   },
+  watch: {
+    accountInfo: {
+      immediate: true,
+      deep: true,
+    }
+  }
 };
 </script>
 
