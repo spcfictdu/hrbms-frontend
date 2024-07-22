@@ -18,6 +18,7 @@ export default {
     referenceNumber: null,
     meta: {
       status: "",
+      loading: false,
     },
   }),
   methods: {
@@ -25,8 +26,10 @@ export default {
       "fetchRoomCategory",
       "createRoomCategory",
       "updateRoomCategory",
+      "triggerLoading",
     ]),
     assessRequestCategory: function (payload) {
+      this.triggerLoading(true);
       if (this.meta.status === "NEW") {
         this.createRoomCategory(payload);
       } else {
@@ -58,12 +61,21 @@ export default {
   computed: {
     ...mapState("roomCategories", {
       roomCategory: "roomCategory",
+      metaLoading: "meta",
     }),
   },
   created() {
     this.assessRouteParams();
   },
-  watch: {},
+  watch: {
+    metaLoading: {
+      deep: true,
+      handler: function (newVal) {
+        console.log(newVal);
+        this.meta.loading = newVal.loading;
+      },
+    },
+  },
 };
 </script>
 

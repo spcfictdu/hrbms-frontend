@@ -17,7 +17,7 @@
           </div>
 
           <div class="d-none d-md-flex">
-            <v-btn color="primary" elevation="0" @click="requestRoomUpdate"
+            <v-btn color="primary" elevation="0" :loading="meta.loading" @click="requestRoomUpdate"
               >Save</v-btn
             >
           </div>
