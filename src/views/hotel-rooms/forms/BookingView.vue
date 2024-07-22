@@ -4,6 +4,7 @@
       @validation-event="requestPostTransaction"
       :queryResult="queryResult"
       :fillResult="returnPreviousTransactions"
+      :metaLoading="meta"
     />
   </div>
 </template>
@@ -107,6 +108,7 @@ export default {
   computed: {
     ...mapState("transaction", {
       previousTransactions: "previousTransactions",
+      meta: 'meta',
     }),
     returnPreviousTransactions() {
       return this.previousTransactions ? this.previousTransactions : [];

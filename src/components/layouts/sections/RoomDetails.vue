@@ -17,6 +17,7 @@
         <room-info
           v-if="category"
           :room="room"
+          :metaLoading="metaLoading"
           @validation-event="(e) => $emit('validation-event', e)"
           @delete-event="$emit('delete-event')"
         />
@@ -42,6 +43,7 @@ export default {
   props: {
     category: Object,
     queryFill: Object,
+    metaLoading: Object
   },
   data: () => ({
     isShowAlert: false,

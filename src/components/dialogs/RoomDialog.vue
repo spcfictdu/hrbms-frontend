@@ -58,7 +58,7 @@
                 block
                 color="primary"
                 class="lightBg"
-                :loading="metaLoading?.title === 'Room' ? metaLoading.loading : false"
+                :loading="metaLoading?.title ? metaLoading.loading : false"
                 @click="proceedButton"
                 >Proceed</v-btn
               ></v-col

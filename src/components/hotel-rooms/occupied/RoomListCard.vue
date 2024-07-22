@@ -67,6 +67,7 @@
     <DeleteDialog
       :activator="metaDialog.deleteActivator"
       :deleteMeta="metaDialog"
+      :metaLoading="metaLoading"
       @reset-activator="resetActivator"
       @delete-event="requestType"
     />

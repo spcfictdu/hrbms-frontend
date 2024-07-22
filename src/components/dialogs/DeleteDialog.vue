@@ -21,6 +21,7 @@
               block
               color="primary"
               class="lightBg"
+              :loading="metaLoading?.title ? metaLoading.loading : false"
               @click="deleteButton"
               >Proceed</v-btn
             ></v-col
@@ -43,7 +44,8 @@ export default {
     },
     deleteMeta: {
       type: Object,
-    }
+    },
+    metaLoading: Object
   },
   computed: {
     size: function () {

@@ -7,6 +7,7 @@
       <v-col cols="12">
         <RoomDetails
           :category="roomCategory"
+          :metaLoading="meta"
           @reservation-event="requestReservation"
           @validation-event="assessRequestCall"
           @delete-event="deleteRequestCategory"
@@ -30,6 +31,7 @@ export default {
     ...mapActions("roomCategories", [
       "fetchRoomCategory",
       "deleteRoomCategory",
+      "triggerLoading",
     ]),
     ...mapActions("roomRates", [
       "createSpecialRoomRate",
@@ -86,6 +88,7 @@ export default {
       }
     },
     deleteRequestCategory: function () {
+      this.triggerLoading(true);
       this.deleteRoomCategory({
         roomTypeReferenceNumber: this.referenceNumber,
       });
@@ -100,6 +103,7 @@ export default {
   computed: {
     ...mapState("roomCategories", {
       roomCategory: "roomCategory",
+      meta: 'meta'
     }),
     roomImages: function () {
       return this.roomCategory ? this.roomCategory.images : [];

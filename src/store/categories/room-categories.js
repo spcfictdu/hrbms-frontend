@@ -95,9 +95,10 @@ export const roomCategories = {
             message: error.response.data.message,
             status: "ERROR",
           });
+          dispatch("triggerLoading", false);
         });
     },
-    deleteRoomCategory: function ({ commit, _ }, { roomTypeReferenceNumber }) {
+    deleteRoomCategory: function ({ commit, dispatch }, { roomTypeReferenceNumber }) {
       const url = `room-type/delete/${roomTypeReferenceNumber}`;
       return this.$axios
         .delete(url)
@@ -108,6 +109,7 @@ export const roomCategories = {
             status: "SUCCESS",
           });
           // dispatch("fetchRoomCategories");
+          dispatch("triggerLoading", false);
         })
         .catch((error) => {
           console.error("Error deleting room category: ", error);
@@ -115,6 +117,7 @@ export const roomCategories = {
             message: error.response.data.message,
             status: "ERROR",
           });
+          // dispatch("triggerLoading", false);
         });
     },
     updateRoomCategory: function (

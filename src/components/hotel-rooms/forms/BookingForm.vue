@@ -112,6 +112,7 @@
     <confirmation-dialog
       :activator="confirmMeta.activator"
       :metaDialog="confirmMeta"
+      :metaLoading="metaLoading"
       @reset-activator="resetDialog('CONFIRM')"
       @change-event="submitForValidation"
     />
@@ -140,7 +141,7 @@ import WarningDialog from "@/components/dialogs/WarningDialog.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "BookingForm",
-  props: ["queryResult", "fillResult", "guestAutofill"],
+  props: ["queryResult", "fillResult", "guestAutofill", 'metaLoading'],
   data: () => ({
     valid: true,
     autofill: "",

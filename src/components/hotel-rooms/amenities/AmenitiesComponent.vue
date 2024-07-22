@@ -59,12 +59,14 @@
     <DeleteDialog
       :activator="metaDialog.deleteActivator"
       :delete-meta="metaDialog"
+      :metaLoading="metaLoading"
       @reset-activator="resetActivator"
       @delete-event="requestAction"
     />
     <AmenityDialog
       :activator="metaDialog.amenityDialogActivator"
       :metaDialog="metaDialog"
+      :metaLoading="metaLoading"
       @reset-activator="resetActivator"
       @amenity-request="requestAction"
     />
@@ -86,6 +88,7 @@ export default {
     amenityDialog: {
       type: Boolean,
     },
+    metaLoading: Object
   },
   data: () => ({
     payload: {},

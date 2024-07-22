@@ -12,14 +12,22 @@ export const amenities = {
       status: "",
     },
     amenityDialog: false,
+    meta: {
+      title: "",
+      loading: false,
+    },
   }),
   getters: {},
   mutations: {
     SET_AMENITIES: (state, data) => (state.amenities = data),
     SET_PROCEDURE_STATUS: (state, data) => (state.procedureStatus = data),
     SET_AMENITY_DIALOG: (state, data) => (state.amenityDialog = data),
+    SET_LOADING: (state, data) => (state.meta.loading = data),
   },
   actions: {
+    triggerLoading: function ({ commit }, value) {
+      commit('SET_LOADING', value)
+    },
     fetchAmenities: function ({ commit }) {
       const url = `amenity`;
       return this.$axios
@@ -42,6 +50,7 @@ export const amenities = {
             message: response.data.message,
             status: "success",
           });
+          dispatch('triggerLoading', false)
         })
         .catch((error) => {
           console.error("Error adding amenity: ", error);
@@ -49,6 +58,7 @@ export const amenities = {
             message: error.response.data.message,
             status: "error",
           });
+          dispatch('triggerLoading', false)
         });
     },
     updateAmenity: function ({ commit, dispatch }, { refNum, data }) {
@@ -62,6 +72,7 @@ export const amenities = {
             message: response.data.message,
             status: "success",
           });
+          dispatch('triggerLoading', false)
         })
         .catch((error) => {
           console.error("Error updating amenity: ", error);
@@ -69,6 +80,7 @@ export const amenities = {
             message: error.response.data.message,
             status: "error",
           });
+          dispatch('triggerLoading', false)
         });
     },
     deleteAmenity: function ({ commit, dispatch }, refNum) {
@@ -82,6 +94,7 @@ export const amenities = {
             message: response.data.message,
             status: "success",
           });
+          dispatch('triggerLoading', false)
         })
         .catch((error) => {
           console.error("Error deleting amenity: ", error);
@@ -89,6 +102,7 @@ export const amenities = {
             message: error.response.data.message,
             status: "error",
           });
+          dispatch('triggerLoading', false)
         });
     },
     triggerAmenityDialog: function ({ commit }, value) {

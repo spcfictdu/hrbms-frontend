@@ -150,6 +150,7 @@
       :activator="deleteDialog"
       @reset-activator="resetDeleteActivator"
       :deleteMeta="deleteMeta"
+      :metaLoading="metaLoading"
       @delete-event="$emit('delete-event')"
     />
   </div>
@@ -164,6 +165,7 @@ export default {
   name: "RoomInfo",
   props: {
     room: Object,
+    metaLoading: Object
   },
   components: {
     PriceSlot,

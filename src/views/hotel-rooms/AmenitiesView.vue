@@ -11,6 +11,7 @@
     <amenities-component
       :amenities="amenities"
       :amenityDialog="amenityDialog"
+      :metaLoading="meta"
       @request-event="requestEvent"
       @close-dialog="closeAmenityDialog"
     />
@@ -35,20 +36,24 @@ export default {
       "updateAmenity",
       "deleteAmenity",
       "triggerAmenityDialog",
+      "triggerLoading",
     ]),
     requestEvent: function (payload) {
       switch (payload.requestType) {
-        case 'Add Amenity':
+        case "Add Amenity":
+          this.triggerLoading(true);
           this.createAmenity(payload.data);
           break;
-        case 'Delete Amenity':
+        case "Delete Amenity":
+          this.triggerLoading(true);
           this.deleteAmenity(payload.refNum);
           break;
-        case 'Edit Amenity':
+        case "Edit Amenity":
+          this.triggerLoading(true);
           this.updateAmenity({
             refNum: payload.refNum,
             data: payload.data,
-          })
+          });
       }
     },
     triggerAlert: function (value) {
@@ -63,6 +68,7 @@ export default {
       amenities: "amenities",
       procedureStatus: "procedureStatus",
       amenityDialog: "amenityDialog",
+      meta: "meta",
     }),
   },
   created() {
