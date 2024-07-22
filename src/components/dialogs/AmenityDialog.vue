@@ -36,6 +36,7 @@
                 block
                 max-width="50%"
                 class="lightBg"
+                :loading="metaLoading?.title ? metaLoading.loading : false"
                 @click="submitButton"
                 >Proceed</v-btn
               ></v-col
@@ -59,6 +60,7 @@ export default {
   props: {
     activator: Boolean,
     metaDialog: Object,
+    metaLoading: Object
   },
   computed: {
     validate() {
