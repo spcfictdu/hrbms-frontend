@@ -74,12 +74,14 @@
       :activator="metaDialog.roomActivator"
       :roomData="roomData"
       :metaDialog="metaDialog"
+      :metaLoading="metaLoading"
       @reset-activator="resetActivator"
       @edit-event="requestType"
     />
     <ConfirmationDialog
       :activator="metaDialog.confirmActivator"
       :metaDialog="metaDialog"
+      :metaLoading="metaLoading"
       @reset-activator="resetActivator"
       @change-event="requestType"
     />
@@ -96,6 +98,7 @@ export default {
   components: { RoomDialog, DeleteDialog, ConfirmationDialog },
   props: {
     room: Object,
+    metaLoading: Object,
   },
   data: () => ({
     metaDialog: {},

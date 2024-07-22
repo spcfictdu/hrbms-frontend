@@ -102,6 +102,7 @@
         <room-list-card
           :room="room"
           :queryParams="queryParams"
+          :metaLoading="metaLoading"
           @request-type="passRequest"
         />
       </v-col>
@@ -118,6 +119,7 @@
     <RoomDialog
       :activator="metaDialog.createActivator"
       :metaDialog="metaDialog"
+      :metaLoading="metaLoading"
       @reset-activator="resetActivator"
       @add-request="addRoomRequest"
     />
@@ -138,6 +140,7 @@ export default {
   props: {
     roomStatuses: Object,
     occupiedDialog: Boolean,
+    metaLoading: Object
   },
   data: () => ({
     selectedStatus: "AVAILABLE",

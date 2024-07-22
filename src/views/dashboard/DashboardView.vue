@@ -22,12 +22,14 @@ export default {
     checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
   }),
   methods: {
-    ...mapActions("availabilityCalendar", ["fetchAvailabilityCalendar", "triggerLoading"]),
+    ...mapActions("availabilityCalendar", [
+      "fetchAvailabilityCalendar",
+      "triggerLoading",
+    ]),
     requestCalendar: function (queryParams) {
       this.triggerLoading(true).then(() => {
         this.fetchAvailabilityCalendar(queryParams);
-      })
-
+      });
     },
     pushToTransactionRoute: function (payload) {
       if (this.confirmationRoute.includes(payload.status)) {

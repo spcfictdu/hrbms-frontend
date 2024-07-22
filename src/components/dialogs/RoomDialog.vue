@@ -58,6 +58,7 @@
                 block
                 color="primary"
                 class="lightBg"
+                :loading="metaLoading?.title === 'Room' ? metaLoading.loading : false"
                 @click="proceedButton"
                 >Proceed</v-btn
               ></v-col
@@ -78,6 +79,7 @@ export default {
     activator: Boolean,
     metaDialog: Object,
     roomData: Object,
+    metaLoading: Object
   },
   data: () => ({
     dialog: false,

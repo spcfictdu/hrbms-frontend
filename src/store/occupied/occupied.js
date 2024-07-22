@@ -13,6 +13,10 @@ export const occupied = {
       status: "", //SUCCESS, ERROR
     },
     occupiedDialog: false,
+    meta: {
+      title: "Room",
+      loading: false,
+    },
   }),
   getters: {},
   mutations: {
@@ -28,8 +32,12 @@ export const occupied = {
       }, 3000);
     },
     SET_OCCUPIED_DIALOG: (state, data) => (state.occupiedDialog = data),
+    SET_LOADING: (state, data) => (state.meta.loading = data),
   },
   actions: {
+    triggerLoading: function ({ commit }, data) {
+      commit("SET_LOADING", data);
+    },
     fetchRoomStatus: function ({ commit }, queryParams = {}) {
       const url = `room-status`;
       const queryUrl = functions.query(url, queryParams);
@@ -43,7 +51,10 @@ export const occupied = {
           console.error("Error fetching room status: ", error);
         });
     },
-    updateRoomStatus: function ({ dispatch, commit }, { roomRefNum, data, queryParams = {} }) {
+    updateRoomStatus: function (
+      { dispatch, commit },
+      { roomRefNum, data, queryParams = {} }
+    ) {
       const url = `room-status/update/${roomRefNum}`;
       return this.$axios
         .put(url, data)
@@ -53,12 +64,14 @@ export const occupied = {
             message: response.data.message,
             status: "success",
           });
+          dispatch("triggerLoading", false);
         })
         .catch((error) => {
           commit("SET_OCCUPIED_STATUS", {
             message: error.response.data.message,
             status: "error",
           });
+          dispatch("triggerLoading", false);
           console.error(error.response.data.message);
         });
     },
@@ -69,7 +82,7 @@ export const occupied = {
     },
 
     // Rooms Configuration
-    createRoom: function ({ commit, dispatch }, {data, queryParams = {}}) {
+    createRoom: function ({ commit, dispatch }, { data, queryParams = {} }) {
       const url = `room/create`;
       return this.$axios
         .post(url, data)
@@ -79,16 +92,18 @@ export const occupied = {
             message: response.data.message,
             status: "success",
           });
+          dispatch("triggerLoading", false);
         })
         .catch((error) => {
           commit("SET_OCCUPIED_STATUS", {
             message: error.response.data.results.roomNumber,
             status: "error",
           });
+          dispatch("triggerLoading", false);
           console.error("Error creating room", error.response.data.message);
         });
     },
-    deleteRoom: function ({ commit, dispatch }, {refNum, queryParams = {}}) {
+    deleteRoom: function ({ commit, dispatch }, { refNum, queryParams = {} }) {
       const url = `room/delete/${refNum}`;
       return this.$axios
         .delete(url)
@@ -98,16 +113,21 @@ export const occupied = {
             message: response.data.message,
             status: "success",
           });
+          dispatch("triggerLoading", false);
         })
         .catch((error) => {
           commit("SET_OCCUPIED_STATUS", {
             message: error.response.data.message,
             status: "error",
           });
+          dispatch("triggerLoading", false);
           console.error(error.response.data.message);
         });
     },
-    updateRoom: function ({ commit, dispatch }, { refNum, data, queryParams = {} }) {
+    updateRoom: function (
+      { commit, dispatch },
+      { refNum, data, queryParams = {} }
+    ) {
       const url = `room/update/${refNum}`;
       return this.$axios
         .put(url, data)
@@ -117,12 +137,14 @@ export const occupied = {
             message: response.data.message,
             status: "success",
           });
+          dispatch("triggerLoading", false);
         })
         .catch((error) => {
           commit("SET_OCCUPIED_STATUS", {
             message: error.response.data.message,
             status: "error",
           });
+          dispatch("triggerLoading", false);
           console.error(error.response.data.message);
         });
     },

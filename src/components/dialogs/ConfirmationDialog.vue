@@ -22,6 +22,7 @@
                 block
                 color="primary"
                 class="lightBg"
+                :loading="metaLoading?.title ? metaLoading.loading : false"
                 @click="proceedButton"
                 >Proceed</v-btn
               ></v-col
@@ -39,6 +40,7 @@ export default {
   props: {
     activator: Boolean,
     metaDialog: Object,
+    metaLoading: Object,
   },
   data: () => ({
     dialog: false,
