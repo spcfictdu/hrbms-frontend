@@ -158,9 +158,9 @@
 
 <script>
 import PriceSlot from "../../slots/PriceSlot.vue";
-// import RoomListCard from "./RoomListCard.vue";
 import RateDialog from "@/components/dialogs/RateDialog.vue";
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "RoomInfo",
   props: {
@@ -169,23 +169,23 @@ export default {
   },
   components: {
     PriceSlot,
-    // RoomListCard,
     RateDialog,
     DeleteDialog,
   },
   data: () => ({
     // Rate Dialog
-    rateDialog: false,
     rateMeta: {
       typeOfAction: "",
       roomType: "",
       rateType: "",
       referenceNumber: "",
+      loading: false,
     },
     // Delete Dialog
     deleteDialog: false,
     deleteMeta: {
       targetDeletion: "",
+      loading: false,
     },
     // Miscellaneous
     page: 1,
@@ -228,6 +228,7 @@ export default {
     ],
   }),
   methods: {
+    ...mapActions("roomRates", ["triggerDialog"]),
     capitalizeString(str) {
       const lowerCaseString = str.toLowerCase();
       return lowerCaseString
@@ -259,11 +260,14 @@ export default {
       return `${formattedDateOne} - ${formattedDateTwo}`;
     },
     activateDialog: function (meta) {
-      this.rateMeta = meta;
-      this.rateDialog = !this.rateDialog;
+      this.rateMeta = {
+        ...this.rateMeta,
+        ...meta,
+      };
+      this.triggerDialog(true);
     },
     resetActivator: function () {
-      this.rateDialog = false;
+      this.triggerDialog(false);
     },
     activateDeleteDialog: function (meta) {
       this.deleteMeta = meta;
@@ -280,6 +284,13 @@ export default {
     },
   },
   computed: {
+    ...mapState("roomRates", {
+      rateDialog: "rateDialog",
+      rateMeta: "meta",
+    }),
+    ...mapState("roomRates", {
+      categoryMeta: "meta",
+    }),
     numberOfPages: function () {
       return this.room ? Math.ceil(this.room.prices.length / 5) : 0;
     },
@@ -329,7 +340,9 @@ export default {
           action: () => {
             this.$router.push({
               name: "Create Room",
-              params: { roomCategoryReferenceNumber: this.room.referenceNumber },
+              params: {
+                roomCategoryReferenceNumber: this.room.referenceNumber,
+              },
             });
           },
         },
@@ -354,6 +367,20 @@ export default {
           },
         },
       ];
+    },
+  },
+  watch: {
+    rateMeta: {
+      deep: true,
+      handler: function (newVal) {
+        this.rateMeta.loading = newVal.loading;
+      },
+    },
+    categoryMeta: {
+      deep: true,
+      handler: function (newVal) {
+        this.deleteMeta.loading = newVal.loading;
+      },
     },
   },
 };

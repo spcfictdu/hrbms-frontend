@@ -172,6 +172,7 @@
                 text
                 color="primary"
                 class="lightBg"
+                :loading="rateMeta.loading"
                 @click="submitButton"
                 >{{ titleForSubmitButton }}</v-btn
               >
@@ -457,7 +458,6 @@ export default {
           };
         }
         this.$emit("validation-event", payload);
-        this.dialog = false;
       }
     },
   },

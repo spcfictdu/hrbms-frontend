@@ -61,12 +61,7 @@ export const roomCategories = {
           console.error("Error fetching room categories", error);
         });
     },
-    fetchRoomCategory: function (
-      { commit, state },
-      { roomTypeReferenceNumber }
-    ) {
-      state.roomCategory = null;
-
+    fetchRoomCategory: function ({ commit }, { roomTypeReferenceNumber }) {
       const url = `room-type/${roomTypeReferenceNumber}`;
       return this.$axios
         .get(url)
@@ -76,6 +71,9 @@ export const roomCategories = {
         .catch((error) => {
           console.error("Error fetching room category: ", error);
         });
+    },
+    resetRoomCategory: function ({ commit }) {
+      commit("SET_ROOM_CATEGORY", null);
     },
     createRoomCategory: function ({ commit, dispatch }, payload) {
       const url = `room-type/create`;

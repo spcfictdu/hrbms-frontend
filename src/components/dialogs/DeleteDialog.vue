@@ -6,7 +6,8 @@
         >Delete Confirmation</v-card-title
       >
       <p class="py-2 py-sm-4 text-caption text-sm-body-2 font-weight-regular">
-        Permanently delete {{ deleteMeta.targetDeletion }}? This action cannot be undone.
+        Permanently delete {{ deleteMeta.targetDeletion }}? This action cannot
+        be undone.
       </p>
       <v-card-actions class="pa-0 mt-4">
         <v-row dense>
@@ -36,7 +37,7 @@
 export default {
   name: "DeleteDialog",
   data: () => ({
-    dialog: false
+    dialog: false,
   }),
   props: {
     activator: {
@@ -64,15 +65,15 @@ export default {
     activator: {
       handler: function (newVal) {
         this.dialog = newVal;
-      }
+      },
     },
     dialog: {
       handler: function (newVal) {
         if (!newVal) {
           this.$emit("reset-activator");
         }
-      }
-    }
+      },
+    },
   },
 };
 </script>
