@@ -150,7 +150,7 @@
       :activator="deleteDialog"
       @reset-activator="resetDeleteActivator"
       :deleteMeta="deleteMeta"
-      :metaLoading="categoryMeta"
+      :metaLoading="metaLoading"
       @delete-event="$emit('delete-event')"
     />
   </div>
@@ -165,7 +165,7 @@ export default {
   name: "RoomInfo",
   props: {
     room: Object,
-    metaLoading: Object
+    metaLoading: Object,
   },
   components: {
     PriceSlot,
@@ -286,10 +286,7 @@ export default {
   computed: {
     ...mapState("roomRates", {
       rateDialog: "rateDialog",
-      rateMeta: "meta",
-    }),
-    ...mapState("roomRates", {
-      categoryMeta: "meta",
+      rateMetaState: "meta",
     }),
     numberOfPages: function () {
       return this.room ? Math.ceil(this.room.prices.length / 5) : 0;
@@ -370,16 +367,11 @@ export default {
     },
   },
   watch: {
-    rateMeta: {
+    rateMetaState: {
       deep: true,
       handler: function (newVal) {
         this.rateMeta.loading = newVal.loading;
-      },
-    },
-    categoryMeta: {
-      deep: true,
-      handler: function (newVal) {
-        this.deleteMeta.loading = newVal.loading;
+        console.log(newVal);
       },
     },
   },

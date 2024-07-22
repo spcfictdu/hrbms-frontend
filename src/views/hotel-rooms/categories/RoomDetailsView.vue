@@ -126,7 +126,7 @@ export default {
   computed: {
     ...mapState("roomCategories", {
       roomCategory: "roomCategory",
-      meta: 'meta'
+      meta: "meta",
     }),
     roomImages: function () {
       return this.roomCategory ? this.roomCategory.images : [];
