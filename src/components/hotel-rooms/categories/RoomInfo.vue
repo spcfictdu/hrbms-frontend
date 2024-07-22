@@ -150,7 +150,7 @@
       :activator="deleteDialog"
       @reset-activator="resetDeleteActivator"
       :deleteMeta="deleteMeta"
-      :metaLoading="metaLoading"
+      :metaLoading="categoryMeta"
       @delete-event="$emit('delete-event')"
     />
   </div>
