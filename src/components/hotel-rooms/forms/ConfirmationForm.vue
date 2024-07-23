@@ -8,7 +8,7 @@
     </header-booking-slot>
     <v-form ref="form" lazy-validation>
       <v-row>
-        <v-col cols="12" md="6">
+        <v-col cols="12" md="6" v-if="isAdmin">
           <!-- Transaction -->
           <v-divider />
           <transaction-template
@@ -26,10 +26,11 @@
           <!-- GCash QR Code Transition -->
           <g-cash-image-transition :showScan="showScan" />
         </v-col>
-        <v-col cols="12" md="6">
+        <v-col cols="12" :md="isAdmin ? 6 : 12">
           <!-- Booking Summary -->
           <v-divider />
           <booking-summary
+            ref="bookingSummary"
             :isStatus="payload.status"
             :cardInformation="cardInformation"
             @validation-event="requestUpdateOnTransaction"
@@ -48,6 +49,7 @@ import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import GCashImageTransition from "./GCashImageTransition.vue";
 import { mapActions, mapState } from "vuex";
+import html2canvas from "html2canvas";
 export default {
   name: "ConfirmationForm",
   props: ["result"],
@@ -177,6 +179,12 @@ export default {
       // Total Change
       const totalChange = totalReceived > total ? totalReceived - total : 0;
 
+      // Button Changing
+      const button = {
+        title: this.isAdmin ? "Record Payment" : "Print",
+        outlined: this.isAdmin ? false : true,
+      };
+
       return {
         client: this.result.guestName,
         room: {
@@ -195,10 +203,13 @@ export default {
           totalChange: totalChange,
         },
         button: {
-          title: "Record Payment",
-          outlined: false,
+          title: button.title,
+          outlined: button.outlined,
         },
       };
+    },
+    isAdmin: function () {
+      return !!this.$auth.user()?.role === "ADMIN";
     },
   },
   watch: {
@@ -210,12 +221,6 @@ export default {
         }
       },
     },
-    // payload: {
-    //   deep: true,
-    //   handler: function (newVal) {
-    //     console.log(newVal);
-    //   }
-    // }
   },
 };
 </script>

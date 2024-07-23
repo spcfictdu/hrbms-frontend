@@ -84,4 +84,3 @@ export default {
 </script>
 
 <style scoped></style>
-../dashboard/TotalBillCard.vue../hotel-rooms/forms/TotalBillCard.vue
