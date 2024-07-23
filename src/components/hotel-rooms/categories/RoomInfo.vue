@@ -259,6 +259,7 @@ export default {
 
       return `${formattedDateOne} - ${formattedDateTwo}`;
     },
+    // Rate Dialog
     activateDialog: function (meta) {
       this.rateMeta = {
         ...this.rateMeta,
@@ -269,6 +270,7 @@ export default {
     resetActivator: function () {
       this.triggerDialog(false);
     },
+    // Delete Dialog
     activateDeleteDialog: function (meta) {
       this.deleteMeta = meta;
       this.deleteDialog = !this.deleteDialog;
@@ -276,6 +278,7 @@ export default {
     resetDeleteActivator: function () {
       this.deleteDialog = false;
     },
+    // Pagination
     next: function () {
       this.page++;
     },
@@ -371,7 +374,6 @@ export default {
       deep: true,
       handler: function (newVal) {
         this.rateMeta.loading = newVal.loading;
-        console.log(newVal);
       },
     },
   },
@@ -381,6 +383,7 @@ export default {
 <style scoped>
 .price-table {
   background-color: transparent;
+  cursor: pointer;
 }
 .menu-border {
   border-bottom: 1px solid #e6e2e2;
