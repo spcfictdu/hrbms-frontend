@@ -11,7 +11,6 @@
     <OccupiedRoomsComponent
       :roomStatuses="roomStatuses"
       :occupiedDialog="occupiedDialog"
-      :metaLoading="meta"
       @close-dialog="triggerDialog"
       @request-event="requestEvent"
       @query-pagination="paginateRoomStatus"
@@ -38,7 +37,6 @@ export default {
       roomStatuses: "roomStatuses",
       occupiedStatus: "occupiedStatus",
       occupiedDialog: "occupiedDialog",
-      meta: "meta",
     }),
     handleAlertType() {
       return this.occupiedStatus.status !== ""
@@ -54,7 +52,6 @@ export default {
       "createRoom",
       "deleteRoom",
       "updateRoom",
-      "triggerLoading",
     ]),
     paginateRoomStatus: function (query_params) {
       this.assignParams(query_params);
@@ -69,7 +66,6 @@ export default {
     requestEvent: function (payload) {
       switch (payload.requestType) {
         case "Change Room Status":
-        this.triggerLoading(true);
           this.updateRoomStatus({
             roomRefNum: payload.refNum,
             data: payload.data,
@@ -78,7 +74,6 @@ export default {
           this.triggerEventFetch = true;
           break;
         case "Delete room":
-        this.triggerLoading(true);
           this.deleteRoom({
             refNum: payload.refNum,
             queryParams: this.queryParams,
@@ -86,7 +81,6 @@ export default {
           this.triggerEventFetch = true;
           break;
         case "Edit room":
-        this.triggerLoading(true);
           this.updateRoom({
             refNum: payload.refNum,
             data: payload.data,
@@ -95,7 +89,6 @@ export default {
           this.triggerEventFetch = true;
           break;
         case "Add room":
-          this.triggerLoading(true);
           this.createRoom({
             data: payload.data,
             queryParams: this.queryParams,

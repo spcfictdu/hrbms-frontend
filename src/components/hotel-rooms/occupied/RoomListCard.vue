@@ -51,7 +51,7 @@
                 :key="index"
                 class="menu-border"
                 :class="{
-                  'warning--text': iter.text === 'Delete room'
+                  'warning--text': iter.text === 'Delete room',
                 }"
                 @click="executeMenuItem(iter)"
               >
@@ -93,13 +93,13 @@
 import RoomDialog from "@/components/dialogs/RoomDialog.vue";
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
+import { mapState, mapActions } from "vuex";
 
 export default {
   name: "RoomListCard",
   components: { RoomDialog, DeleteDialog, ConfirmationDialog },
   props: {
     room: Object,
-    metaLoading: Object,
   },
   data: () => ({
     metaDialog: {},
@@ -108,6 +108,7 @@ export default {
     requestRefNum: "",
   }),
   methods: {
+    ...mapActions("occupied", ["triggerDialog", "triggerLoading"]),
     chipColor: function (status) {
       const value = status.toLowerCase();
       let color = null;
@@ -137,6 +138,7 @@ export default {
         {
           text: "Make available",
           action: () => {
+            this.triggerDialog(true);
             this.payload = {
               requestType: "Change Room Status",
               refNum: room.referenceNumber,
@@ -148,13 +150,14 @@ export default {
               action: "Change Room Status",
               actionType: "Confirmation",
               message: `Change Room ${room.name} status to available`,
-              confirmActivator: true,
+              confirmActivator: this.activator,
             };
           },
         },
         {
           text: "Make occupied",
           action: () => {
+            this.triggerDialog(true);
             this.payload = {
               requestType: "Change Room Status",
               refNum: room.referenceNumber,
@@ -166,13 +169,14 @@ export default {
               action: "Change Room Status",
               actionType: "Confirmation",
               message: `Change Room ${room.name} status to occupied`,
-              confirmActivator: true,
+              confirmActivator: this.activator,
             };
           },
         },
         {
           text: "Make unclean",
           action: () => {
+            this.triggerDialog(true);
             this.payload = {
               requestType: "Change Room Status",
               refNum: room.referenceNumber,
@@ -184,13 +188,14 @@ export default {
               action: "Change Room Status",
               actionType: "Confirmation",
               message: `Change Room ${room.name} status to unclean`,
-              confirmActivator: true,
+              confirmActivator: this.activator,
             };
           },
         },
         {
           text: "Make unallocated",
           action: () => {
+            this.triggerDialog(true);
             this.payload = {
               requestType: "Change Room Status",
               refNum: room.referenceNumber,
@@ -202,13 +207,14 @@ export default {
               action: "Change Room Status",
               actionType: "Confirmation",
               message: `Change Room ${room.name} status to unallocated`,
-              confirmActivator: true,
+              confirmActivator: this.activator,
             };
           },
         },
         {
           text: "Edit room details",
           action: () => {
+            this.triggerDialog(true);
             this.payload = {
               refNum: room.referenceNumber,
               requestType: "Edit room",
@@ -221,13 +227,14 @@ export default {
             this.metaDialog = {
               action: "Edit room",
               actionType: "Edit room",
-              roomActivator: true,
+              roomActivator: this.activator,
             };
           },
         },
         {
           text: "Delete room",
           action: () => {
+            this.triggerDialog(true);
             this.payload = {
               refNum: room.referenceNumber,
               requestType: "Delete room",
@@ -235,7 +242,7 @@ export default {
             this.metaDialog = {
               action: "Delete room",
               targetDeletion: "room",
-              deleteActivator: true,
+              deleteActivator: this.activator,
             };
           },
         },
@@ -275,17 +282,26 @@ export default {
     requestType: function (requestData) {
       switch (this.metaDialog.action) {
         case "Change Room Status":
+          this.triggerLoading({
+            title: "Rooms",
+            loading: true,
+          });
           this.$emit("request-type", this.payload);
-          this.resetActivator();
           break;
         case "Delete room":
+          this.triggerLoading({
+            title: "Rooms",
+            loading: true,
+          });
           this.$emit("request-type", this.payload);
-          this.resetActivator();
           break;
         case "Edit room":
+          this.triggerLoading({
+            title: "Rooms",
+            loading: true,
+          });
           this.payload.data = requestData;
           this.$emit("request-type", this.payload);
-          this.resetActivator();
           break;
       }
     },
@@ -294,11 +310,22 @@ export default {
     },
   },
   computed: {
+    ...mapState("occupied", {
+      activator: "activatorOccupied",
+      metaLoading: "meta",
+    }),
     size: function () {
       return this.$vuetify.breakpoint;
     },
   },
   watch: {
+    activator: {
+      handler: function (value) {
+        if (!value) {
+          this.resetActivator();
+        }
+      },
+    },
   },
 };
 </script>

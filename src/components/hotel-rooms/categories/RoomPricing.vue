@@ -106,32 +106,6 @@ export default {
   data: () => ({
     regularRateDialog: false,
     specialRateDialog: false,
-    // headers: [
-    //   {
-    //     text: "Rates (in peso)",
-    //   },
-    //   {
-    //     text: "Sun",
-    //   },
-    //   {
-    //     text: "Mon",
-    //   },
-    //   {
-    //     text: "Tue",
-    //   },
-    //   {
-    //     text: "Wed",
-    //   },
-    //   {
-    //     text: "Thu",
-    //   },
-    //   {
-    //     text: "Fri",
-    //   },
-    //   {
-    //     text: "Sat",
-    //   },
-    // ],
     headers: [
       {
         text: "Rates (in peso)",

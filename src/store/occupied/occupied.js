@@ -14,9 +14,10 @@ export const occupied = {
     },
     occupiedDialog: false,
     meta: {
-      title: "Room",
+      title: "Rooms",
       loading: false,
     },
+    activatorOccupied: false,
   }),
   getters: {},
   mutations: {
@@ -32,10 +33,27 @@ export const occupied = {
       }, 3000);
     },
     SET_OCCUPIED_DIALOG: (state, data) => (state.occupiedDialog = data),
-    SET_LOADING: (state, data) => (state.meta.loading = data),
+    SET_LOADING: (state, data) => (state.meta = data),
+    SET_ACTIVATOR: (state, data) => (state.activatorOccupied = data),
   },
   actions: {
-    triggerLoading: function ({ commit }, data) {
+    // Dialog
+    triggerOccupiedDialog: function ({ commit }, data) {
+      commit("SET_OCCUPIED_DIALOG", data);
+    },
+    triggerDialog: function ({ commit }, value) {
+      commit("SET_ACTIVATOR", value);
+    },
+    resetDialog: function ({ dispatch }) {
+      dispatch("triggerLoading", {
+        title: "",
+        loading: false
+      }).then(() => {
+        dispatch("triggerDialog", false);
+      });
+    },
+    // Loading
+    triggerLoading: function ({ commit }, data ) {
       commit("SET_LOADING", data);
     },
     fetchRoomStatus: function ({ commit }, queryParams = {}) {
@@ -64,21 +82,16 @@ export const occupied = {
             message: response.data.message,
             status: "success",
           });
-          dispatch("triggerLoading", false);
+          dispatch("resetDialog");
         })
         .catch((error) => {
           commit("SET_OCCUPIED_STATUS", {
             message: error.response.data.message,
             status: "error",
           });
-          dispatch("triggerLoading", false);
+          dispatch("resetDialog");
           console.error(error.response.data.message);
         });
-    },
-
-    // Dialog
-    triggerOccupiedDialog: function ({ commit }, data) {
-      commit("SET_OCCUPIED_DIALOG", data);
     },
 
     // Rooms Configuration
@@ -93,6 +106,7 @@ export const occupied = {
             status: "success",
           });
           dispatch("triggerLoading", false);
+          dispatch("triggerOccupiedDialog", false);
         })
         .catch((error) => {
           commit("SET_OCCUPIED_STATUS", {
@@ -100,6 +114,7 @@ export const occupied = {
             status: "error",
           });
           dispatch("triggerLoading", false);
+          dispatch("triggerOccupiedDialog", false);
           console.error("Error creating room", error.response.data.message);
         });
     },
@@ -113,14 +128,14 @@ export const occupied = {
             message: response.data.message,
             status: "success",
           });
-          dispatch("triggerLoading", false);
+          dispatch("resetDialog");
         })
         .catch((error) => {
           commit("SET_OCCUPIED_STATUS", {
             message: error.response.data.message,
             status: "error",
           });
-          dispatch("triggerLoading", false);
+          dispatch("resetDialog");
           console.error(error.response.data.message);
         });
     },
@@ -137,14 +152,14 @@ export const occupied = {
             message: response.data.message,
             status: "success",
           });
-          dispatch("triggerLoading", false);
+          dispatch("resetDialog");
         })
         .catch((error) => {
           commit("SET_OCCUPIED_STATUS", {
             message: error.response.data.message,
             status: "error",
           });
-          dispatch("triggerLoading", false);
+          dispatch("resetDialog");
           console.error(error.response.data.message);
         });
     },

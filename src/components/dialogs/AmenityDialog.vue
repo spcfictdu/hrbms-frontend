@@ -77,7 +77,6 @@ export default {
     submitButton: function () {
       if (this.$refs.amenityForm.validate()) {
         this.$emit("amenity-request", this.payload);
-        this.$refs.amenityForm.reset();
       }
     },
   },
@@ -95,6 +94,7 @@ export default {
       deep: true,
       handler: function (value) {
         if (!value) {
+          this.$refs.amenityForm.reset();
           this.$emit("reset-activator");
         }
       },

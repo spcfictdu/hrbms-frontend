@@ -68,13 +68,6 @@ export default {
     this.assessRouteParams();
   },
   watch: {
-    metaLoading: {
-      deep: true,
-      handler: function (newVal) {
-        console.log(newVal);
-        this.meta.loading = newVal.loading;
-      },
-    },
   },
 };
 </script>

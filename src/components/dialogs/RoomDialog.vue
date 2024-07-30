@@ -58,7 +58,7 @@
                 block
                 color="primary"
                 class="lightBg"
-                :loading="metaLoading?.title ? metaLoading.loading : false"
+                :loading="metaLoading.title !== 'rooms in this category' ? metaLoading.loading : false"
                 @click="proceedButton"
                 >Proceed</v-btn
               ></v-col
@@ -99,12 +99,10 @@ export default {
       if (this.metaDialog.actionType === "Edit room") {
         if (this.$refs.roomForm.validate()) {
           this.$emit("edit-event", this.payload);
-          this.$refs.roomForm.reset();
         }
       } else {
         if (this.$refs.roomForm.validate()) {
           this.$emit("add-request", this.payload);
-          this.$refs.roomForm.reset();
         }
       }
     },
@@ -137,6 +135,7 @@ export default {
     dialog: {
       handler: function (newVal) {
         if (!newVal) {
+          this.$refs.roomForm.reset();
           this.$emit("reset-activator");
         }
       },

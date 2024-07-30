@@ -21,9 +21,7 @@
               depressed
               block
               :ripple="false"
-              :color="
-                selectedAmenity === amenity.name ? 'primary' : 'lightBg'
-              "
+              :color="selectedAmenity === amenity.name ? 'primary' : 'lightBg'"
               :class="
                 selectedAmenity === amenity.name
                   ? 'font-weight-medium'
@@ -76,6 +74,7 @@
 <script>
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
 import AmenityDialog from "@/components/dialogs/AmenityDialog.vue";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "AmenitiesComponent",
@@ -88,7 +87,6 @@ export default {
     amenityDialog: {
       type: Boolean,
     },
-    metaLoading: Object
   },
   data: () => ({
     payload: {},
@@ -100,11 +98,16 @@ export default {
     metaDialog: {},
   }),
   computed: {
+    ...mapState("amenities", {
+      metaLoading: "meta",
+      activator: "activator",
+    }),
     size() {
       return this.$vuetify.breakpoint;
     },
   },
   methods: {
+    ...mapActions("amenities", ["triggerLoading", "triggerDialog"]),
     selectAmenity: function (amenity) {
       this.selectedAmenity = amenity;
     },
@@ -120,9 +123,10 @@ export default {
     ) {
       switch (option) {
         case "Delete Amenity":
+          this.triggerDialog(true);
           this.metaDialog = {
-            deleteActivator: true,
             targetDeletion: "amenity",
+            deleteActivator: this.activator,
           };
           this.payload = {
             refNum: selectedAmenityRefNum,
@@ -130,9 +134,10 @@ export default {
           };
           break;
         case "Edit Amenity":
+          this.triggerDialog(true);
           this.metaDialog = {
             action: "Edit Amenity",
-            amenityDialogActivator: true,
+            amenityDialogActivator: this.activator,
             amenityName: selectedAmenityName,
           };
           this.payload = {
@@ -149,24 +154,46 @@ export default {
       this.metaDialog = {};
     },
     requestAction: function (requestData) {
-      if (this.metaDialog.action === "Add Amenity" || this.metaDialog.action === "Edit Amenity") {
-        this.payload.data = requestData
+      this.triggerLoading(true);
+      if (
+        this.metaDialog.action === "Add Amenity" ||
+        this.metaDialog.action === "Edit Amenity"
+      ) {
+        this.payload.data = requestData;
       }
       this.$emit("request-event", this.payload);
-      this.resetActivator();
+      this.selectedAmenity = null;
     },
   },
   watch: {
+    activator: {
+      handler: function (value) {
+        if (!value) {
+          this.resetActivator();
+        }
+      },
+    },
+    payload: {
+      deep: true,
+      handler: function (value) {
+        if (value.data && value.requestType === "Add Amenity") {
+          this.resetActivator()
+        }
+      }
+    },
     amenityDialog: {
+      deep: true,
       handler: function (value) {
         if (value) {
           this.metaDialog = {
             action: "Add Amenity",
-            amenityDialogActivator: true,
+            amenityDialogActivator: value,
           };
           this.payload = {
             requestType: "Add Amenity",
           };
+        } else {
+          this.resetActivator();
         }
       },
     },

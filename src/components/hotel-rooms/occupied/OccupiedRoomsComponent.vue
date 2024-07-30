@@ -102,13 +102,12 @@
         <room-list-card
           :room="room"
           :queryParams="queryParams"
-          :metaLoading="metaLoading"
           @request-type="passRequest"
         />
       </v-col>
     </v-row>
     <v-col v-else>
-      <NoDataFoundCard :meta="meta" />
+      <NoDataFoundCard :meta="metaLoading" />
     </v-col>
 
     <v-pagination
@@ -140,7 +139,6 @@ export default {
   props: {
     roomStatuses: Object,
     occupiedDialog: Boolean,
-    metaLoading: Object
   },
   data: () => ({
     selectedStatus: "AVAILABLE",
@@ -155,6 +153,9 @@ export default {
   }),
   computed: {
     ...mapState("roomTypeEnum", ["roomTypeEnum"]),
+    ...mapState("occupied", {
+      metaLoading: "meta",
+    }),
     buttonDisplay() {
       let buttonData = [];
       const countData = this.roomStatuses?.roomStatusCount;
@@ -187,6 +188,7 @@ export default {
   },
   methods: {
     ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
+    ...mapActions("occupied", ["triggerLoading"]),
     selectStatus: function (status) {
       this.selectedStatus = status;
     },
@@ -194,12 +196,12 @@ export default {
       this.$emit("request-event", payload);
     },
     addRoomRequest: function (data) {
+      this.triggerLoading(true);
       this.payload = {
         requestType: "Add room",
         data: data,
       };
       this.passRequest(this.payload);
-      this.resetActivator();
     },
     resetActivator: function () {
       this.metaDialog = {};
@@ -212,22 +214,21 @@ export default {
       deep: true,
       handler: function (value) {
         if (value.rooms.length === 0) {
-          this.meta = {
-            title: "rooms",
+          this.triggerLoading({
+            title: "rooms in this category",
             loading: true,
-          };
-
+          });
           setTimeout(() => {
-            this.meta = {
+            this.triggerLoading({
               title: "rooms in this category",
               loading: false,
-            };
+            });
           }, 3000);
         } else {
-          this.meta = {
-            title: "",
-            loading: false,
-          };
+          this.triggerLoading({
+              title: "",
+              loading: false,
+            });
         }
       },
     },

@@ -22,7 +22,7 @@
                 block
                 color="primary"
                 class="lightBg"
-                :loading="metaLoading?.title ? metaLoading.loading : false"
+                :loading="metaLoading.loading"
                 @click="proceedButton"
                 >Proceed</v-btn
               ></v-col
@@ -55,6 +55,13 @@ export default {
   },
   computed: {},
   watch: {
+    metaLoading: {
+      immediate: true,
+      deep: true,
+      handler: function (newVal) {
+        console.log(newVal)
+      },
+    },
     activator: {
       handler: function (newVal) {
         this.dialog = newVal;
