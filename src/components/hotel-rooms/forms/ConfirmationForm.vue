@@ -209,7 +209,7 @@ export default {
       };
     },
     isAdmin: function () {
-      return !!this.$auth.user()?.role === "ADMIN";
+      return this.$auth.user()?.role === "ADMIN";
     },
   },
   watch: {

@@ -4,6 +4,7 @@
       @validation-event="requestPostTransaction"
       :queryResult="queryResult"
       :guestAutofill="guestAutofill"
+      :metaLoading="meta"
     />
   </div>
 </template>
@@ -104,6 +105,9 @@ export default {
     }),
     ...mapState("publicRooms", {
       temporaryData: "temporaryData",
+    }),
+    ...mapState("transaction", {
+      meta: 'meta'
     }),
     queryResult() {
       return this.$route.query;
