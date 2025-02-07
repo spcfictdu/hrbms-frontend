@@ -6,14 +6,11 @@ import vuetify from "./plugins/vuetify";
 import axios from "axios";
 import Vuex from "vuex";
 import { auth } from "./utils/auth";
+import getBackend from "./utils/urls";
 
 Vue.config.productionTip = false;
 
-const axiosInstance = axios.create({
-  // baseURL: 'http://127.0.0.1:8000/api' // For localhost
-  baseURL: 'http://192.168.31.231/api'
-  // baseURL: "http://192.168.31.185:81/api",
-});
+const axiosInstance = axios.create({ baseURL: getBackend("deployed") });
 
 if (auth.token()) {
   axiosInstance.defaults.headers.common["Authorization"] =
@@ -29,12 +26,14 @@ axiosInstance.interceptors.request.use((config) => {
 });
 
 // Reset or upon refresh session handling
-window.addEventListener("beforeunload", (event) => auth.handleTabTermination(event));
+window.addEventListener("beforeunload", (event) =>
+  auth.handleTabTermination(event)
+);
 auth.handleTabRefresh();
 
 Vue.prototype.$axios = axiosInstance;
 Vue.prototype.$auth = auth;
-Vue.prototype.$apiPath = 'http://192.168.31.231';
+Vue.prototype.$apiPath = "http://192.168.31.231";
 
 Vuex.Store.prototype.$axios = axiosInstance;
 Vuex.Store.prototype.$router = router;
