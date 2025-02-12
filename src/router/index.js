@@ -17,6 +17,7 @@ const mappedRoutes = {
     ...authentication.map(({ name }) => name),
     ...publicRoutes[0].children.map(({ name }) => name),
   ],
+  commonRoutes: [...publicRoutes[0].children.map(({ name }) => name)],
   authRoutes: [...authentication.map(({ name }) => name)],
   roleRoutes: {
     GUEST: [...guestUser[0].children.map(({ name }) => name)],
@@ -70,7 +71,10 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
-  const allowedRoutes = [...(mappedRoutes.roleRoutes[userRole] || [])];
+  const allowedRoutes = [
+    ...(mappedRoutes.roleRoutes[userRole] || []),
+    ...mappedRoutes.commonRoutes,
+  ];
 
   if (!allowedRoutes.includes(to.name)) {
     next({ name: DASHBOARD_NAME[userRole] });

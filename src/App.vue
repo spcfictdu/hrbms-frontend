@@ -1,49 +1,36 @@
 <template>
-  <v-app
-    class="bg-color"
-    :class="{
-      'image-bg': $router.currentRoute.meta.name === 'Sign In',
-      'image-bg-2': $router.currentRoute.meta.name === 'Guest Sign In',
-    }"
-  >
-    <div class="container-height">
-      <!-- Navigation -->
-      <!-- Exists in Admin & Not Login -->
-      <Navigation v-if="$auth.user()?.role === 'ADMIN'" />
+  <v-app class="bg-color" :class="bgImages[$router.currentRoute.meta.name]">
+    <PageLoader :target="hasLoaded">
+      <div class="container-height">
+        <!-- Navigation -->
+        <Navigation v-if="navigation.primary" />
+        <PublicNavigation v-if="navigation.secondary" />
 
-      <!-- Exists Only in Guest & Public & Not Login -->
-      <PublicNavigation
-        v-else-if="
-          $router.currentRoute.meta.isPublic ||
-          $router.currentRoute.meta.isGuest
-        "
-      />
-
-      <div
-        :class="{
-          'flex-grow-1 mt-n10 bg-color main-layout white py-5': !notAllowedRoutes.includes(
-            $router.currentRoute.name
-          ),
-        }"
-      >
-        <v-container class="pa-0 transparent-bg">
-          <v-main
-            class="mx-3"
-            :class="{
-              'custom-main': notAllowedRoutes.includes(
-                $router.currentRoute.name
-              ),
-            }"
-          >
-            <router-view />
-          </v-main>
-        </v-container>
+        <div
+          :class="{
+            'flex-grow-1 mt-n10 bg-color main-layout white py-5':
+              !notAllowedRoutes.includes($router.currentRoute.name),
+          }"
+        >
+          <v-container class="pa-0 transparent-bg">
+            <v-main
+              class="mx-3"
+              :class="{
+                'custom-main': notAllowedRoutes.includes(
+                  $router.currentRoute.name
+                ),
+              }"
+            >
+              <router-view />
+            </v-main>
+          </v-container>
+        </div>
+        <!-- Footer Component -->
+        <footer-component
+          v-if="allowedFooterRoutes.includes($router.currentRoute.name)"
+        />
       </div>
-      <!-- Footer Component -->
-      <footer-component
-        v-if="allowedFooterRoutes.includes($router.currentRoute.name)"
-      />
-    </div>
+    </PageLoader>
   </v-app>
 </template>
 
@@ -52,19 +39,31 @@ import Navigation from "./components/navigation/Navigation.vue";
 import { mapActions } from "vuex";
 import PublicNavigation from "./components/navigation/PublicNavigation.vue";
 import FooterComponent from "./components/public/FooterComponent.vue";
-
+import PageLoader from "./components/loaders/PageLoader.vue";
 export default {
   name: "App",
-  components: { Navigation, PublicNavigation, FooterComponent },
+  components: { Navigation, PublicNavigation, FooterComponent, PageLoader },
   data: () => ({
+    hasLoaded: false,
     notAllowedRoutes: ["Sign In", "Guest Sign In"],
     allowedFooterRoutes: ["Public Dashboard", "Guest Dashboard"],
+    bgImages: {
+      "Sign In": "image-bg",
+      "Guest Sign In": "image-bg-2",
+    },
   }),
-
   methods: {
     ...mapActions("authentication", ["logout"]),
   },
-
+  computed: {
+    navigation: function () {
+      const currentRoute = this.$route.meta;
+      return {
+        primary: !(currentRoute["isPublic"] || currentRoute["isGuest"]),
+        secondary: currentRoute["isPublic"] || currentRoute["isGuest"],
+      };
+    },
+  },
   mounted() {
     // if (
     //   !this.$auth.user() &&
@@ -72,6 +71,9 @@ export default {
     // ) {
     //   // this.logout();
     // }
+    setTimeout(() => {
+      this.hasLoaded = true;
+    }, 1000);
   },
 };
 </script>
