@@ -12,7 +12,7 @@
 
     <!-- Fade Transition for Content -->
     <v-fade-transition mode="out-in">
-      <slot v-if="target"  />
+      <slot v-if="target" />
     </v-fade-transition>
   </div>
 </template>
@@ -31,6 +31,7 @@ export default {
 
 <style scoped>
 .loading-container {
+  background: #fff;
   height: 100dvh;
   display: flex;
   justify-content: center;
