@@ -57,7 +57,7 @@
           v-for="(amenity, i) in room.amenities"
           :key="i"
           :color="i % 2 === 0 ? 'primary' : 'accentOne'"
-          >{{ capitalizeString(amenity) }}</v-chip
+          >{{ capitalizeString(amenity.name) }}</v-chip
         >
       </div>
     </div>
