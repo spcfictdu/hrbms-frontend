@@ -52,7 +52,7 @@ export const publicRooms = {
     },
     fetchPublicRoom: function ({ commit, state }, referenceNumber) {
       state.room = null;
-      
+
       const url = `hotel-room/${referenceNumber}`;
       return this.$axios
         .get(url)
@@ -66,14 +66,14 @@ export const publicRooms = {
     storeTemporaryData: function ({ commit }, payload) {
       return commit("SET_TEMPORARY_DATA", payload);
     },
+    clearTempData({ commit }) {
+      commit("SET_TEMPORARY_DATA", null);
+    },
     triggerLoading: function ({ commit }) {
       commit("SET_LOADING", true);
     },
     resetLoading: function ({ commit }) {
       commit("SET_LOADING", false);
-    },
-    clearTempData({ commit }) {
-      commit("SET_TEMPORARY_DATA", null);
     },
   },
 };

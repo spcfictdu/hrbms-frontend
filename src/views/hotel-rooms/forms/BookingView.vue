@@ -1,9 +1,10 @@
 <template>
   <div class="mt-10">
     <booking-form
-      @validation-event="requestPostTransaction"
-      :queryResult="queryResult"
+      @validation-event="handleCreateTransaction"
+      :query="query"
       :fillResult="returnPreviousTransactions"
+      :guestAutofill="guestAutofill"
       :metaLoading="meta"
     />
   </div>
@@ -14,111 +15,149 @@ import BookingForm from "../../../components/hotel-rooms/forms/BookingForm.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "BookingView",
-  data: () => ({}),
   components: {
     BookingForm,
+  },
+  data: () => ({
+    routes: {
+      GUEST: {
+        RESERVED: "Guest Confirmation",
+      },
+      ADMIN: {
+        RESERVED: "Confirmation",
+        CHECKED_IN: "CheckInOut",
+        CHECKED_OUT: "CheckInOut",
+      },
+    },
+  }),
+  created: function () {
+    this.fetch();
   },
   methods: {
     ...mapActions("transaction", [
       "createTransaction",
       "fetchPreviousFormTransactions",
-      "triggerLoading",
     ]),
-    requestPostTransaction: function (payload) {
-      this.triggerLoading({
-        title: "Create Transaction",
-        loading: true,
-      }).then(() => {
-        this.createTransaction(this.createObject(payload)).then((response) => {
-          if (response) {
-            if (response.data.results.status === "RESERVED") {
-              this.$router.push({
-                name: "Confirmation",
-                params: {
-                  referenceNumber: response.data.results.referenceNumber,
-                },
-              });
-            } else {
-              this.$router.push({
-                name: "CheckInOut",
-                params: {
-                  referenceNumber: response.data.results.referenceNumber,
-                },
-              });
-            }
-          }
+    ...mapActions("publicRooms", ["clearTempData"]),
+    handleCreateTransaction: function (payload) {
+      const formattedPayload = this.assignObject(payload);
+
+      this.createTransaction(formattedPayload).then((response) => {
+        const route = this.routes[this.userRole][response.data.results.status];
+
+        if (this.userRole === "GUEST") {
+          this.clearTempData();
+        }
+
+        this.$router.push({
+          name: route,
+          params: {
+            referenceNumber: response.data.results.referenceNumber,
+          },
         });
       });
     },
-    createObject: function (payload) {
-      let value = {};
+    assignObject: function (payload) {
+      // RESERVED INITIAL VALUE
+      let value = {
+        status: payload.status,
+        guest: {
+          firstName: payload.firstName,
+          middleName: payload.middleName,
+          lastName: payload.lastName,
+          address: payload.address,
+          contact: {
+            email: payload.contact.email,
+            phoneNum: payload.contact.phoneNumber,
+          },
+          id: payload.id,
+          extraPerson: payload.guests,
+        },
+        checkIn: payload.checkIn,
+        checkOut: payload.checkOut,
+        room: payload.room,
+      };
 
-      if (payload.status === "RESERVED") {
-        value = {
-          status: payload.status,
-          guest: {
-            firstName: payload.firstName,
-            middleName: payload.middleName,
-            lastName: payload.lastName,
-            address: payload.address,
-            contact: {
-              email: payload.contact.email,
-              phoneNum: payload.contact.phoneNumber,
-            },
-            id: payload.id,
-            extraPerson: payload.guests,
-          },
-          checkIn: payload.checkIn,
-          checkOut: payload.checkOut,
-          room: payload.room,
-        };
-      } else {
-        value = {
-          status: payload.status,
-          guest: {
-            firstName: payload.firstName,
-            middleName: payload.middleName,
-            lastName: payload.lastName,
-            address: payload.address,
-            contact: {
-              email: payload.contact.email,
-              phoneNum: payload.contact.phoneNumber,
-            },
-            id: payload.id,
-            extraPerson: payload.guests,
-          },
-          payment: payload.payment,
-          checkIn: payload.checkIn,
-          checkOut: payload.checkOut,
-          room: payload.room,
-        };
+      if (payload.status === "CONFIRMED") {
+        value.payment = payload.payment;
       }
 
       if (payload.accountId) {
         value.guest.accountId = payload.accountId;
       }
-
       return value;
     },
-    fetchTransactionFills: function () {
-      const referenceNumber = this.queryResult.referenceNumber;
-      this.fetchPreviousFormTransactions(referenceNumber);
+    fetch: function () {
+      const referenceNumber = this.query.referenceNumber;
+
+      if (this.userRole === "ADMIN") {
+        this.fetchPreviousFormTransactions(referenceNumber);
+      }
     },
   },
   computed: {
-    ...mapState("transaction", {
-      previousTransactions: "previousTransactions",
-      meta: 'meta',
-    }),
+    ...mapState("transaction", ["previousTransactions", "meta"]),
+    ...mapState("account", ["userInfo"]),
+    ...mapState("publicRooms", ["temporaryData"]),
     returnPreviousTransactions() {
       return this.previousTransactions ? this.previousTransactions : [];
     },
-    queryResult() {
+    query: function () {
       return this.$route.query;
     },
-  },
-  mounted() {
-    this.fetchTransactionFills();
+    userRole: function () {
+      return this.$auth.user().role;
+    },
+    guestAutofill: function () {
+      let fill = {};
+      if (this.userRole === "GUEST" || !this.$auth.user()) {
+        if (this.temporaryData) {
+          fill = {
+            first_name: this.temporaryData.guest.firstName,
+            middle_name: this.temporaryData.guest.middleName,
+            last_name: this.temporaryData.guest.lastName,
+            phone_number: this.temporaryData.guest.contact.phoneNum,
+            email: this.temporaryData.guest.contact.email,
+            city: this.temporaryData.guest.address.city,
+            province: this.temporaryData.guest.address.province,
+            checkInTime: this.temporaryData.checkIn.time,
+            checkOutTime: this.temporaryData.checkOut.time,
+            checkInDate: this.temporaryData.checkIn.date,
+            checkOutDate: this.temporaryData.checkOut.date,
+            extraPerson: this.temporaryData.guest.extraPerson,
+            id: {
+              type: this.temporaryData.guest.id.type,
+              number: this.temporaryData.guest.id.number,
+            },
+
+            status: this.temporaryData.status,
+          };
+          if (this.temporaryData.payment) {
+            fill.payment = this.temporaryData.payment;
+          }
+        } else {
+          if (this.userRole === "GUEST") {
+            fill = {
+              first_name: this.userInfo.firstName,
+              middle_name: this.userInfo.middleName,
+              last_name: this.userInfo.lastName,
+              phone_number: this.userInfo.phone,
+              email: this.userInfo.email,
+              city: this.userInfo.address.city,
+              province: this.userInfo.address.province,
+              checkInTime: "14:00",
+              checkOutTime: "11:00",
+            };
+          } else {
+            fill = {
+              checkInTime: "14:00",
+              checkOutTime: "11:00",
+            };
+          }
+        }
+      }
+      return fill;
+    },
   },
 };
 </script>

@@ -30,9 +30,11 @@ export const transaction = {
     SET_META: (state, data) => (state.meta = data),
   },
   actions: {
-    triggerLoading: function ({ commit }, data) {
-      // Data is an Object
-      commit("SET_META", data);
+    triggerLoading: function ({ commit }, title) {
+      commit("SET_META", {
+        title,
+        loading: true,
+      });
     },
     resetLoading: function ({ commit }) {
       commit("SET_META", {
@@ -71,20 +73,21 @@ export const transaction = {
           console.error("Error fetching transaction: ", error);
         });
     },
-    createTransaction: function ({ dispatch }, payload) {
+    createTransaction: async function ({ dispatch }, payload) {
       const url = `transaction/create`;
+      dispatch("triggerLoading", "CREATE");
+
       return this.$axios
         .post(url, payload)
         .then((response) => {
-          if (response) {
-            dispatch("resetLoading");
-            return response;
-          }
+          return response;
         })
         .catch((error) => {
           console.error("Error creating transaction: ", error);
-          dispatch("resetLoading");
           throw error;
+        })
+        .finally(() => {
+          dispatch("resetLoading");
         });
     },
     deleteReservation: function (

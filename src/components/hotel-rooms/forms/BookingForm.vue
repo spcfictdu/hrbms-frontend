@@ -141,7 +141,13 @@ import WarningDialog from "@/components/dialogs/WarningDialog.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "BookingForm",
-  props: ["queryResult", "fillResult", "guestAutofill", 'metaLoading'],
+  // props: ["query", "fillResult", "guestAutofill", 'metaLoading'],
+  props: {
+    query: Object,
+    fillResult: Array,
+    guestAutofill: Object,
+    metaLoading: Object,
+  },
   data: () => ({
     valid: true,
     autofill: "",
@@ -232,15 +238,12 @@ export default {
     },
     fetchQuery: function () {
       let query = {
-        roomType: this.queryResult.room,
-        roomNumber: this.queryResult.roomNumber,
+        roomType: this.query.room,
+        roomNumber: this.query.roomNumber,
       };
 
-      if (this.queryResult.checkInDate && this.queryResult.checkOutDate) {
-        query.dateRange = [
-          this.queryResult.checkInDate,
-          this.queryResult.checkOutDate,
-        ];
+      if (this.query.checkInDate && this.query.checkOutDate) {
+        query.dateRange = [this.query.checkInDate, this.query.checkOutDate];
       }
 
       if (this.payload.checkIn?.date && this.payload.checkOut?.date) {
@@ -385,7 +388,7 @@ export default {
     },
   },
   watch: {
-    queryResult: {
+    query: {
       immediate: true,
       handler: function (newVal) {
         this.payload.room = {
@@ -426,7 +429,7 @@ export default {
       handler: function (newVal) {
         if (newVal || newVal === 0) {
           this.fetchQuery();
-        } 
+        }
       },
     },
     autofill: {

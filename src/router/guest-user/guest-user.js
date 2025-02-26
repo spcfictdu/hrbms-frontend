@@ -39,14 +39,14 @@ export default [
           name: "Hotel Rooms",
         },
       },
-      
+
       // Transactional Routes
       {
         path: "booking",
         name: "Guest Booking",
         component: () =>
           import(
-            /* webpackChunkName: "guest-booking" */ "@/views/guest-user/hotel-rooms/GuestBookingView.vue"
+            /* webpackChunkName: "guest-booking" */ "@/views/hotel-rooms/forms/BookingView.vue"
           ),
         meta: {
           isGuest: true,
