@@ -26,7 +26,7 @@
           v-for="(i, index) in room.amenities"
           :key="index"
         >
-          {{ i }}
+          {{ i.name }}
         </div>
       </div>
     </section>
