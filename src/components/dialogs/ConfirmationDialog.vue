@@ -1,80 +1,58 @@
 <template>
-  <v-dialog max-width="450" v-model="dialog" overlay-opacity="0.2">
-    <v-form ref="form">
-      <v-card class="pa-8" rounded="lg" flat>
-        <v-card-title
-          class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0"
-          >{{ metaDialog.action }} {{ metaDialog.actionType }}</v-card-title
+  <DialogTemplate
+    :action="meta.action"
+    :title="meta.actionType"
+    maxWidth="450"
+    :opened="opened"
+    :onClose="onClose"
+    @onSubmit="handleProceed"
+  >
+    <p class="text-caption text-sm-body-2 font-weight-regular">
+      {{ meta.message }}
+    </p>
+    <v-card-actions class="pa-0 mt-4">
+      <v-row dense>
+        <v-col cols="12" sm="6" order="last" order-sm="first"
+          ><v-btn text block color="warning" @click="onClose()"
+            >Cancel</v-btn
+          ></v-col
         >
-        <p class="py-2 py-sm-4 text-caption text-sm-body-2 font-weight-regular">
-          {{ metaDialog.message }}?
-        </p>
-        <v-card-actions class="pa-0 mt-4">
-          <v-row dense>
-            <v-col cols="12" sm="6" order="last" order-sm="first"
-              ><v-btn text block color="warning" @click="cancelButton"
-                >Cancel</v-btn
-              ></v-col
-            >
-            <v-col cols="12" sm="6"
-              ><v-btn
-                text
-                block
-                color="primary"
-                class="lightBg"
-                :loading="metaLoading.loading"
-                @click="proceedButton"
-                >Proceed</v-btn
-              ></v-col
-            >
-          </v-row>
-        </v-card-actions>
-      </v-card>
-    </v-form>
-  </v-dialog>
+        <v-col cols="12" sm="6"
+          ><v-btn
+            type="submit"
+            text
+            block
+            color="primary"
+            class="lightBg"
+            :loading="loading"
+            >Proceed</v-btn
+          ></v-col
+        >
+      </v-row>
+    </v-card-actions>
+  </DialogTemplate>
 </template>
 
 <script>
+import DialogTemplate from "./DialogTemplate.vue";
 export default {
   name: "ConfirmationDialog",
-  props: {
-    activator: Boolean,
-    metaDialog: Object,
-    metaLoading: Object,
+  components: {
+    DialogTemplate,
   },
-  data: () => ({
-    dialog: false,
-  }),
+  props: {
+    opened: Boolean,
+    onClose: Function,
+    meta: Object,
+    loading: Boolean,
+  },
+  data: () => ({}),
   methods: {
-    cancelButton: function () {
-      this.$emit("reset-activator");
-    },
-    proceedButton: function () {
-      this.$emit("change-event");
+    handleProceed: function () {
+      this.$emit("onProceed");
     },
   },
   computed: {},
-  watch: {
-    metaLoading: {
-      immediate: true,
-      deep: true,
-      handler: function (newVal) {
-        console.log(newVal)
-      },
-    },
-    activator: {
-      handler: function (newVal) {
-        this.dialog = newVal;
-      },
-    },
-    dialog: {
-      handler: function (newVal) {
-        if (!newVal) {
-          this.$emit("reset-activator");
-        }
-      },
-    },
-  },
 };
 </script>
 

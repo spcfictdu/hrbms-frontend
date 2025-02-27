@@ -1,11 +1,10 @@
 <template>
   <div class="mt-10">
     <booking-form
-      @validation-event="handleCreateTransaction"
       :query="query"
-      :fillResult="returnPreviousTransactions"
+      :fills="returnPreviousTransactions"
       :guestAutofill="guestAutofill"
-      :metaLoading="meta"
+      @onSubmit="handleCreateTransaction"
     />
   </div>
 </template>
@@ -38,22 +37,32 @@ export default {
       "createTransaction",
       "fetchPreviousFormTransactions",
     ]),
-    ...mapActions("publicRooms", ["clearTempData"]),
+    ...mapActions("publicRooms", ["storeTemporaryData", "clearTempData"]),
     handleCreateTransaction: function (payload) {
-      const formattedPayload = this.assignObject(payload);
+      console.log(payload);
+      let formattedPayload =
+        ["REGISTER", "MAYBE"].includes(payload?.action) && !this.user
+          ? this.assignObject(payload.payload)
+          : this.assignObject(payload);
+
+      if (!this.user && payload?.action === "REGISTER") {
+        formattedPayload.query = this.$route.query;
+        return this.storeTemporaryData(formattedPayload).then(() =>
+          this.$router.replace({ name: "Guest Sign In" })
+        );
+      }
 
       this.createTransaction(formattedPayload).then((response) => {
-        const route = this.routes[this.userRole][response.data.results.status];
+        const { status, referenceNumber } = response.data.results;
+        const route = this.user
+          ? this.routes[this.userRole][status]
+          : "Public Dashboard";
 
-        if (this.userRole === "GUEST") {
-          this.clearTempData();
-        }
+        if (this.userRole === "GUEST") this.clearTempData();
 
-        this.$router.push({
+        this.$router[this.user ? "push" : "replace"]({
           name: route,
-          params: {
-            referenceNumber: response.data.results.referenceNumber,
-          },
+          ...(this.user && { params: { referenceNumber } }),
         });
       });
     },
@@ -96,23 +105,35 @@ export default {
     },
   },
   computed: {
-    ...mapState("transaction", ["previousTransactions", "meta"]),
+    ...mapState("transaction", ["previousTransactions"]),
     ...mapState("account", ["userInfo"]),
     ...mapState("publicRooms", ["temporaryData"]),
     returnPreviousTransactions() {
-      return this.previousTransactions ? this.previousTransactions : [];
+      return this.previousTransactions ? this.previousTransactions : {};
     },
     query: function () {
       return this.$route.query;
     },
+    user: function () {
+      return this.$auth.user();
+    },
     userRole: function () {
-      return this.$auth.user().role;
+      return this.$auth.user()?.role;
     },
     guestAutofill: function () {
       let fill = {};
-      if (this.userRole === "GUEST" || !this.$auth.user()) {
+
+      if (!this.user) {
+        fill = {
+          checkInTime: "14:00",
+          checkOutTime: "11:00",
+        };
+      }
+
+      if (this.userRole === "GUEST") {
         if (this.temporaryData) {
           fill = {
+            status: this.temporaryData.status,
             first_name: this.temporaryData.guest.firstName,
             middle_name: this.temporaryData.guest.middleName,
             last_name: this.temporaryData.guest.lastName,
@@ -129,31 +150,19 @@ export default {
               type: this.temporaryData.guest.id.type,
               number: this.temporaryData.guest.id.number,
             },
-
-            status: this.temporaryData.status,
           };
-          if (this.temporaryData.payment) {
-            fill.payment = this.temporaryData.payment;
-          }
         } else {
-          if (this.userRole === "GUEST") {
-            fill = {
-              first_name: this.userInfo.firstName,
-              middle_name: this.userInfo.middleName,
-              last_name: this.userInfo.lastName,
-              phone_number: this.userInfo.phone,
-              email: this.userInfo.email,
-              city: this.userInfo.address.city,
-              province: this.userInfo.address.province,
-              checkInTime: "14:00",
-              checkOutTime: "11:00",
-            };
-          } else {
-            fill = {
-              checkInTime: "14:00",
-              checkOutTime: "11:00",
-            };
-          }
+          fill = {
+            first_name: this.userInfo.firstName,
+            middle_name: this.userInfo.middleName,
+            last_name: this.userInfo.lastName,
+            phone_number: this.userInfo.phone,
+            email: this.userInfo.email,
+            city: this.userInfo.address.city,
+            province: this.userInfo.address.province,
+            checkInTime: "14:00",
+            checkOutTime: "11:00",
+          };
         }
       }
       return fill;

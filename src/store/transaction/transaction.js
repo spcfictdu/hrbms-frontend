@@ -15,9 +15,8 @@ export const transaction = {
       message: "",
       status: "", // SUCCESS, ERROR
     },
-    meta: {
-      title: "", // Transaction Type
-      loading: false,
+    loading: {
+      dialog: false,
     },
   }),
   getters: {},
@@ -27,19 +26,19 @@ export const transaction = {
     SET_TRANSACTION_STATUS: (state, data) => (state.transactionStatus = data),
     SET_PREVIOUS_TRANSACTIONS: (state, data) =>
       (state.previousTransactions = data),
-    SET_META: (state, data) => (state.meta = data),
+    SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
   },
   actions: {
-    triggerLoading: function ({ commit }, title) {
-      commit("SET_META", {
-        title,
-        loading: true,
+    triggerLoading: function ({ commit }, key) {
+      commit("SET_LOADING", {
+        key,
+        value: true,
       });
     },
-    resetLoading: function ({ commit }) {
-      commit("SET_META", {
-        title: "",
-        loading: false,
+    resetLoading: function ({ commit }, key) {
+      commit("SET_LOADING", {
+        key,
+        value: false,
       });
     },
     fetchTransactions: function ({ commit }, queryParams = {}) {
@@ -75,7 +74,7 @@ export const transaction = {
     },
     createTransaction: async function ({ dispatch }, payload) {
       const url = `transaction/create`;
-      dispatch("triggerLoading", "CREATE");
+      dispatch("triggerLoading", "dialog");
 
       return this.$axios
         .post(url, payload)
@@ -87,7 +86,7 @@ export const transaction = {
           throw error;
         })
         .finally(() => {
-          dispatch("resetLoading");
+          dispatch("resetLoading", "dialog");
         });
     },
     deleteReservation: function (

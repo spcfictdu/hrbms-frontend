@@ -1,83 +1,106 @@
 <template>
-  <div class="pb-8">
-    <title-slot>
-      <template v-slot:title> Booking Summary </template>
-    </title-slot>
-
-    <div>
-      <total-bill-card
-        @validation-event="$emit('validation-event')"
-        :totalInformation="totalInformation"
-        :loadingMeta="loadingMeta"
-      >
-      </total-bill-card>
-    </div>
+  <div class="pb-8" v-if="bookingSummary">
+    <FormSection title="Booking Summary">
+      <TotalBillCard :value="bookingSummary" :loading="loading" />
+    </FormSection>
   </div>
 </template>
 
 <script>
-import TitleSlot from "../slots/TitleSlot.vue";
 import TotalBillCard from "../hotel-rooms/forms/TotalBillCard.vue";
+import FormSection from "../sections/FormSection.vue";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "BookingSummary",
+  components: {
+    TotalBillCard,
+    FormSection,
+  },
   props: {
-    isStatus: {
-      required: true,
-    },
-    cardInformation: {
-      type: Object,
-      required: true,
-    },
-    loadingMeta: Object,
+    loading: Boolean,
+    clientMeta: Object,
+    queryParams: Object,
+    btnStyling: Object,
   },
   data: () => ({}),
-  components: {
-    TitleSlot,
-    TotalBillCard,
+
+  methods: {
+    ...mapActions("roomEnum", ["fetchRoom"]),
   },
-  methods: {},
   computed: {
-    totalInformation() {
+    ...mapState("roomEnum", ["room"]),
+    bookingSummary: function () {
+      const room = this.room ? this.room[0] : null;
+
+      if (!room) return;
+
       let data = [
         {
           title: "Guest Name",
-          value: this.cardInformation.client,
+          value: this.clientMeta.clientName,
         },
       ];
+
       if (
-        this.isStatus === "CONFIRMED" ||
-        this.isStatus === "CHECKED-IN" ||
-        this.isStatus === "CHECKED-OUT"
+        ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"].includes(
+          this.clientMeta.status
+        )
       ) {
         data.push(
           {
             title: "Room",
-            value: this.cardInformation.room.roomName,
+            value: room.roomNumber,
           },
           {
             title: "Floor",
-            value: `Floor ${this.cardInformation.room.roomFloor}`,
+            value: `Floor ${room.roomFloor}`,
           }
         );
       }
+
+      // Total Bill
+      const total = room.roomTotalWithExtraPerson;
+
+      // Total Received
+      const totalReceived = this.clientMeta.amountReceived;
+
+      // Total Outstanding Bill
+      const totalOutstanding =
+        total - totalReceived < 0 ? 0 : total - totalReceived;
+
+      // Total Change
+      const totalChange = totalReceived > total ? totalReceived - total : 0;
+
+      // console.log(room);
       return {
-        room: {
-          type: this.cardInformation.room.type,
-          room: this.cardInformation.room.roomName,
-          capacity: this.cardInformation.room.capacity,
+        receiptHeader: data,
+        receiptEnums: {
+          type: room.roomType,
+          roomNumber: room.roomNumber,
+          capacity: room.roomTypeCapacity,
+          roomFloor: room.roomFloor,
+          roomTotal: room.roomTotal,
+          extraPersonTotal: room.extraPersonTotal,
+          total: room.roomTotalWithExtraPerson,
+          roomRatesArray: room.roomRatesArray,
         },
-        guest: data,
-        payment: {
-          roomTotal: this.cardInformation.payment.roomTotal,
-          extraPersonTotal: this.cardInformation.payment.extraPersonTotal,
-          total: this.cardInformation.payment.total,
-          totalReceived: this.cardInformation.payment.totalReceived,
-          totalOutstanding: this.cardInformation.payment.totalOutstanding,
-          totalChange: this.cardInformation.payment.totalChange,
-          roomRatesArray: this.cardInformation.payment.roomRatesArray,
+        clientInput: {
+          totalReceived: totalReceived,
+          totalOutstanding: totalOutstanding,
+          totalChange: totalChange,
         },
-        button: this.cardInformation.button,
+        button: this.btnStyling,
       };
+    },
+  },
+  watch: {
+    queryParams: {
+      handler: async function (v) {
+        await this.fetchRoom(v);
+
+        // Needed by the Parent Component
+        this.$emit("capacity", this.room[0].extraPersonCapacity);
+      },
     },
   },
 };

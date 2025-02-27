@@ -43,7 +43,7 @@ export default [
         name: "Public Booking",
         component: () =>
           import(
-            /* webpackChunkName: "public-routes" */ "@/views/public/rooms/transactions/PublicBookingView.vue"
+            /* webpackChunkName: "public-routes" */ "@/views/hotel-rooms/forms/BookingView.vue"
           ),
         props: true,
         meta: {
