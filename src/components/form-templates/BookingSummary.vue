@@ -95,6 +95,7 @@ export default {
   },
   watch: {
     queryParams: {
+      immediate: true,
       handler: async function (v) {
         await this.fetchRoom(v);
 

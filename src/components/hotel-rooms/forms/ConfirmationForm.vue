@@ -1,12 +1,16 @@
 <template>
-  <div v-if="room">
+  <div>
     <header-booking-slot
-      @button-event="requestCancel"
+      @button-event="handleCancelButton"
       :headerData="headerData"
-      :loadingMeta="meta"
+      :loadingMeta="loading.cancel"
     >
     </header-booking-slot>
-    <v-form ref="form" lazy-validation>
+    <v-form
+      ref="form"
+      lazy-validation
+      @submit.prevent="handleTransactionUpdate"
+    >
       <v-row>
         <v-col cols="12" md="6" v-if="isAdmin">
           <!-- Transaction -->
@@ -19,8 +23,8 @@
           <!-- Payment -->
           <v-divider />
           <payment-template
-            @emit-transaction="assignPayload"
             :isGreater="totalPayment"
+            @emit-transaction="assignPayload"
           />
 
           <!-- GCash QR Code Transition -->
@@ -29,12 +33,11 @@
         <v-col cols="12" :md="isAdmin ? 6 : 12">
           <!-- Booking Summary -->
           <v-divider />
-          <booking-summary
-            ref="bookingSummary"
-            :isStatus="payload.status"
-            :cardInformation="cardInformation"
-            @validation-event="requestUpdateOnTransaction"
-            :loadingMeta="meta"
+          <BookingSummary
+            :loading="loading.form"
+            :queryParams="receiptQuery"
+            :clientMeta="clientMeta"
+            :btnStyling="btnStyling"
           />
         </v-col>
       </v-row>
@@ -48,11 +51,19 @@ import HeaderBookingSlot from "../../slots/HeaderBookingSlot.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import GCashImageTransition from "./GCashImageTransition.vue";
-import { mapActions, mapState } from "vuex";
-import html2canvas from "html2canvas";
+import { mapState } from "vuex";
 export default {
   name: "ConfirmationForm",
-  props: ["result"],
+  components: {
+    HeaderBookingSlot,
+    TransactionTemplate,
+    PaymentTemplate,
+    BookingSummary,
+    GCashImageTransition,
+  },
+  props: {
+    value: Object,
+  },
   data: () => ({
     payload: {
       payment: {
@@ -68,15 +79,7 @@ export default {
     ],
     totalPayment: 0,
   }),
-  components: {
-    HeaderBookingSlot,
-    TransactionTemplate,
-    PaymentTemplate,
-    BookingSummary,
-    GCashImageTransition,
-  },
   methods: {
-    ...mapActions("roomEnum", ["fetchRoom"]),
     assignPayload: function (payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
@@ -84,142 +87,79 @@ export default {
         }
       }
     },
-    requestUpdateOnTransaction: function () {
+    handleTransactionUpdate: function () {
       // Assign Variables
-      const referenceNumber = this.result.transaction.referenceNumber;
+      const referenceNumber = this.value.transaction.referenceNumber;
+
       let payload = {
         referenceNumber: referenceNumber,
         paymentType: this.payload.payment.paymentType,
         amountReceived: this.payload.payment.amountReceived,
-        status: this.result.transaction.status,
+        status: this.value.transaction.status,
       };
 
-      this.$refs.form.validate();
       if (this.$refs.form.validate()) {
-        this.$emit("validation-event", payload);
+        this.$emit("onSubmit", payload);
       }
     },
-    requestCancel: function () {
+    handleCancelButton: function () {
       let params = {
-        status: this.result.transaction.status,
-        transactionRefNum: this.result.transaction.referenceNumber,
+        status: this.value.transaction.status,
+        transactionRefNum: this.value.transaction.referenceNumber,
       };
-      this.$emit("delete-event", params);
-    },
-    fetchQuery: function () {
-      const transaction = this.result.transaction;
-      const room = this.result.room;
-      let query = {
-        roomType: room.name,
-        roomNumber: room.number,
-      };
-
-      if (transaction.checkInDate && transaction.checkOutDate) {
-        query.dateRange = [transaction.checkInDate, transaction.checkOutDate];
-      } else {
-        delete query.dateRange;
-      }
-      if (transaction.extraPerson) {
-        query.extraPersonCount = transaction.extraPerson;
-      } else {
-        delete query.extraPersonCount;
-      }
-
-      this.fetchRoom(query);
+      this.$emit("onCancel", params);
     },
   },
   computed: {
-    ...mapState("roomEnum", ["room"]),
-    ...mapState("transaction", {
-      meta: "meta",
-    }),
-    headerData() {
-      let status = {};
-      let button = {};
-
-      // Manipulate Button and Title Styling
-      status.type = this.result.transaction.status;
-      button.title = "Cancel Reservation";
-      button.style = {
-        color: "warning",
-        outlined: true,
-      };
-
+    ...mapState("transaction", ["loading"]),
+    headerData: function () {
       return {
-        client: this.result.guestName,
+        client: this.value.guestName,
         from: {
-          date: `${this.result.transaction.checkInDate}T${this.result.transaction.checkInTime}`,
+          date: `${this.value.transaction.checkInDate}T${this.value.transaction.checkInTime}`,
         },
         to: {
-          date: `${this.result.transaction.checkOutDate}T${this.result.transaction.checkOutTime}`,
+          date: `${this.value.transaction.checkOutDate}T${this.value.transaction.checkOutTime}`,
         },
-        status: status,
-        button: button,
+        status: {
+          type: this.value.transaction.status,
+        },
+        button: {
+          title: "Cancel Reservation",
+          style: {
+            color: "warning",
+            outlined: true,
+          },
+        },
       };
     },
     showScan() {
       return this.payload.payment?.paymentType === "GCASH" ? true : false;
     },
-    cardInformation() {
-      const room = this.room ? this.room[0] : null;
-
-      // Total Bill
-      const total = room.roomTotalWithExtraPerson;
-      this.totalPayment = total;
-
-      // Total Received
-      const totalReceived = this.payload.payment
-        ? this.payload.payment.amountReceived
-        : 0;
-
-      // Total Outstanding Bill
-      const totalOutstanding =
-        total - totalReceived < 0 ? 0 : total - totalReceived;
-
-      // Total Change
-      const totalChange = totalReceived > total ? totalReceived - total : 0;
-
-      // Button Changing
-      const button = {
-        title: this.isAdmin ? "Record Payment" : "Print",
-        outlined: this.isAdmin ? false : true,
-      };
-
+    receiptQuery: function () {
       return {
-        client: this.result.guestName,
-        room: {
-          type: room.roomType,
-          roomName: room.roomNumber,
-          capacity: room.roomTypeCapacity,
-          roomFloor: room.roomFloor,
-        },
-        payment: {
-          roomTotal: room.roomTotal,
-          extraPersonTotal: room.extraPersonTotal,
-          total: room.roomTotalWithExtraPerson,
-          roomRatesArray: room.roomRatesArray,
-          totalReceived: totalReceived,
-          totalOutstanding: totalOutstanding,
-          totalChange: totalChange,
-        },
-        button: {
-          title: button.title,
-          outlined: button.outlined,
-        },
+        roomType: this.value.room.name,
+        roomNumber: this.value.room.number,
+        dateRange: [
+          this.value.transaction.checkInDate,
+          this.value.transaction.checkOutDate,
+        ],
+        extraPersonCount: this.value.transaction.extraPerson,
       };
+    },
+    clientMeta: function () {
+      return {
+        status: this.value.transaction.status,
+        clientName: this.value.guestName,
+        amountReceived: this.payload.payment.amountReceived,
+      };
+    },
+    btnStyling: function () {
+      const btnProps = this.$route.meta.formBtn;
+      return btnProps;
     },
     isAdmin: function () {
       return this.$auth.user()?.role === "ADMIN";
-    },
-  },
-  watch: {
-    result: {
-      immediate: true,
-      handler: function (newVal) {
-        if (newVal) {
-          this.fetchQuery();
-        }
-      },
     },
   },
 };

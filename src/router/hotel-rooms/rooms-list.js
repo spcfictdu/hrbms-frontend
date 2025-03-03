@@ -96,10 +96,16 @@ export default [
         path: "confirmation/:referenceNumber",
         name: "Confirmation",
         component: ConfirmationView,
-        props: true,
+        props: (route) => ({
+          referenceNumber: route.params.referenceNumber,
+        }),
         meta: {
           name: "Booking",
           hideInputs: true,
+          formBtn: {
+            title: "Record Payment",
+            outlined: false,
+          },
         },
       },
       {

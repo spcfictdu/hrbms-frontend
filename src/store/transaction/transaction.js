@@ -17,6 +17,8 @@ export const transaction = {
     },
     loading: {
       dialog: false,
+      form: false,
+      cancel: false,
     },
   }),
   getters: {},
@@ -116,16 +118,20 @@ export const transaction = {
     },
     updateTransaction: function ({ dispatch }, payload) {
       const url = `transaction/update`;
+
+      dispatch("triggerLoading", "form");
+
       return this.$axios
         .put(url, payload)
         .then((response) => {
-          dispatch("resetLoading");
           return response;
         })
         .catch((error) => {
           console.error("Error updating transaction: ", error);
-          dispatch("resetLoading");
           throw error;
+        })
+        .finally(() => {
+          dispatch("resetLoading", "form");
         });
     },
     fetchPreviousFormTransactions: function ({ commit }, referenceNumber) {
