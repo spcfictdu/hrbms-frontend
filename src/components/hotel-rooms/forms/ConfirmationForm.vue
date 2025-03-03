@@ -34,10 +34,12 @@
           <!-- Booking Summary -->
           <v-divider />
           <BookingSummary
+            ref="bookingSummary"
             :loading="loading.form"
             :queryParams="receiptQuery"
             :clientMeta="clientMeta"
             :btnStyling="btnStyling"
+            @totalPayment="(v) => (totalPayment = v)"
           />
         </v-col>
       </v-row>
@@ -51,9 +53,11 @@ import HeaderBookingSlot from "../../slots/HeaderBookingSlot.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import GCashImageTransition from "./GCashImageTransition.vue";
+import PrintingFunction from "@/mixins/PrintingFunction";
 import { mapState } from "vuex";
 export default {
   name: "ConfirmationForm",
+  mixins: [PrintingFunction],
   components: {
     HeaderBookingSlot,
     TransactionTemplate,

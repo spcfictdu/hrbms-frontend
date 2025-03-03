@@ -2,8 +2,9 @@
   <div class="mt-10">
     <RouteLoader :target="hasData">
       <confirmation-form
+        ref="confirmationForm"
         @onCancel="handleCancel"
-        @onSubmit="handleUpdate"
+        @onSubmit="handleClickEvent"
         :value="transaction"
       />
     </RouteLoader>
@@ -23,6 +24,12 @@ export default {
   props: {
     referenceNumber: String,
   },
+  data: () => ({
+    cancelRoutes: {
+      GUEST: "Guest Account Details",
+      ADMIN: "Transactions",
+    },
+  }),
   created: function () {
     this.fetch();
   },
@@ -39,20 +46,19 @@ export default {
       this.deleteReservation({
         status: payload.status,
         transactionRefNum: payload.transactionRefNum,
-      })
-        .then(() => {
-          this.$router.replace({
-            name: "Transactions",
-          });
-        })
-        .catch(() => {
-          this.$router.push({
-            name: "Transactions",
-          });
+      }).then(() => {
+        this.$router.replace({
+          name: this.cancelRoutes[this.userRole],
         });
+      });
     },
-    handleUpdate: function (payload) {
-      this.updateTransaction(payload).then(() => {
+    handleClickEvent: function (payload) {
+      const fn = this.$route.meta.formBtn.title.toUpperCase();
+      if (fn === "PRINT") {
+        return this.$refs.confirmationForm.handlePrinting();
+      }
+
+      return this.updateTransaction(payload).then(() => {
         if (payload.status === "RESERVED") {
           this.$router.push({
             name: "CheckInOut",
@@ -68,6 +74,9 @@ export default {
     ...mapState("transaction", ["transaction"]),
     hasData: function () {
       return !!this.transaction ?? false;
+    },
+    userRole: function () {
+      return this.$auth.user().role;
     },
   },
 };

@@ -57,15 +57,21 @@ export default [
       {
         path: "confirmation/:referenceNumber",
         name: "Guest Confirmation",
-        props: true,
         component: () =>
           import(
-            /* webpackChunkName: "guest-confirmation" */ "@/views/guest-user/hotel-rooms/GuestConfirmationView.vue"
+            /* webpackChunkName: "guest-confirmation" */ "@/views/hotel-rooms/forms/ConfirmationView.vue"
           ),
+        props: (route) => ({
+          referenceNumber: String(route.params.referenceNumber),
+        }),
         meta: {
           isGuest: true,
           withSearchEngine: false,
           name: "Booking",
+          formBtn: {
+            title: "Print",
+            outlined: true,
+          },
         },
       },
       {

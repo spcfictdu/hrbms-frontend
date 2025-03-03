@@ -69,10 +69,7 @@ import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "PaymentTemplate",
   props: {
-    isGreater: {
-      type: Number,
-      required: true,
-    },
+    isGreater: Number,
     fill: Object,
   },
   data: () => ({
@@ -102,7 +99,8 @@ export default {
     },
   },
   computed: {
-    rules() {
+    rules: function () {
+      console.log(this.isGreater);
       const errors = {};
       // errors.type = [(v) => !!v || "Type is required"];
       errors.amountReceived = [

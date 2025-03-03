@@ -101,6 +101,7 @@ export default {
 
         // Needed by the Parent Component
         this.$emit("capacity", this.room[0].extraPersonCapacity);
+        this.$emit("totalPayment", this.room[0].roomTotalWithExtraPerson);
       },
     },
   },
