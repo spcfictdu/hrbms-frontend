@@ -1,28 +1,33 @@
 <template>
   <div class="mt-10">
-    <confirmed-details
-      @update-event="requestUpdate"
-      :result="transaction"
-      v-if="transaction"
-    />
+    <RouteLoader :target="hasData">
+      <confirmed-details @update-event="handleUpdate" :value="transaction" />
+    </RouteLoader>
   </div>
 </template>
 
 <script>
+import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import ConfirmedDetails from "../../../components/hotel-rooms/forms/ConfirmedDetails.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "CheckInAndOut",
   components: {
     ConfirmedDetails,
+    RouteLoader,
+  },
+  props: {
+    referenceNumber: String,
+  },
+  created() {
+    this.fetch();
   },
   methods: {
     ...mapActions("transaction", ["fetchTransaction", "updateTransaction"]),
-    fetchData: function () {
-      const referenceNumber = this.$route.params.referenceNumber;
-      this.fetchTransaction(referenceNumber);
+    fetch: async function () {
+      this.fetchTransaction(this.referenceNumber);
     },
-    requestUpdate: function (payload) {
+    handleUpdate: function (payload) {
       this.updateTransaction(payload).then(() => {
         if (payload.status === "RESERVED") {
           this.$router.push({
@@ -37,9 +42,9 @@ export default {
   },
   computed: {
     ...mapState("transaction", ["transaction"]),
-  },
-  created() {
-    this.fetchData();
+    hasData: function () {
+      return !!this.transaction ?? false;
+    },
   },
 };
 </script>

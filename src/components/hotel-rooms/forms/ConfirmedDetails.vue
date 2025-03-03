@@ -1,28 +1,30 @@
 <template>
-  <div v-if="room">
+  <div>
     <header-booking-slot
-      @button-event="requestUpdateOnTime"
+      @button-event="handleStatusUpdate"
       :headerData="headerData"
-      :loadingMeta="meta"
+      :loadingMeta="loading.header"
     />
 
-    <v-row>
-      <v-col cols="12" md="6">
-        <!-- Checked-in/out -->
-        <v-divider />
-        <check-in-out-details :cardTimeInformation="cardTimeInformation" />
-      </v-col>
-      <v-col cols="12" md="6">
-        <!-- Booking Summary -->
-        <v-divider></v-divider>
-        <booking-summary
-          ref="bookingSummary"
-          :isStatus="payload.status"
-          :cardInformation="cardInformation"
-          @validation-event="requestPrinting"
-        />
-      </v-col>
-    </v-row>
+    <v-form @submit.prevent="handlePrinting">
+      <v-row>
+        <v-col cols="12" md="6">
+          <!-- Checked-in/out -->
+          <v-divider />
+          <check-in-out-details :cardTimeInformation="cardTimeInformation" />
+        </v-col>
+        <v-col cols="12" md="6">
+          <!-- Booking Summary -->
+          <v-divider></v-divider>
+          <booking-summary
+            ref="bookingSummary"
+            :queryParams="receiptQuery"
+            :clientMeta="clientMeta"
+            :btnStyling="btnStyling"
+          />
+        </v-col>
+      </v-row>
+    </v-form>
   </div>
 </template>
 
@@ -30,25 +32,27 @@
 import HeaderBookingSlot from "@/components/slots/HeaderBookingSlot.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import CheckInOutDetails from "@/components/form-templates/CheckInOutDetails.vue";
-import { mapActions, mapState } from "vuex";
+import PrintingFunction from "@/mixins/PrintingFunction";
+import { mapState } from "vuex";
 import { format, parseISO } from "date-fns";
-import html2canvas from "html2canvas";
 export default {
   name: "ConfirmedDetails",
-  props: ["result"],
+  mixins: [PrintingFunction],
+  components: {
+    HeaderBookingSlot,
+    BookingSummary,
+    CheckInOutDetails,
+  },
+  props: {
+    value: Object,
+  },
   data: () => ({
     payload: {
       status: null,
     },
     activeButtonTitle: "Save Check-In Time",
   }),
-  components: {
-    HeaderBookingSlot,
-    BookingSummary,
-    CheckInOutDetails,
-  },
   methods: {
-    ...mapActions("roomEnum", ["fetchRoom"]),
     assignPayload: function (payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
@@ -56,128 +60,29 @@ export default {
         }
       }
     },
-    requestUpdateOnTime: function () {
-      const history = this.result.transactionHistory;
-      const referenceNumber = this.result.transaction.referenceNumber;
-      let payload = {};
+    handleStatusUpdate() {
+      const {
+        transactionHistory: history,
+        transaction: { referenceNumber },
+      } = this.result;
       const now = new Date().toISOString();
+      let payload = { referenceNumber };
 
       if (!history.checkInDate && !history.checkInTime) {
         payload = {
+          ...payload,
           checkInDate: this.formatISODate(now),
           checkInTime: this.formatISOTime(now),
         };
       } else if (!history.checkOutDate && !history.checkOutTime) {
         payload = {
+          ...payload,
           checkOutDate: this.formatISODate(now),
           checkOutTime: this.formatISOTime(now),
         };
       }
 
-      // Attached Final Values
-      payload.referenceNumber = referenceNumber;
       this.$emit("update-event", payload);
-    },
-    requestPrinting: function () {
-      const printContent = this.$refs.bookingSummary.$el;
-      const referenceNumber = this.result.transaction.referenceNumber;
-
-      const button = printContent.querySelector("button");
-
-      let originalDisplay = "";
-      if (button) {
-        originalDisplay = button.style.display;
-        button.style.display = "none";
-      }
-
-      const options = {
-        logging: false,
-        useCORS: true, // Enable CORS to handle cross-origin images
-        scale: 2, // Increase the scale to improve the quality of the screenshot
-      };
-
-      html2canvas(printContent, options)
-        .then((canvas) => {
-          const imageData = canvas.toDataURL("image/png");
-          const printWindow = window.open("", "_blank");
-          const printDocument = printWindow.document;
-
-          const head = printDocument.head;
-          const style = printDocument.createElement("style");
-          style.innerHTML = `
-        html, body {
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          font-family: Arial, Helvetica, sans-serif;
-        }
-        body {
-          justify-content: space-between;
-        }
-        .booking-summary {
-          display: block;
-          margin: 0 auto;
-          max-width: 100%;
-          max-height: 100%;
-        }
-        footer {
-          margin-top: auto;
-        }
-      `;
-
-          head.appendChild(style);
-
-          const img = printDocument.createElement("img");
-          img.className = "booking-summary";
-          img.src = imageData;
-
-          printDocument.body.appendChild(img);
-
-          const footer = printDocument.createElement("footer");
-
-          const divFooter = printDocument.createElement("div");
-          divFooter.className = "div-footer";
-          divFooter.textContent = "Ref no. " + referenceNumber;
-          footer.appendChild(divFooter);
-
-          printDocument.body.appendChild(footer);
-
-          // Add a slight delay before triggering print (optional)
-          setTimeout(() => {
-            // Print the document directly
-            printWindow.print();
-
-            // Close the print window (optional)
-            printWindow.close();
-          }, 1000); // Adjust the delay as needed
-        })
-        .finally(() => {
-          // Restore the button visibility
-          if (button) {
-            button.style.display = originalDisplay;
-          }
-        });
-    },
-    fetchQuery: function () {
-      const transaction = this.result.transaction;
-      const room = this.result.room;
-      let query = {
-        roomType: room.name,
-        roomNumber: room.number,
-      };
-
-      if (transaction.checkInDate && transaction.checkOutDate) {
-        query.dateRange = [transaction.checkInDate, transaction.checkOutDate];
-      } else {
-        delete query.dateRange;
-      }
-      if (transaction.extraPerson) {
-        query.extraPersonCount = transaction.extraPerson;
-      } else {
-        delete query.extraPersonCount;
-      }
-
-      this.fetchRoom(query);
     },
     formatISODate: function (date) {
       return format(parseISO(date), "yyyy-MM-dd");
@@ -185,100 +90,42 @@ export default {
     formatISOTime: function (date) {
       return format(parseISO(date), "HH:mm:ss");
     },
-    updateButtonTitles(newVal) {
-      if (newVal === "CHECKED-IN") {
-        this.activeButtonTitle = "Save Checked-Out Time";
-      } else {
-        this.activeButtonTitle = "Save Checked-In Time";
-      }
-    },
   },
   computed: {
-    ...mapState("roomEnum", ["room"]),
-    ...mapState("transaction", {
-      meta: "meta",
-    }),
-    headerData() {
-      let status = {};
-      let button = {};
-      let disabled = true;
-      const checkInDate = `${this.result.transaction.checkInDate}T${this.result.transaction.checkInTime}`;
-      const checkOutDate = `${this.result.transaction.checkOutDate}T${this.result.transaction.checkOutTime}`;
-
+    ...mapState("transaction", ["loading"]),
+    headerData: function () {
+      const { transaction, guestName } = this.value;
+      const { checkInDate, checkInTime, checkOutDate, checkOutTime, status } =
+        transaction;
+      const checkInDateTime = `${checkInDate}T${checkInTime}`;
+      const checkOutDateTime = `${checkOutDate}T${checkOutTime}`;
       const now = new Date();
-      const from = new Date(checkInDate);
-      const to = new Date(checkOutDate);
 
-      if (this.result.transaction.status === "CONFIRMED" && from <= now) {
-        disabled = false;
-      } else if (this.result.transaction.status === "CHECKED-IN" && to <= now) {
-        disabled = false;
-      }
-
-      status.type = this.result.transaction.status;
-      button.title = this.activeButtonTitle;
-      button.style = {
-        color: "primary",
-        outlined: false,
-      };
-      button.disabled = disabled;
+      // Determine disabled state: false if confirmed and check-in has started, or checked-in and check-out has passed
+      const disabled = !(
+        (status === "CONFIRMED" && new Date(checkInDateTime) <= now) ||
+        (status === "CHECKED-IN" && new Date(checkOutDateTime) <= now)
+      );
 
       return {
-        client: this.result.guestName,
-        from: {
-          date: `${this.result.transaction.checkInDate}T${this.result.transaction.checkInTime}`,
+        client: guestName,
+        from: { date: checkInDateTime },
+        to: { date: checkOutDateTime },
+        status: { type: status },
+        button: {
+          title: this.headerBtnText,
+          style: { color: "primary", outlined: false },
+          disabled,
         },
-        to: {
-          date: `${this.result.transaction.checkOutDate}T${this.result.transaction.checkOutTime}`,
-        },
-        status: status,
-        button: button,
       };
     },
-    cardInformation() {
-      const room = this.room ? this.room[0] : null;
-
-      // Total Bill
-      const total = room.roomTotalWithExtraPerson;
-
-      // Total Received
-      const totalReceived =
-        this.result && this.result.paymentSummary.amountReceived > 0
-          ? this.result.paymentSummary.amountReceived
-          : 0;
-
-      // Total Outstanding Bill
-      const totalOutstanding =
-        total - totalReceived < 0 ? 0 : total - totalReceived;
-
-      // Total Change
-      const totalChange = totalReceived > total ? totalReceived - total : 0;
-
-      return {
-        client: this.result.guestName,
-        room: {
-          type: room.roomType,
-          roomName: room.roomNumber,
-          capacity: room.roomTypeCapacity,
-          roomFloor: room.roomFloor,
-        },
-        payment: {
-          roomTotal: room.roomTotal,
-          extraPersonTotal: room.extraPersonTotal,
-          total: room.roomTotalWithExtraPerson,
-          roomRatesArray: room.roomRatesArray,
-          totalReceived: totalReceived,
-          totalOutstanding: totalOutstanding,
-          totalChange: totalChange,
-        },
-        button: {
-          title: "Print",
-          outlined: true,
-        },
-      };
+    headerBtnText: function () {
+      return this.value.transaction.status === "CHECKED-IN"
+        ? "Save Checked-Out Time"
+        : "Save Checked-In Time";
     },
     cardTimeInformation() {
-      const transactionHistory = this.result.transactionHistory;
+      const transactionHistory = this.value.transactionHistory;
       let checkIn = null;
       let checkOut = null;
 
@@ -288,20 +135,37 @@ export default {
       if (transactionHistory.checkOutDate && transactionHistory.checkOutTime) {
         checkOut = `${transactionHistory.checkOutDate}T${transactionHistory.checkOutTime}`;
       }
+      return { checkIn, checkOut };
+    },
+    receiptQuery: function () {
       return {
-        checkIn: checkIn,
-        checkOut: checkOut,
+        roomType: this.value.room.name,
+        roomNumber: this.value.room.number,
+        dateRange: [
+          this.value.transaction.checkInDate,
+          this.value.transaction.checkOutDate,
+        ],
+        extraPersonCount: this.value.transaction.extraPerson,
       };
+    },
+    clientMeta: function () {
+      return {
+        status: this.value.transaction.status,
+        clientName: this.value.guestName,
+        amountReceived: this.value.paymentSummary.amountReceived,
+      };
+    },
+    btnStyling: function () {
+      const btnProps = this.$route.meta.formBtn;
+      return btnProps;
     },
   },
   watch: {
-    result: {
+    value: {
       immediate: true,
       handler: function (newVal) {
         if (newVal) {
-          this.fetchQuery();
           this.payload.status = newVal.transaction.status;
-          this.updateButtonTitles(newVal.transaction.status);
         }
       },
     },

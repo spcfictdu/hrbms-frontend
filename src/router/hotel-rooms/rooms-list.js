@@ -97,7 +97,7 @@ export default [
         name: "Confirmation",
         component: ConfirmationView,
         props: (route) => ({
-          referenceNumber: route.params.referenceNumber,
+          referenceNumber: String(route.params.referenceNumber),
         }),
         meta: {
           name: "Booking",
@@ -112,10 +112,16 @@ export default [
         path: "check-in-out/:referenceNumber",
         name: "CheckInOut",
         component: CheckInAndOutView,
-        props: true,
+        props: (route) => ({
+          referenceNumber: String(route.params.referenceNumber),
+        }),
         meta: {
           name: "Check In & Out",
           hideInputs: true,
+          formBtn: {
+            title: "Print",
+            outlined: true,
+          },
         },
       },
     ],

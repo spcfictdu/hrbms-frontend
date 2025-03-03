@@ -19,6 +19,7 @@ export const transaction = {
       dialog: false,
       form: false,
       cancel: false,
+      header: false,
     },
   }),
   getters: {},
@@ -120,6 +121,7 @@ export const transaction = {
       const url = `transaction/update`;
 
       dispatch("triggerLoading", "form");
+      dispatch("triggerLoading", "header");
 
       return this.$axios
         .put(url, payload)
@@ -132,6 +134,7 @@ export const transaction = {
         })
         .finally(() => {
           dispatch("resetLoading", "form");
+          dispatch("resetLoading", "header");
         });
     },
     fetchPreviousFormTransactions: function ({ commit }, referenceNumber) {
