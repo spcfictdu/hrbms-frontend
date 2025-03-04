@@ -77,15 +77,21 @@ export default [
       {
         path: "check-in-out/:referenceNumber",
         name: "Guest CheckInOut",
-        props: true,
         component: () =>
           import(
-            /* webpackChunkName: "guest-check-in-out" */ "@/views/guest-user/hotel-rooms/GuestCheckInOutView.vue"
+            /* webpackChunkName: "guest-check-in-out" */ "@/views/hotel-rooms/forms/CheckInAndOutView.vue"
           ),
+        props: (route) => ({
+          referenceNumber: String(route.params.referenceNumber),
+        }),
         meta: {
           isGuest: true,
           withSearchEngine: false,
           name: "Check In & Out",
+          formBtn: {
+            title: "Print",
+            outlined: true,
+          },
         },
       },
 
