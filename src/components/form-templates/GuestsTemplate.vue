@@ -1,13 +1,6 @@
 <template>
-  <div class="pb-8">
-    <title-slot>
-      <template v-slot:title> Guests </template>
-    </title-slot>
-
-    <div>
-      <label-slot>
-        <template v-slot:label> Extra Person </template>
-      </label-slot>
+  <FormSection title="Guests">
+    <FormField label="Extra Person">
       <v-select
         hide-details="auto"
         v-model="payload.guests"
@@ -16,34 +9,35 @@
         @change="emitTransaction"
         :items="guestsEnums"
       ></v-select>
-    </div>
-  </div>
+    </FormField>
+  </FormSection>
 </template>
 
 <script>
+import FormSection from "../sections/FormSection.vue";
+import FormField from "../fields/FormField.vue";
 import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "GuestsTemplate",
-  props: ["guestsEnums", "fill"],
+  components: {
+    TitleSlot,
+    LabelSlot,
+    FormSection,
+    FormField,
+  },
+  props: {
+    guestsEnums: Array,
+    fill: Object,
+  },
   data: () => ({
     payload: {
       guests: 0,
     },
   }),
-  components: {
-    TitleSlot,
-    LabelSlot,
-  },
   methods: {
     emitTransaction: function () {
       this.$emit("emit-transaction", this.payload);
-    },
-  },
-  computed: {
-    rules() {
-      const errors = {};
-      return errors;
     },
   },
   mounted() {
@@ -53,7 +47,7 @@ export default {
     fill: {
       immediate: true,
       handler: function (newVal) {
-        if (typeof newVal?.extraPerson === 'number') {
+        if (typeof newVal?.extraPerson === "number") {
           this.payload.guests = newVal.extraPerson;
           this.$emit("emit-transaction", this.payload);
         } else {

@@ -1,13 +1,6 @@
 <template>
-  <div class="pb-8">
-    <title-slot>
-      <template v-slot:title> Guest Name </template>
-    </title-slot>
-
-    <div>
-      <label-slot>
-        <template v-slot:label> First Name </template>
-      </label-slot>
+  <FormSection title="Guest Name">
+    <FormField label="First Name">
       <v-text-field
         dense
         hide-details="auto"
@@ -16,12 +9,9 @@
         v-model="payload.firstName"
         @change="emitTransaction"
       ></v-text-field>
-    </div>
+    </FormField>
 
-    <div class="my-4">
-      <label-slot>
-        <template v-slot:label> Middle Name </template>
-      </label-slot>
+    <FormField label="Middle Name" class="my-4">
       <v-text-field
         dense
         hide-details="auto"
@@ -29,12 +19,9 @@
         v-model="payload.middleName"
         @change="emitTransaction"
       ></v-text-field>
-    </div>
+    </FormField>
 
-    <div>
-      <label-slot>
-        <template v-slot:label> Last Name </template>
-      </label-slot>
+    <FormField label="Last Name">
       <v-text-field
         dense
         hide-details="auto"
@@ -43,16 +30,22 @@
         v-model="payload.lastName"
         @change="emitTransaction"
       ></v-text-field>
-    </div>
-  </div>
+    </FormField>
+  </FormSection>
 </template>
 
 <script>
-import LabelSlot from "../slots/LabelSlot.vue";
-import TitleSlot from "../slots/TitleSlot.vue";
+import FormField from "../fields/FormField.vue";
+import FormSection from "../sections/FormSection.vue";
 export default {
   name: "GuestNameTemplate",
-  props: ["fill"],
+  components: {
+    FormField,
+    FormSection,
+  },
+  props: {
+    fill: Object,
+  },
   data: () => ({
     payload: {
       firstName: null,
@@ -60,17 +53,13 @@ export default {
       lastName: null,
     },
   }),
-  components: {
-    TitleSlot,
-    LabelSlot,
-  },
   methods: {
     emitTransaction: function () {
       this.$emit("emit-transaction", this.payload);
     },
   },
   computed: {
-    rules() {
+    rules: function () {
       const errors = {};
       errors.firstName = [(v) => !!v || "First name is required"];
       errors.lastName = [(v) => !!v || "Last name is required"];

@@ -1,47 +1,47 @@
 <template>
-  <div class="pb-8">
-    <title-slot>
-      <template v-slot:title> ID </template>
-    </title-slot>
-
+  <FormSection title="ID">
     <v-row>
       <v-col cols="12" md="6">
-        <label-slot>
-          <template v-slot:label> Type </template>
-        </label-slot>
-        <v-select
-          hide-details="auto"
-          outlined
-          dense
-          :items="IdEnums"
-          :rules="rules.type"
-          v-model="payload.id.type"
-          @change="emitTransaction"
-        ></v-select>
+        <FormField label="Type">
+          <v-select
+            hide-details="auto"
+            outlined
+            dense
+            :items="IdEnums"
+            :rules="rules.type"
+            v-model="payload.id.type"
+            @change="emitTransaction"
+          ></v-select>
+        </FormField>
       </v-col>
       <v-col cols="12" md="6">
-        <label-slot>
-          <template v-slot:label> ID Number </template>
-        </label-slot>
-        <v-text-field
-          dense
-          hide-details="auto"
-          outlined
-          :rules="rules.IdNumber"
-          v-model="payload.id.number"
-          @change="emitTransaction"
-        ></v-text-field>
+        <FormField label="ID Number">
+          <v-text-field
+            dense
+            hide-details="auto"
+            outlined
+            :rules="rules.IdNumber"
+            v-model="payload.id.number"
+            @change="emitTransaction"
+          ></v-text-field>
+        </FormField>
       </v-col>
     </v-row>
-  </div>
+  </FormSection>
 </template>
 
 <script>
-import LabelSlot from "../slots/LabelSlot.vue";
-import TitleSlot from "../slots/TitleSlot.vue";
+import FormField from "../fields/FormField.vue";
+import FormSection from "../sections/FormSection.vue";
 export default {
   name: "IdentificationTemplate",
-  props: ["fill"],
+  components: {
+    FormSection,
+    FormField,
+  },
+  props: {
+    fill: Object,
+  },
   data: () => ({
     payload: {
       id: {
@@ -51,17 +51,13 @@ export default {
     },
     IdEnums: ["National ID", "Driver's License", "Passport"],
   }),
-  components: {
-    TitleSlot,
-    LabelSlot,
-  },
   methods: {
     emitTransaction: function () {
       this.$emit("emit-transaction", this.payload);
     },
   },
   computed: {
-    rules() {
+    rules: function () {
       const errors = {};
       errors.type = [(v) => !!v || "Id type is required"];
       errors.IdNumber = [(v) => !!v || "Id number is required"];
@@ -86,7 +82,7 @@ export default {
         }
       },
     },
-  }
+  },
 };
 </script>
 

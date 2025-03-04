@@ -1,9 +1,7 @@
 <template>
-  <div class="pb-8" v-if="bookingSummary">
-    <FormSection title="Booking Summary">
-      <TotalBillCard :value="bookingSummary" :loading="loading" />
-    </FormSection>
-  </div>
+  <FormSection title="Booking Summary" class="pb-8" v-if="bookingSummary">
+    <TotalBillCard :value="bookingSummary" :loading="loading" />
+  </FormSection>
 </template>
 
 <script>

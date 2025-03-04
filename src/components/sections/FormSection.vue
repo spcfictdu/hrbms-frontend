@@ -1,10 +1,8 @@
 <template>
-  <div>
+  <div class="pb-8">
     <TitleSlot>{{ title }}</TitleSlot>
 
-    <div>
-      <slot />
-    </div>
+    <slot />
   </div>
 </template>
 

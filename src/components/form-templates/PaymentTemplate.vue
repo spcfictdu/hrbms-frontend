@@ -1,9 +1,5 @@
 <template>
-  <div class="pb-8">
-    <title-slot>
-      <template v-slot:title> Payment </template>
-    </title-slot>
-
+  <FormSection title="Payment">
     <v-row>
       <v-col cols="12" :md="isAdmin ? 6 : 0" v-if="isAdmin">
         <v-btn
@@ -46,10 +42,7 @@
       </v-col>
     </v-row>
 
-    <div class="mt-4">
-      <label-slot>
-        <template v-slot:label> Amount Received </template>
-      </label-slot>
+    <FormField label="Amount Received" class="mt-4">
       <v-text-field
         type="number"
         dense
@@ -59,15 +52,19 @@
         v-model.number="payload.payment.amountReceived"
         @change="emitTransaction"
       ></v-text-field>
-    </div>
-  </div>
+    </FormField>
+  </FormSection>
 </template>
 
 <script>
-import LabelSlot from "../slots/LabelSlot.vue";
-import TitleSlot from "../slots/TitleSlot.vue";
+import FormSection from "../sections/FormSection.vue";
+import FormField from "../fields/FormField.vue";
 export default {
   name: "PaymentTemplate",
+  components: {
+    FormSection,
+    FormField,
+  },
   props: {
     isGreater: Number,
     fill: Object,
@@ -84,10 +81,6 @@ export default {
     },
     imgSrc: require("@/assets/GCashLogo.png"),
   }),
-  components: {
-    TitleSlot,
-    LabelSlot,
-  },
   methods: {
     assignActiveButton: function (string) {
       this.activeButton = string;
@@ -100,7 +93,6 @@ export default {
   },
   computed: {
     rules: function () {
-      console.log(this.isGreater);
       const errors = {};
       // errors.type = [(v) => !!v || "Type is required"];
       errors.amountReceived = [

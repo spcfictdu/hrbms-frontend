@@ -1,30 +1,26 @@
 <template>
-  <div class="pb-8">
-    <title-slot>
-      <template v-slot:title> Checked-in/out </template>
-    </title-slot>
-
+  <FormSection title="Checked-in/out" class="pb-8">
     <div v-for="(i, index) in cardDetails" :key="index">
       <check-card
         :card="i.card"
         :class="{ 'mb-2': index < cardDetails.length - 1 }"
       />
     </div>
-  </div>
+  </FormSection>
 </template>
 
 <script>
+import FormSection from "../sections/FormSection.vue";
 import CheckCard from "../hotel-rooms/forms/CheckCard.vue";
-import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "CheckInOutDetails",
-  props: ["cardTimeInformation"],
-  data: () => ({}),
   components: {
-    TitleSlot,
     CheckCard,
+    FormSection,
   },
-  methods: {},
+  props: {
+    cardTimeInformation: Object,
+  },
   computed: {
     cardDetails() {
       return [

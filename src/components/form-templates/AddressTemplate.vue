@@ -1,13 +1,6 @@
 <template>
-  <div class="pb-8">
-    <title-slot>
-      <template v-slot:title> Address </template>
-    </title-slot>
-
-    <div>
-      <label-slot>
-        <template v-slot:label> Province </template>
-      </label-slot>
+  <FormSection title="Address">
+    <FormField label="Province">
       <v-text-field
         dense
         hide-details="auto"
@@ -16,12 +9,9 @@
         v-model="payload.address.province"
         @change="emitTransaction"
       ></v-text-field>
-    </div>
+    </FormField>
 
-    <div class="mt-4">
-      <label-slot>
-        <template v-slot:label> City/Municipality </template>
-      </label-slot>
+    <FormField label="City/Municipality" class="mt-4">
       <v-text-field
         dense
         hide-details="auto"
@@ -30,16 +20,22 @@
         v-model="payload.address.city"
         @change="emitTransaction"
       ></v-text-field>
-    </div>
-  </div>
+    </FormField>
+  </FormSection>
 </template>
 
 <script>
-import LabelSlot from "../slots/LabelSlot.vue";
-import TitleSlot from "../slots/TitleSlot.vue";
+import FormSection from "../sections/FormSection.vue";
+import FormField from "../fields/FormField.vue";
 export default {
   name: "AddressTemplate",
-  props: ["fill"],
+  components: {
+    FormSection,
+    FormField,
+  },
+  props: {
+    fill: Object,
+  },
   data: () => ({
     payload: {
       address: {
@@ -48,17 +44,14 @@ export default {
       },
     },
   }),
-  components: {
-    TitleSlot,
-    LabelSlot,
-  },
+
   methods: {
     emitTransaction: function () {
       this.$emit("emit-transaction", this.payload);
     },
   },
   computed: {
-    rules() {
+    rules: function () {
       const errors = {};
       errors.province = [(v) => !!v || "Province is required"];
       errors.city = [(v) => !!v || "City/Municipality is required"];
