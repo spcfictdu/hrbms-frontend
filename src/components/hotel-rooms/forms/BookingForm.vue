@@ -73,6 +73,10 @@
             @emit-transaction="assignPayload"
           />
 
+          <!-- Add-Ons -->
+          <v-divider />
+          <AddOnsTemplate />
+
           <!-- Payment -->
           <div v-if="showPayment" class="pb-8">
             <v-divider />
@@ -125,6 +129,7 @@ import GuestsTemplate from "@/components/form-templates/GuestsTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import GCashImageTransition from "@/components/hotel-rooms/forms/GCashImageTransition.vue";
+import AddOnsTemplate from "@/components/form-templates/AddOnsTemplate.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import WarningDialog from "@/components/dialogs/WarningDialog.vue";
 import { mapState } from "vuex";
@@ -144,6 +149,7 @@ export default {
     GCashImageTransition,
     ConfirmationDialog,
     WarningDialog,
+    AddOnsTemplate,
   },
   props: {
     query: Object,
