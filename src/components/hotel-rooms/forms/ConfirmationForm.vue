@@ -20,15 +20,16 @@
             @emit-transaction="assignPayload"
           />
 
+          <!-- Discount -->
+          <v-divider />
+          <DiscountTemplate />
+
           <!-- Payment -->
           <v-divider />
           <payment-template
             :isGreater="totalPayment"
             @emit-transaction="assignPayload"
           />
-
-          <!-- GCash QR Code Transition -->
-          <g-cash-image-transition :showScan="showScan" />
         </v-col>
         <v-col cols="12" :md="isAdmin ? 6 : 12">
           <!-- Booking Summary -->
@@ -52,7 +53,7 @@ import TransactionTemplate from "@/components/form-templates/TransactionTemplate
 import HeaderBookingSlot from "../../slots/HeaderBookingSlot.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
-import GCashImageTransition from "./GCashImageTransition.vue";
+import DiscountTemplate from "@/components/form-templates/DiscountTemplate.vue";
 import PrintingFunction from "@/mixins/PrintingFunction";
 import { mapState } from "vuex";
 export default {
@@ -63,7 +64,7 @@ export default {
     TransactionTemplate,
     PaymentTemplate,
     BookingSummary,
-    GCashImageTransition,
+    DiscountTemplate,
   },
   props: {
     value: Object,
@@ -136,9 +137,6 @@ export default {
           },
         },
       };
-    },
-    showScan() {
-      return this.payload.payment?.paymentType === "GCASH" ? true : false;
     },
     receiptQuery: function () {
       return {

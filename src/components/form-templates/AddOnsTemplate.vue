@@ -93,6 +93,14 @@ export default {
   computed: {
     ...mapState("amenities", ["amenities"]),
   },
+  watch: {
+    payload: {
+      deep: true,
+      handler: function () {
+        this.$emit("emit-transaction", this.payload);
+      },
+    },
+  },
 };
 </script>
 

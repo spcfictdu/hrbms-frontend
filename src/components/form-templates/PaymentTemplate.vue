@@ -1,46 +1,41 @@
 <template>
   <FormSection title="Payment">
     <v-row>
-      <v-col cols="12" :md="isAdmin ? 6 : 0" v-if="isAdmin">
+      <v-col cols="12" md="6" v-for="button in buttons" :key="button.text">
         <v-btn
           depressed
           block
-          :color="buttonOne === activeButton ? 'primary' : 'lightBg'"
+          :color="button.value === activeButton ? 'primary' : 'lightBg'"
           height="100%"
-          class="text-capitalize py-2"
+          class="text-caption font-weight-regular text-capitalize py-2"
           :class="{
-            'font-weight-medium': buttonOne === activeButton,
-            'font-weight-regular': buttonOne !== activeButton,
+            'font-weight-medium': button.value === activeButton,
           }"
-          @click="assignActiveButton(buttonOne)"
-          ><v-avatar color="white" size="30" class="mr-2">
-            <v-icon color="primary" dense>mdi-cash</v-icon> </v-avatar
-          >Cash</v-btn
+          @click="assignActiveButton(button.value)"
         >
-      </v-col>
-      <v-col cols="12" :md="isAdmin ? 6 : 0">
-        <v-btn
-          depressed
-          block
-          :color="buttonTwo === activeButton ? 'primary' : 'lightBg'"
-          height="100%"
-          class="font-weight-regular text-capitalize py-2"
-          :class="{
-            'font-weight-medium': buttonTwo === activeButton,
-            'font-weight-regular': buttonTwo !== activeButton,
-          }"
-          @click="assignActiveButton(buttonTwo)"
-          ><v-avatar color="white" size="30" class="mr-2">
-            <v-img
-              contain
-              width="20"
-              height="20"
-              :src="imgSrc"
-            ></v-img> </v-avatar
-          >GCash</v-btn
-        >
+          <div class="d-flex align-center" style="gap: 8px; min-width: 100px">
+            <v-avatar color="white" size="30">
+              <v-icon color="primary" dense v-if="button.icon">{{
+                button.icon
+              }}</v-icon>
+              <v-img
+                v-if="button.img"
+                contain
+                width="20"
+                height="20"
+                :src="button.img"
+              ></v-img>
+            </v-avatar>
+            <div>{{ button.text }}</div>
+          </div>
+        </v-btn>
       </v-col>
     </v-row>
+
+    <!-- Type Fields -->
+
+    <ChequeForm v-if="activeButton === 'CHEQUE'" />
+    <CreditCardForm v-if="activeButton === 'CREDIT_CARD'" />
 
     <FormField label="Amount Received" class="mt-4">
       <v-text-field
@@ -53,10 +48,15 @@
         @change="emitTransaction"
       ></v-text-field>
     </FormField>
+
+    <GCashImageTransition :showScan="activeButton === 'GCASH'" />
   </FormSection>
 </template>
 
 <script>
+import GCashImageTransition from "../hotel-rooms/forms/GCashImageTransition.vue";
+import ChequeForm from "./payment/ChequeForm.vue";
+import CreditCardForm from "./payment/CreditCardForm.vue";
 import FormSection from "../sections/FormSection.vue";
 import FormField from "../fields/FormField.vue";
 export default {
@@ -64,6 +64,9 @@ export default {
   components: {
     FormSection,
     FormField,
+    GCashImageTransition,
+    ChequeForm,
+    CreditCardForm,
   },
   props: {
     isGreater: Number,
@@ -71,15 +74,34 @@ export default {
   },
   data: () => ({
     activeButton: "",
-    buttonOne: "CASH",
-    buttonTwo: "GCASH",
+    buttons: [
+      {
+        text: "Cash",
+        value: "CASH",
+        icon: "mdi-cash",
+      },
+      {
+        text: "GCash",
+        value: "GCASH",
+        img: require("@/assets/GCashLogo.svg"),
+      },
+      {
+        text: "Cheque",
+        value: "CHEQUE",
+        img: require("@/assets/BankCheque.svg"),
+      },
+      {
+        text: "Credit Card",
+        value: "CREDIT_CARD",
+        img: require("@/assets/CreditCard.svg"),
+      },
+    ],
     payload: {
       payment: {
         paymentType: null,
         amountReceived: 0,
       },
     },
-    imgSrc: require("@/assets/GCashLogo.png"),
   }),
   methods: {
     assignActiveButton: function (string) {
@@ -94,7 +116,6 @@ export default {
   computed: {
     rules: function () {
       const errors = {};
-      // errors.type = [(v) => !!v || "Type is required"];
       errors.amountReceived = [
         !!this.payload.payment.paymentType || "Type is required",
         (v) => !!v || "Amount is required",

@@ -53,6 +53,12 @@
             @emit-transaction="assignPayload"
             :fill="fill"
           />
+
+          <!-- Discount -->
+          <div v-if="showDiscount">
+            <v-divider />
+            <DiscountTemplate />
+          </div>
         </v-col>
 
         <!-- Right Column -->
@@ -75,7 +81,7 @@
 
           <!-- Add-Ons -->
           <v-divider />
-          <AddOnsTemplate />
+          <AddOnsTemplate @emit-transaction="assignPayload" />
 
           <!-- Payment -->
           <div v-if="showPayment" class="pb-8">
@@ -85,9 +91,6 @@
               :isGreater="totalPayment"
               @emit-transaction="assignPayload"
             />
-
-            <!-- GCash QR Code Transition -->
-            <g-cash-image-transition :showScan="showScan" />
           </div>
 
           <!-- Booking Summary -->
@@ -128,8 +131,8 @@ import CheckOutTemplate from "@/components/form-templates/CheckOutTemplate.vue";
 import GuestsTemplate from "@/components/form-templates/GuestsTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
-import GCashImageTransition from "@/components/hotel-rooms/forms/GCashImageTransition.vue";
 import AddOnsTemplate from "@/components/form-templates/AddOnsTemplate.vue";
+import DiscountTemplate from "@/components/form-templates/DiscountTemplate.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import WarningDialog from "@/components/dialogs/WarningDialog.vue";
 import { mapState } from "vuex";
@@ -146,10 +149,10 @@ export default {
     GuestsTemplate,
     BookingSummary,
     PaymentTemplate,
-    GCashImageTransition,
     ConfirmationDialog,
     WarningDialog,
     AddOnsTemplate,
+    DiscountTemplate,
   },
   props: {
     query: Object,
@@ -262,8 +265,8 @@ export default {
     showPayment() {
       return this.payload?.status === "CONFIRMED" ? true : false;
     },
-    showScan() {
-      return this.payload.payment?.paymentType === "GCASH" ? true : false;
+    showDiscount: function () {
+      return this.payload?.status == "CONFIRMED";
     },
 
     // Receipt Computed State

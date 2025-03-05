@@ -1,6 +1,6 @@
 <template>
   <div>
-    <LabelSlot>{{ label }}</LabelSlot>
+    <LabelSlot :isBold="isBold">{{ label }}</LabelSlot>
     <slot />
   </div>
 </template>
@@ -14,6 +14,7 @@ export default {
   },
   props: {
     label: String,
+    isBold: Boolean,
   },
 };
 </script>
