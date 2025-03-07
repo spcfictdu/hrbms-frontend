@@ -12,10 +12,15 @@
             dense
             hide-details="auto"
             outlined
-            :items="amenities"
+            :items="addons"
             item-text="name"
             v-model="addon.name"
             :item-disabled="(item) => isItemDisabled(item, index)"
+            clearable
+            :rules="[
+              (v) =>
+                payload.addons.length > 1 ? !!v || 'Add-on is required' : true,
+            ]"
           />
 
           <CounterButtons
@@ -63,10 +68,10 @@ export default {
     },
   }),
   created() {
-    this.fetchAmenities();
+    this.fetchAddons();
   },
   methods: {
-    ...mapActions("amenities", ["fetchAmenities"]),
+    ...mapActions("addonsEnum", ["fetchAddons"]),
     handleAddItem() {
       this.payload.addons.push({
         name: null,
@@ -91,13 +96,21 @@ export default {
     },
   },
   computed: {
-    ...mapState("amenities", ["amenities"]),
+    ...mapState("addonsEnum", ["addons"]),
   },
   watch: {
     payload: {
       deep: true,
-      handler: function () {
-        this.$emit("emit-transaction", this.payload);
+      handler: function (v) {
+        const nullPayload = {
+          addons: null,
+        };
+        const isDefault =
+          v.addons?.length === 1 &&
+          v.addons[0].name === null &&
+          v.addons[0].quantity === 1;
+
+        this.$emit("emit-transaction", isDefault ? nullPayload : v);
       },
     },
   },

@@ -56,6 +56,17 @@
             <div>₱ {{ i.extraPersonRate }}</div>
           </div>
         </div>
+        <div v-if="value.receiptEnums.addonsArray.length > 0">
+          Addons Charge:
+          <div
+            class="ml-5 d-flex justify-space-between align-center"
+            v-for="(i, index) in value.receiptEnums.addonsArray"
+            :key="'addons' + index"
+          >
+            <div>{{ i.name }} x {{ i.quantity }} @  ₱{{ i.unit_price }}</div>
+            <div>₱ {{ i.total }}</div>
+          </div>
+        </div>
       </div>
 
       <v-divider />

@@ -22,6 +22,7 @@ import {
   rateTypeEnum,
   availableRoomNumbersEnum,
 } from "./enums/rooms";
+import { addonsEnum } from "./enums/addons";
 
 Vue.use(Vuex);
 
@@ -45,9 +46,11 @@ export default new Vuex.Store({
     roomEnum,
     rateTypeEnum,
     availableRoomNumbersEnum,
+    addonsEnum,
   },
   plugins: [
     createPersistedState({
+      storage: window.sessionStorage,
       paths: [
         "authentication.currentUser",
         "account.userInfo",

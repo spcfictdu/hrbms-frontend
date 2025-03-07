@@ -81,6 +81,7 @@ export default {
           extraPersonTotal: room.extraPersonTotal,
           total: room.roomTotalWithExtraPerson,
           roomRatesArray: room.roomRatesArray,
+          addonsArray: room.addons,
         },
         clientInput: {
           totalReceived: totalReceived,
@@ -94,8 +95,18 @@ export default {
   watch: {
     queryParams: {
       immediate: true,
+      deep: true,
       handler: async function (v) {
-        await this.fetchRoom(v);
+        const data = {
+          ...v,
+          ...(v.addons && {
+            addons: v.addons
+              .filter(({ name }) => name)
+              .map(({ name, quantity }) => `${name}-${quantity}`),
+          }),
+        };
+
+        await this.fetchRoom(data);
 
         // Needed by the Parent Component
         this.$emit("capacity", this.room[0].extraPersonCapacity);

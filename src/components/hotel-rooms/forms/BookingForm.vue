@@ -101,6 +101,7 @@
             :clientMeta="clientMeta"
             :btnStyling="btnStyling"
             @capacity="(v) => (extraRoomCapacity = v)"
+            @totalPayment="evaluateTotalPayment"
           />
         </v-col>
       </v-row>
@@ -196,7 +197,12 @@ export default {
     assignPayload: function (payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
-          this.$set(this.payload, key, payload[key]);
+          const value = payload[key];
+          if (value === null) {
+            this.$delete(this.payload, key);
+          } else {
+            this.$set(this.payload, key, payload[key]);
+          }
         }
       }
     },
@@ -222,7 +228,7 @@ export default {
       this.$emit("onSubmit", this.payload);
 
       if (this.$auth.user()) {
-        this.resetDialog("confirm");
+        this.resetDialog("confirmation");
       }
     },
     assignAutoFill: function (newVal) {
@@ -241,6 +247,7 @@ export default {
 
       this.fill = autofilledObject[0];
       this.payload.accountId = autofilledObject[0].id;
+      this.$refs.form.resetValidation();
     },
     resetAutoFill: function () {
       this.fill = null;
@@ -253,6 +260,10 @@ export default {
         checkInDate: newVal.checkInDate,
         checkOutDate: newVal.checkOutDate,
       };
+    },
+    evaluateTotalPayment: function (total) {
+      this.totalPayment = total;
+      this.payload.roomTotal = total;
     },
   },
   computed: {
@@ -276,6 +287,7 @@ export default {
         roomNumber: this.query.roomNumber,
         dateRange: [this.payload.checkIn.date, this.payload.checkOut.date],
         extraPersonCount: this.payload.guests,
+        addons: this.payload.addons ?? [],
       };
     },
     clientMeta: function () {
