@@ -57,7 +57,7 @@
           <!-- Discount -->
           <div v-if="showDiscount">
             <v-divider />
-            <DiscountTemplate />
+            <DiscountTemplate @emit-transaction="assignPayload" />
           </div>
         </v-col>
 

@@ -1,22 +1,27 @@
 <template>
   <div>
-    <FormField isBold label="Cheque Number" class="mt-4">
-      <v-text-field
-        dense
-        hide-details="auto"
-        outlined
-        v-model="payload.chequeNumber"
-      ></v-text-field>
-    </FormField>
-
-    <FormField isBold label="Bank Name" class="mt-4">
-      <v-text-field
-        dense
-        hide-details="auto"
-        outlined
-        v-model="payload.bankName"
-      ></v-text-field>
-    </FormField>
+    <v-row dense class="mt-4">
+      <v-col cols="12"
+        ><FormField isBold label="Cheque Number">
+          <v-text-field
+            dense
+            hide-details="auto"
+            outlined
+            v-model="payload.chequeNumber"
+            :rules="[(v) => !!v || 'Cheque Number is required']"
+          ></v-text-field> </FormField
+      ></v-col>
+      <v-col cols="12">
+        <FormField isBold label="Bank Name">
+          <v-text-field
+            dense
+            hide-details="auto"
+            outlined
+            v-model="payload.chequeBankName"
+            :rules="[(v) => !!v || 'Bank Name is required']"
+          ></v-text-field> </FormField
+      ></v-col>
+    </v-row>
   </div>
 </template>
 
@@ -28,9 +33,17 @@ export default {
   data: () => ({
     payload: {
       chequeNumber: null,
-      bankName: null,
+      chequeBankName: null,
     },
   }),
+  watch: {
+    payload: {
+      deep: true,
+      handler: function (v) {
+        this.$emit("assignPayload", v);
+      },
+    },
+  },
 };
 </script>
 

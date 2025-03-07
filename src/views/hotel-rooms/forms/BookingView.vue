@@ -24,7 +24,7 @@ export default {
       },
       ADMIN: {
         RESERVED: "Confirmation",
-        CHECKED_IN: "CheckInOut",
+        CONFIRMED: "CheckInOut",
         CHECKED_OUT: "CheckInOut",
       },
     },
@@ -85,6 +85,7 @@ export default {
         checkIn: payload.checkIn,
         checkOut: payload.checkOut,
         room: payload.room,
+        roomTotal: payload.roomTotal,
       };
 
       if (payload.status === "CONFIRMED") {
@@ -93,6 +94,13 @@ export default {
 
       if (payload.accountId) {
         value.guest.accountId = payload.accountId;
+      }
+
+      if (payload.addons) {
+        value.addons = payload.addons.map(({ name, quantity }) => ({
+          name,
+          quantity: String(quantity),
+        }));
       }
       return value;
     },
@@ -146,6 +154,7 @@ export default {
             checkInDate: this.temporaryData.checkIn.date,
             checkOutDate: this.temporaryData.checkOut.date,
             extraPerson: this.temporaryData.guest.extraPerson,
+            addons: this.temporaryData.addons,
             id: {
               type: this.temporaryData.guest.id.type,
               number: this.temporaryData.guest.id.number,

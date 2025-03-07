@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-row dense class="mt-4">
+    <v-row class="mt-4" dense>
       <v-col cols="12">
         <FormField isBold label="Card Number">
           <v-text-field
@@ -8,38 +8,52 @@
             hide-details="auto"
             outlined
             v-model="payload.cardNumber"
+            :rules="[
+              (v) => !!v || 'Card Number is required',
+              (v) => v.length === 16 || 'Card Number must be 16 digits',
+            ]"
+            placeholder="0123 4567 8901 2344"
           ></v-text-field>
         </FormField>
       </v-col>
       <v-col cols="12">
-        <FormField isBold label="Card Name">
+        <FormField isBold label="Card Holder Name">
           <v-text-field
             dense
             hide-details="auto"
             outlined
-            v-model="payload.cardName"
+            v-model="payload.cardHolderName"
+            :rules="[(v) => !!v || 'Card Holder  is required']"
+            placeholder="JUAN DELA CRUZ"
           ></v-text-field>
         </FormField>
       </v-col>
-      <v-col cols="12" md="6">
-        <FormField isBold label="Expiry Date">
-          <v-text-field
-            dense
-            hide-details="auto"
-            outlined
-            v-model="payload.expiryDate"
-          ></v-text-field>
-        </FormField>
-      </v-col>
-      <v-col cols="12" md="6">
-        <FormField isBold label="CVC/CVV">
-          <v-text-field
-            dense
-            hide-details="auto"
-            outlined
-            v-model="payload.cvcOrCvv"
-          ></v-text-field>
-        </FormField>
+      <v-col cols="12">
+        <v-row>
+          <v-col cols="12" md="6">
+            <FormField isBold label="Expiry Date">
+              <v-text-field
+                dense
+                hide-details="auto"
+                outlined
+                v-model="payload.expirationDate"
+                placeholder="MM/YY"
+                :rules="[(v) => !!v || 'Expiry Date is required']"
+              ></v-text-field>
+            </FormField>
+          </v-col>
+          <v-col cols="12" md="6">
+            <FormField isBold label="CVC/CVV">
+              <v-text-field
+                dense
+                hide-details="auto"
+                outlined
+                v-model="payload.cvc"
+                :rules="[(v) => !!v || 'CVC/CVV is required']"
+              ></v-text-field>
+            </FormField>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
   </div>
@@ -53,11 +67,19 @@ export default {
   data: () => ({
     payload: {
       cardNumber: null,
-      cardName: null,
-      expiryDate: null,
-      cvcOrCvv: null,
+      cardHolderName: null,
+      expirationDate: null,
+      cvc: null,
     },
   }),
+  watch: {
+    payload: {
+      deep: true,
+      handler: function (v) {
+        this.$emit("assignPayload", v);
+      },
+    },
+  },
 };
 </script>
 

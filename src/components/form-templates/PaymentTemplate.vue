@@ -33,9 +33,14 @@
     </v-row>
 
     <!-- Type Fields -->
-
-    <ChequeForm v-if="activeButton === 'CHEQUE'" />
-    <CreditCardForm v-if="activeButton === 'CREDIT_CARD'" />
+    <ChequeForm
+      @assignPayload="assignPayload"
+      v-if="activeButton === 'CHEQUE'"
+    />
+    <CreditCardForm
+      @assignPayload="assignPayload"
+      v-if="activeButton === 'CREDIT_CARD'"
+    />
 
     <FormField label="Amount Received" class="mt-4">
       <v-text-field
@@ -45,11 +50,10 @@
         outlined
         :rules="rules.amountReceived"
         v-model.number="payload.payment.amountReceived"
-        @change="emitTransaction"
       ></v-text-field>
     </FormField>
 
-    <GCashImageTransition :showScan="activeButton === 'GCASH'" />
+    <GCashImageTransition class="mt-4" :showScan="activeButton === 'GCASH'" />
   </FormSection>
 </template>
 
@@ -104,13 +108,22 @@ export default {
     },
   }),
   methods: {
+    assignPayload: function (payload) {
+      for (const key in payload) {
+        if (Object.hasOwnProperty.call(payload, key)) {
+          this.$set(this.payload.payment, key, payload[key]);
+        }
+      }
+    },
     assignActiveButton: function (string) {
       this.activeButton = string;
       this.payload.payment.paymentType = string;
-      this.emitTransaction();
     },
-    emitTransaction: function () {
-      this.$emit("emit-transaction", this.payload);
+    resetPayload: function (v) {
+      this.payload.payment = {
+        paymentType: v,
+        amountReceived: 0,
+      };
     },
   },
   computed: {
@@ -144,6 +157,17 @@ export default {
             amountReceived: null,
           };
         }
+      },
+    },
+    payload: {
+      deep: true,
+      handler: function (v) {
+        this.$emit("emit-transaction", v);
+      },
+    },
+    "payload.payment.paymentType": {
+      handler: function (v) {
+        this.resetPayload(v);
       },
     },
   },
