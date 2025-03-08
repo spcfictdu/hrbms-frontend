@@ -50,6 +50,7 @@
         outlined
         :rules="rules.amountReceived"
         v-model.number="payload.payment.amountReceived"
+        hide-spin-buttons
       ></v-text-field>
     </FormField>
 

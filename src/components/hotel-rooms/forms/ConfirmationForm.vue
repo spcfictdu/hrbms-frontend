@@ -22,7 +22,7 @@
 
           <!-- Discount -->
           <v-divider />
-          <DiscountTemplate />
+          <DiscountTemplate @emit-transaction="assignPayload" />
 
           <!-- Payment -->
           <v-divider />
@@ -94,13 +94,13 @@ export default {
     },
     handleTransactionUpdate: function () {
       // Assign Variables
-      const referenceNumber = this.value.transaction.referenceNumber;
+      const { referenceNumber, status } = this.value.transaction;
+      const { payment } = this.payload;
 
       let payload = {
-        referenceNumber: referenceNumber,
-        paymentType: this.payload.payment.paymentType,
-        amountReceived: this.payload.payment.amountReceived,
-        status: this.value.transaction.status,
+        referenceNumber,
+        status,
+        ...payment,
       };
 
       if (this.$refs.form.validate()) {
@@ -147,6 +147,7 @@ export default {
           this.value.transaction.checkOutDate,
         ],
         extraPersonCount: this.value.transaction.extraPerson,
+        addons: this.value.priceSummary.fullAddons,
       };
     },
     clientMeta: function () {
