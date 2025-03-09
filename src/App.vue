@@ -22,6 +22,7 @@
               }"
             >
               <router-view />
+              <AlertComponent />
             </v-main>
           </v-container>
         </div>
@@ -40,9 +41,16 @@ import { mapActions } from "vuex";
 import PublicNavigation from "./components/navigation/PublicNavigation.vue";
 import FooterComponent from "./components/public/FooterComponent.vue";
 import PageLoader from "./components/loaders/PageLoader.vue";
+import AlertComponent from "./components/alerts/AlertComponent.vue";
 export default {
   name: "App",
-  components: { Navigation, PublicNavigation, FooterComponent, PageLoader },
+  components: {
+    Navigation,
+    PublicNavigation,
+    FooterComponent,
+    PageLoader,
+    AlertComponent,
+  },
   data: () => ({
     hasLoaded: false,
     notAllowedRoutes: ["Sign In", "Guest Sign In"],

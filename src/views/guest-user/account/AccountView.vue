@@ -22,25 +22,26 @@ export default {
     confirmationRoute: ["RESERVED"],
     checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
   }),
+  created: function () {
+    this.fetch();
+  },
   methods: {
     ...mapActions("account", ["fetchAccountInfo", "updateAccountPassword"]),
+    ...mapActions("alerts", ["requireAlertFn"]),
+    fetch: async function () {
+      await this.fetchAccountInfo();
+    },
     requestPasswordUpdate: function (payload) {
+      this.requireAlertFn(1);
       this.updateAccountPassword(payload);
     },
     filterData: function (value) {
-      switch (value) {
-        case "Bookings":
-          this.accommodationData = this.accountInfo.bookings;
-          break;
-        case "Reservations":
-          this.accommodationData = this.accountInfo.reservation;
-          break;
-        case "History":
-          this.accommodationData = this.accountInfo.histories;
-          break;
-        default:
-          this.accommodationData = null;
-      }
+      const data = {
+        Bookings: this.accountInfo.bookings,
+        Reservations: this.accountInfo.reservation,
+        History: this.accountInfo.histories,
+      };
+      this.accommodationData = data[value];
     },
     redirect: function (meta) {
       if (this.confirmationRoute.includes(meta.status)) {
@@ -61,38 +62,20 @@ export default {
     },
   },
   computed: {
-    ...mapState("account", {
-      accountInfo: "accountInfo",
-      accountStatus: "accountStatus",
-    }),
-    ...mapGetters("account", {
-      accountHolder: "accountHolder",
-    }),
+    ...mapState("account", ["accountInfo", "accountStatus"]),
+    ...mapGetters("account", ["accountHolder"]),
     accountHeaderData: function () {
-      let headerData = {};
+      if (!this.accountHolder) return;
 
-      if (this.accountHolder) {
-        headerData = {
-          fullName: this.accountHolder.fullName,
-          phone: this.accountHolder.phone,
-          email: this.accountHolder.email,
-          city: this.accountHolder.address.city,
-          province: this.accountHolder.address.province,
-        };
-        return headerData;
-      }
-      return null;
+      return {
+        fullName: this.accountHolder.fullName,
+        phone: this.accountHolder.phone,
+        email: this.accountHolder.email,
+        city: this.accountHolder.address.city,
+        province: this.accountHolder.address.province,
+      };
     },
   },
-  created() {
-    this.fetchAccountInfo();
-  },
-  watch: {
-    accountInfo: {
-      immediate: true,
-      deep: true,
-    }
-  }
 };
 </script>
 

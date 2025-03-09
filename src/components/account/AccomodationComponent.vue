@@ -44,7 +44,6 @@
 
 <script>
 import TransactionCard from "./TransactionCard.vue";
-
 export default {
   name: "AccommodationComponent",
   props: { accommodationData: Array },
@@ -72,10 +71,6 @@ export default {
         this.$emit("selected-button", newVal);
       },
     },
-    accommodationData: {
-      immediate: true,
-      deep: true,
-    }
   },
 };
 </script>

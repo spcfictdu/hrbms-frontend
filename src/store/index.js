@@ -13,6 +13,7 @@ import { amenities } from "./amenities/amenities";
 import { occupied } from "./occupied/occupied";
 import { publicRooms } from "./public/public-rooms";
 import { account } from "@/store/account/account";
+import { alerts } from "@/store/alerts/alerts";
 
 // Enums
 import {
@@ -40,13 +41,16 @@ export default new Vuex.Store({
     publicRooms,
     account,
 
-    //Enums
+    // Enums
     roomTypeEnum,
     roomNumberEnum,
     roomEnum,
     rateTypeEnum,
     availableRoomNumbersEnum,
     addonsEnum,
+
+    // Alerts
+    alerts,
   },
   plugins: [
     createPersistedState({

@@ -1,15 +1,5 @@
 <template>
   <div>
-    <!-- Alert -->
-    <v-alert
-      :value="isShowAlert"
-      :type="handleAlertType"
-      class="w-full"
-      transition="scroll-y-transition"
-    >
-      {{ alertStatus.message ?? alertStatus.message }}
-    </v-alert>
-
     <!-- Header -->
     <account-header :headerData="headerData" />
 
@@ -42,14 +32,9 @@ export default {
   name: "AccountComponent",
   props: { headerData: Object, accommodationData: Array, alertStatus: Object },
   components: { AccountHeader, AccommodationComponent, PasswordDialog },
-  data: () => ({
-    isShowAlert: false,
-  }),
+  data: () => ({}),
   methods: {
     ...mapActions("account", ["triggerPasswordDialog"]),
-    triggerAlert: function (value) {
-      this.isShowAlert = value;
-    },
     resetPasswordDialog: function (dialog) {
       if (!dialog) {
         this.triggerPasswordDialog(false);
@@ -57,29 +42,7 @@ export default {
     },
   },
   computed: {
-    ...mapState("account", {
-      passwordDialog: "passwordDialog",
-    }),
-    handleAlertType() {
-      return this.alertStatus.status !== ""
-        ? this.alertStatus.status.toLowerCase()
-        : "success";
-    },
-  },
-  watch: {
-    alertStatus: {
-      immediate: true,
-      deep: true,
-      handler: function (newVal) {
-        if (newVal.status.toLowerCase() === "success") {
-          this.triggerAlert(true);
-          let interval = setInterval(() => {
-            this.triggerAlert(false);
-            clearInterval(interval);
-          }, 3000);
-        }
-      },
-    },
+    ...mapState("account", ["passwordDialog"]),
   },
 };
 </script>

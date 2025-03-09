@@ -10,7 +10,7 @@ import getBackend from "./utils/urls";
 
 Vue.config.productionTip = false;
 
-const axiosInstance = axios.create({ baseURL: getBackend("deployed") });
+const axiosInstance = axios.create({ baseURL: getBackend("local") });
 
 if (auth.token()) {
   axiosInstance.defaults.headers.common["Authorization"] =
@@ -25,11 +25,22 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-// Reset or upon refresh session handling
-window.addEventListener("beforeunload", (event) =>
-  auth.handleTabTermination(event)
+const { requireAlert } = store.state.alerts;
+
+axiosInstance.interceptors.response.use(
+  (response) => {
+    if (requireAlert.includes("success")) {
+      store.dispatch("alerts/triggerSuccess", response.data.message);
+    }
+    return response;
+  },
+  (error) => {
+    if (requireAlert.includes("error")) {
+      store.dispatch("alerts/triggerError", error.response.data.message);
+    }
+    return Promise.reject(error);
+  }
 );
-auth.handleTabRefresh();
 
 Vue.prototype.$axios = axiosInstance;
 Vue.prototype.$auth = auth;
