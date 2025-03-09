@@ -52,7 +52,7 @@ export default {
   name: "AccountHeader",
   props: { headerData: Object },
   methods: {
-    ...mapActions("account", ["triggerPasswordDialog"]),
+    ...mapActions("dialogs", ["setDialogFn"]),
   },
   data: () => ({}),
   computed: {
@@ -61,7 +61,7 @@ export default {
         {
           text: "Change Password",
           action: () => {
-            this.triggerPasswordDialog(true);
+            this.setDialogFn({ key: "password", value: true });
           },
         },
         {

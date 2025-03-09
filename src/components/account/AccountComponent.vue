@@ -14,11 +14,11 @@
 
     <!--  Password Dialog  -->
     <password-dialog
-      :passwordDialog="passwordDialog"
-      :alertStatus="alertStatus"
-      @cancel-event="resetPasswordDialog(false)"
-      @reset-dialog="resetPasswordDialog"
-      @password-event="(e) => $emit('password-event', e)"
+      :opened="password"
+      :onClose="() => setDialogFn({ key: 'password', value: false })"
+      :loading="loading.password"
+      :alertMeta="alertMeta"
+      @onSubmit="(e) => $emit('password-event', e)"
     />
   </div>
 </template>
@@ -30,19 +30,16 @@ import PasswordDialog from "@/components/dialogs/PasswordDialog.vue";
 import { mapState, mapActions } from "vuex";
 export default {
   name: "AccountComponent",
-  props: { headerData: Object, accommodationData: Array, alertStatus: Object },
+  props: { headerData: Object, accommodationData: Array },
   components: { AccountHeader, AccommodationComponent, PasswordDialog },
   data: () => ({}),
   methods: {
-    ...mapActions("account", ["triggerPasswordDialog"]),
-    resetPasswordDialog: function (dialog) {
-      if (!dialog) {
-        this.triggerPasswordDialog(false);
-      }
-    },
+    ...mapActions("dialogs", ["setDialogFn"]),
   },
   computed: {
-    ...mapState("account", ["passwordDialog"]),
+    ...mapState("dialogs", ["password"]),
+    ...mapState("account", ["loading"]),
+    ...mapState("alerts", ["alertMeta"]),
   },
 };
 </script>

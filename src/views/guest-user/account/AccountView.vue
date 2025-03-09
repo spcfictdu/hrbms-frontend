@@ -4,7 +4,6 @@
       @selected-button="filterData"
       @password-event="requestPasswordUpdate"
       @transaction-event="redirect"
-      :alertStatus="accountStatus"
       :headerData="accountHeaderData"
       :accommodationData="accommodationData"
     />
@@ -26,14 +25,28 @@ export default {
     this.fetch();
   },
   methods: {
-    ...mapActions("account", ["fetchAccountInfo", "updateAccountPassword"]),
+    ...mapActions("account", [
+      "fetchAccountInfo",
+      "updateAccountPassword",
+      "setLoading",
+    ]),
+    ...mapActions("dialogs", ["setDialogFn"]),
     ...mapActions("alerts", ["requireAlertFn"]),
     fetch: async function () {
       await this.fetchAccountInfo();
     },
     requestPasswordUpdate: function (payload) {
+      // Prefetch
       this.requireAlertFn(1);
-      this.updateAccountPassword(payload);
+      this.setLoading({ key: "password", value: true });
+
+      this.updateAccountPassword(payload)
+        .then(() => {
+          this.setDialogFn({ key: "password", value: false });
+        })
+        .finally(() => {
+          this.setLoading({ key: "password", value: false });
+        });
     },
     filterData: function (value) {
       const data = {
@@ -62,7 +75,7 @@ export default {
     },
   },
   computed: {
-    ...mapState("account", ["accountInfo", "accountStatus"]),
+    ...mapState("account", ["accountInfo"]),
     ...mapGetters("account", ["accountHolder"]),
     accountHeaderData: function () {
       if (!this.accountHolder) return;

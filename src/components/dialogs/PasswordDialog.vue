@@ -1,96 +1,90 @@
 <template>
-  <v-dialog v-model="dialog" max-width="600">
-    <v-form ref="form" lazy-validation>
-      <v-card class="pa-8" rounded="lg" flat>
-        <v-card-title
-          class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0"
-          >Change Password
-        </v-card-title>
+  <DialogTemplate
+    title="Change Password"
+    maxWidth="600"
+    :opened="opened"
+    :onClose="onClose"
+    @onSubmit="handlePasswordUpdate"
+  >
+    <!-- Alert -->
+    <v-alert
+      :value="alert"
+      :type="alertType"
+      dense
+      class="w-full mt-2"
+      transition="scroll-y-transition"
+    >
+      {{ alertMeta.message ?? alertMeta.message }}
+    </v-alert>
 
-        <!-- Alert -->
-        <v-alert
-          :value="isShowAlert"
-          :type="handleAlertType"
-          dense
-          class="w-full mt-2"
-          transition="scroll-y-transition"
-        >
-          {{ alertStatus.message ?? alertStatus.message }}
-        </v-alert>
+    <FormField label="Old Password" class="mt-4 pb-4">
+      <v-text-field
+        type="password"
+        dense
+        outlined
+        hide-details="auto"
+        v-model="payload.oldPassword"
+        :rules="rules.oldPassword"
+      ></v-text-field>
+    </FormField>
 
-        <div class="mt-4 pb-4">
-          <label-slot>
-            <template #label>Old Password</template>
-          </label-slot>
-          <v-text-field
-            type="password"
-            dense
-            outlined
-            hide-details="auto"
-            v-model="payload.oldPassword"
-            :rules="rules.oldPassword"
-          ></v-text-field>
-        </div>
+    <FormField label="New Password" class="pb-4">
+      <v-text-field
+        type="password"
+        dense
+        outlined
+        hide-details="auto"
+        v-model="payload.newPassword"
+        :rules="rules.newPassword"
+      ></v-text-field>
+    </FormField>
 
-        <div class="pb-4">
-          <label-slot>
-            <template #label>New Password</template>
-          </label-slot>
-          <v-text-field
-            type="password"
-            dense
-            outlined
-            hide-details="auto"
-            v-model="payload.newPassword"
-            :rules="rules.newPassword"
-          ></v-text-field>
-        </div>
+    <FormField label="Confirm Password" class="pb-4">
+      <v-text-field
+        type="password"
+        dense
+        outlined
+        hide-details="auto"
+        v-model="payload.newPasswordConfirmation"
+        :rules="rules.newPasswordConfirmation"
+      ></v-text-field>
+    </FormField>
 
-        <div class="pb-4">
-          <label-slot>
-            <template #label>Confirm Password</template>
-          </label-slot>
-          <v-text-field
-            type="password"
-            dense
-            outlined
-            hide-details="auto"
-            v-model="payload.newPasswordConfirmation"
-            :rules="rules.newPasswordConfirmation"
-          ></v-text-field>
-        </div>
-
-        <v-card-actions class="pa-0 mt-4">
-          <v-row dense>
-            <v-col cols="12" sm="6" order="last" order-sm="first">
-              <v-btn text block color="warning" @click="handleCancelEvent">Cancel</v-btn>
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-btn
-                text
-                block
-                color="primary"
-                class="lightBg"
-                @click="handlePasswordUpdate"
-                >Save Changes
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-card-actions>
-      </v-card>
-    </v-form>
-  </v-dialog>
+    <v-card-actions class="pa-0 mt-4">
+      <v-row dense>
+        <v-col cols="12" sm="6" order="last" order-sm="first">
+          <v-btn text block color="warning" @click="onClose()">Cancel</v-btn>
+        </v-col>
+        <v-col cols="12" sm="6">
+          <v-btn
+            text
+            block
+            color="primary"
+            class="lightBg"
+            type="submit"
+            :loading="loading"
+          >
+            Save Changes
+          </v-btn>
+        </v-col>
+      </v-row>
+    </v-card-actions>
+  </DialogTemplate>
 </template>
 
 <script>
-import LabelSlot from "@/components/slots/LabelSlot.vue";
+import DialogTemplate from "./DialogTemplate.vue";
+import FormField from "../fields/FormField.vue";
 export default {
   name: "PasswordDialog",
-  props: { alertStatus: Object, passwordDialog: Boolean },
-  components: { LabelSlot },
+  components: { DialogTemplate, FormField },
+  props: {
+    alertMeta: Object,
+    opened: Boolean,
+    onClose: Function,
+    loading: Boolean,
+  },
   data: () => ({
-    dialog: false,
-    isShowAlert: false,
     payload: {
       oldPassword: null,
       newPassword: null,
@@ -102,9 +96,7 @@ export default {
       this.isShowAlert = value;
     },
     handlePasswordUpdate: function () {
-      if (this.$refs.form.validate()) {
-        this.$emit("password-event", this.payload);
-      }
+      this.$emit("onSubmit", this.payload);
     },
     resetPayload: function () {
       for (const key in this.payload) {
@@ -114,15 +106,13 @@ export default {
       }
       this.$refs.form.reset();
     },
-    handleCancelEvent: function () {
-      this.$emit('cancel-event');
-    },
   },
   computed: {
-    handleAlertType() {
-      return this.alertStatus.status !== ""
-        ? this.alertStatus.status.toLowerCase()
-        : "error";
+    alert: function () {
+      return this.alertMeta.status === "error" ? true : false;
+    },
+    alertType: function () {
+      return "error";
     },
     rules: function () {
       let errors = {};
@@ -138,34 +128,12 @@ export default {
     },
   },
   watch: {
-    alertStatus: {
+    opened: {
       deep: true,
-      handler: function (newVal) {
-        if (
-          newVal.type?.toLowerCase() === "password" &&
-          newVal.status?.toLowerCase() === "error"
-        ) {
-          this.triggerAlert(true);
-          let interval = setInterval(() => {
-            this.triggerAlert(false);
-            clearInterval(interval);
-          }, 3000);
-        }
-      },
-    },
-    dialog: {
-      deep: true,
-      handler: function (newVal) {
-        // Reset Vuex Store
-        if (!newVal) {
-          this.$emit("reset-dialog", newVal);
+      handler: function (v) {
+        if (!v) {
           this.resetPayload();
         }
-      },
-    },
-    passwordDialog: {
-      handler: function (newVal) {
-        this.dialog = newVal;
       },
     },
   },

@@ -17,7 +17,11 @@ export const alerts = {
   getters: {},
   mutations: {
     SET_ALERT(state, meta) {
-      state.alert = true;
+      // Checks if the status is required to alert
+      if (state.requireAlert.includes(meta.status)) {
+        state.alert = true;
+      }
+
       state.alertMeta = meta;
 
       if (state.alertTimeout) {
@@ -25,7 +29,7 @@ export const alerts = {
       }
 
       state.alertTimeout = setTimeout(() => {
-        state.requireAlert = false;
+        state.requireAlert = [];
         state.alert = false;
         state.alertMeta = {
           message: "",
@@ -34,7 +38,7 @@ export const alerts = {
       }, 3000);
     },
     CLEAR_ALERT(state) {
-      state.requireAlert = false;
+      state.requireAlert = [];
       state.alert = false;
       state.alertMeta = {
         message: "",

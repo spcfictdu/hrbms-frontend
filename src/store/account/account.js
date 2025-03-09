@@ -13,7 +13,9 @@ export const account = {
       status: "", //SUCCESS, ERROR
       type: "",
     },
-    passwordDialog: false,
+    loading: {
+      password: false,
+    },
   }),
   getters: {
     accountHolder: (state) => {
@@ -33,11 +35,11 @@ export const account = {
         clearInterval(interval);
       }, 3000);
     },
-    SET_PASSWORD_DIALOG: (state, data) => (state.passwordDialog = data),
+    SET_LOADING: (state, { key, status }) => (state.loading[key] = status),
   },
   actions: {
-    triggerPasswordDialog: function ({ commit }, value) {
-      commit("SET_PASSWORD_DIALOG", value);
+    setLoading: function ({ commit }, { key, value }) {
+      commit("SET_LOADING", { key, value });
     },
     fetchAccountInfo: function ({ commit }) {
       const url = `guest/account`;
@@ -51,26 +53,16 @@ export const account = {
           console.error("Error fetching account information", error);
         });
     },
-    updateAccountPassword: function ({ commit }, data) {
+    updateAccountPassword: function (_, data) {
       const url = `guest/account/change-password`;
       return this.$axios
         .put(url, data)
         .then((response) => {
-          commit("SET_PASSWORD_DIALOG", false);
-          commit("SET_ACCOUNT_STATUS", {
-            message: response.data.message,
-            status: "SUCCESS",
-            type: "PASSWORD",
-          });
+          return response;
         })
         .catch((error) => {
           console.error("Error updating password", error);
-          commit("SET_PASSWORD_DIALOG", true);
-          commit("SET_ACCOUNT_STATUS", {
-            message: error.response.data.message,
-            status: "ERROR",
-            type: "PASSWORD",
-          });
+          return error;
         });
     },
     updateAccountInfo: function ({ commit }, data) {
@@ -96,6 +88,6 @@ export const account = {
     },
     removeUserInfo: function ({ commit }) {
       commit("SET_USER_INFO", null);
-    }
+    },
   },
 };

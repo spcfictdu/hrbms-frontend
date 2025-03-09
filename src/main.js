@@ -25,17 +25,15 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-const { requireAlert } = store.state.alerts;
-
 axiosInstance.interceptors.response.use(
   (response) => {
-    if (requireAlert.includes("success")) {
+    if (store.state.alerts.requireAlert.length > 0) {
       store.dispatch("alerts/triggerSuccess", response.data.message);
     }
     return response;
   },
   (error) => {
-    if (requireAlert.includes("error")) {
+    if (store.state.alerts.requireAlert.length > 0) {
       store.dispatch("alerts/triggerError", error.response.data.message);
     }
     return Promise.reject(error);
