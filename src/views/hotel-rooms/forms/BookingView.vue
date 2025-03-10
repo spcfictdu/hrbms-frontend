@@ -76,6 +76,7 @@ export default {
             ...(this.user && { params: { referenceNumber } }),
           });
         })
+        .catch((err) => {})
         .finally(() => {
           this.setLoading({ key: "dialog", value: false });
         });

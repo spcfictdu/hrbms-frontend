@@ -83,6 +83,7 @@ export default {
             this.fetchTransaction(payload.referenceNumber);
           }
         })
+        .catch((err) => {})
         .finally(() => {
           this.setLoading({ key: "form", value: false });
         });

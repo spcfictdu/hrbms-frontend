@@ -41,6 +41,7 @@ export default {
         .then(() => {
           this.fetchTransaction(payload.referenceNumber);
         })
+        .catch((err) => {})
         .finally(() => {
           this.setLoading({ key: "header", value: false });
         });
