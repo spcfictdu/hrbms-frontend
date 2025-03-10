@@ -146,6 +146,7 @@ export default {
           this.value.transaction.checkOutDate,
         ],
         extraPersonCount: this.value.transaction.extraPerson,
+        addons: this.value.priceSummary.fullAddons,
       };
     },
     clientMeta: function () {

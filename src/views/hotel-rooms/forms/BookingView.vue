@@ -38,13 +38,19 @@ export default {
       "fetchPreviousFormTransactions",
     ]),
     ...mapActions("publicRooms", ["storeTemporaryData", "clearTempData"]),
+    ...mapActions("alerts", ["requireAlertFn"]),
     handleCreateTransaction: function (payload) {
-      console.log(payload);
+      // Prefetch required alerts
+      this.requireAlertFn(2);
+
+      // Check if whether a user has an account, then return the right parameters.
       let formattedPayload =
         ["REGISTER", "MAYBE"].includes(payload?.action) && !this.user
           ? this.assignObject(payload.payload)
           : this.assignObject(payload);
 
+      // Check if a user will register or proceed without registering.
+      // Storing temporary data for rebooking after registration.
       if (!this.user && payload?.action === "REGISTER") {
         formattedPayload.query = this.$route.query;
         return this.storeTemporaryData(formattedPayload).then(() =>
@@ -52,6 +58,7 @@ export default {
         );
       }
 
+      // Create transaction
       this.createTransaction(formattedPayload).then((response) => {
         const { status, referenceNumber } = response.data.results;
         const route = this.user
@@ -60,6 +67,7 @@ export default {
 
         if (this.userRole === "GUEST") this.clearTempData();
 
+        // If user is not logged in, redirect to public dashboard
         this.$router[this.user ? "push" : "replace"]({
           name: route,
           ...(this.user && { params: { referenceNumber } }),

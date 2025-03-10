@@ -11,10 +11,6 @@ export const transaction = {
     transactions: null,
     transaction: null,
     previousTransactions: null,
-    transactionStatus: {
-      message: "",
-      status: "", // SUCCESS, ERROR
-    },
     loading: {
       dialog: false,
       form: false,
@@ -26,7 +22,6 @@ export const transaction = {
   mutations: {
     SET_TRANSACTIONS: (state, data) => (state.transactions = data),
     SET_TRANSACTION: (state, data) => (state.transaction = data),
-    SET_TRANSACTION_STATUS: (state, data) => (state.transactionStatus = data),
     SET_PREVIOUS_TRANSACTIONS: (state, data) =>
       (state.previousTransactions = data),
     SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
@@ -82,39 +77,41 @@ export const transaction = {
       return this.$axios
         .post(url, payload)
         .then((response) => {
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
           return response;
         })
         .catch((error) => {
           console.error("Error creating transaction: ", error);
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
           throw error;
         })
         .finally(() => {
           dispatch("resetLoading", "dialog");
         });
     },
-    deleteReservation: function (
-      { commit, dispatch },
-      { status, transactionRefNum }
-    ) {
+    deleteReservation: function ({ dispatch }, { status, transactionRefNum }) {
       const url = `transaction/reservation/delete/${status}/${transactionRefNum}`;
+      dispatch("triggerLoading", "cancel");
+
       return this.$axios
         .delete(url)
         .then((response) => {
-          commit("SET_TRANSACTION_STATUS", {
-            message: response.data.message,
-            status: "SUCCESS",
-          });
-          dispatch("resetLoading");
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
           return response;
         })
         .catch((error) => {
-          commit("SET_TRANSACTION_STATUS", {
-            message: error.response.data.message,
-            status: "ERROR",
-          });
           console.error("Error deleting reservation: ", error);
-          dispatch("resetLoading");
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
           throw error;
+        })
+        .finally(() => {
+          dispatch("resetLoading", "cancel");
         });
     },
     updateTransaction: function ({ dispatch }, payload) {

@@ -25,21 +25,6 @@ axiosInstance.interceptors.request.use((config) => {
   return config;
 });
 
-axiosInstance.interceptors.response.use(
-  (response) => {
-    if (store.state.alerts.requireAlert.length > 0) {
-      store.dispatch("alerts/triggerSuccess", response.data.message);
-    }
-    return response;
-  },
-  (error) => {
-    if (store.state.alerts.requireAlert.length > 0) {
-      store.dispatch("alerts/triggerError", error.response.data.message);
-    }
-    return Promise.reject(error);
-  }
-);
-
 Vue.prototype.$axios = axiosInstance;
 Vue.prototype.$auth = auth;
 Vue.prototype.$apiPath = "http://192.168.31.231";
@@ -47,6 +32,7 @@ Vue.prototype.$apiPath = "http://192.168.31.231";
 Vuex.Store.prototype.$axios = axiosInstance;
 Vuex.Store.prototype.$router = router;
 Vuex.Store.prototype.$auth = auth;
+Vuex.Store.prototype.$store = store;
 
 new Vue({
   router,

@@ -49,7 +49,7 @@
             v-for="(i, index) in transaction.amenities"
             :key="index"
           >
-            {{ i }}
+            {{ i.name }}
           </div>
         </div>
       </section>

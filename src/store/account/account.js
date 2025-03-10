@@ -58,11 +58,14 @@ export const account = {
       return this.$axios
         .put(url, data)
         .then((response) => {
-          return response;
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
         })
         .catch((error) => {
           console.error("Error updating password", error);
-          return error;
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
         });
     },
     updateAccountInfo: function ({ commit }, data) {
