@@ -113,7 +113,7 @@
       :loading="loading.dialog"
       @onProceed="handleOnConfirmed"
     />
-    <warning-dialog
+    <WarningDialog
       :opened="dialog.warning"
       :onClose="() => resetDialog('warning')"
       @onDecision="handleWarning"

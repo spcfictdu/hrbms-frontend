@@ -25,7 +25,7 @@
             color="primary"
             class="lightBg"
             :loading="loading"
-            >Proceed</v-btn
+            >{{ submitBtn }}</v-btn
           ></v-col
         >
       </v-row>
@@ -45,6 +45,10 @@ export default {
     onClose: Function,
     meta: Object,
     loading: Boolean,
+    submitBtn: {
+      type: String,
+      default: "Proceed",
+    },
   },
   data: () => ({}),
   methods: {

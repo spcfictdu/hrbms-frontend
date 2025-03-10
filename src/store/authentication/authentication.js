@@ -23,22 +23,22 @@ export const authentication = {
   actions: {
     async login({ commit }, { user, loginRole }) {
       // Set Login Path for Backend
-      let loginPath = "";
-
-      let payload = {
-        password: user.password,
+      const loginPath = {
+        ADMIN: "user/admin/login",
+        GUEST: "user/guest/login",
+      };
+      const userKey = {
+        ADMIN: "username",
+        GUEST: "email",
       };
 
-      if (loginRole === "ADMIN") {
-        loginPath = "user/admin/login";
-        payload.username = user.username;
-      } else if (loginRole === "GUEST") {
-        loginPath = "user/guest/login";
-        payload.email = user.username;
-      }
+      const payload = {
+        password: user.password,
+        [userKey[loginRole]]: user.username,
+      };
 
       try {
-        const url = loginPath;
+        const url = loginPath[loginRole];
 
         let response = await this.$axios.post(url, payload);
         commit("SET_CURRENT_USER", response.data.results);
@@ -62,12 +62,10 @@ export const authentication = {
     },
 
     async logout({ commit }, role) {
-      let routeName = "";
-      if (role !== "GUEST") {
-        routeName = "Sign In";
-      } else {
-        routeName = "Guest Sign In";
-      }
+      const routeNames = {
+        ADMIN: "Sign In",
+        GUEST: "Guest Sign In",
+      };
 
       try {
         const config = {
@@ -76,23 +74,19 @@ export const authentication = {
           },
         };
 
-        let url = "user/logout";
+        const url = "user/logout";
 
         await this.$axios.get(url, config);
-
-        // Remove Persisted State
-        commit("SET_CURRENT_USER", null);
-        store.dispatch("account/removeUserInfo");
-
-        // Back To Login
-        await this.$router.push({ name: routeName });
+        return response;
       } catch (error) {
+        console.log("Error executing logout", error);
+      } finally {
         // Remove Persisted State
         commit("SET_CURRENT_USER", null);
         store.dispatch("account/removeUserInfo");
 
         // Back To Login
-        await this.$router.push({ name: routeName });
+        await this.$router.push({ name: routeNames[role] });
       }
     },
 

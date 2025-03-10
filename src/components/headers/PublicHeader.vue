@@ -6,8 +6,6 @@
       <p class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-1">
         {{ $route.meta.name }}
       </p>
-      <!-- <div class="red--text">{{ $route.meta }}</div>
-      <div class="yellow--text">{{ $router.currentRoute.meta }}</div> -->
       <div class="w-full d-none d-sm-flex flex-row align-center justify-center">
         <!-- Nav Controls -->
         <v-btn
@@ -53,23 +51,39 @@
 
       <v-divider />
     </div>
+
+    <!-- Logout Confirmation -->
+    <ConfirmationDialog
+      :opened="dialog_logout"
+      :onClose="() => setDialogFn({ key: 'logout', value: false })"
+      :meta="logoutMeta"
+      :loading="loading"
+      submitBtn="Logout"
+      @onProceed="handleLogout"
+    />
   </v-container>
 </template>
 
 <script>
 import SearchEngine from "@/components/public/SearchEngine.vue";
+import ConfirmationDialog from "../dialogs/ConfirmationDialog.vue";
 import { assignParams } from "@/mixins/FormattingFunctions";
-import { mapActions } from "vuex";
-import { auth } from "@/utils/auth";
-
+import { mapActions, mapState } from "vuex";
 export default {
   name: "PublicHeader",
   mixins: [assignParams],
-  components: { SearchEngine },
+  components: { SearchEngine, ConfirmationDialog },
   data: () => ({
     activeButton: null,
+    loading: false,
+    logoutMeta: {
+      action: "",
+      actionType: "Logout",
+      message: "Are you certain sure you want to Logout?",
+    },
   }),
   methods: {
+    ...mapActions("dialogs", ["setDialogFn"]),
     ...mapActions("authentication", ["logout"]),
     redirect: function (route) {
       this.activeButton = route.name;
@@ -108,8 +122,23 @@ export default {
         }
       }
     },
+    handleLogout: function () {
+      this.loading = true;
+
+      // Main Function
+      this.logout(this.$auth.user().role)
+        .then(() => {
+          this.setDialogFn({ key: "logout", value: false });
+        })
+        .finally(() => {
+          this.loading = false;
+        });
+    },
   },
   computed: {
+    ...mapState("dialogs", {
+      dialog_logout: "logout",
+    }),
     activeRouteButton: function () {
       return this.activeButton;
     },
@@ -160,7 +189,7 @@ export default {
           {
             name: "Log Out",
             action: () => {
-              this.logout(auth.user().role);
+              this.setDialogFn({ key: "logout", value: true });
             },
           }
         );

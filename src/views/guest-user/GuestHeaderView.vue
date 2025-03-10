@@ -12,7 +12,6 @@
 
 <script>
 import PublicHeader from "@/components/headers/PublicHeader.vue";
-
 export default {
   name: "PublicHeaderView",
   components: { PublicHeader },

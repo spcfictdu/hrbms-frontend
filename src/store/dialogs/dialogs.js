@@ -7,6 +7,7 @@ export const dialogs = {
   namespaced: true,
   state: () => ({
     password: false,
+    logout: false,
   }),
   getters: {},
   mutations: {

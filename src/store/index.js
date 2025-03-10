@@ -14,7 +14,7 @@ import { occupied } from "./occupied/occupied";
 import { publicRooms } from "./public/public-rooms";
 import { account } from "@/store/account/account";
 import { alerts } from "@/store/alerts/alerts";
-import { dialogs } from "./dialogs/dialog";
+import { dialogs } from "./dialogs/dialogs";
 
 // Enums
 import {
