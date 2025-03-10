@@ -3,7 +3,7 @@
     <header-booking-slot
       @button-event="handleStatusUpdate"
       :headerData="headerData"
-      :loadingMeta="loading.header"
+      :loading="loading.header"
     />
 
     <v-form @submit.prevent="handlePrinting">
@@ -64,7 +64,7 @@ export default {
       const {
         transactionHistory: history,
         transaction: { referenceNumber },
-      } = this.result;
+      } = this.value;
       const now = new Date().toISOString();
       let payload = { referenceNumber };
 

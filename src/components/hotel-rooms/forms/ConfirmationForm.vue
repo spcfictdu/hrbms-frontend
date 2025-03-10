@@ -3,7 +3,7 @@
     <header-booking-slot
       @button-event="handleCancelButton"
       :headerData="headerData"
-      :loadingMeta="loading.cancel"
+      :loading="loading.cancel"
     >
     </header-booking-slot>
     <v-form

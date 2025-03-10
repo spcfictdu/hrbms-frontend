@@ -23,21 +23,27 @@ export default {
     this.fetch();
   },
   methods: {
-    ...mapActions("transaction", ["fetchTransaction", "updateTransaction"]),
+    ...mapActions("transaction", [
+      "fetchTransaction",
+      "updateTransaction",
+      "setLoading",
+    ]),
+    ...mapActions("alerts", ["requireAlertFn"]),
     fetch: async function () {
       this.fetchTransaction(this.referenceNumber);
     },
     handleUpdate: function (payload) {
-      this.updateTransaction(payload).then(() => {
-        if (payload.status === "RESERVED") {
-          this.$router.push({
-            name: "CheckInOut",
-            params: { referenceNumber: payload.referenceNumber },
-          });
-        } else {
+      // Prefetch the alert function: success, error
+      this.requireAlertFn(2);
+      this.setLoading({ key: "header", value: true });
+
+      this.updateTransaction(payload)
+        .then(() => {
           this.fetchTransaction(payload.referenceNumber);
-        }
-      });
+        })
+        .finally(() => {
+          this.setLoading({ key: "header", value: false });
+        });
     },
   },
   computed: {

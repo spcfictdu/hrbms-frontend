@@ -27,17 +27,8 @@ export const transaction = {
     SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
   },
   actions: {
-    triggerLoading: function ({ commit }, key) {
-      commit("SET_LOADING", {
-        key,
-        value: true,
-      });
-    },
-    resetLoading: function ({ commit }, key) {
-      commit("SET_LOADING", {
-        key,
-        value: false,
-      });
+    setLoading: function ({ commit }, { key, value }) {
+      commit("SET_LOADING", { key, value });
     },
     fetchTransactions: function ({ commit }, queryParams = {}) {
       const url = `transaction`;
@@ -72,7 +63,6 @@ export const transaction = {
     },
     createTransaction: async function ({ dispatch }, payload) {
       const url = `transaction/create`;
-      dispatch("triggerLoading", "dialog");
 
       return this.$axios
         .post(url, payload)
@@ -87,14 +77,10 @@ export const transaction = {
             error.response.data.message
           );
           throw error;
-        })
-        .finally(() => {
-          dispatch("resetLoading", "dialog");
         });
     },
-    deleteReservation: function ({ dispatch }, { status, transactionRefNum }) {
+    deleteReservation: function (_, { status, transactionRefNum }) {
       const url = `transaction/reservation/delete/${status}/${transactionRefNum}`;
-      dispatch("triggerLoading", "cancel");
 
       return this.$axios
         .delete(url)
@@ -109,29 +95,24 @@ export const transaction = {
             error.response.data.message
           );
           throw error;
-        })
-        .finally(() => {
-          dispatch("resetLoading", "cancel");
         });
     },
-    updateTransaction: function ({ dispatch }, payload) {
+    updateTransaction: function (_, payload) {
       const url = `transaction/update`;
-
-      dispatch("triggerLoading", "form");
-      dispatch("triggerLoading", "header");
 
       return this.$axios
         .put(url, payload)
         .then((response) => {
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
           return response;
         })
         .catch((error) => {
           console.error("Error updating transaction: ", error);
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
           throw error;
-        })
-        .finally(() => {
-          dispatch("resetLoading", "form");
-          dispatch("resetLoading", "header");
         });
     },
     fetchPreviousFormTransactions: function ({ commit }, referenceNumber) {

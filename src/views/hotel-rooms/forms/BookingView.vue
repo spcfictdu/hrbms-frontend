@@ -36,12 +36,14 @@ export default {
     ...mapActions("transaction", [
       "createTransaction",
       "fetchPreviousFormTransactions",
+      "setLoading",
     ]),
     ...mapActions("publicRooms", ["storeTemporaryData", "clearTempData"]),
     ...mapActions("alerts", ["requireAlertFn"]),
     handleCreateTransaction: function (payload) {
       // Prefetch required alerts
       this.requireAlertFn(2);
+      this.setLoading({ key: "dialog", value: true });
 
       // Check if whether a user has an account, then return the right parameters.
       let formattedPayload =
@@ -59,20 +61,24 @@ export default {
       }
 
       // Create transaction
-      this.createTransaction(formattedPayload).then((response) => {
-        const { status, referenceNumber } = response.data.results;
-        const route = this.user
-          ? this.routes[this.userRole][status]
-          : "Public Dashboard";
+      this.createTransaction(formattedPayload)
+        .then((response) => {
+          const { status, referenceNumber } = response.data.results;
+          const route = this.user
+            ? this.routes[this.userRole][status]
+            : "Public Dashboard";
 
-        if (this.userRole === "GUEST") this.clearTempData();
+          if (this.userRole === "GUEST") this.clearTempData();
 
-        // If user is not logged in, redirect to public dashboard
-        this.$router[this.user ? "push" : "replace"]({
-          name: route,
-          ...(this.user && { params: { referenceNumber } }),
+          // If user is not logged in, redirect to public dashboard
+          this.$router[this.user ? "push" : "replace"]({
+            name: route,
+            ...(this.user && { params: { referenceNumber } }),
+          });
+        })
+        .finally(() => {
+          this.setLoading({ key: "dialog", value: false });
         });
-      });
     },
     assignObject: function (payload) {
       // RESERVED INITIAL VALUE

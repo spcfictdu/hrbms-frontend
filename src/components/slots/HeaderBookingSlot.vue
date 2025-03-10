@@ -13,7 +13,7 @@
           <v-chip
             small
             class="text-outline white--text font-weight-bold text-uppercase mr-2"
-            :color="getColor(status.type)"
+            :color="getColor[status.type]"
             >{{ status.type }}</v-chip
           >
         </slot>
@@ -38,7 +38,7 @@
         :outlined="button.style.outlined"
         :color="button.style.color"
         :disabled="button.disabled"
-        :loading="loadingButton"
+        :loading="loading"
         >{{ button.title }}</v-btn
       >
     </slot>
@@ -49,27 +49,21 @@
 import { formatDate, formatTime } from "@/mixins/FormattingFunctions";
 export default {
   name: "HeaderBookingSlot",
-  props: ["headerData", "loadingMeta"],
+  props: {
+    headerData: Object,
+    loading: Boolean,
+  },
   mixins: [formatDate, formatTime],
   data: () => ({
-    loadingTransactions: ["Delete Transaction", "Time Transaction"],
+    getColor: {
+      CONFIRMED: "confirmed",
+      "CHECKED-IN": "checkedin",
+      "CHECKED-OUT": "checkedout",
+      HOUSEKEEPING: "housekeeping",
+      RESERVED: "reserved",
+    },
   }),
   methods: {
-    getColor: function (status) {
-      let color = null;
-      if (status === "CONFIRMED") {
-        color = "confirmed";
-      } else if (status === "CHECKED-IN") {
-        color = "checkedin";
-      } else if (status === "CHECKED-OUT") {
-        color = "checkedout";
-      } else if (status === "HOUSEKEEPING") {
-        color = "housekeeping";
-      } else if (status === "RESERVED") {
-        color = "reserved";
-      }
-      return color;
-    },
     showButton(status) {
       return status === "Checked-out" ? false : true;
     },
@@ -89,12 +83,6 @@ export default {
     },
     client() {
       return this.headerData.client;
-    },
-    loadingButton: function () {
-      return this.loadingMeta &&
-        this.loadingTransactions.includes(this.loadingMeta.title)
-        ? this.loadingMeta.loading
-        : false;
     },
   },
 };
