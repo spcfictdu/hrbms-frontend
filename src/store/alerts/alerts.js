@@ -13,6 +13,7 @@ export const alerts = {
       status: "", // success, error, warning
     },
     alertTimeout: null,
+    metaTimeout: null,
   }),
   getters: {},
   mutations: {
@@ -24,17 +25,26 @@ export const alerts = {
 
       state.alertMeta = meta;
 
+      // Clear timeouts
       if (state.alertTimeout) {
         clearTimeout(state.alertTimeout);
+      }
+
+      if (state.metaTimeout) {
+        clearTimeout(state.metaTimeout);
       }
 
       state.alertTimeout = setTimeout(() => {
         state.requireAlert = [];
         state.alert = false;
-        state.alertMeta = {
-          message: "",
-          status: "",
-        };
+
+        // Another timeout to clear the alertMeta
+        state.metaTimeout = setTimeout(() => {
+          state.alertMeta = {
+            message: "",
+            status: "",
+          };
+        }, 1000);
       }, 3000);
     },
     CLEAR_ALERT(state) {
