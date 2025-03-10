@@ -8,13 +8,9 @@ export const account = {
   state: () => ({
     accountInfo: null,
     userInfo: null,
-    accountStatus: {
-      message: "",
-      status: "", //SUCCESS, ERROR
-      type: "",
-    },
     loading: {
       password: false,
+      update: false,
     },
   }),
   getters: {
@@ -35,7 +31,7 @@ export const account = {
         clearInterval(interval);
       }, 3000);
     },
-    SET_LOADING: (state, { key, status }) => (state.loading[key] = status),
+    SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
   },
   actions: {
     setLoading: function ({ commit }, { key, value }) {
@@ -68,25 +64,19 @@ export const account = {
           );
         });
     },
-    updateAccountInfo: function ({ commit }, data) {
+    updateAccountInfo: function (_, data) {
       const url = `guest/account/update-details`;
       return this.$axios
         .put(url, data)
         .then((response) => {
-          this.$router.replace({ name: "Guest Account Details" });
-          commit("SET_ACCOUNT_STATUS", {
-            message: response.data.message,
-            status: "SUCCESS",
-            type: "DETAILS",
-          });
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
         })
         .catch((error) => {
           console.error("Error updating account details", error);
-          commit("SET_ACCOUNT_STATUS", {
-            message: error.response.data.message,
-            status: "ERROR",
-            type: "DETAILS",
-          });
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
         });
     },
     removeUserInfo: function ({ commit }) {

@@ -2,9 +2,10 @@
   <div class="mt-8">
     <edit-details-component
       :accountData="accountHolder"
-      :alertStatus="accountStatus"
-      @update-event="requestAccountUpdate"
-      @cancel-event="requestCancelEvent"
+      :alertMeta="alertMeta"
+      :loading="loading.update"
+      @update-event="handleUpdate"
+      @cancel-event="handleCancel"
     />
   </div>
 </template>
@@ -16,25 +17,41 @@ export default {
   name: "EditDetailsView",
   components: { EditDetailsComponent },
   data: () => ({}),
+  created: function () {
+    this.fetch();
+  },
   methods: {
-    ...mapActions("account", ["fetchAccountInfo", "updateAccountInfo"]),
-    requestAccountUpdate: function (payload) {
-      this.updateAccountInfo(payload);
+    ...mapActions("account", [
+      "fetchAccountInfo",
+      "updateAccountInfo",
+      "setLoading",
+    ]),
+    ...mapActions("alerts", ["requireAlertFn"]),
+    fetch: async function () {
+      await this.fetchAccountInfo();
     },
-    requestCancelEvent: function () {
-      this.$router.push({ name: "Guest Account Details" });
+    handleUpdate: function (payload) {
+      // Prefetch: Only Success Alert and activate loading
+      this.requireAlertFn(1);
+      this.setLoading({ key: "update", value: true });
+
+      this.updateAccountInfo(payload)
+        .then(() => {
+          this.$router.push({ name: "Guest Account Details" });
+        })
+        .finally(() => {
+          this.setLoading({ key: "update", value: false });
+        });
+    },
+    handleCancel: function () {
+      // Handle Cancel Update
+      this.$router.go(-1);
     },
   },
   computed: {
-    ...mapState("account", {
-      accountStatus: "accountStatus",
-    }),
-    ...mapGetters("account", {
-      accountHolder: "accountHolder",
-    }),
-  },
-  created() {
-    this.fetchAccountInfo();
+    ...mapState("alerts", ["alertMeta"]),
+    ...mapState("account", ["loading"]),
+    ...mapGetters("account", ["accountHolder"]),
   },
 };
 </script>

@@ -1,110 +1,106 @@
 <template>
   <div>
+    <!-- Alert -->
     <v-alert
-      :value="isShowAlert"
-      :type="handleAlertType"
-      class="w-full"
+      :value="alert"
+      :type="alertType"
+      dense
+      class="w-full mt-2"
       transition="scroll-y-transition"
     >
-      {{ alertStatus.message ?? alertStatus.message }}
+      {{ alertMeta.message ?? alertMeta.message }}
     </v-alert>
+
     <v-form ref="form" lazy-validation>
       <v-row>
         <v-col cols="12" sm="6" md="4">
-          <label-slot>
-            <template #label>First Name</template>
-          </label-slot>
-          <v-text-field
-            background-color="white"
-            dense
-            outlined
-            hide-details="auto"
-            v-model="payload.firstName"
-            :rules="rules.firstName"
-          ></v-text-field>
+          <FormField label="First Name">
+            <v-text-field
+              background-color="white"
+              dense
+              outlined
+              hide-details="auto"
+              v-model="payload.firstName"
+              :rules="rules.firstName"
+            ></v-text-field>
+          </FormField>
         </v-col>
         <v-col cols="12" sm="6" md="4">
-          <label-slot>
-            <template #label>Middle Name</template>
-          </label-slot>
-          <v-text-field
-            background-color="white"
-            dense
-            outlined
-            hide-details="auto"
-            v-model="payload.middleName"
-            :rules="rules.middleName"
-          ></v-text-field>
+          <FormField label="Middle Name">
+            <v-text-field
+              background-color="white"
+              dense
+              outlined
+              hide-details="auto"
+              v-model="payload.middleName"
+              :rules="rules.middleName"
+            ></v-text-field>
+          </FormField>
         </v-col>
         <v-col cols="12" sm="6" md="4">
-          <label-slot>
-            <template #label>Last Name</template>
-          </label-slot>
-          <v-text-field
-            background-color="white"
-            dense
-            outlined
-            hide-details="auto"
-            v-model="payload.lastName"
-            :rules="rules.lastName"
-          ></v-text-field>
+          <FormField label="Last Name">
+            <v-text-field
+              background-color="white"
+              dense
+              outlined
+              hide-details="auto"
+              v-model="payload.lastName"
+              :rules="rules.lastName"
+            ></v-text-field>
+          </FormField>
         </v-col>
         <v-col cols="12" sm="6" md="3">
-          <label-slot>
-            <template #label>Email</template>
-          </label-slot>
-          <v-text-field
-            background-color="white"
-            type="email"
-            dense
-            outlined
-            hide-details="auto"
-            v-model="payload.email"
-            :rules="rules.email"
-          ></v-text-field>
+          <FormField label="Email">
+            <v-text-field
+              background-color="white"
+              type="email"
+              dense
+              outlined
+              hide-details="auto"
+              v-model="payload.email"
+              :rules="rules.email"
+            ></v-text-field>
+          </FormField>
         </v-col>
         <v-col cols="12" sm="6" md="3">
-          <label-slot>
-            <template #label>Phone</template>
-          </label-slot>
-          <v-text-field
-            background-color="white"
-            counter="11"
-            maxLength="11"
-            type="tel"
-            dense
-            outlined
-            hide-details="auto"
-            v-mask="'###########'"
-            v-model="payload.phoneNumber"
-            :rules="rules.phoneNumber"
-          ></v-text-field>
+          <FormField label="Phone">
+            <v-text-field
+              background-color="white"
+              counter="11"
+              maxLength="11"
+              type="tel"
+              dense
+              outlined
+              hide-details="auto"
+              v-mask="'###########'"
+              v-model="payload.phoneNumber"
+              :rules="rules.phoneNumber"
+            ></v-text-field>
+          </FormField>
         </v-col>
         <v-col cols="12" sm="6" md="3">
-          <label-slot>
-            <template #label>Province</template>
-          </label-slot>
-          <v-text-field
-            background-color="white"
-            dense
-            outlined
-            hide-details="auto"
-            v-model="payload.province"
-            :rules="rules.province"
-          ></v-text-field>
+          <FormField label="Province">
+            <v-text-field
+              background-color="white"
+              dense
+              outlined
+              hide-details="auto"
+              v-model="payload.province"
+              :rules="rules.province"
+            ></v-text-field>
+          </FormField>
         </v-col>
         <v-col cols="12" sm="6" md="3">
-          <label-slot>
-            <template #label>City</template>
-          </label-slot>
-          <v-text-field
-            background-color="white"
-            dense
-            outlined
-            hide-details="auto"
-            v-model="payload.city"
-            :rules="rules.city"
-          ></v-text-field>
+          <FormField label="City">
+            <v-text-field
+              background-color="white"
+              dense
+              outlined
+              hide-details="auto"
+              v-model="payload.city"
+              :rules="rules.city"
+            ></v-text-field>
+          </FormField>
         </v-col>
       </v-row>
     </v-form>
@@ -123,6 +119,7 @@
         color="primary"
         :block="$vuetify.breakpoint.xs"
         @click="handleAccountUpdate"
+        :loading="loading"
         >Save Changes</v-btn
       >
     </div>
@@ -131,12 +128,13 @@
 
 <script>
 import LabelSlot from "@/components/slots/LabelSlot.vue";
+import FormField from "../fields/FormField.vue";
 import { mask } from "vue-the-mask";
 export default {
   name: "EditDetailsComponent",
   directives: { mask },
-  components: { LabelSlot },
-  props: { accountData: Object, alertStatus: Object },
+  components: { LabelSlot, FormField },
+  props: { accountData: Object, alertMeta: Object, loading: Boolean },
   data: () => ({
     payload: {
       firstName: null,
@@ -147,7 +145,6 @@ export default {
       province: null,
       city: null,
     },
-    isShowAlert: false,
   }),
   methods: {
     handleAccountUpdate: function () {
@@ -155,19 +152,8 @@ export default {
         this.$emit("update-event", this.payload);
       }
     },
-    resetPayload: function () {
-      for (const key in this.payload) {
-        if (Object.hasOwnProperty.call(this.payload, key)) {
-          this.$set(this.payload, key, null);
-        }
-      }
-      this.$refs.form.reset();
-    },
-    triggerAlert: function (value) {
-      this.isShowAlert = value;
-    },
     handleCancelEvent: function () {
-      this.$emit('cancel-event');
+      this.$emit("cancel-event");
     },
   },
   computed: {
@@ -185,10 +171,11 @@ export default {
       errors.city = [];
       return errors;
     },
-    handleAlertType() {
-      return this.alertStatus.status !== ""
-        ? this.alertStatus.status.toLowerCase()
-        : "error";
+    alert: function () {
+      return this.alertMeta.status === "error" ? true : false;
+    },
+    alertType: function () {
+      return "error";
     },
   },
   watch: {
@@ -205,21 +192,6 @@ export default {
             province: newVal.address.province,
             city: newVal.address.city,
           };
-        }
-      },
-    },
-    alertStatus: {
-      deep: true,
-      handler: function (newVal) {
-        if (
-          newVal.status.toLowerCase() === "error" &&
-          newVal.type.toLowerCase() === "details"
-        ) {
-          this.triggerAlert(true);
-          let interval = setInterval(() => {
-            this.triggerAlert(false);
-            clearInterval(interval);
-          }, 3000);
         }
       },
     },
