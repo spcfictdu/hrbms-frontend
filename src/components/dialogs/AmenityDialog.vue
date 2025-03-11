@@ -73,6 +73,8 @@ export default {
       handler: function (v) {
         if (v && this.meta.action === "Edit") {
           this.payload.name = this.meta.value;
+        } else {
+          this.payload.name = "";
         }
       },
     },

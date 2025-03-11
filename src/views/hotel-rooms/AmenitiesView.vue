@@ -38,7 +38,6 @@ export default {
       await this.fetchAmenities();
     },
     handleRequest: async function (payload) {
-      console.log("TEST", payload.requestType);
       // Prefetch the alerts: success, error
       this.requireAlertFn(2);
       this.setLoading({ key: "dialog", value: true });
