@@ -206,7 +206,7 @@ export default {
         case "Amenities":
           buttonData.name = "Amenity";
           buttonData.action = () => {
-            this.triggerAmenityDialog(true);
+            this.setDialogFn({ key: "amenity_dialog", value: true });
           };
           break;
         case "Occupied Rooms":
@@ -227,6 +227,7 @@ export default {
   methods: {
     ...mapActions("amenities", ["triggerAmenityDialog"]),
     ...mapActions("occupied", ["triggerOccupiedDialog"]),
+    ...mapActions("dialogs", ["setDialogFn"]),
     redirect: function (route) {
       this.activeButton = route.name;
 

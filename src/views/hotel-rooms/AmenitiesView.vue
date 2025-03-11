@@ -1,87 +1,76 @@
 <template>
-  <div class="mt-10">
-    <v-alert
-      :value="alert"
-      :type="status"
-      class="w-full"
-      transition="scroll-y-transition"
-    >
-      {{ procedureStatus.message }}
-    </v-alert>
+  <RouteLoader :target="hasData" class="mt-10">
     <amenities-component
       :amenities="amenities"
-      :amenityDialog="amenityDialog"
-      @request-event="requestEvent"
-      @close-dialog="closeAmenityDialog"
+      @request-event="handleRequest"
     />
-  </div>
+  </RouteLoader>
 </template>
 
 <script>
 import AmenitiesComponent from "@/components/hotel-rooms/amenities/AmenitiesComponent.vue";
+import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import { mapActions, mapState } from "vuex";
-
 export default {
   name: "AmenitiesView",
-  components: { AmenitiesComponent },
+  components: { AmenitiesComponent, RouteLoader },
   data: () => ({
-    alert: false,
-    status: null,
+    dialogKeys: {
+      add: "amenity_dialog",
+      edit: "amenity_dialog",
+      delete: "amenity_delete",
+    },
   }),
+  created() {
+    this.fetch();
+  },
   methods: {
     ...mapActions("amenities", [
       "fetchAmenities",
       "createAmenity",
       "updateAmenity",
       "deleteAmenity",
-      "triggerAmenityDialog",
+      "setLoading",
     ]),
-    requestEvent: function (payload) {
-      switch (payload.requestType) {
-        case "Add Amenity":
-          this.createAmenity(payload.data);
-          break;
-        case "Delete Amenity":
-          this.deleteAmenity(payload.refNum);
-          break;
-        case "Edit Amenity":
+    ...mapActions("alerts", ["requireAlertFn"]),
+    ...mapActions("dialogs", ["setDialogFn"]),
+    fetch: async function () {
+      await this.fetchAmenities();
+    },
+    handleRequest: async function (payload) {
+      console.log("TEST", payload.requestType);
+      // Prefetch the alerts: success, error
+      this.requireAlertFn(2);
+      this.setLoading({ key: "dialog", value: true });
+
+      // Designate Requests
+      const requests = {
+        add: () => this.createAmenity(payload.data),
+        delete: () => this.deleteAmenity(payload.refNum),
+        edit: () =>
           this.updateAmenity({
             refNum: payload.refNum,
             data: payload.data,
-          });
+          }),
+      };
+
+      // Await the request
+      if (requests[payload.requestType]) {
+        await requests[payload.requestType]();
       }
-    },
-    triggerAlert: function (value) {
-      this.alert = value;
-    },
-    closeAmenityDialog: function () {
-      this.triggerAmenityDialog(false);
+
+      // Close the dialog and finish loading
+      this.setLoading({ key: "dialog", value: false });
+      this.setDialogFn({
+        key: this.dialogKeys[payload.requestType],
+        value: false,
+      });
     },
   },
   computed: {
-    ...mapState("amenities", {
-      amenities: "amenities",
-      procedureStatus: "procedureStatus",
-      amenityDialog: "amenityDialog",
-    }),
-  },
-  created() {
-    this.fetchAmenities();
-  },
-  watch: {
-    procedureStatus: {
-      immediate: true,
-      deep: true,
-      handler: function (newVal) {
-        if (newVal.status !== "") {
-          this.status = newVal.status;
-          this.triggerAlert(true);
-          setTimeout(() => {
-            this.triggerAlert(false);
-            newVal.status = "";
-          }, 3000);
-        }
-      },
+    ...mapState("amenities", ["amenities"]),
+    hasData: function () {
+      return !!this.amenities ?? false;
     },
   },
 };

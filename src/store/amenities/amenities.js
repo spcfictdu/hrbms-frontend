@@ -6,40 +6,19 @@ Vue.use(Vuex);
 export const amenities = {
   namespaced: true,
   state: () => ({
-    amenities: [],
-    procedureStatus: {
-      message: "",
-      status: "",
+    amenities: null,
+    loading: {
+      dialog: false,
     },
-    amenityDialog: false,
-    meta: {
-      title: "amenities",
-      loading: false,
-    },
-    activator: false,
   }),
   getters: {},
   mutations: {
     SET_AMENITIES: (state, data) => (state.amenities = data),
-    SET_PROCEDURE_STATUS: (state, data) => (state.procedureStatus = data),
-    SET_AMENITY_DIALOG: (state, data) => (state.amenityDialog = data),
-    SET_LOADING: (state, data) => (state.meta.loading = data),
-    SET_ACTIVATOR: (state, data) => (state.activator = data),
+    SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
   },
   actions: {
-    triggerDialog: function ({ commit }, value) {
-      commit("SET_ACTIVATOR", value);
-    },
-    triggerLoading: function ({ commit }, value) {
-      commit("SET_LOADING", value);
-    },
-    resetDialog: function ({ dispatch }) {
-      dispatch("triggerLoading", false).then(() => {
-        dispatch("triggerDialog", false);
-      });
-    },
-    triggerAmenityDialog: function ({ commit }, value) {
-      commit("SET_AMENITY_DIALOG", value);
+    setLoading: function ({ commit }, { key, value }) {
+      commit("SET_LOADING", { key, value });
     },
     fetchAmenities: function ({ commit }) {
       const url = `amenity`;
@@ -52,50 +31,36 @@ export const amenities = {
           console.error("Error fetching amenities: ", error);
         });
     },
-    createAmenity: function ({ commit, dispatch }, data) {
+    createAmenity: function ({ dispatch }, data) {
       const url = `amenity/create`;
       return this.$axios
         .post(url, data)
         .then((response) => {
-          dispatch("fetchAmenities", data);
-          console.log(response.data.message);
-          commit("SET_PROCEDURE_STATUS", {
-            message: response.data.message,
-            status: "success",
-          });
-          dispatch("triggerLoading", false);
-          dispatch("triggerAmenityDialog", false);
+          dispatch("fetchAmenities");
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
         })
         .catch((error) => {
           console.error("Error adding amenity: ", error);
-          commit("SET_PROCEDURE_STATUS", {
-            message: error.response.data.message,
-            status: "error",
-          });
-          dispatch("triggerLoading", false);
-          dispatch("triggerAmenityDialog", false);
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
         });
     },
-    updateAmenity: function ({ commit, dispatch }, { refNum, data }) {
+    updateAmenity: function ({ dispatch }, { refNum, data }) {
       const url = `amenity/update/${refNum}`;
       return this.$axios
         .put(url, data)
         .then((response) => {
-          dispatch("fetchAmenities", refNum);
-          console.log(response.data.message);
-          commit("SET_PROCEDURE_STATUS", {
-            message: response.data.message,
-            status: "success",
-          });
-          dispatch("resetDialog");
+          dispatch("fetchAmenities");
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
         })
         .catch((error) => {
           console.error("Error updating amenity: ", error);
-          commit("SET_PROCEDURE_STATUS", {
-            message: error.response.data.message,
-            status: "error",
-          });
-          dispatch("resetDialog");
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
         });
     },
     deleteAmenity: function ({ commit, dispatch }, refNum) {
@@ -103,21 +68,15 @@ export const amenities = {
       return this.$axios
         .delete(url)
         .then((response) => {
-          dispatch("fetchAmenities", refNum);
-          console.log(response.data.message);
-          commit("SET_PROCEDURE_STATUS", {
-            message: response.data.message,
-            status: "success",
-          });
-          dispatch("resetDialog");
+          dispatch("fetchAmenities");
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
         })
         .catch((error) => {
           console.error("Error deleting amenity: ", error);
-          commit("SET_PROCEDURE_STATUS", {
-            message: error.response.data.message,
-            status: "error",
-          });
-          dispatch("resetDialog");
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
         });
     },
   },

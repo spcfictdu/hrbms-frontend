@@ -2,8 +2,8 @@
   <div>
     <v-row justify="start">
       <v-col
-        v-for="(amenity, index) in amenities"
-        :key="index"
+        v-for="amenity in amenities"
+        :key="amenity.name"
         class="pb-3 pb-sm-2"
         cols="12"
         md="3"
@@ -39,15 +39,19 @@
               v-for="(option, index) in options"
               :key="index"
               @click="
-                selectedOption(option, amenity.referenceNumber, amenity.name)
+                selectedOption(
+                  option.value,
+                  amenity.referenceNumber,
+                  amenity.name
+                )
               "
               :class="{ 'menu-border': index < options.length - 1 }"
             >
               <v-list-item-title
                 class="text-subtitle-2 font-weight-regular"
-                :class="itemColor(option)"
+                :class="itemColor(option.text)"
               >
-                {{ option }}
+                {{ option.text }}
               </v-list-item-title>
             </v-list-item>
           </v-list>
@@ -55,17 +59,17 @@
       </v-col>
     </v-row>
     <DeleteDialog
-      :activator="metaDialog.deleteActivator"
-      :delete-meta="metaDialog"
-      :metaLoading="metaLoading"
-      @reset-activator="resetActivator"
-      @delete-event="requestAction"
+      :opened="amenity_delete"
+      :onClose="() => setDialogFn({ key: 'amenity_delete', value: false })"
+      :loading="loading.dialog"
+      message="Amenity"
+      @onDelete="requestAction"
     />
     <AmenityDialog
-      :activator="metaDialog.amenityDialogActivator"
-      :metaDialog="metaDialog"
-      :metaLoading="metaLoading"
-      @reset-activator="resetActivator"
+      :opened="amenity_dialog"
+      :onClose="() => setDialogFn({ key: 'amenity_dialog', value: false })"
+      :meta="meta"
+      :loading="loading.dialog"
       @amenity-request="requestAction"
     />
   </div>
@@ -75,39 +79,50 @@
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
 import AmenityDialog from "@/components/dialogs/AmenityDialog.vue";
 import { mapActions, mapState } from "vuex";
-
 export default {
   name: "AmenitiesComponent",
   components: { DeleteDialog, AmenityDialog },
   props: {
-    amenities: {
-      type: Array,
-      required: true,
-    },
-    amenityDialog: {
-      type: Boolean,
-    },
+    amenities: Array,
   },
   data: () => ({
-    payload: {},
+    selectedAmenity: null,
+    payload: {
+      requestType: null,
+    },
+
+    // Dialog Meta
+    meta: {
+      action: "", // Add Amenity, Edit Amenity, Delete Amenity
+      value: null,
+    },
+
+    // Menu Options
+    options: [
+      {
+        text: "Edit Amenity",
+        value: "edit",
+      },
+      {
+        text: "Delete Amenity",
+        value: "delete",
+      },
+    ],
+
+    // Menu Properties
     isSmall: false,
     isLarge: true,
     menuWidth: 150,
-    selectedAmenity: null,
-    options: ["Edit Amenity", "Delete Amenity"],
-    metaDialog: {},
-  }),
-  computed: {
-    ...mapState("amenities", {
-      metaLoading: "meta",
-      activator: "activator",
-    }),
-    size() {
-      return this.$vuetify.breakpoint;
+
+    dialogKeys: {
+      edit: "amenity_dialog",
+      delete: "amenity_delete",
     },
-  },
+  }),
+
   methods: {
-    ...mapActions("amenities", ["triggerLoading", "triggerDialog"]),
+    ...mapActions("amenities", []),
+    ...mapActions("dialogs", ["setDialogFn"]),
     selectAmenity: function (amenity) {
       this.selectedAmenity = amenity;
     },
@@ -116,84 +131,69 @@ export default {
         return "warning--text";
       }
     },
-    selectedOption: function (
-      option,
-      selectedAmenityRefNum,
-      selectedAmenityName
-    ) {
-      switch (option) {
-        case "Delete Amenity":
-          this.triggerDialog(true);
-          this.metaDialog = {
-            targetDeletion: "amenity",
-            deleteActivator: this.activator,
+    selectedOption: function (option, refNum, amenityName) {
+      const options = {
+        edit: () => {
+          this.meta = {
+            action: "Edit",
+            value: amenityName,
           };
           this.payload = {
-            refNum: selectedAmenityRefNum,
-            requestType: "Delete Amenity",
+            refNum,
+            requestType: "edit",
           };
-          break;
-        case "Edit Amenity":
-          this.triggerDialog(true);
-          this.metaDialog = {
-            action: "Edit Amenity",
-            amenityDialogActivator: this.activator,
-            amenityName: selectedAmenityName,
-          };
+        },
+        delete: () => {
+          this.meta.action = "Delete";
           this.payload = {
-            refNum: selectedAmenityRefNum,
-            requestType: "Edit Amenity",
+            refNum,
+            requestType: "delete",
           };
-          break;
+        },
+      };
+
+      if (options[option]) {
+        this.setDialogFn({ key: this.dialogKeys[option], value: true });
+        options[option]();
       }
-    },
-    resetActivator: function () {
-      if (this.metaDialog.action === "Add Amenity") {
-        this.$emit("close-dialog");
-      }
-      this.metaDialog = {};
     },
     requestAction: function (requestData) {
-      this.triggerLoading(true);
-      if (
-        this.metaDialog.action === "Add Amenity" ||
-        this.metaDialog.action === "Edit Amenity"
-      ) {
+      // Assign data to payload if action is Add or Edit
+      if (["Add", "Edit"].includes(this.meta.action)) {
         this.payload.data = requestData;
       }
       this.$emit("request-event", this.payload);
       this.selectedAmenity = null;
     },
+    resetMeta: function () {
+      this.meta = {
+        action: "",
+        value: null,
+      };
+      this.payload = {
+        requestType: null,
+      };
+    },
+  },
+  computed: {
+    ...mapState("dialogs", ["amenity_dialog", "amenity_delete"]),
+    ...mapState("amenities", ["loading"]),
+    size() {
+      return this.$vuetify.breakpoint;
+    },
   },
   watch: {
-    activator: {
-      handler: function (value) {
-        if (!value) {
-          this.resetActivator();
-        }
-      },
-    },
-    payload: {
+    amenity_dialog: {
       deep: true,
-      handler: function (value) {
-        if (value.data && value.requestType === "Add Amenity") {
-          this.resetActivator()
-        }
-      }
-    },
-    amenityDialog: {
-      deep: true,
-      handler: function (value) {
-        if (value) {
-          this.metaDialog = {
-            action: "Add Amenity",
-            amenityDialogActivator: value,
-          };
-          this.payload = {
-            requestType: "Add Amenity",
-          };
+      handler: function (v) {
+        if (v) {
+          // if action is an empty string, set it to Add
+          if (this.meta.action === "") {
+            this.meta.action = "Add";
+            this.payload.requestType = "add";
+          }
         } else {
-          this.resetActivator();
+          this.resetMeta();
         }
       },
     },

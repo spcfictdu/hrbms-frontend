@@ -8,6 +8,8 @@ export const dialogs = {
   state: () => ({
     password: false,
     logout: false,
+    amenity_dialog: false,
+    amenity_delete: false,
   }),
   getters: {},
   mutations: {
