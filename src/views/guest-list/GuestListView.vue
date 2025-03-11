@@ -5,43 +5,29 @@
       'px-sm-2 py-md-8': $vuetify.breakpoint.lgAndDown,
     }"
   >
-    <v-alert
-      :value="showAlert"
-      :type="AlertType"
-      class="w-full"
-      transition="scroll-y-transition"
-    >
-      {{ alertProperties.message }}
-    </v-alert>
     <PageHeader />
-    <GuestListTable
-      class="mt-10"
-      :guests="guests"
-      @query_params="paginationGuestTable"
-      v-if="guests && guests.pagination"
-    />
+    <RouteLoader :target="hasData" class="mt-10">
+      <GuestListTable :guests="guests" @query_params="paginationGuestTable" />
+    </RouteLoader>
   </div>
 </template>
 
 <script>
 import GuestListTable from "@/components/guests/GuestListTable.vue";
 import PageHeader from "@/components/headers/PageHeader.vue";
+import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import { mapActions, mapState } from "vuex";
-
 export default {
   name: "GuestListView",
-  components: { GuestListTable, PageHeader },
-  data: () => ({
-    showAlert: false,
-    AlertType: null,
-  }),
+  components: { GuestListTable, PageHeader, RouteLoader },
+  data: () => ({}),
+  created() {
+    this.fetch();
+  },
   methods: {
     ...mapActions("guest", ["fetchGuests"]),
-    paginationGuestTable: function (query_params) {
+    fetch: function (query_params = {}) {
       this.fetchGuests(query_params);
-    },
-    triggerAlert: function (value) {
-      this.showAlert = value;
     },
   },
   computed: {
@@ -49,26 +35,8 @@ export default {
       guests: "guests",
       alertProperties: "alertProperties",
     }),
-  },
-  created() {
-    this.fetchGuests();
-  },
-  watch: {
-    alertProperties: {
-      immediate: true,
-      deep: true,
-      handler: function (newVal) {
-        if (newVal.type !== "") {
-          this.triggerAlert(true);
-          this.AlertType = newVal.type;
-          setTimeout(() => {
-            this.triggerAlert(false);
-            this.AlertType = null;
-            newVal.message = "";
-            newVal.type = "";
-          }, 3000);
-        }
-      },
+    hasData: function () {
+      return !!this.guests ?? false;
     },
   },
 };
@@ -76,6 +44,6 @@ export default {
 
 <style scoped>
 .xl-padding {
-  padding: 0 288px 0 288px;
+  padding: 0 300px 0 300px;
 }
 </style>

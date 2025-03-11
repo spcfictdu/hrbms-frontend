@@ -24,7 +24,6 @@
 <script>
 import TablePagination from "@/mixins/TablePagination";
 import GuestListCardHeaderVue from "./GuestListCardHeader.vue";
-
 export default {
   name: "GuestListTable",
   components: { GuestListCardHeaderVue },

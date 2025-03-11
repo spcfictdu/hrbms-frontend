@@ -61,6 +61,6 @@ export default {
 
 <style scoped>
 .xl-padding {
-  padding: 0 288px 0 288px;
+  padding: 0 300px 0 300px;
 }
 </style>
