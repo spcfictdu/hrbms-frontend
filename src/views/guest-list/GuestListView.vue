@@ -1,15 +1,21 @@
 <template>
   <div
     :class="{
-      'xl-padding mt-n3': $vuetify.breakpoint.xl,
-      'px-sm-2 mx-md-n3 my-md-5 mx-sm-n3 my-sm-n3':
-        $vuetify.breakpoint.lgAndDown,
+      'xl-padding': $vuetify.breakpoint.xl,
+      'px-sm-2 py-md-8': $vuetify.breakpoint.lgAndDown,
     }"
   >
-    <v-alert :value="showAlert" :type="AlertType" class="w-full" transition="scroll-y-transition">
+    <v-alert
+      :value="showAlert"
+      :type="AlertType"
+      class="w-full"
+      transition="scroll-y-transition"
+    >
       {{ alertProperties.message }}
     </v-alert>
+    <PageHeader />
     <GuestListTable
+      class="mt-10"
       :guests="guests"
       @query_params="paginationGuestTable"
       v-if="guests && guests.pagination"
@@ -19,11 +25,12 @@
 
 <script>
 import GuestListTable from "@/components/guests/GuestListTable.vue";
+import PageHeader from "@/components/headers/PageHeader.vue";
 import { mapActions, mapState } from "vuex";
 
 export default {
   name: "GuestListView",
-  components: { GuestListTable },
+  components: { GuestListTable, PageHeader },
   data: () => ({
     showAlert: false,
     AlertType: null,

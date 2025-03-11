@@ -1,38 +1,24 @@
 <template>
-  <v-container>
-    <div>
-      <v-row>
-        <v-col cols="12">
-          <div :class="guestClass">Guests</div>
-        </v-col>
-      </v-row>
-    </div>
-    <v-divider />
-    <v-row>
-      <v-col cols="12">
-        <v-card elevation="0" class="mt-5">
-          <guest-list-card-header-vue
-            :guests="guests"
-            @query-request="searchFunction"
-          />
-          <!-- Guest List -->
-          <v-data-table
-            @click:row="selectGuest"
-            :headers="headers"
-            :items="guests.guests"
-            class="ma-5"
-            :footer-props="{
-              itemsPerPage: [5, 10, 15],
-            }"
-            :options.sync="options"
-            :server-items-length="guests.pagination.total"
-            disable-sort
-          >
-          </v-data-table>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-card flat>
+    <guest-list-card-header-vue
+      :guests="guests"
+      @query-request="searchFunction"
+    />
+    <!-- Guest List -->
+    <v-data-table
+      @click:row="selectGuest"
+      :headers="headers"
+      :items="guests.guests"
+      class="ma-5"
+      :footer-props="{
+        itemsPerPage: [5, 10, 15],
+      }"
+      :options.sync="options"
+      :server-items-length="guests.pagination.total"
+      disable-sort
+    >
+    </v-data-table>
+  </v-card>
 </template>
 
 <script>
@@ -78,7 +64,7 @@ export default {
       }
 
       if (this.query_params.page) {
-        delete this.query_params.page
+        delete this.query_params.page;
       }
 
       this.assignParams(query_params);

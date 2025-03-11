@@ -1,49 +1,39 @@
 <template>
-  <v-container class="mt-lg-5">
-    <v-row>
-      <v-col cols="12"><div :class="title">Transactions</div></v-col>
-    </v-row>
-    <v-divider />
-    <v-row>
-      <v-col cols="12">
-        <v-card elevation="0" class="mt-5">
-          <transactions-card-header
-            :transactions="transactions"
-            @query-request="searchFunction"
-          />
-          <v-data-table
-            :headers="headers"
-            :items="mappedTransactions"
-            item-key="reference"
-            group-by="date"
-            class="ma-5"
-            @click:row="(v) => requestRouteEvent(v)"
-            :footer-props="{
-              itemsPerPage: [5, 10, 15],
-            }"
-            :server-items-length="transactions.pagination.total"
-            :options.sync="options"
-            disable-sort
-          >
-            <template v-slot:[`item.status`]="{ item }">
-              <v-chip
-                :color="statusColors[item.status.toLowerCase()]"
-                dark
-                small
-                class="text-overline"
-                >{{ item.status }}</v-chip
-              >
-            </template>
-            <template v-slot:[`group.header`]="{ group }">
-              <td :colspan="headers.length" class="pl-8">
-                {{ group }}
-              </td>
-            </template>
-          </v-data-table>
-        </v-card>
-      </v-col>
-    </v-row>
-  </v-container>
+  <v-card flat>
+    <transactions-card-header
+      :transactions="transactions"
+      @query-request="searchFunction"
+    />
+    <v-data-table
+      :headers="headers"
+      :items="mappedTransactions"
+      item-key="reference"
+      group-by="date"
+      class="ma-5"
+      @click:row="(v) => requestRouteEvent(v)"
+      :footer-props="{
+        itemsPerPage: [5, 10, 15],
+      }"
+      :server-items-length="transactions.pagination.total"
+      :options.sync="options"
+      disable-sort
+    >
+      <template v-slot:[`item.status`]="{ item }">
+        <v-chip
+          :color="statusColors[item.status.toLowerCase()]"
+          dark
+          small
+          class="text-overline"
+          >{{ item.status }}</v-chip
+        >
+      </template>
+      <template v-slot:[`group.header`]="{ group }">
+        <td :colspan="headers.length" class="pl-8">
+          {{ group }}
+        </td>
+      </template>
+    </v-data-table>
+  </v-card>
 </template>
 
 <script>

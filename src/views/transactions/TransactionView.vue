@@ -1,12 +1,12 @@
 <template>
   <div
     :class="{
-      'xl-padding mt-n8': $vuetify.breakpoint.xl,
-      'px-sm-2 mx-md-n3 my-md-5 mx-sm-n3 my-sm-n3':
-        $vuetify.breakpoint.lgAndDown,
+      'xl-padding': $vuetify.breakpoint.xl,
+      'px-sm-2 py-md-8': $vuetify.breakpoint.lgAndDown,
     }"
   >
-    <RouteLoader :target="hasData">
+    <PageHeader />
+    <RouteLoader :target="hasData" class="mt-10">
       <TransactionsTable
         :transactions="transactions"
         @route-event="redirectRoute"
@@ -19,10 +19,11 @@
 <script>
 import TransactionsTable from "@/components/transactions/TransactionsTable.vue";
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
+import PageHeader from "@/components/headers/PageHeader.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "TransactionView",
-  components: { TransactionsTable, RouteLoader },
+  components: { TransactionsTable, RouteLoader, PageHeader },
   data: () => ({
     routeNames: {
       RESERVED: "Confirmation",
