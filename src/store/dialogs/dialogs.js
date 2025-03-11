@@ -10,6 +10,9 @@ export const dialogs = {
     logout: false,
     amenity_dialog: false,
     amenity_delete: false,
+    room_dialog: false,
+    room_confirm: false,
+    room_delete: false,
   }),
   getters: {},
   mutations: {

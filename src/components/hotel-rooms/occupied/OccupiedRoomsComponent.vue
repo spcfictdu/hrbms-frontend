@@ -13,19 +13,21 @@
           <div class="d-flex flex-column align-center justify-center">
             <div
               class="text-h6"
-              :class="{
-                'font-weight-regular': selectedStatus !== item.status,
-                'font-weight-medium': selectedStatus === item.status,
-              }"
+              :class="
+                selectedStatus === item.status
+                  ? 'font-weight-medium'
+                  : 'font-weight-regular'
+              "
             >
               {{ item.count }}
             </div>
             <div
               class="text-subtitle-2"
-              :class="{
-                'font-weight-regular': selectedStatus !== item.status,
-                'font-weight-medium': selectedStatus === item.status,
-              }"
+              :class="
+                selectedStatus === item.status
+                  ? 'font-weight-medium'
+                  : 'font-weight-regular'
+              "
             >
               {{ item.status }}
             </div>
@@ -33,6 +35,7 @@
         </v-btn>
       </v-col>
     </v-row>
+
     <!-- Mobile Filter -->
     <v-row class="d-flex d-sm-none">
       <v-col cols="12">
@@ -80,7 +83,9 @@
         </v-autocomplete>
       </v-col>
     </v-row>
+
     <v-divider class="my-5" />
+
     <div style="max-width: 225px" class="d-none d-sm-flex">
       <v-autocomplete
         class="d-block"
@@ -97,30 +102,55 @@
       </v-autocomplete>
     </div>
 
+    <!-- Room Lists -->
     <v-row class="mt-4" dense v-if="roomStatuses.rooms.length > 0">
       <v-col cols="12" v-for="(room, index) in mappedRoomStatuses" :key="index">
-        <room-list-card
+        <RoomListCard
           :room="room"
-          :queryParams="queryParams"
-          @request-type="passRequest"
+          :actions="{
+            statusChange: (payload, meta) => assessPayload(payload, meta),
+            deleteRoom: (payload, meta) => {
+              assessPayload(payload, meta);
+            },
+            editRoom: (payload, meta) => {
+              assessPayload(payload, meta);
+            },
+          }"
         />
       </v-col>
     </v-row>
     <v-col v-else>
-      <NoDataFoundCard :meta="metaLoading" />
+      <NoDataFoundCard :meta="noDataCardMeta" />
     </v-col>
 
+    <!-- Pagination -->
     <v-pagination
       class="mt-4"
-      v-model="page"
-      :length="paginationLastPage"
+      v-model="queryParams.page"
+      :length="paginationLength"
     ></v-pagination>
+
+    <!-- Dialogs -->
     <RoomDialog
-      :activator="metaDialog.createActivator"
-      :metaDialog="metaDialog"
-      :metaLoading="metaLoading"
-      @reset-activator="resetActivator"
-      @add-request="addRoomRequest"
+      :opened="room_dialog"
+      :onClose="() => setDialogFn({ key: 'room_dialog', value: false })"
+      :meta="meta"
+      :loading="loading.dialog"
+      @onSubmit="handleRequest"
+    />
+    <ConfirmationDialog
+      :opened="room_confirm"
+      :onClose="() => setDialogFn({ key: 'room_confirm', value: false })"
+      :meta="meta_confirm"
+      :loading="loading.confirm"
+      @onProceed="handleRequest"
+    />
+    <DeleteDialog
+      :opened="room_delete"
+      :onClose="() => setDialogFn({ key: 'room_delete', value: false })"
+      :message="meta_delete.message"
+      :loading="loading.delete"
+      @onDelete="handleRequest"
     />
   </div>
 </template>
@@ -128,47 +158,115 @@
 <script>
 import NoDataFoundCard from "@/components/cards/NoDataFoundCard.vue";
 import RoomDialog from "@/components/dialogs/RoomDialog.vue";
+import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
+import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
 import RoomListCard from "./RoomListCard.vue";
-import { assignParams } from "@/mixins/FormattingFunctions";
 import { mapActions, mapState } from "vuex";
-
 export default {
   name: "OccupiedRoomsComponent",
-  components: { RoomListCard, RoomDialog, NoDataFoundCard },
-  mixins: [assignParams],
+  components: {
+    RoomListCard,
+    RoomDialog,
+    NoDataFoundCard,
+    ConfirmationDialog,
+    DeleteDialog,
+  },
   props: {
     roomStatuses: Object,
-    occupiedDialog: Boolean,
   },
   data: () => ({
     selectedStatus: "AVAILABLE",
     selectedRoomType: "JUNIOR STANDARD",
-    page: 1,
-    metaDialog: {},
-    payload: {},
+    payload: {
+      requestType: null,
+    },
+
+    // Dialog Meta
     meta: {
-      title: "",
-      loading: false,
+      action: "",
+      value: null,
+    },
+    meta_confirm: {
+      action: "",
+      actionType: "",
+      message: "",
+    },
+    meta_delete: {
+      message: "",
+    },
+
+    // Initial Params
+    queryParams: {
+      roomStatus: "AVAILABLE",
+      roomType: "JUNIOR STANDARD",
+      per_page: 5,
+      page: 1,
     },
   }),
+  created() {
+    this.fetchRoomTypes();
+  },
+  methods: {
+    ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
+    ...mapActions("dialogs", ["setDialogFn"]),
+    selectStatus: function (status) {
+      this.selectedStatus = status;
+    },
+    handleRequest: function (v) {
+      // API Request Function
+      // IF requestType is add/edit, assign a data key to payload.
+      if (["add", "edit"].includes(this.payload.requestType)) {
+        this.payload.data = v;
+      }
+      this.$emit("request-event", this.payload);
+    },
+    assessPayload: function (payload, meta) {
+      // Assess Function for Status Changes.
+      this.payload = payload;
+
+      const requests = {
+        status: {
+          metaKey: "meta_confirm",
+          dialogKey: "room_confirm",
+        },
+        delete: {
+          metaKey: "meta_delete",
+          dialogKey: "room_delete",
+        },
+        edit: {
+          metaKey: "meta",
+          dialogKey: "room_dialog",
+        },
+      };
+
+      // If action has value, open the necessary dialogs.
+      const action = requests[payload.requestType];
+
+      if (action) {
+        this[action.metaKey] = meta;
+        this.setDialogFn({ key: action.dialogKey, value: true });
+      }
+    },
+    resetPayload: function () {
+      this.payload = {
+        requestType: "",
+      };
+      this.meta = {
+        action: "",
+        value: null,
+      };
+    },
+  },
   computed: {
     ...mapState("roomTypeEnum", ["roomTypeEnum"]),
-    ...mapState("occupied", {
-      metaLoading: "meta",
-    }),
+    ...mapState("occupied", ["loading"]),
+    ...mapState("dialogs", ["room_dialog", "room_confirm", "room_delete"]),
     buttonDisplay() {
-      let buttonData = [];
-      const countData = this.roomStatuses?.roomStatusCount;
-
-      countData &&
-        Object.keys(countData).forEach((key) => {
-          buttonData.push({
-            count: countData[key],
-            status: key,
-          });
-        });
-
-      return buttonData;
+      const countData = this.roomStatuses.roomStatusCount;
+      return Object.keys(countData).map((key) => ({
+        count: countData[key],
+        status: key,
+      }));
     },
     mappedRoomStatuses: function () {
       return this.roomStatuses
@@ -182,110 +280,52 @@ export default {
           }))
         : [];
     },
-    paginationLastPage: function () {
+    paginationLength: function () {
       return this.roomStatuses ? this.roomStatuses.pagination.lastPage : 1;
     },
-  },
-  methods: {
-    ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
-    ...mapActions("occupied", ["triggerLoading"]),
-    selectStatus: function (status) {
-      this.selectedStatus = status;
-    },
-    passRequest: function (payload) {
-      this.$emit("request-event", payload);
-    },
-    addRoomRequest: function (data) {
-      this.triggerLoading(true);
-      this.payload = {
-        requestType: "Add room",
-        data: data,
+    noDataCardMeta: function () {
+      return {
+        title: "rooms",
+        loading: this.loading.fetch,
       };
-      this.passRequest(this.payload);
-    },
-    resetActivator: function () {
-      this.metaDialog = {};
-      this.$emit("close-dialog");
     },
   },
   watch: {
-    roomStatuses: {
-      immediate: true,
+    room_dialog: {
       deep: true,
-      handler: function (value) {
-        if (value.rooms.length === 0) {
-          this.triggerLoading({
-            title: "rooms in this category",
-            loading: true,
-          });
-          setTimeout(() => {
-            this.triggerLoading({
-              title: "rooms in this category",
-              loading: false,
-            });
-          }, 3000);
+      handler: function (v) {
+        if (v) {
+          // Default to add, if meta has no value
+          if (this.meta.action === "") {
+            this.payload.requestType = "add";
+            this.meta = {
+              action: "Add",
+              value: null,
+            };
+          }
         } else {
-          this.triggerLoading({
-              title: "",
-              loading: false,
-            });
+          this.resetPayload();
         }
       },
     },
     selectedStatus: {
       immediate: true,
       handler: function (status) {
-        this.$emit("input-event", {
-          roomStatus: status,
-          roomType: this.selectedRoomType,
-        });
+        this.queryParams.roomStatus = status;
       },
     },
     selectedRoomType: {
       immediate: true,
       handler: function (type) {
-        this.$emit("input-event", {
-          roomStatus: this.selectedStatus,
-          roomType: type,
-        });
-      },
-    },
-    page: {
-      immediate: true,
-      deep: true,
-      handler: function (newVal) {
-        const object = {
-          perPage: 5,
-          page: newVal,
-        };
-        this.assignParams(object);
-      },
-    },
-    "roomStatuses.pagination": {
-      deep: true,
-      handler: function (newVal) {
-        this.page = newVal.currentPage;
+        this.queryParams.roomType = type;
       },
     },
     queryParams: {
-      immediate: true,
       deep: true,
       handler: function (newVal) {
-        this.$emit("query-pagination", newVal);
+        this.$emit("onQuery", newVal);
       },
     },
-    occupiedDialog: {
-      immediate: true,
-      handler: function (newVal) {
-        this.metaDialog = {
-          createActivator: newVal,
-          actionType: "Add New Room",
-        };
-      },
-    },
-  },
-  created() {
-    this.fetchRoomTypes();
   },
 };
 </script>

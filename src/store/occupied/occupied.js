@@ -8,159 +8,99 @@ export const occupied = {
   namespaced: true,
   state: () => ({
     roomStatuses: null,
-    occupiedStatus: {
-      message: "",
-      status: "", //SUCCESS, ERROR
+    loading: {
+      fetch: false,
+      dialog: false,
+      delete: false,
+      confirm: false,
     },
-    occupiedDialog: false,
-    meta: {
-      title: "Rooms",
-      loading: false,
-    },
-    activatorOccupied: false,
   }),
   getters: {},
   mutations: {
     SET_ROOM_STATUS: (state, data) => (state.roomStatuses = data),
-    SET_OCCUPIED_STATUS: (state, data) => {
-      state.occupiedStatus = data;
-      let interval = setInterval(() => {
-        state.occupiedStatus = {
-          message: "",
-          status: "",
-        };
-        clearInterval(interval);
-      }, 3000);
-    },
-    SET_OCCUPIED_DIALOG: (state, data) => (state.occupiedDialog = data),
-    SET_LOADING: (state, data) => (state.meta = data),
-    SET_ACTIVATOR: (state, data) => (state.activatorOccupied = data),
+    SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
   },
   actions: {
-    // Dialog
-    triggerOccupiedDialog: function ({ commit }, data) {
-      commit("SET_OCCUPIED_DIALOG", data);
+    setLoading: function ({ commit }, { key, value }) {
+      commit("SET_LOADING", { key, value });
     },
-    triggerDialog: function ({ commit }, value) {
-      commit("SET_ACTIVATOR", value);
-    },
-    resetDialog: function ({ dispatch }) {
-      dispatch("triggerLoading", {
-        title: "",
-        loading: false
-      }).then(() => {
-        dispatch("triggerDialog", false);
-      });
-    },
-    // Loading
-    triggerLoading: function ({ commit }, data ) {
-      commit("SET_LOADING", data);
-    },
-    fetchRoomStatus: function ({ commit }, queryParams = {}) {
+    fetchRoomStatus: function ({ dispatch, commit }, queryParams = {}) {
       const url = `room-status`;
+      dispatch("setLoading", { key: "fetch", value: true });
+
       const queryUrl = functions.query(url, queryParams);
       return this.$axios
         .get(queryUrl)
         .then((response) => {
           commit("SET_ROOM_STATUS", response.data.results);
-          console.log(response.data.message);
         })
         .catch((error) => {
           console.error("Error fetching room status: ", error);
+        })
+        .finally(() => {
+          dispatch("setLoading", { key: "fetch", value: false });
         });
     },
-    updateRoomStatus: function (
-      { dispatch, commit },
-      { roomRefNum, data, queryParams = {} }
-    ) {
+    updateRoomStatus: function (_, { roomRefNum, data }) {
       const url = `room-status/update/${roomRefNum}`;
       return this.$axios
         .put(url, data)
         .then((response) => {
-          dispatch("fetchRoomStatus", queryParams);
-          commit("SET_OCCUPIED_STATUS", {
-            message: response.data.message,
-            status: "success",
-          });
-          dispatch("resetDialog");
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
         })
         .catch((error) => {
-          commit("SET_OCCUPIED_STATUS", {
-            message: error.response.data.message,
-            status: "error",
-          });
-          dispatch("resetDialog");
           console.error(error.response.data.message);
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
         });
     },
 
     // Rooms Configuration
-    createRoom: function ({ commit, dispatch }, { data, queryParams = {} }) {
+    createRoom: function (_, { data }) {
       const url = `room/create`;
       return this.$axios
         .post(url, data)
         .then((response) => {
-          dispatch("fetchRoomStatus", queryParams);
-          commit("SET_OCCUPIED_STATUS", {
-            message: response.data.message,
-            status: "success",
-          });
-          dispatch("triggerLoading", false);
-          dispatch("triggerOccupiedDialog", false);
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
         })
         .catch((error) => {
-          commit("SET_OCCUPIED_STATUS", {
-            message: error.response.data.results.roomNumber,
-            status: "error",
-          });
-          dispatch("triggerLoading", false);
-          dispatch("triggerOccupiedDialog", false);
           console.error("Error creating room", error.response.data.message);
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
         });
     },
-    deleteRoom: function ({ commit, dispatch }, { refNum, queryParams = {} }) {
+    deleteRoom: function (_, { refNum }) {
       const url = `room/delete/${refNum}`;
       return this.$axios
         .delete(url)
         .then((response) => {
-          dispatch("fetchRoomStatus", queryParams);
-          commit("SET_OCCUPIED_STATUS", {
-            message: response.data.message,
-            status: "success",
-          });
-          dispatch("resetDialog");
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
         })
         .catch((error) => {
-          commit("SET_OCCUPIED_STATUS", {
-            message: error.response.data.message,
-            status: "error",
-          });
-          dispatch("resetDialog");
           console.error(error.response.data.message);
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
         });
     },
-    updateRoom: function (
-      { commit, dispatch },
-      { refNum, data, queryParams = {} }
-    ) {
+    updateRoom: function (_, { refNum, data }) {
       const url = `room/update/${refNum}`;
       return this.$axios
         .put(url, data)
         .then((response) => {
-          dispatch("fetchRoomStatus", queryParams);
-          commit("SET_OCCUPIED_STATUS", {
-            message: response.data.message,
-            status: "success",
-          });
-          dispatch("resetDialog");
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
         })
         .catch((error) => {
-          commit("SET_OCCUPIED_STATUS", {
-            message: error.response.data.message,
-            status: "error",
-          });
-          dispatch("resetDialog");
           console.error(error.response.data.message);
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
         });
     },
   },

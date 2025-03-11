@@ -53,7 +53,7 @@
                 :class="{
                   'warning--text': iter.text === 'Delete room',
                 }"
-                @click="executeMenuItem(iter)"
+                @click="iter.action()"
               >
                 <v-list-item-title class="text-body-2 font-weight-regular"
                   >{{ iter.text }}
@@ -64,267 +64,123 @@
         </div>
       </v-card-title>
     </v-card>
-    <DeleteDialog
-      :activator="metaDialog.deleteActivator"
-      :deleteMeta="metaDialog"
-      :metaLoading="metaLoading"
-      @reset-activator="resetActivator"
-      @delete-event="requestType"
-    />
-    <RoomDialog
-      :activator="metaDialog.roomActivator"
-      :roomData="roomData"
-      :metaDialog="metaDialog"
-      :metaLoading="metaLoading"
-      @reset-activator="resetActivator"
-      @edit-event="requestType"
-    />
-    <ConfirmationDialog
-      :activator="metaDialog.confirmActivator"
-      :metaDialog="metaDialog"
-      :metaLoading="metaLoading"
-      @reset-activator="resetActivator"
-      @change-event="requestType"
-    />
   </div>
 </template>
 
 <script>
-import RoomDialog from "@/components/dialogs/RoomDialog.vue";
-import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
-import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
-import { mapState, mapActions } from "vuex";
-
 export default {
   name: "RoomListCard",
-  components: { RoomDialog, DeleteDialog, ConfirmationDialog },
   props: {
     room: Object,
+    actions: Object,
   },
-  data: () => ({
-    metaDialog: {},
-    payload: {},
-    roomData: {},
-    requestRefNum: "",
-  }),
+  data: () => ({}),
   methods: {
-    ...mapActions("occupied", ["triggerDialog", "triggerLoading"]),
     chipColor: function (status) {
       const value = status.toLowerCase();
-      let color = null;
-      switch (value) {
-        case "occupied":
-          color = "occupied";
-          break;
-        case "reserved":
-          color = "reserved";
-          break;
-        case "available":
-          color = "available";
-          break;
-        case "unclean":
-          color = "unclean";
-          break;
-        case "confirmed":
-          color = "confirmed";
-          break;
-        default:
-          color = "primary";
-      }
-      return color;
+      const colors = {
+        occupied: "occupied",
+        reserved: "reserved",
+        available: "available",
+        unclean: "unclean",
+        confirmed: "confirmed",
+      };
+      return value ? colors[value] : "primary";
     },
     menuItems: function (room) {
-      let menu = [
+      // Status Payload & Meta for available, occupied, unclean, unallocated
+      const statusPayload = (status) => ({
+        requestType: "status",
+        refNum: room.referenceNumber,
+        data: {
+          status,
+        },
+      });
+      const statusMeta = (status) => ({
+        action: "Change",
+        actionType: "Room Status",
+        message: `Change Room ${room.name} status to ${status.toLowerCase()}`,
+      });
+
+      const menu = [
         {
           text: "Make available",
           action: () => {
-            this.triggerDialog(true);
-            this.payload = {
-              requestType: "Change Room Status",
-              refNum: room.referenceNumber,
-              data: {
-                status: "AVAILABLE",
-              },
-            };
-            this.metaDialog = {
-              action: "Change Room Status",
-              actionType: "Confirmation",
-              message: `Change Room ${room.name} status to available`,
-              confirmActivator: this.activator,
-            };
+            this.actions.statusChange(
+              statusPayload("AVAILABLE"),
+              statusMeta("AVAILABLE")
+            );
           },
         },
         {
           text: "Make occupied",
           action: () => {
-            this.triggerDialog(true);
-            this.payload = {
-              requestType: "Change Room Status",
-              refNum: room.referenceNumber,
-              data: {
-                status: "OCCUPIED",
-              },
-            };
-            this.metaDialog = {
-              action: "Change Room Status",
-              actionType: "Confirmation",
-              message: `Change Room ${room.name} status to occupied`,
-              confirmActivator: this.activator,
-            };
+            this.actions.statusChange(
+              statusPayload("OCCUPIED"),
+              statusMeta("OCCUPIED")
+            );
           },
         },
         {
           text: "Make unclean",
           action: () => {
-            this.triggerDialog(true);
-            this.payload = {
-              requestType: "Change Room Status",
-              refNum: room.referenceNumber,
-              data: {
-                status: "UNCLEAN",
-              },
-            };
-            this.metaDialog = {
-              action: "Change Room Status",
-              actionType: "Confirmation",
-              message: `Change Room ${room.name} status to unclean`,
-              confirmActivator: this.activator,
-            };
+            this.actions.statusChange(
+              statusPayload("UNCLEAN"),
+              statusMeta("UNCLEAN")
+            );
           },
         },
         {
           text: "Make unallocated",
           action: () => {
-            this.triggerDialog(true);
-            this.payload = {
-              requestType: "Change Room Status",
-              refNum: room.referenceNumber,
-              data: {
-                status: "UNALLOCATED",
-              },
-            };
-            this.metaDialog = {
-              action: "Change Room Status",
-              actionType: "Confirmation",
-              message: `Change Room ${room.name} status to unallocated`,
-              confirmActivator: this.activator,
-            };
+            this.actions.statusChange(
+              statusPayload("UNALLOCATED"),
+              statusMeta("UNALLOCATED")
+            );
           },
         },
         {
           text: "Edit room details",
           action: () => {
-            this.triggerDialog(true);
-            this.payload = {
+            const payload = {
               refNum: room.referenceNumber,
-              requestType: "Edit room",
+              requestType: "edit",
             };
-            this.roomData = {
-              roomNumber: room.name,
-              roomFloor: room.floor,
-              roomType: room.type,
+            const meta = {
+              action: "Edit",
+              value: {
+                roomNumber: room.name,
+                roomFloor: room.floor,
+                roomType: room.type,
+              },
             };
-            this.metaDialog = {
-              action: "Edit room",
-              actionType: "Edit room",
-              roomActivator: this.activator,
-            };
+            this.actions.editRoom(payload, meta);
           },
         },
         {
           text: "Delete room",
           action: () => {
-            this.triggerDialog(true);
-            this.payload = {
+            const payload = {
               refNum: room.referenceNumber,
-              requestType: "Delete room",
+              requestType: "delete",
             };
-            this.metaDialog = {
-              action: "Delete room",
-              targetDeletion: "room",
-              deleteActivator: this.activator,
+            const meta = {
+              message: room.name,
             };
+            this.actions.deleteRoom(payload, meta);
           },
         },
       ];
 
-      switch (room.status) {
-        case "AVAILABLE":
-          menu = menu.filter(
-            (item) =>
-              item.text !== "Make available" && item.text !== "Delete room"
-          );
-          break;
-        case "OCCUPIED":
-          menu = menu.filter((item) =>
-            ["Make available", "Make unclean", "Make unallocated"].includes(
-              item.text
-            )
-          );
-          break;
-        case "UNCLEAN":
-          menu = menu.filter(
-            (item) =>
-              item.text !== "Make unclean" && item.text !== "Delete room"
-          );
-          break;
-        case "UNALLOCATED":
-          menu = menu.filter((item) => item.text !== "Make unallocated");
-          break;
-      }
-      return menu;
-    },
-    executeMenuItem: function (item) {
-      if (item.text) {
-        return item.action();
-      }
-    },
-    requestType: function (requestData) {
-      switch (this.metaDialog.action) {
-        case "Change Room Status":
-          this.triggerLoading({
-            title: "Rooms",
-            loading: true,
-          });
-          this.$emit("request-type", this.payload);
-          break;
-        case "Delete room":
-          this.triggerLoading({
-            title: "Rooms",
-            loading: true,
-          });
-          this.$emit("request-type", this.payload);
-          break;
-        case "Edit room":
-          this.triggerLoading({
-            title: "Rooms",
-            loading: true,
-          });
-          this.payload.data = requestData;
-          this.$emit("request-type", this.payload);
-          break;
-      }
-    },
-    resetActivator: function () {
-      this.metaDialog = {};
-    },
-  },
-  computed: {
-    ...mapState("occupied", {
-      activator: "activatorOccupied",
-      metaLoading: "meta",
-    }),
-    size: function () {
-      return this.$vuetify.breakpoint;
-    },
-  },
-  watch: {
-    activator: {
-      handler: function (value) {
-        if (!value) {
-          this.resetActivator();
-        }
-      },
+      // Filter out the unavailable options per status
+      const filters = {
+        AVAILABLE: ["Make available", "Delete room"],
+        OCCUPIED: ["Make occupied", "Delete room"],
+        UNCLEAN: ["Make unclean", "Delete room"],
+        UNALLOCATED: ["Make unallocated"],
+      };
+
+      return menu.filter(({ text }) => !filters[room.status].includes(text));
     },
   },
 };

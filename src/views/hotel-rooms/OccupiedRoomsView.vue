@@ -1,135 +1,119 @@
 <template>
-  <div class="mt-10">
-    <v-alert
-      :value="isShowAlert"
-      :type="handleAlertType"
-      class="w-full"
-      transition="scroll-y-transition"
-    >
-      {{ occupiedStatus.message ?? occupiedStatus.message }}
-    </v-alert>
+  <RouteLoader :target="hasData" class="mt-10">
     <OccupiedRoomsComponent
       :roomStatuses="roomStatuses"
-      :occupiedDialog="occupiedDialog"
-      @close-dialog="triggerDialog"
       @request-event="requestEvent"
-      @query-pagination="paginateRoomStatus"
-      @input-event="attachType"
+      @onQuery="assignQuery"
     />
-  </div>
+  </RouteLoader>
 </template>
 
 <script>
+import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import OccupiedRoomsComponent from "@/components/hotel-rooms/occupied/OccupiedRoomsComponent.vue";
 import { mapState, mapActions } from "vuex";
 import { assignParams } from "@/mixins/FormattingFunctions";
 
 export default {
   name: "OccupiedRoomsView",
-  components: { OccupiedRoomsComponent },
+  components: { OccupiedRoomsComponent, RouteLoader },
   mixins: [assignParams],
   data: () => ({
-    isShowAlert: false,
-    triggerEventFetch: false,
-  }),
-  computed: {
-    ...mapState("occupied", {
-      roomStatuses: "roomStatuses",
-      occupiedStatus: "occupiedStatus",
-      occupiedDialog: "occupiedDialog",
-    }),
-    handleAlertType() {
-      return this.occupiedStatus.status !== ""
-        ? this.occupiedStatus.status.toLowerCase()
-        : "success";
+    // Default Params
+    queryParams: {
+      roomStatus: "AVAILABLE",
+      roomType: "JUNIOR STANDARD",
+      per_page: 5,
+      page: 1,
     },
+  }),
+  created: function () {
+    this.fetch(this.queryParams);
   },
   methods: {
     ...mapActions("occupied", [
       "fetchRoomStatus",
       "updateRoomStatus",
-      "triggerOccupiedDialog",
       "createRoom",
       "deleteRoom",
       "updateRoom",
+      "setLoading",
     ]),
-    paginateRoomStatus: function (query_params) {
+    ...mapActions("dialogs", ["setDialogFn"]),
+    ...mapActions("alerts", ["requireAlertFn"]),
+    fetch: async function (queryParams = {}) {
+      await this.fetchRoomStatus(queryParams);
+    },
+    assignQuery: function (query_params) {
       this.assignParams(query_params);
     },
-    attachType: function ({ roomStatus, roomType }) {
-      const object = {
-        roomStatus: roomStatus,
-        roomType: roomType,
-      };
-      this.assignParams(object);
-    },
     requestEvent: function (payload) {
-      switch (payload.requestType) {
-        case "Change Room Status":
-          this.updateRoomStatus({
-            roomRefNum: payload.refNum,
-            data: payload.data,
-            queryParams: this.queryParams,
+      const requests = {
+        status: {
+          loadingKey: "confirm",
+          action: () =>
+            this.updateRoomStatus({
+              roomRefNum: payload.refNum,
+              data: payload.data,
+            }),
+          dialogKey: "room_confirm",
+        },
+        delete: {
+          loadingKey: "delete",
+          action: () =>
+            this.deleteRoom({
+              refNum: payload.refNum,
+            }),
+          dialogKey: "room_delete",
+        },
+        edit: {
+          loadingKey: "dialog",
+          action: () =>
+            this.updateRoom({
+              refNum: payload.refNum,
+              data: payload.data,
+            }),
+          dialogKey: "room_dialog",
+        },
+        add: {
+          loadingKey: "dialog",
+          action: () =>
+            this.createRoom({
+              data: payload.data,
+            }),
+          dialogKey: "room_dialog",
+        },
+      };
+
+      const request = requests[payload.requestType];
+
+      if (request) {
+        // Prefetch alerts: success, error
+        this.requireAlertFn(2);
+        this.setLoading({ key: request.loadingKey, value: true });
+        return request
+          .action()
+          .then(() => {
+            this.setDialogFn({ key: request.dialogKey, value: false });
+          })
+          .finally(() => {
+            this.setLoading({ key: request.loadingKey, value: false });
+            this.fetch(this.queryParams);
           });
-          this.triggerEventFetch = true;
-          break;
-        case "Delete room":
-          this.deleteRoom({
-            refNum: payload.refNum,
-            queryParams: this.queryParams,
-          });
-          this.triggerEventFetch = true;
-          break;
-        case "Edit room":
-          this.updateRoom({
-            refNum: payload.refNum,
-            data: payload.data,
-            queryParams: this.queryParams,
-          });
-          this.triggerEventFetch = true;
-          break;
-        case "Add room":
-          this.createRoom({
-            data: payload.data,
-            queryParams: this.queryParams,
-          });
-          this.triggerEventFetch = true;
-          break;
       }
     },
-    triggerAlert: function (value) {
-      this.isShowAlert = value;
-    },
-    triggerDialog: function () {
-      this.triggerOccupiedDialog(false);
+  },
+  computed: {
+    ...mapState("occupied", ["roomStatuses"]),
+    hasData: function () {
+      return !!this.roomStatuses ?? false;
     },
   },
   watch: {
     queryParams: {
       deep: true,
-      handler: function (newVal) {
-        this.fetchRoomStatus(newVal);
-      },
-    },
-    roomStatuses: {
-      deep: true,
-      handler: function () {
-        if (this.triggerEventFetch === true) {
-          this.fetchRoomStatus(this.queryParams);
-          this.triggerEventFetch = false;
-        }
-      },
-    },
-    occupiedStatus: {
-      deep: true,
-      handler: function (newVal) {
-        if (newVal.status !== "") {
-          this.triggerAlert(true);
-          let interval = setInterval(() => {
-            this.triggerAlert(false);
-            clearInterval(interval);
-          }, 3000);
-        }
+      handler: function (v) {
+        this.fetch(v);
       },
     },
   },
