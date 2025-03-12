@@ -1,23 +1,10 @@
 <template>
   <div>
     <v-row>
-      <!-- Alert -->
-      <v-col cols="12" v-if="isShowAlert">
-        <v-alert
-          :value="isShowAlert"
-          :type="handleAlertType"
-          class="w-full"
-          transition="scroll-y-transition"
-        >
-          {{ ratesStatus.message ?? ratesStatus.message }}
-        </v-alert>
-      </v-col>
       <!-- Information -->
       <v-col cols="12" md="8">
         <room-info
-          v-if="category"
           :room="room"
-          :metaLoading="metaLoading"
           @validation-event="(e) => $emit('validation-event', e)"
           @delete-event="$emit('delete-event')"
         />
@@ -43,25 +30,15 @@ export default {
   props: {
     category: Object,
     queryFill: Object,
-    metaLoading: Object
   },
   data: () => ({
-    isShowAlert: false,
   }),
   methods: {
-    triggerAlert: function (value) {
-      this.isShowAlert = value;
-    },
   },
   computed: {
     ...mapState("roomRates", {
       ratesStatus: "ratesStatus",
     }),
-    handleAlertType() {
-      return this.ratesStatus.status !== ""
-        ? this.ratesStatus.status.toLowerCase()
-        : "success";
-    },
     room: function () {
       const category = this.category;
       let room = {
@@ -110,24 +87,6 @@ export default {
       });
 
       return room;
-    },
-  },
-  watch: {
-    ratesStatus: {
-      immediate: true,
-      deep: true,
-      handler: function (newVal) {
-        if (
-          newVal.status.toLowerCase() === "success" ||
-          newVal.status.toLowerCase() === "error"
-        ) {
-          this.triggerAlert(true);
-          let interval = setInterval(() => {
-            this.triggerAlert(false);
-            clearInterval(interval);
-          }, 3000);
-        }
-      },
     },
   },
 };

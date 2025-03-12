@@ -128,6 +128,7 @@ export default {
   }),
   methods: {
     ...mapActions("roomRates", ["triggerDialog"]),
+    ...mapActions("dialogs", ["setDialogFn"]),
     capitalizeString(str) {
       const lowerCaseString = str.toLowerCase();
       return lowerCaseString

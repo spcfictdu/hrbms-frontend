@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-10" v-if="roomCategory">
+  <RouteLoader :target="hasData" class="mt-10">
     <v-row>
       <v-col cols="12">
         <RoomImages :images="roomImages" />
@@ -7,23 +7,23 @@
       <v-col cols="12">
         <RoomDetails
           :category="roomCategory"
-          :metaLoading="meta"
           @reservation-event="requestReservation"
           @validation-event="assessRequestCall"
           @delete-event="deleteRequestCategory"
         />
       </v-col>
     </v-row>
-  </div>
+  </RouteLoader>
 </template>
 
 <script>
 import RoomImages from "@/components/layouts/images/RoomImages.vue";
 import RoomDetails from "@/components/layouts/sections/RoomDetails.vue";
+import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "RoomDetailsView",
-  components: { RoomImages, RoomDetails },
+  components: { RoomImages, RoomDetails, RouteLoader },
   data: () => ({
     referenceNumber: null,
   }),
@@ -124,12 +124,12 @@ export default {
     },
   },
   computed: {
-    ...mapState("roomCategories", {
-      roomCategory: "roomCategory",
-      meta: "meta",
-    }),
+    ...mapState("roomCategories", ["roomCategory", "meta"]),
     roomImages: function () {
       return this.roomCategory ? this.roomCategory.images : [];
+    },
+    hasData: function () {
+      return !!this.roomCategory ?? false;
     },
   },
   created() {

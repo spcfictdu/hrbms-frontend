@@ -13,6 +13,8 @@ export const dialogs = {
     room_dialog: false,
     room_confirm: false,
     room_delete: false,
+    category_delete: false,
+    category_rate: false,
   }),
   getters: {},
   mutations: {
