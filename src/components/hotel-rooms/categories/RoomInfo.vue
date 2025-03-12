@@ -6,9 +6,7 @@
           {{ room.name.toUpperCase() }}
         </p>
         <p class="text-subtitle-2 font-weight-regular">
-          <PriceSlot>
-            <template v-slot:price> {{ room.price }} </template>
-          </PriceSlot>
+          <PriceSlot :price="room.price" />
           {{ ` | ${room.maxOccupancy} max occupancy` }}
         </p>
       </div>
@@ -45,101 +43,37 @@
       </p>
     </div>
 
-    <v-divider class="mb-5 mt-7" />
+    <v-divider class="mt-7" />
 
-    <div>
-      <p class="text-overline font-weight-bold">Amenities</p>
-      <div>
-        <v-chip
-          outlined
-          small
-          class="mr-2 mb-1 text-subtitle-2"
-          v-for="(amenity, i) in room.amenities"
-          :key="i"
-          :color="i % 2 === 0 ? 'primary' : 'accentOne'"
-          >{{ capitalizeString(amenity.name) }}</v-chip
-        >
-      </div>
-    </div>
-
-    <v-divider class="mb-5 mt-7" />
-
-    <div>
-      <div
-        class="d-flex flex-sm-row flex-column justify-sm-space-between align-sm-center mb-4"
+    <InfoSection title="Amenities">
+      <v-chip
+        outlined
+        small
+        class="mr-2 mb-1 text-subtitle-2"
+        v-for="(amenity, i) in room.amenities"
+        :key="i"
+        :color="i % 2 === 0 ? 'primary' : 'accentOne'"
+        >{{ capitalizeString(amenity.name) }}</v-chip
       >
-        <p class="mb-0 text-overline font-weight-bold">Price Rates</p>
+    </InfoSection>
 
-        <p class="text-caption font-weight-regular">
+    <v-divider />
+
+    <InfoSection title="Price Rates">
+      <template v-slot:headerItem>
+        <div class="text-caption font-weight-regular">
           {{ discountDates }}
           <span class="ml-md-2">
             <v-chip small color="primary" outlined class="text-subtitle-2">{{
               discountChip
             }}</v-chip>
           </span>
-        </p>
-      </div>
-      <v-data-table
-        elevation="0"
-        dense
-        hide-default-footer
-        class="price-table"
-        :headers="headers"
-        :items="room.prices"
-        :items-per-page="5"
-        @click:row="(row) => assignValues(row)"
-        :options="{ page: page }"
-      ></v-data-table>
-      <div
-        class="mt-2"
-        :class="{
-          'd-flex justify-space-between align-center': room.prices.length > 5,
-        }"
-      >
-        <div v-if="room.prices.length > 5">
-          <v-btn
-            class="mr-4"
-            :disabled="isFirstPage"
-            @click="prev()"
-            fab
-            text
-            x-small
-            color="grey darken-2"
-          >
-            <v-icon> mdi-chevron-left </v-icon>
-          </v-btn>
-          <v-btn
-            :disabled="isLastPage"
-            @click="next()"
-            fab
-            text
-            x-small
-            color="grey darken-2"
-          >
-            <v-icon> mdi-chevron-right </v-icon>
-          </v-btn>
         </div>
-        <div class="text-caption grey--text text--darken-2 text-right">
-          *click a row to view its discount range
-        </div>
-      </div>
-    </div>
+      </template>
 
-    <!-- <v-divider class="mb-5 mt-7" />
-    <div>
-      <div class="d-flex justify-space-between mb-4 mb-md-0">
-        <p class="text-overline font-weight-bold">Rooms List</p>
-        <v-btn icon outlined color="primary"
-          ><v-icon small>mdi-pen-plus</v-icon></v-btn
-        >
-      </div>
+      <PriceRatesTable :value="room.prices" @click:row="assignValues($event)" />
+    </InfoSection>
 
-      <v-row dense>
-        <v-col cols="12" v-for="(iter, index) in room.rooms" :key="index">
-          <RoomListCard :room="iter" />
-        </v-col>
-      </v-row>
-    </div> -->
     <rate-dialog
       :activator="rateDialog"
       :rateMeta="rateMeta"
@@ -150,7 +84,6 @@
       :activator="deleteDialog"
       @reset-activator="resetDeleteActivator"
       :deleteMeta="deleteMeta"
-      :metaLoading="metaLoading"
       @delete-event="$emit('delete-event')"
     />
   </div>
@@ -160,17 +93,20 @@
 import PriceSlot from "../../slots/PriceSlot.vue";
 import RateDialog from "@/components/dialogs/RateDialog.vue";
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
+import InfoSection from "@/components/sections/InfoSection.vue";
+import PriceRatesTable from "@/components/tables/variants/PriceRatesTable.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "RoomInfo",
   props: {
     room: Object,
-    metaLoading: Object,
   },
   components: {
     PriceSlot,
     RateDialog,
     DeleteDialog,
+    InfoSection,
+    PriceRatesTable,
   },
   data: () => ({
     // Rate Dialog
@@ -188,44 +124,8 @@ export default {
       loading: false,
     },
     // Miscellaneous
-    page: 1,
     discountChip: "Regular Rate",
     discountDates: "",
-    headers: [
-      {
-        text: "Rates (in peso)",
-        value: "rate",
-        width: "120",
-      },
-      {
-        text: "Sun",
-        value: "sunday",
-      },
-      {
-        text: "Mon",
-        value: "monday",
-      },
-      {
-        text: "Tue",
-        value: "tuesday",
-      },
-      {
-        text: "Wed",
-        value: "wednesday",
-      },
-      {
-        text: "Thu",
-        value: "thursday",
-      },
-      {
-        text: "Fri",
-        value: "friday",
-      },
-      {
-        text: "Sat",
-        value: "saturday",
-      },
-    ],
   }),
   methods: {
     ...mapActions("roomRates", ["triggerDialog"]),
@@ -278,28 +178,12 @@ export default {
     resetDeleteActivator: function () {
       this.deleteDialog = false;
     },
-    // Pagination
-    next: function () {
-      this.page++;
-    },
-    prev: function () {
-      this.page--;
-    },
   },
   computed: {
     ...mapState("roomRates", {
       rateDialog: "rateDialog",
       rateMetaState: "meta",
     }),
-    numberOfPages: function () {
-      return this.room ? Math.ceil(this.room.prices.length / 5) : 0;
-    },
-    isLastPage: function () {
-      return this.numberOfPages === 1 || this.page === this.numberOfPages;
-    },
-    isFirstPage: function () {
-      return this.numberOfPages === 1 || this.page === 1;
-    },
     menuItems: function () {
       return [
         {

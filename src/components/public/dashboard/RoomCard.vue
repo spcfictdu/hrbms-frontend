@@ -1,11 +1,11 @@
 <template>
   <v-card flat outlined class="card-container">
     <header>
-      <div class="text-h6 font-weight-bold text-uppercase">{{ room.roomName }}</div>
+      <div class="text-h6 font-weight-bold text-uppercase">
+        {{ room.roomName }}
+      </div>
       <p class="text-subtitle-2 font-weight-regular">
-        <price-slot
-          ><template #price>{{ room.rate }}</template></price-slot
-        >
+        <price-slot :price="room.rate" />
         {{ ` | ${room.capacity} max occupancy` }}
       </p>
     </header>

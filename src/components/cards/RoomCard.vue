@@ -23,11 +23,7 @@
               room.name.toUpperCase()
             }}</v-card-title>
             <v-card-subtitle class="pb-4 pt-2">
-              <PriceSlot>
-                <template v-slot:price>
-                  {{ room.price }}
-                </template>
-              </PriceSlot>
+              <PriceSlot :price="room.price" />
               <!-- <v-chip
                 small
                 outlined
@@ -57,7 +53,10 @@
                 >{{ room.totalRooms }} Rooms in Total</v-chip
               >
               <v-spacer />
-              <v-btn @click="redirect(room.referenceNumber)" small color="primary"
+              <v-btn
+                @click="redirect(room.referenceNumber)"
+                small
+                color="primary"
                 >View Details</v-btn
               >
             </v-card-actions>
@@ -81,7 +80,7 @@ export default {
   }),
   methods: {
     redirect: function (referenceNumber) {
-      this.$emit('redirect-event', referenceNumber);
+      this.$emit("redirect-event", referenceNumber);
     },
     appendImagePath: function (path) {
       return `${this.$apiPath}/${path}`;
