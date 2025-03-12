@@ -11,8 +11,8 @@
 export default {
   name: "PriceSlot",
   props: {
-    price: String,
-    maxOccupancy: String,
+    price: Number,
+    maxOccupancy: Number,
   },
 };
 </script>

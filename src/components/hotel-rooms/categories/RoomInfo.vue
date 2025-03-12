@@ -70,19 +70,22 @@
         </div>
       </template>
 
-      <PriceRatesTable :value="room.prices" @click:row="assignValues($event)" />
+      <PriceRatesTable
+        :value="room.prices"
+        @click:row="assignPromoInfo($event)"
+      />
     </InfoSection>
 
-    <rate-dialog
-      :activator="rateDialog"
+    <RateDialog
+      :opened="category_rate"
+      :onClose="() => setDialogFn({ key: 'category_rate', value: false })"
       :rateMeta="rateMeta"
-      @reset-activator="resetActivator"
       @validation-event="(e) => $emit('validation-event', e)"
     />
     <delete-dialog
-      :activator="deleteDialog"
-      @reset-activator="resetDeleteActivator"
-      :deleteMeta="deleteMeta"
+      :opened="category_delete"
+      :onClose="() => setDialogFn({ key: 'category_delete', value: false })"
+      :message="deleteMessage"
       @delete-event="$emit('delete-event')"
     />
   </div>
@@ -95,8 +98,10 @@ import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
 import InfoSection from "@/components/sections/InfoSection.vue";
 import PriceRatesTable from "@/components/tables/variants/PriceRatesTable.vue";
 import { mapActions, mapState } from "vuex";
+import { formatDate, capitalizeString } from "@/mixins/FormattingFunctions";
 export default {
   name: "RoomInfo",
+  mixins: [formatDate, capitalizeString],
   props: {
     room: Object,
   },
@@ -110,113 +115,73 @@ export default {
   data: () => ({
     // Rate Dialog
     rateMeta: {
-      typeOfAction: "",
+      action: "",
       roomType: "",
       rateType: "",
       referenceNumber: "",
       loading: false,
     },
     // Delete Dialog
-    deleteDialog: false,
-    deleteMeta: {
-      targetDeletion: "",
-      loading: false,
-    },
+    deleteMessage: "",
     // Miscellaneous
     discountChip: "Regular Rate",
     discountDates: "",
   }),
   methods: {
-    ...mapActions("roomRates", ["triggerDialog"]),
     ...mapActions("dialogs", ["setDialogFn"]),
-    capitalizeString(str) {
-      const lowerCaseString = str.toLowerCase();
-      return lowerCaseString
-        .split(" ")
-        .map((word) => {
-          return word.charAt(0).toUpperCase() + word.slice(1);
-        })
-        .join(" ");
-    },
-    assignValues: function (rowData) {
+    assignPromoInfo: function (rowData) {
       this.discountChip = rowData.rate;
       this.discountDates =
         rowData.startDate && rowData.endDate
-          ? this.formatDate(rowData.startDate, rowData.endDate)
+          ? `${this.formatDate(rowData.startDate)} - ${this.formatDate(
+              rowData.endDate
+            )}`
           : "";
     },
-    formatDate(start, end) {
-      const formattedDateOne = new Date(start).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-      const formattedDateTwo = new Date(end).toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-      });
-
-      return `${formattedDateOne} - ${formattedDateTwo}`;
-    },
     // Rate Dialog
-    activateDialog: function (meta) {
+    assignRateMeta: function (meta) {
       this.rateMeta = {
         ...this.rateMeta,
         ...meta,
       };
-      this.triggerDialog(true);
-    },
-    resetActivator: function () {
-      this.triggerDialog(false);
-    },
-    // Delete Dialog
-    activateDeleteDialog: function (meta) {
-      this.deleteMeta = meta;
-      this.deleteDialog = !this.deleteDialog;
-    },
-    resetDeleteActivator: function () {
-      this.deleteDialog = false;
     },
   },
   computed: {
-    ...mapState("roomRates", {
-      rateDialog: "rateDialog",
-      rateMetaState: "meta",
-    }),
+    ...mapState("roomRates", ["loading"]),
+    ...mapState("dialogs", ["category_rate", "category_delete"]),
     menuItems: function () {
       return [
         {
           text: "Add special rate",
           action: () => {
-            let meta = {
-              typeOfAction: "ADD",
+            this.assignRateMeta({
+              action: "ADD",
               roomType: this.room.name,
               rateType: "special",
-            };
-            this.activateDialog(meta);
+            });
+            this.setDialogFn({ key: "category_rate", value: true });
           },
         },
         {
           text: "Edit regular rate",
           action: () => {
-            let meta = {
-              typeOfAction: "EDIT",
+            this.assignRateMeta({
+              action: "EDIT",
               roomType: this.room.name,
               rateType: "regular",
-            };
-            this.activateDialog(meta);
+            });
+            this.setDialogFn({ key: "category_rate", value: true });
           },
         },
         {
           text: "Edit special rate",
           action: () => {
-            let meta = {
-              typeOfAction: "EDIT",
+            this.assignRateMeta({
+              action: "EDIT",
               roomType: this.room.name,
               rateType: "special",
-            };
-            this.activateDialog(meta);
+            });
+            this.setDialogFn({ key: "category_rate", value: true });
           },
         },
         {
@@ -233,32 +198,22 @@ export default {
         {
           text: "Remove rate",
           action: () => {
-            let meta = {
-              typeOfAction: "DELETE",
+            this.assignRateMeta({
+              action: "DELETE",
               roomType: this.room.name,
               rateType: "special",
-            };
-            this.activateDialog(meta);
+            });
+            this.setDialogFn({ key: "category_rate", value: true });
           },
         },
         {
           text: "Remove category",
           action: () => {
-            let meta = {
-              targetDeletion: "category",
-            };
-            this.activateDeleteDialog(meta);
+            this.deleteMessage = "category";
+            this.setDialogFn({ key: "category_delete", value: true });
           },
         },
       ];
-    },
-  },
-  watch: {
-    rateMetaState: {
-      deep: true,
-      handler: function (newVal) {
-        this.rateMeta.loading = newVal.loading;
-      },
     },
   },
 };

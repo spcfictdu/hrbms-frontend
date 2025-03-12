@@ -5,7 +5,7 @@
       :headers="headers"
       hideDefaultFooter
       dense
-      itemsPerPage="5"
+      :itemsPerPage="5"
       :options="{ page }"
       @click:row="$emit('click:row', $event)"
       @update:options="page = $event.page"

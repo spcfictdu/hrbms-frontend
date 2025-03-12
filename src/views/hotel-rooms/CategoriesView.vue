@@ -66,7 +66,6 @@ export default {
     queryParams: {
       deep: true,
       handler: function (newVal) {
-        console.log(newVal);
         this.fetch(newVal);
       },
     },

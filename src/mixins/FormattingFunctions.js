@@ -94,3 +94,17 @@ export const assignFormData = {
     },
   },
 };
+
+export const capitalizeString = {
+  methods: {
+    capitalizeString(str) {
+      const lowerCaseString = str.toLowerCase();
+      return lowerCaseString
+        .split(" ")
+        .map((word) => {
+          return word.charAt(0).toUpperCase() + word.slice(1);
+        })
+        .join(" ");
+    },
+  },
+};

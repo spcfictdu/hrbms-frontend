@@ -15,7 +15,7 @@
         dense
         readonly
         hide-details="auto"
-        :value="date"
+        :value="withFormat ? formatDate(date) : date"
         :rules="rules"
       ></v-text-field>
     </template>
@@ -23,6 +23,7 @@
       v-model="date"
       :min="minDate"
       @change="handleDate"
+      :readonly="readonly"
     ></v-date-picker>
   </v-menu>
 </template>
@@ -35,6 +36,11 @@ export default {
     rules: Array,
     model: String,
     value: String,
+    readonly: Boolean,
+    withFormat: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     date: null,
@@ -46,6 +52,9 @@ export default {
 
       this.$emit("input", date);
       this.menu = false;
+    },
+    formatDate: function (date) {
+      return date ? format(parseISO(date), "MMMM dd, yyyy") : null;
     },
   },
   watch: {
