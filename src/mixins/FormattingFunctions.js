@@ -50,3 +50,47 @@ export const assignParams = {
     },
   },
 };
+
+export const assignFormData = {
+  methods: {
+    assignFormData: function (payload) {
+      const formData = new FormData();
+
+      function append(formData, key, value) {
+        if (Array.isArray(value)) {
+          if (value.length === 0) {
+            formData.append(key, JSON.stringify([]));
+          } else {
+            value.forEach((item, index) => {
+              append(formData, `${key}[${index}]`, item);
+            });
+          }
+        } else if (
+          typeof value === "object" &&
+          value !== null &&
+          !(value instanceof File)
+        ) {
+          if (Object.keys(value).length === 0) {
+            formData.append(key, JSON.stringify({}));
+          } else {
+            for (const subKey in value) {
+              if (value.hasOwnProperty(subKey)) {
+                append(formData, `${key}[${subKey}]`, value[subKey]);
+              }
+            }
+          }
+        } else {
+          formData.append(key, value);
+        }
+      }
+
+      for (const key in payload) {
+        if (payload.hasOwnProperty(key)) {
+          append(formData, key, payload[key]);
+        }
+      }
+
+      return formData;
+    },
+  },
+};

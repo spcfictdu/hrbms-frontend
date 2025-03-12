@@ -1,19 +1,23 @@
 <template>
   <div class="mt-10">
-    <CreateRoomForm
+    <CategoryForm
       @validation-event="assessRequestCategory"
       :filledCategory="roomCategory"
-      :meta="meta"
+      :action="formTitle"
     />
   </div>
 </template>
 
 <script>
-import CreateRoomForm from "../../../components/hotel-rooms/CreateRoomForm.vue";
+import CategoryForm from "../../../components/hotel-rooms/CategoryForm.vue";
 import { mapActions, mapState } from "vuex";
 export default {
-  name: "CreateRoomView",
-  components: { CreateRoomForm },
+  name: "CategoryControlView",
+  components: { CategoryForm },
+  props: {
+    formTitle: String,
+    roomCategoryReferenceNumber: String,
+  },
   data: () => ({
     referenceNumber: null,
     meta: {
@@ -21,6 +25,9 @@ export default {
       loading: false,
     },
   }),
+  created() {
+    this.fetch();
+  },
   methods: {
     ...mapActions("roomCategories", [
       "fetchRoomCategory",
@@ -28,6 +35,13 @@ export default {
       "updateRoomCategory",
       "triggerLoading",
     ]),
+    fetch: async function () {
+      if (this.formTitle === "UPDATE") {
+        await this.fetchRoomCategory({
+          roomTypeReferenceNumber: this.roomCategoryReferenceNumber,
+        });
+      }
+    },
     assessRequestCategory: function (payload) {
       this.triggerLoading(true);
       if (this.meta.status === "NEW") {
@@ -39,24 +53,6 @@ export default {
         });
       }
     },
-    assessRouteParams: function () {
-      const referenceNumber = this.$route.params.roomCategoryReferenceNumber;
-      if (referenceNumber) {
-        // For Updates
-        this.referenceNumber = referenceNumber;
-        this.meta.status = "UPDATE";
-        this.fetchRequestCategory(referenceNumber);
-      } else {
-        // For Creation
-        this.referenceNumber = null;
-        this.meta.status = "NEW";
-      }
-    },
-    fetchRequestCategory: function (referenceNumber) {
-      this.fetchRoomCategory({
-        roomTypeReferenceNumber: referenceNumber,
-      });
-    },
   },
   computed: {
     ...mapState("roomCategories", {
@@ -64,11 +60,8 @@ export default {
       metaLoading: "meta",
     }),
   },
-  created() {
-    this.assessRouteParams();
-  },
-  watch: {
-  },
+
+  watch: {},
 };
 </script>
 

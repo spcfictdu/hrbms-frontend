@@ -11,7 +11,7 @@
           dense
           hide-details="auto"
           outlined
-          :items="enum_addons"
+          :items="enums"
           item-text="name"
           v-model="addon.name"
           :item-disabled="(item) => isItemDisabled(item, index)"
@@ -49,6 +49,12 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "AmenityField",
   components: { FormField, CounterButtons },
+  props: {
+    fetchAction: {
+      type: String,
+      default: "addons",
+    },
+  },
   data: () => ({
     addons: [
       {
@@ -58,10 +64,20 @@ export default {
     ],
   }),
   created() {
-    this.fetchAddons();
+    this.fetch();
   },
   methods: {
     ...mapActions("addonsEnum", ["fetchAddons"]),
+    ...mapActions("amenities", ["fetchAmenities"]),
+    fetch: async function () {
+      const actions = {
+        addons: this.fetchAddons,
+        amenities: this.fetchAmenities,
+      };
+      if (actions[this.fetchAction]) {
+        await actions[this.fetchAction]();
+      }
+    },
     handleAddItem() {
       this.addons.push({
         name: null,
@@ -89,6 +105,16 @@ export default {
     ...mapState("addonsEnum", {
       enum_addons: "addons",
     }),
+    ...mapState("amenities", {
+      enum_amenities: "amenities",
+    }),
+    enums: function () {
+      const returnVals = {
+        addons: this.enum_addons,
+        amenities: this.enum_amenities,
+      };
+      return returnVals[this.fetchAction] || [];
+    },
   },
   watch: {
     addons: {

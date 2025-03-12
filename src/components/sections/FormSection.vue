@@ -1,5 +1,5 @@
 <template>
-  <div class="pb-8">
+  <div :class="paddingBottom">
     <TitleSlot>{{ title }}</TitleSlot>
 
     <slot />
@@ -13,6 +13,10 @@ export default {
   components: { TitleSlot },
   props: {
     title: String,
+    paddingBottom: {
+      type: String,
+      default: "pb-8",
+    },
   },
 };
 </script>

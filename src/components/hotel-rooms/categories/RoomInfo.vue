@@ -339,7 +339,7 @@ export default {
           text: "Edit category",
           action: () => {
             this.$router.push({
-              name: "Create Room",
+              name: "Update Room",
               params: {
                 roomCategoryReferenceNumber: this.room.referenceNumber,
               },

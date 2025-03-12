@@ -4,7 +4,7 @@ import HotelRoomsView from "../../views/hotel-rooms/HotelRoomsView";
 import AmenitiesView from "../../views/hotel-rooms/AmenitiesView";
 import RoomDetailsView from "../../views/hotel-rooms/categories/RoomDetailsView";
 import CategoriesView from "../../views/hotel-rooms/CategoriesView";
-import CreateRoomView from "../../views/hotel-rooms/categories/CreateRoomCategoryView.vue";
+import CategoryControlView from "../../views/hotel-rooms/categories/CategoryControlView.vue";
 import OccupiedRoomsView from "../../views/hotel-rooms/OccupiedRoomsView.vue";
 // import AvailabilityView from "../../views/hotel-rooms/AvailabilityView";
 import BookingView from "../../views/hotel-rooms/forms/BookingView";
@@ -61,10 +61,27 @@ export default [
         },
       },
       {
-        path: "create-room-category/:roomCategoryReferenceNumber?",
+        path: "create-room-category",
         name: "Create Room",
-        component: CreateRoomView,
-        props: true,
+        component: CategoryControlView,
+        props: () => ({
+          formTitle: "NEW",
+        }),
+        meta: {
+          name: "Room Categories",
+          hideAddButton: true,
+        },
+      },
+      {
+        path: "update-room-category/:roomCategoryReferenceNumber?",
+        name: "Update Room",
+        component: CategoryControlView,
+        props: (route) => ({
+          formTitle: "UPDATE",
+          roomCategoryReferenceNumber: String(
+            route.params.roomCategoryReferenceNumber
+          ),
+        }),
         meta: {
           name: "Room Categories",
           hideAddButton: true,
