@@ -1,213 +1,157 @@
 <template>
-  <v-dialog v-model="dialog" max-width="600" overlay-opacity="0.2">
-    <v-form ref="form" lazy-validation>
-      <v-card class="pa-8" rounded="lg" flat>
-        <v-card-title
-          class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase pa-0 mb-4"
-          >{{ rateMeta.typeOfAction }} {{ rateMeta.roomType }} Rooms
-          {{ rateMeta.rateType }} Rate
-        </v-card-title>
-
-        <!-- Special Rate -->
-        <div v-if="rateMeta.rateType === permissions.specialRateInputs">
-          <v-row>
-            <v-col
-              cols="12"
-              v-if="permissions.specialRates.includes(rateMeta.typeOfAction)"
+  <DialogTemplate
+    maxWidth="600"
+    :action="rateMeta.action"
+    :title="`${rateMeta.roomType} ${rateMeta.rateType} Rate`"
+    :opened="opened"
+    :onClose="onClose"
+  >
+    <!-- Special Rate -->
+    <div v-if="rateMeta.rateType === permissions.specialRateInputs">
+      <v-row>
+        <v-col
+          cols="12"
+          v-if="permissions.specialRates.includes(rateMeta.action)"
+        >
+          <FormField label="Special Rates">
+            <v-autocomplete
+              hide-details="auto"
+              outlined
+              dense
+              :items="specialRateTypes"
+              item-text="referenceNumber"
+              v-model="specialRateSelection"
             >
-              <label-slot>
-                <template #label> Special Rates </template>
-              </label-slot>
-              <v-autocomplete
-                hide-details="auto"
-                outlined
-                dense
-                :items="specialRateTypes"
-                item-text="referenceNumber"
-                v-model="specialRateSelection"
-              >
-                <template #item="{ item }">
-                  <div>
-                    <div class="text-subtitle-2">{{ item.discountName }}</div>
-                    <div class="text-caption grey--text text-darken--2">
-                      {{ item.referenceNumber }}
-                    </div>
+              <template #item="{ item }">
+                <div>
+                  <div class="text-subtitle-2">{{ item.discountName }}</div>
+                  <div class="text-caption grey--text text-darken--2">
+                    {{ item.referenceNumber }}
                   </div>
-                </template>
-              </v-autocomplete>
-            </v-col>
-            <v-col cols="12">
-              <label-slot>
-                <template #label> Special Rate Name </template>
-              </label-slot>
-              <v-text-field
-                hide-details="auto"
-                outlined
-                dense
-                v-model="discountName"
-                :readonly="readOnlyLock"
-                :rules="rules.discountName"
-              ></v-text-field>
-            </v-col>
-            <v-col cols="12" sm="6">
-              <label-slot>
-                <template #label> Start Date </template>
-              </label-slot>
-              <v-menu
-                :close-on-content-click="false"
-                offset-y
-                transition="scale-transition"
-                v-model="menuStart"
-                min-width="auto"
-                max-width="290"
-              >
-                <template #activator="{ on, attrs }">
-                  <v-text-field
-                    :value="formatDate(startDate)"
-                    v-on="on"
-                    v-bind="attrs"
-                    outlined
-                    dense
-                    readonly
-                    hide-details="auto"
-                    :rules="rules.startDate"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="startDate"
-                  :min="minDate"
-                  @input="menuStart = false"
-                  :readonly="readOnlyLock"
-                ></v-date-picker>
-              </v-menu>
-            </v-col>
-            <v-col cols="12" sm="6">
-              <label-slot>
-                <template #label> End Date </template>
-              </label-slot>
-              <v-menu
-                v-model="menuEnd"
-                :close-on-content-click="false"
-                offset-y
-                transition="scale-transition"
-                min-width="auto"
-                max-width="290"
-              >
-                <template #activator="{ on, attrs }">
-                  <v-text-field
-                    :value="formatDate(endDate)"
-                    v-on="on"
-                    v-bind="attrs"
-                    outlined
-                    dense
-                    readonly
-                    hide-details="auto"
-                    :rules="rules.endDate"
-                  ></v-text-field>
-                </template>
-                <v-date-picker
-                  v-model="endDate"
-                  :min="minDate"
-                  @input="menuEnd = false"
-                  :readonly="readOnlyLock"
-                ></v-date-picker>
-              </v-menu>
-            </v-col>
-          </v-row>
-        </div>
+                </div>
+              </template>
+            </v-autocomplete>
+          </FormField>
+        </v-col>
+        <v-col cols="12">
+          <FormField label="Special Rate Name">
+            <v-text-field
+              hide-details="auto"
+              outlined
+              dense
+              v-model="discountName"
+              :readonly="readOnlyLock"
+              :rules="rules.discountName"
+            ></v-text-field>
+          </FormField>
+        </v-col>
+        <v-col cols="12" sm="6">
+          <FormField label="Start Date">
+            <DateField
+              :minDate="minDate"
+              :model="startDate"
+              :rules="rules.startDate"
+              :readonly="readOnlyLock"
+              withFormat
+              @input="startDate = $event"
+            />
+          </FormField>
+        </v-col>
+        <v-col cols="12" sm="6">
+          <FormField label="End Date">
+            <DateField
+              :minDate="minDate"
+              :model="endDate"
+              :rules="rules.endDate"
+              :readonly="readOnlyLock"
+              withFormat
+              @input="endDate = $event"
+            />
+          </FormField>
+        </v-col>
+      </v-row>
+    </div>
 
-        <!-- Pricing -->
-        <div class="py-4">
-          <v-row class="d-none d-sm-flex">
-            <v-col cols="6">
-              <div class="font-weight-bold text-subtitle-2">Day</div>
-            </v-col>
-            <v-col cols="6">
-              <div class="ml-1 font-weight-bold text-subtitle-2">Price</div>
-            </v-col>
-          </v-row>
+    <!-- Pricing -->
+    <div class="py-4">
+      <v-row class="d-none d-sm-flex">
+        <v-col cols="6">
+          <div class="font-weight-bold text-subtitle-2">Day</div>
+        </v-col>
+        <v-col cols="6">
+          <div class="ml-1 font-weight-bold text-subtitle-2">Price</div>
+        </v-col>
+      </v-row>
 
+      <!-- Mobile Breakpoint -->
+      <p class="d-flex d-sm-none text-overline font-weight-bold text-uppercase">
+        Pricing
+      </p>
+
+      <v-row v-for="(day, index) in rates" :key="index" align="center">
+        <v-col cols="6" class="d-none d-sm-flex">
+          <span class="text-subtitle-2 font-weight-regular">{{ day.day }}</span>
+        </v-col>
+        <v-col cols="12" sm="6">
           <!-- Mobile Breakpoint -->
-          <p
-            class="d-flex d-sm-none text-overline font-weight-bold text-uppercase"
+          <div class="d-flex d-sm-none text-caption ml-1 mb-1">
+            {{ day.day }}
+          </div>
+
+          <v-text-field
+            outlined
+            dense
+            hide-details="auto"
+            prefix="₱"
+            v-model.number="day.rate"
+            type="number"
+            :rules="rules.rate"
+            :readonly="readOnlyLock"
+        /></v-col>
+      </v-row>
+    </div>
+
+    <v-card-actions class="mt-4 pa-0">
+      <v-row dense>
+        <v-col cols="12" sm="6" order="last" order-sm="first">
+          <v-btn block text color="warning" @click="cancelButton">Cancel</v-btn>
+        </v-col>
+        <v-col cols="12" sm="6">
+          <v-btn
+            block
+            text
+            color="primary"
+            class="lightBg"
+            :loading="rateMeta.loading"
+            @click="submitButton"
+            >{{ titleForSubmitButton }}</v-btn
           >
-            Pricing
-          </p>
-
-          <v-row v-for="(day, index) in rates" :key="index" align="center">
-            <v-col cols="6" class="d-none d-sm-flex">
-              <span class="text-subtitle-2 font-weight-regular">{{
-                day.day
-              }}</span>
-            </v-col>
-            <v-col cols="12" sm="6">
-              <!-- Mobile Breakpoint -->
-              <div class="d-flex d-sm-none text-caption ml-1 mb-1">
-                {{ day.day }}
-              </div>
-
-              <v-text-field
-                outlined
-                dense
-                hide-details="auto"
-                prefix="₱"
-                v-model.number="day.rate"
-                type="number"
-                :rules="rules.rate"
-                :readonly="readOnlyLock"
-            /></v-col>
-          </v-row>
-        </div>
-
-        <v-card-actions class="mt-4 pa-0">
-          <v-row dense>
-            <v-col cols="12" sm="6" order="last" order-sm="first">
-              <v-btn block text color="warning" @click="cancelButton"
-                >Cancel</v-btn
-              >
-            </v-col>
-            <v-col cols="12" sm="6">
-              <v-btn
-                block
-                text
-                color="primary"
-                class="lightBg"
-                :loading="rateMeta.loading"
-                @click="submitButton"
-                >{{ titleForSubmitButton }}</v-btn
-              >
-            </v-col>
-          </v-row>
-        </v-card-actions>
-      </v-card>
-    </v-form>
-  </v-dialog>
+        </v-col>
+      </v-row>
+    </v-card-actions>
+  </DialogTemplate>
 </template>
 
 <script>
+import DialogTemplate from "./DialogTemplate.vue";
+import FormField from "../fields/FormField.vue";
+import DateField from "../fields/DateField.vue";
 import { mapActions, mapState } from "vuex";
-import { format, parseISO } from "date-fns";
-import LabelSlot from "../slots/LabelSlot.vue";
 export default {
   name: "RateDialog",
   components: {
-    LabelSlot,
+    DialogTemplate,
+    FormField,
+    DateField,
   },
   props: {
-    activator: {
-      type: Boolean,
-      required: true,
-    },
-    rateMeta: {
-      type: Object,
-    },
+    opened: Boolean,
+    onClose: Function,
+    rateMeta: Object,
   },
   data: () => ({
     // Meta
-    dialog: false,
     minDate: new Date().toISOString().slice(0, 10),
-    menuStart: false,
-    menuEnd: false,
     permissions: {
       specialRates: ["DELETE", "EDIT"],
       specialRateInputs: "special",
@@ -253,65 +197,16 @@ export default {
       },
     ],
   }),
-  computed: {
-    ...mapState("rateTypeEnum", {
-      rateType: "rateType",
-    }),
-    size() {
-      return this.$vuetify.breakpoint;
-    },
-    specialRateTypes: function () {
-      const meta = this.rateMeta;
-      const allowedTypeOfAction = ["EDIT", "DELETE"];
-      return meta.rateType === "special" &&
-        allowedTypeOfAction.includes(meta.typeOfAction) &&
-        this.rateType
-        ? this.rateType.map((key) => ({
-            discountName: key.discountName,
-            referenceNumber: key.referenceNumber,
-          }))
-        : [];
-    },
-    readOnlyLock: function () {
-      const meta = this.rateMeta;
-      return meta.typeOfAction === "DELETE" && meta.rateType === "special"
-        ? true
-        : false;
-    },
-    titleForSubmitButton: function () {
-      const meta = this.rateMeta;
-      const allowedTypeOfAction = ["EDIT", "ADD"];
-      return allowedTypeOfAction.includes(meta.typeOfAction)
-        ? "Save Changes"
-        : "Proceed";
-    },
-    rules() {
-      let errors = {};
-      const allowedTypeOfAction = ["EDIT", "ADD"];
-
-      if (allowedTypeOfAction.includes(this.rateMeta.typeOfAction)) {
-        errors.discountName = [(v) => !!v || "Discount name is required"];
-        errors.startDate = [(v) => !!v || "Starting discount date is required"];
-        errors.endDate = [(v) => !!v || "Ending discount date is required"];
-        errors.rate = [(v) => !!v || "Rate is required"];
-      }
-
-      return errors;
-    },
-  },
   methods: {
     ...mapActions("rateTypeEnum", ["fetchRateType"]),
-    formatDate: function (date) {
-      return date ? format(parseISO(date), "MMMM dd, yyyy") : null;
-    },
     cancelButton: function () {
-      this.$emit("reset-activator");
-      this.resetRateTypes();
+      this.onClose();
     },
-    requestRateTypes: function (meta) {
-      const allowedTypeOfAction = ["EDIT", "DELETE"];
-      if (allowedTypeOfAction.includes(meta.typeOfAction)) {
-        this.fetchRateType({
+    fetch: async function (meta) {
+      console.log(meta);
+      if (["EDIT", "DELETE"].includes(meta.action)) {
+        console.log("Fetching Rate Type");
+        await this.fetchRateType({
           roomType: meta.roomType,
           rateType: meta.rateType,
         });
@@ -335,31 +230,10 @@ export default {
       }
 
       if (pricingData) {
-        this.rates.forEach((key) => {
-          switch (key.day) {
-            case "Sunday":
-              key.rate = pricingData.sunday;
-              break;
-            case "Monday":
-              key.rate = pricingData.monday;
-              break;
-            case "Tuesday":
-              key.rate = pricingData.tuesday;
-              break;
-            case "Wednesday":
-              key.rate = pricingData.wednesday;
-              break;
-            case "Thursday":
-              key.rate = pricingData.thursday;
-              break;
-            case "Friday":
-              key.rate = pricingData.friday;
-              break;
-            case "Saturday":
-              key.rate = pricingData.saturday;
-              break;
-          }
-        });
+        this.rates = this.rates.map(({ day }) => ({
+          day,
+          rate: pricingData[day.toLowerCase()],
+        }));
       }
     },
     resetRateTypes: function () {
@@ -371,37 +245,12 @@ export default {
       this.discountName = null;
       this.startDate = null;
       this.endDate = null;
-
-      this.$refs.form.reset();
     },
-    reassignRateTypes: function () {
-      let newVal = {};
-      this.rates.forEach((key) => {
-        switch (key.day) {
-          case "Sunday":
-            newVal.sunday = key.rate;
-            break;
-          case "Monday":
-            newVal.monday = key.rate;
-            break;
-          case "Tuesday":
-            newVal.tuesday = key.rate;
-            break;
-          case "Wednesday":
-            newVal.wednesday = key.rate;
-            break;
-          case "Thursday":
-            newVal.thursday = key.rate;
-            break;
-          case "Friday":
-            newVal.friday = key.rate;
-            break;
-          case "Saturday":
-            newVal.saturday = key.rate;
-            break;
-        }
-      });
-      return newVal;
+    ratesReducer: function (rates) {
+      return rates.reduce((acc, { day, rate }) => {
+        acc[day.toLowerCase()] = rate;
+        return acc;
+      }, {});
     },
     submitButton: function () {
       const meta = this.rateMeta;
@@ -411,80 +260,102 @@ export default {
       const referenceNumber = this.referenceNumber;
 
       let payload = {};
-      this.$refs.form.validate();
 
-      if (this.$refs.form.validate()) {
-        if (meta.typeOfAction === "ADD" && meta.rateType === "special") {
-          payload = {
-            status: "ADD",
-            type: "SPECIAL",
-            roomType: meta.roomType,
-            discountName: discountName,
-            startDate: startDate,
-            endDate: endDate,
-            rates: this.reassignRateTypes(),
-          };
-        } else if (
-          meta.typeOfAction === "DELETE" &&
-          meta.rateType === "special"
-        ) {
-          payload = {
-            status: "DELETE",
-            type: "SPECIAL",
-            referenceNumber: referenceNumber,
-          };
-        } else if (
-          meta.typeOfAction === "EDIT" &&
-          meta.rateType === "regular"
-        ) {
-          payload = {
-            status: "UPDATE",
-            type: "REGULAR",
-            referenceNumber: referenceNumber,
-            rates: this.reassignRateTypes(),
-          };
-        } else if (
-          meta.typeOfAction === "EDIT" &&
-          meta.rateType === "special"
-        ) {
-          payload = {
-            status: "UPDATE",
-            type: "SPECIAL",
-            referenceNumber: referenceNumber,
-            discountName: discountName,
-            startDate: startDate,
-            endDate: endDate,
-            rates: this.reassignRateTypes(),
-          };
-        }
-        this.$emit("validation-event", payload);
+      if (meta.action === "ADD" && meta.rateType === "special") {
+        payload = {
+          status: "ADD",
+          type: "SPECIAL",
+          roomType: meta.roomType,
+          discountName: discountName,
+          startDate: startDate,
+          endDate: endDate,
+          rates: this.ratesReducer(this.rates),
+        };
+      } else if (meta.action === "DELETE" && meta.rateType === "special") {
+        payload = {
+          status: "DELETE",
+          type: "SPECIAL",
+          referenceNumber: referenceNumber,
+        };
+      } else if (meta.action === "EDIT" && meta.rateType === "regular") {
+        payload = {
+          status: "UPDATE",
+          type: "REGULAR",
+          referenceNumber: referenceNumber,
+          rates: this.ratesReducer(this.rates),
+        };
+      } else if (meta.action === "EDIT" && meta.rateType === "special") {
+        payload = {
+          status: "UPDATE",
+          type: "SPECIAL",
+          referenceNumber: referenceNumber,
+          discountName: discountName,
+          startDate: startDate,
+          endDate: endDate,
+          rates: this.ratesReducer(this.rates),
+        };
       }
+      this.$emit("validation-event", payload);
     },
   },
+  computed: {
+    ...mapState("rateTypeEnum", ["rateType"]),
+    size() {
+      return this.$vuetify.breakpoint;
+    },
+    specialRateTypes: function () {
+      const meta = this.rateMeta;
+      const allowedTypeOfAction = ["EDIT", "DELETE"];
+      return meta.rateType === "special" &&
+        allowedTypeOfAction.includes(meta.action) &&
+        this.rateType
+        ? this.rateType.map((key) => ({
+            discountName: key.discountName,
+            referenceNumber: key.referenceNumber,
+          }))
+        : [];
+    },
+    readOnlyLock: function () {
+      const meta = this.rateMeta;
+      return meta.action === "DELETE" && meta.rateType === "special"
+        ? true
+        : false;
+    },
+    titleForSubmitButton: function () {
+      const meta = this.rateMeta;
+      return ["EDIT", "ADD"].includes(meta.action) ? "Save Changes" : "Proceed";
+    },
+    rules: function () {
+      let errors = {};
+      if (["EDIT", "ADD"].includes(this.rateMeta.action)) {
+        errors.discountName = [(v) => !!v || "Discount name is required"];
+        errors.startDate = [(v) => !!v || "Starting discount date is required"];
+        errors.endDate = [(v) => !!v || "Ending discount date is required"];
+        errors.rate = [(v) => !!v || "Rate is required"];
+      }
+      return errors;
+    },
+  },
+
   watch: {
-    dialog: {
-      handler: function (newVal) {
-        if (!newVal) {
-          this.$emit("reset-activator");
-        } else {
+    opened: {
+      deep: true,
+      handler: function (v) {
+        if (!v) {
           this.resetRateTypes();
         }
       },
     },
-    activator: {
-      handler: function (newVal) {
-        this.dialog = newVal;
-      },
-    },
     rateMeta: {
-      handler: function (newVal) {
-        this.requestRateTypes(newVal);
+      deep: true,
+      handler: function (v) {
+        this.fetch(v);
       },
     },
     rateType: {
       deep: true,
-      handler: function (newVal) {
-        this.localRateTypes = newVal;
+      handler: function (v) {
+        this.localRateTypes = v;
         this.assignRateTypes();
       },
     },
