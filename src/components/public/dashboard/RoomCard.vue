@@ -5,8 +5,7 @@
         {{ room.roomName }}
       </div>
       <p class="text-subtitle-2 font-weight-regular">
-        <price-slot :price="room.rate" />
-        {{ ` | ${room.capacity} max occupancy` }}
+        <price-slot :price="room.rate" :maxOccupancy="room.capacity" />
       </p>
     </header>
 

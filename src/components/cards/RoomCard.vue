@@ -23,16 +23,10 @@
               room.name.toUpperCase()
             }}</v-card-title>
             <v-card-subtitle class="pb-4 pt-2">
-              <PriceSlot :price="room.price" />
-              <!-- <v-chip
-                small
-                outlined
-                color="primary"
-                class="text-caption font-weight-bold mr-2"
-              >
-                {{ room.category.toUpperCase() }}
-              </v-chip> -->
-              {{ ` | ${room.maxOccupancy} max occupancy` }}
+              <PriceSlot
+                :price="room.price"
+                :maxOccupancy="room.maxOccupancy"
+              />
             </v-card-subtitle>
             <v-card-text>
               <p class="text-body-2 room-description longText--text mb-0">

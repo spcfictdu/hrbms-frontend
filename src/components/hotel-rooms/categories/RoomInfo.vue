@@ -6,8 +6,7 @@
           {{ room.name.toUpperCase() }}
         </p>
         <p class="text-subtitle-2 font-weight-regular">
-          <PriceSlot :price="room.price" />
-          {{ ` | ${room.maxOccupancy} max occupancy` }}
+          <PriceSlot :price="room.price" :maxOccupancy="room.maxOccupancy" />
         </p>
       </div>
 

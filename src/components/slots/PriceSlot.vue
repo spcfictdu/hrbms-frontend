@@ -1,7 +1,10 @@
 <template>
-  <span class="price--text font-weight-bold"
-    >PHP {{ price }}<small>/NIGHT</small></span
-  >
+  <div>
+    <span class="price--text font-weight-bold"
+      >PHP {{ price }}<small>/NIGHT</small></span
+    >
+    {{ ` | ${maxOccupancy} max occupancy` }}
+  </div>
 </template>
 
 <script>
@@ -9,6 +12,7 @@ export default {
   name: "PriceSlot",
   props: {
     price: String,
+    maxOccupancy: String,
   },
 };
 </script>
