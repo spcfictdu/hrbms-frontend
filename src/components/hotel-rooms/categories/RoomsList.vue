@@ -1,28 +1,25 @@
 <template>
   <div>
-    <v-row>
+    <v-row v-if="roomArray.length > 0">
       <!-- With Data -->
-      <div style="width: 100%" v-if="roomArray.length > 0">
-        <v-col cols="12" v-for="(room, index) in roomArray" :key="index">
-          <RoomCard
-            @redirect-event="
-              (referenceNumber) => $emit('redirect-event', referenceNumber)
-            "
-            :room="room"
-          />
-        </v-col>
-      </div>
+      <v-col cols="12" v-for="(room, index) in roomArray" :key="index">
+        <RoomCard
+          @redirect-event="
+            (referenceNumber) => $emit('redirect-event', referenceNumber)
+          "
+          :room="room"
+        />
+      </v-col>
       <!-- No Data Found -->
-      <v-col v-else>
-        <no-data-found-card :meta="meta" />
+    </v-row>
+    <v-row v-else>
+      <v-col>
+        <NoDataFoundCard :meta="noDataCardMeta" />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
-        <v-pagination
-          :length="paginationLastPage"
-          v-model="page"
-        ></v-pagination>
+        <v-pagination :length="paginationLength" v-model="queryParams.page" />
       </v-col>
     </v-row>
   </div>
@@ -31,20 +28,19 @@
 <script>
 import RoomCard from "../../cards/RoomCard.vue";
 import NoDataFoundCard from "@/components/cards/NoDataFoundCard.vue";
-import { assignParams } from "@/mixins/FormattingFunctions";
 export default {
   name: "RoomsList",
-  mixins: [assignParams],
+  components: { RoomCard, NoDataFoundCard },
   props: {
     roomCategories: Object,
-    meta: Object,
+    loading: Boolean,
   },
-  components: { RoomCard, NoDataFoundCard },
   data: () => ({
-    page: 1,
-    status: ["Available", "Occupied", "Unallocated", "Unclean"],
+    queryParams: {
+      perPage: 5,
+      page: 1,
+    },
   }),
-  methods: {},
   computed: {
     roomArray: function () {
       return this.roomCategories
@@ -59,33 +55,27 @@ export default {
           }))
         : [];
     },
-    paginationLastPage: function () {
+    paginationLength: function () {
       return this.roomCategories ? this.roomCategories.pagination.lastPage : 1;
+    },
+    noDataCardMeta: function () {
+      return {
+        title: "categories",
+        loading: this.loading,
+      };
     },
   },
   watch: {
-    page: {
-      immediate: true,
-      deep: true,
-      handler: function (newVal) {
-        const object = {
-          perPage: 5,
-          page: newVal,
-        };
-        this.assignParams(object);
-      },
-    },
     queryParams: {
-      immediate: true,
       deep: true,
       handler: function (newVal) {
-        this.$emit("query-pagination", newVal);
+        this.$emit("onQuery", newVal);
       },
     },
     "roomCategories.pagination": {
       deep: true,
       handler: function (newVal) {
-        this.page = newVal.currentPage;
+        this.queryParams.page = newVal.currentPage;
       },
     },
   },

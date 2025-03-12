@@ -1,5 +1,5 @@
 <template>
-  <div v-if="mappedRoomTypeEnum.length > 1">
+  <div>
     <v-row dense justify="space-between" class="pb-4 pb-sm-8">
       <v-col
         v-for="(i, index) in mappedRoomTypeEnum"
@@ -14,10 +14,11 @@
           :color="i.roomType === activeButton ? 'primary' : 'lightBg'"
           :loading="i.roomType === activeButton ? loadingButton : false"
           class="calendar-buttons text-subtitle-2"
-          :class="{
-            'font-weight-medium': i.roomType === activeButton,
-            'font-weight-regular': i.roomType !== activeButton,
-          }"
+          :class="
+            i.roomType === activeButton
+              ? 'font-weight-medium'
+              : 'font-weight-regular'
+          "
           @click="activeValue(i.roomType)"
           >{{ i.roomType }}</v-btn
         >
@@ -44,12 +45,18 @@
 import { mapActions, mapState } from "vuex";
 export default {
   name: "RoomTypeButtons",
-  props: { withAllRooms: Boolean, meta: Object, },
+  props: { withAllRooms: Boolean, meta: Object },
   data: () => ({
     activeButton: "",
   }),
+  created() {
+    this.fetch();
+  },
   methods: {
     ...mapActions("roomTypeEnum", ["fetchRoomTypes"]),
+    fetch: async function () {
+      await this.fetchRoomTypes();
+    },
     capitalizeString(str) {
       const lowerCaseString = str.toLowerCase();
       return lowerCaseString
@@ -66,33 +73,30 @@ export default {
   computed: {
     ...mapState("roomTypeEnum", ["roomTypeEnum"]),
     mappedRoomTypeEnum: function () {
-      let roomTypes = [];
+      const roomTypes = this.roomTypeEnum
+        ? this.roomTypeEnum.map((key) => ({
+            roomType: this.capitalizeString(key.roomType),
+            referenceNumber: key.referenceNumber,
+          }))
+        : [];
 
       if (this.withAllRooms) {
-        roomTypes.push({
+        roomTypes.unshift({
           roomType: "All Rooms",
           referenceNumber: null,
         });
       }
 
-      if (this.roomTypeEnum) {
-        this.roomTypeEnum.forEach((key) => {
-          roomTypes.push({
-            roomType: this.capitalizeString(key.roomType),
-            referenceNumber: key.referenceNumber,
-          });
-        });
-      }
       return roomTypes;
     },
     loadingButton: function () {
       return this.meta?.title === "Calendar" ? this.meta.loading : false;
-    }
+    },
   },
   watch: {
     activeButton: {
       immediate: true,
-      handler(newVal) {
+      handler: function (newVal) {
         if (newVal) {
           this.$emit("input-event", newVal);
         }
@@ -106,9 +110,6 @@ export default {
         }
       },
     },
-  },
-  created() {
-    this.fetchRoomTypes();
   },
 };
 </script>

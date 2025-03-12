@@ -1,59 +1,53 @@
 <template>
-  <div class="mt-10">
-    <v-alert
-      :value="isShowAlert"
-      :type="handleAlertType"
-      class="w-full"
-      transition="scroll-y-transition"
-    >
-      {{ categoryStatus.message ?? categoryStatus.message }}
-    </v-alert>
-    <room-type-buttons :withAllRooms="withAllRooms" @input-event="attachType" />
-    <RoomsList
-      @redirect-event="redirect"
-      @query-pagination="attachQuery"
-      :roomCategories="roomCategories"
-      :meta="meta"
-    />
-  </div>
+  <RouteLoader :target="hasData" class="mt-10">
+    <div>
+      <room-type-buttons
+        :withAllRooms="withAllRooms"
+        @input-event="attachType"
+      />
+      <RoomsList
+        @redirect-event="redirect"
+        @onQuery="attachQuery"
+        :roomCategories="roomCategories"
+        :loading="loading.fetch"
+      />
+    </div>
+  </RouteLoader>
 </template>
 
 <script>
 import RoomsList from "../../components/hotel-rooms/categories/RoomsList.vue";
 import RoomTypeButtons from "@/components/buttons/RoomTypeButtons.vue";
+import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import { mapActions, mapState } from "vuex";
 import { assignParams } from "@/mixins/FormattingFunctions";
-
 export default {
   name: "CategoriesView",
   mixins: [assignParams],
-  components: { RoomsList, RoomTypeButtons },
+  components: { RoomsList, RoomTypeButtons, RouteLoader },
   data: () => ({
-    isShowAlert: false,
     withAllRooms: true,
+    queryParams: {
+      perPage: 5,
+      page: 1,
+    },
   }),
+  created: function () {
+    this.fetch(this.queryParams);
+  },
   methods: {
-    ...mapActions("roomCategories", ["fetchRoomCategories", "triggerLoading"]),
+    ...mapActions("roomCategories", ["fetchRoomCategories"]),
+    fetch: function (queryParams = {}) {
+      this.fetchRoomCategories(queryParams);
+    },
     attachQuery: function (params) {
       this.assignParams(params);
     },
     attachType: function (type) {
-      let object = {
-        roomType: type,
+      let roomTypePayload = {
+        roomType: type === "All Rooms" ? null : type,
       };
-
-      for (const key in object) {
-        if (Object.hasOwnProperty.call(object, key)) {
-          const value = object[key];
-          if (value === "All Rooms") {
-            this.$set(object, key, null);
-          } else {
-            this.$set(object, key, value);
-          }
-        }
-      }
-
-      this.assignParams(object);
+      this.assignParams(roomTypePayload);
     },
     redirect: function (referenceNumber) {
       this.$router.push({
@@ -61,43 +55,19 @@ export default {
         params: { roomCategoryReferenceNumber: referenceNumber },
       });
     },
-    triggerAlert: function (value) {
-      this.isShowAlert = value;
-    },
   },
   computed: {
-    ...mapState("roomCategories", {
-      roomCategories: "roomCategories",
-      categoryStatus: "categoryStatus",
-      meta: "meta",
-    }),
-    handleAlertType() {
-      return this.categoryStatus.status !== ""
-        ? this.categoryStatus.status.toLowerCase()
-        : "success";
+    ...mapState("roomCategories", ["roomCategories", "loading"]),
+    hasData: function () {
+      return !!this.roomCategories ?? false;
     },
   },
   watch: {
     queryParams: {
-      immediate: true,
       deep: true,
       handler: function (newVal) {
-        this.triggerLoading(true).then(() => {
-          this.fetchRoomCategories(newVal);
-        });
-      },
-    },
-    categoryStatus: {
-      immediate: true,
-      deep: true,
-      handler: function (newVal) {
-        if (newVal.status !== "") {
-          this.triggerAlert(true);
-          let interval = setInterval(() => {
-            this.triggerAlert(false);
-            clearInterval(interval);
-          }, 3000);
-        }
+        console.log(newVal);
+        this.fetch(newVal);
       },
     },
   },
