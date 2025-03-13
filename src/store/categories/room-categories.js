@@ -21,10 +21,7 @@ export const roomCategories = {
     roomCategory: null,
     loading: {
       fetch: false,
-    },
-    meta: {
-      title: "Categories",
-      loading: false,
+      delete: false,
     },
   }),
   getters: {},
@@ -54,7 +51,7 @@ export const roomCategories = {
           dispatch("setLoading", { key: "fetch", value: false });
         });
     },
-    fetchRoomCategory: function ({ commit }, { roomTypeReferenceNumber }) {
+    fetchRoomCategory: function ({ commit }, roomTypeReferenceNumber) {
       const url = `room-type/${roomTypeReferenceNumber}`;
       return this.$axios
         .get(url)
@@ -64,9 +61,6 @@ export const roomCategories = {
         .catch((error) => {
           console.error("Error fetching room category: ", error);
         });
-    },
-    resetRoomCategory: function ({ commit }) {
-      commit("SET_ROOM_CATEGORY", null);
     },
     createRoomCategory: function (_, payload) {
       const url = `room-type/create`;
@@ -84,35 +78,22 @@ export const roomCategories = {
           );
         });
     },
-    deleteRoomCategory: function (
-      { commit, dispatch },
-      { roomTypeReferenceNumber }
-    ) {
+    deleteRoomCategory: function (_, roomTypeReferenceNumber) {
       const url = `room-type/delete/${roomTypeReferenceNumber}`;
       return this.$axios
         .delete(url)
         .then((response) => {
-          this.$router.push({ name: "Room Categories" });
-          commit("SET_CATEGORY_STATUS", {
-            message: response.data.message,
-            status: "SUCCESS",
-          });
-          // dispatch("fetchRoomCategories");
-          dispatch("triggerLoading", false);
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
         })
         .catch((error) => {
           console.error("Error deleting room category: ", error);
-          commit("SET_CATEGORY_STATUS", {
-            message: error.response.data.message,
-            status: "ERROR",
-          });
-          // dispatch("triggerLoading", false);
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
         });
     },
-    updateRoomCategory: function (
-      { commit },
-      { roomTypeReferenceNumber, payload }
-    ) {
+    updateRoomCategory: function (_, { roomTypeReferenceNumber, payload }) {
       // // Log the key/value pairs
       // for (var pair of payload.entries()) {
       //   console.log(pair[0] + " - " + pair[1]);
@@ -124,18 +105,18 @@ export const roomCategories = {
         })
         .then((response) => {
           this.$router.push({ name: "Room Categories" });
-          commit("SET_CATEGORY_STATUS", {
-            message: response.data.message,
-            status: "SUCCESS",
-          });
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
         })
         .catch((error) => {
           console.error("Error updating room category: ", error);
-          commit("SET_CATEGORY_STATUS", {
-            message: error.response.data.message,
-            status: "ERROR",
-          });
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
         });
+    },
+    resetRoomCategory: function ({ commit }) {
+      commit("SET_ROOM_CATEGORY", null);
     },
   },
 };

@@ -8,7 +8,7 @@
         <RoomDetails
           :category="roomCategory"
           @reservation-event="requestReservation"
-          @validation-event="assessRequestCall"
+          @validation-event="handleRequest($event)"
           @delete-event="deleteRequestCategory"
         />
       </v-col>
@@ -24,97 +24,82 @@ import { mapActions, mapState } from "vuex";
 export default {
   name: "RoomDetailsView",
   components: { RoomImages, RoomDetails, RouteLoader },
-  data: () => ({
-    referenceNumber: null,
-  }),
+  props: {
+    roomCategoryReferenceNumber: String,
+  },
+  data: () => ({}),
   methods: {
     ...mapActions("roomCategories", [
       "fetchRoomCategory",
       "deleteRoomCategory",
       "resetRoomCategory",
-      "triggerLoading",
     ]),
+    ...mapActions("roomCategories", {
+      setCategoryLoading: "setLoading",
+    }),
     ...mapActions("roomRates", [
       "createSpecialRoomRate",
       "deleteSpecialRoomRate",
       "updateRegularRoomRate",
       "updateSpecialRoomRate",
-      "triggerRateLoading",
+      "setLoading",
     ]),
+    ...mapActions("dialogs", ["setDialogFn"]),
+    ...mapActions("alerts", ["requireAlertFn"]),
     // API Calls
-    fetchRoomCategoryMethod: function () {
-      this.referenceNumber = this.$route.params.roomCategoryReferenceNumber;
-      this.fetchRoomCategory({
-        roomTypeReferenceNumber: this.referenceNumber,
-      });
+    fetch: async function () {
+      await this.fetchRoomCategory(this.roomCategoryReferenceNumber);
     },
-    assessRequestCall: function (payload) {
-      let newVal = { ...payload };
+    handleRequest(payload) {
+      // Prefetch alerts: success, error
+      this.requireAlertFn(2);
+      this.setLoading({ key: "dialog", value: true });
 
-      if (payload.status === "ADD" && payload.type === "SPECIAL") {
-        // Delete Values
-        delete newVal.status;
-        delete newVal.type;
+      const requests = {
+        SPECIAL: {
+          ADD: ({ data }) => this.createSpecialRoomRate(data),
+          DELETE: ({ referenceNumber }) =>
+            this.deleteSpecialRoomRate(referenceNumber),
+          UPDATE: ({ data, referenceNumber }) =>
+            this.updateSpecialRoomRate({
+              roomTypeRateReferenceNumber: referenceNumber,
+              payload: data,
+            }),
+        },
+        REGULAR: {
+          UPDATE: ({ data, referenceNumber }) =>
+            this.updateRegularRoomRate({
+              roomTypeRateReferenceNumber: referenceNumber,
+              payload: data,
+            }),
+        },
+      };
 
-        this.triggerRateLoading({
-          title: "Create Special Room Rate",
-          loading: true,
-        }).then(() => {
-          this.createSpecialRoomRate({
-            payload: newVal,
-            roomTypeReferenceNumber: this.referenceNumber,
-          });
-        });
-      } else if (payload.status === "DELETE" && payload.type === "SPECIAL") {
-        this.triggerRateLoading({
-          title: "Delete Special Room Rate",
-          loading: true,
-        }).then(() => {
-          this.deleteSpecialRoomRate({
-            roomTypeReferenceNumber: this.referenceNumber,
-            roomTypeRateReferenceNumber: payload.referenceNumber,
-          });
-        });
-      } else if (payload.status === "UPDATE" && payload.type === "REGULAR") {
-        // Delete Values
-        delete newVal.status;
-        delete newVal.type;
-        delete newVal.referenceNumber;
+      const typeActions = requests[payload.type];
+      const actionFn = typeActions?.[payload.action];
 
-        this.triggerRateLoading({
-          title: "Update Regular Room Rate",
-          loading: true,
+      if (actionFn) {
+        actionFn({
+          data: payload.data,
+          referenceNumber: payload.referenceNumber,
         }).then(() => {
-          this.updateRegularRoomRate({
-            roomTypeReferenceNumber: this.referenceNumber,
-            roomTypeRateReferenceNumber: payload.referenceNumber,
-            payload: newVal,
-          });
-        });
-      } else if (payload.status === "UPDATE" && payload.type === "SPECIAL") {
-        // Delete Values
-        delete newVal.status;
-        delete newVal.type;
-        delete newVal.referenceNumber;
-
-        this.triggerRateLoading({
-          title: "Update Special Room Rate",
-          loading: true,
-        }).then(() => {
-          this.updateSpecialRoomRate({
-            roomTypeReferenceNumber: this.referenceNumber,
-            roomTypeRateReferenceNumber: payload.referenceNumber,
-            payload: newVal,
-          });
+          this.fetch();
+          this.setDialogFn({ key: "category_rate", value: false });
         });
       }
+      this.setLoading({ key: "dialog", value: false });
     },
     deleteRequestCategory: function () {
-      this.triggerLoading(true).then(() => {
-        this.deleteRoomCategory({
-          roomTypeReferenceNumber: this.referenceNumber,
+      this.setCategoryLoading({ key: "delete", value: true });
+
+      this.deleteRoomCategory(this.roomCategoryReferenceNumber)
+        .then(() => {
+          this.setDialogFn({ key: "category_delete", value: false });
+          this.$router.push({ name: "Room Categories" });
+        })
+        .finally(() => {
+          this.setCategoryLoading({ key: "delete", value: false });
         });
-      });
     },
     requestReservation: function (payload) {
       this.$router.push({
@@ -134,7 +119,7 @@ export default {
   },
   created() {
     this.resetRoomCategory();
-    this.fetchRoomCategoryMethod();
+    this.fetch();
   },
 };
 </script>

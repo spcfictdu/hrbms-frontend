@@ -7,9 +7,7 @@ export const roomRates = {
   namespaced: true,
   state: () => ({
     loading: {
-      create: false,
-      update: false,
-      delete: false,
+      dialog: false,
     },
   }),
   getter: {},

@@ -55,7 +55,11 @@ export default [
         path: "room-details/:roomCategoryReferenceNumber",
         name: "Room Details",
         component: RoomDetailsView,
-        props: true,
+        props: (route) => ({
+          roomCategoryReferenceNumber: String(
+            route.params.roomCategoryReferenceNumber
+          ),
+        }),
         meta: {
           name: "Room Categories",
         },

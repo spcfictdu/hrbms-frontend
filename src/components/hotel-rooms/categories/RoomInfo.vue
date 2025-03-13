@@ -80,12 +80,14 @@
       :opened="category_rate"
       :onClose="() => setDialogFn({ key: 'category_rate', value: false })"
       :rateMeta="rateMeta"
-      @validation-event="(e) => $emit('validation-event', e)"
+      :loading="loading.dialog"
+      @validation-event="$emit('validation-event', $event)"
     />
     <delete-dialog
       :opened="category_delete"
       :onClose="() => setDialogFn({ key: 'category_delete', value: false })"
       :message="deleteMessage"
+      :loading="category_loading.delete"
       @delete-event="$emit('delete-event')"
     />
   </div>
@@ -118,8 +120,6 @@ export default {
       action: "",
       roomType: "",
       rateType: "",
-      referenceNumber: "",
-      loading: false,
     },
     // Delete Dialog
     deleteMessage: "",
@@ -148,6 +148,9 @@ export default {
   },
   computed: {
     ...mapState("roomRates", ["loading"]),
+    ...mapState("roomCategories", {
+      category_loading: "loading",
+    }),
     ...mapState("dialogs", ["category_rate", "category_delete"]),
     menuItems: function () {
       return [

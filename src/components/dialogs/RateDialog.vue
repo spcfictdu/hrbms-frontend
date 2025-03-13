@@ -5,9 +5,10 @@
     :title="`${rateMeta.roomType} ${rateMeta.rateType} Rate`"
     :opened="opened"
     :onClose="onClose"
+    @onSubmit="handleSubmit"
   >
     <!-- Special Rate -->
-    <div v-if="rateMeta.rateType === permissions.specialRateInputs">
+    <div v-if="rateMeta.rateType === 'special'">
       <v-row>
         <v-col
           cols="12"
@@ -39,9 +40,9 @@
               hide-details="auto"
               outlined
               dense
-              v-model="discountName"
-              :readonly="readOnlyLock"
+              v-model="payload.discountName"
               :rules="rules.discountName"
+              :readonly="isReadonly"
             ></v-text-field>
           </FormField>
         </v-col>
@@ -49,11 +50,11 @@
           <FormField label="Start Date">
             <DateField
               :minDate="minDate"
-              :model="startDate"
+              :model="payload.startDate"
               :rules="rules.startDate"
-              :readonly="readOnlyLock"
+              :readonly="isReadonly"
               withFormat
-              @input="startDate = $event"
+              @input="payload.startDate = $event"
             />
           </FormField>
         </v-col>
@@ -61,11 +62,11 @@
           <FormField label="End Date">
             <DateField
               :minDate="minDate"
-              :model="endDate"
+              :model="payload.endDate"
               :rules="rules.endDate"
-              :readonly="readOnlyLock"
+              :readonly="isReadonly"
               withFormat
-              @input="endDate = $event"
+              @input="payload.endDate = $event"
             />
           </FormField>
         </v-col>
@@ -88,14 +89,16 @@
         Pricing
       </p>
 
-      <v-row v-for="(day, index) in rates" :key="index" align="center">
+      <v-row v-for="(rate, index) in payload.rates" :key="index" align="center">
         <v-col cols="6" class="d-none d-sm-flex">
-          <span class="text-subtitle-2 font-weight-regular">{{ day.day }}</span>
+          <span class="text-subtitle-2 font-weight-regular">{{
+            rate.day
+          }}</span>
         </v-col>
         <v-col cols="12" sm="6">
           <!-- Mobile Breakpoint -->
           <div class="d-flex d-sm-none text-caption ml-1 mb-1">
-            {{ day.day }}
+            {{ rate.day }}
           </div>
 
           <v-text-field
@@ -103,10 +106,10 @@
             dense
             hide-details="auto"
             prefix="₱"
-            v-model.number="day.rate"
+            v-model.number="rate.rate"
             type="number"
             :rules="rules.rate"
-            :readonly="readOnlyLock"
+            :readonly="isReadonly"
         /></v-col>
       </v-row>
     </div>
@@ -122,9 +125,9 @@
             text
             color="primary"
             class="lightBg"
-            :loading="rateMeta.loading"
-            @click="submitButton"
-            >{{ titleForSubmitButton }}</v-btn
+            :loading="loading"
+            type="submit"
+            >{{ submitBtnTitle }}</v-btn
           >
         </v-col>
       </v-row>
@@ -148,6 +151,7 @@ export default {
     opened: Boolean,
     onClose: Function,
     rateMeta: Object,
+    loading: Boolean,
   },
   data: () => ({
     // Meta
@@ -159,43 +163,44 @@ export default {
 
     // Special and Regular Rate Selection
     specialRateSelection: null,
-    localRateTypes: null,
 
     // Local Payload
-    referenceNumber: null,
-    discountName: null,
-    startDate: null,
-    endDate: null,
-    rates: [
-      {
-        day: "Sunday",
-        rate: null,
-      },
-      {
-        day: "Monday",
-        rate: null,
-      },
-      {
-        day: "Tuesday",
-        rate: null,
-      },
-      {
-        day: "Wednesday",
-        rate: null,
-      },
-      {
-        day: "Thursday",
-        rate: null,
-      },
-      {
-        day: "Friday",
-        rate: null,
-      },
-      {
-        day: "Saturday",
-        rate: null,
-      },
-    ],
+    payload: {
+      referenceNumber: null,
+      discountName: null,
+      startDate: null,
+      endDate: null,
+      rates: [
+        {
+          day: "Sunday",
+          rate: null,
+        },
+        {
+          day: "Monday",
+          rate: null,
+        },
+        {
+          day: "Tuesday",
+          rate: null,
+        },
+        {
+          day: "Wednesday",
+          rate: null,
+        },
+        {
+          day: "Thursday",
+          rate: null,
+        },
+        {
+          day: "Friday",
+          rate: null,
+        },
+        {
+          day: "Saturday",
+          rate: null,
+        },
+      ],
+    },
   }),
   methods: {
     ...mapActions("rateTypeEnum", ["fetchRateType"]),
@@ -203,48 +208,81 @@ export default {
       this.onClose();
     },
     fetch: async function (meta) {
-      console.log(meta);
       if (["EDIT", "DELETE"].includes(meta.action)) {
-        console.log("Fetching Rate Type");
         await this.fetchRateType({
           roomType: meta.roomType,
           rateType: meta.rateType,
         });
       }
     },
+    handleSubmit: function () {
+      const meta = this.rateMeta;
+
+      const payload = {
+        action: meta.action === "EDIT" ? "UPDATE" : meta.action,
+        type: meta.rateType.toUpperCase(),
+        referenceNumber: this.payload.referenceNumber,
+        data: {
+          ...this.payload,
+          roomType: meta.roomType,
+          rates: this.ratesReducer(this.payload.rates),
+        },
+      };
+
+      if (meta.action === "ADD" && meta.rateType === "special") {
+        payload.data = this.keepOnlyKeys(payload.data, [
+          "roomType",
+          "discountName",
+          "startDate",
+          "endDate",
+          "rates",
+        ]);
+      } else if (meta.action === "DELETE" && meta.rateType === "special") {
+        payload.data = this.keepOnlyKeys(payload.data, []);
+      } else if (meta.action === "EDIT" && meta.rateType === "regular") {
+        payload.data = this.keepOnlyKeys(payload.data, ["rates"]);
+      } else if (meta.action === "EDIT" && meta.rateType === "special") {
+        payload.data = this.keepOnlyKeys(payload.data, [
+          "rates",
+          "discountName",
+          "startDate",
+          "endDate",
+        ]);
+      }
+      this.$emit("validation-event", payload);
+    },
     assignRateTypes: function () {
       let pricingData = null;
 
       if (this.rateMeta.rateType === "regular") {
-        pricingData = this.localRateTypes[0];
-        this.referenceNumber = pricingData.referenceNumber;
+        pricingData = this.rateType[0];
       } else {
-        pricingData = this.localRateTypes.find(
+        pricingData = this.rateType.find(
           (key) => key.referenceNumber === this.specialRateSelection
         );
 
-        this.discountName = pricingData.discountName;
-        this.startDate = pricingData.startDate;
-        this.endDate = pricingData.endDate;
-        this.referenceNumber = pricingData.referenceNumber;
+        this.payload.discountName = pricingData.discountName;
+        this.payload.startDate = pricingData.startDate;
+        this.payload.endDate = pricingData.endDate;
       }
 
       if (pricingData) {
-        this.rates = this.rates.map(({ day }) => ({
+        this.payload.referenceNumber = pricingData.referenceNumber;
+        this.payload.rates = this.payload.rates.map(({ day }) => ({
           day,
           rate: pricingData[day.toLowerCase()],
         }));
       }
     },
     resetRateTypes: function () {
-      this.rates.forEach((key) => {
-        key.rate = null;
-      });
-
       this.specialRateSelection = null;
-      this.discountName = null;
-      this.startDate = null;
-      this.endDate = null;
+      this.payload.discountName = null;
+      this.payload.startDate = null;
+      this.payload.endDate = null;
+      this.payload.rates = this.payload.rates.map(({ day }) => ({
+        day,
+        rate: null,
+      }));
     },
     ratesReducer: function (rates) {
       return rates.reduce((acc, { day, rate }) => {
@@ -252,50 +290,14 @@ export default {
         return acc;
       }, {});
     },
-    submitButton: function () {
-      const meta = this.rateMeta;
-      const discountName = this.discountName;
-      const startDate = this.startDate;
-      const endDate = this.endDate;
-      const referenceNumber = this.referenceNumber;
-
-      let payload = {};
-
-      if (meta.action === "ADD" && meta.rateType === "special") {
-        payload = {
-          status: "ADD",
-          type: "SPECIAL",
-          roomType: meta.roomType,
-          discountName: discountName,
-          startDate: startDate,
-          endDate: endDate,
-          rates: this.ratesReducer(this.rates),
-        };
-      } else if (meta.action === "DELETE" && meta.rateType === "special") {
-        payload = {
-          status: "DELETE",
-          type: "SPECIAL",
-          referenceNumber: referenceNumber,
-        };
-      } else if (meta.action === "EDIT" && meta.rateType === "regular") {
-        payload = {
-          status: "UPDATE",
-          type: "REGULAR",
-          referenceNumber: referenceNumber,
-          rates: this.ratesReducer(this.rates),
-        };
-      } else if (meta.action === "EDIT" && meta.rateType === "special") {
-        payload = {
-          status: "UPDATE",
-          type: "SPECIAL",
-          referenceNumber: referenceNumber,
-          discountName: discountName,
-          startDate: startDate,
-          endDate: endDate,
-          rates: this.ratesReducer(this.rates),
-        };
-      }
-      this.$emit("validation-event", payload);
+    keepOnlyKeys(payload, keysToKeep) {
+      const result = {};
+      keysToKeep.forEach((key) => {
+        if (key in payload) {
+          result[key] = payload[key];
+        }
+      });
+      return result;
     },
   },
   computed: {
@@ -304,26 +306,27 @@ export default {
       return this.$vuetify.breakpoint;
     },
     specialRateTypes: function () {
-      const meta = this.rateMeta;
-      const allowedTypeOfAction = ["EDIT", "DELETE"];
-      return meta.rateType === "special" &&
-        allowedTypeOfAction.includes(meta.action) &&
-        this.rateType
+      const condition =
+        this.rateMeta.rateType === "special" &&
+        ["EDIT", "DELETE"].includes(this.rateMeta.action) &&
+        this.rateType;
+      return condition
         ? this.rateType.map((key) => ({
             discountName: key.discountName,
             referenceNumber: key.referenceNumber,
           }))
         : [];
     },
-    readOnlyLock: function () {
-      const meta = this.rateMeta;
-      return meta.action === "DELETE" && meta.rateType === "special"
-        ? true
-        : false;
+    isReadonly: function () {
+      return (
+        this.rateMeta.action === "DELETE" &&
+        this.rateMeta.rateType === "special"
+      );
     },
-    titleForSubmitButton: function () {
-      const meta = this.rateMeta;
-      return ["EDIT", "ADD"].includes(meta.action) ? "Save Changes" : "Proceed";
+    submitBtnTitle: function () {
+      return ["EDIT", "ADD"].includes(this.rateMeta.action)
+        ? "Save Changes"
+        : "Proceed";
     },
     rules: function () {
       let errors = {};
@@ -336,7 +339,6 @@ export default {
       return errors;
     },
   },
-
   watch: {
     opened: {
       deep: true,
@@ -348,21 +350,17 @@ export default {
     },
     rateMeta: {
       deep: true,
-      handler: function (v) {
-        this.fetch(v);
-      },
-    },
-    rateType: {
-      deep: true,
-      handler: function (v) {
-        this.localRateTypes = v;
-        this.assignRateTypes();
+      handler: async function (v) {
+        await this.fetch(v);
+
+        if (v.action === "EDIT" && v.rateType === "regular")
+          this.assignRateTypes();
       },
     },
     specialRateSelection: {
       deep: true,
-      handler: function (newVal) {
-        if (newVal) {
+      handler: function (v) {
+        if (v) {
           this.assignRateTypes();
         }
       },

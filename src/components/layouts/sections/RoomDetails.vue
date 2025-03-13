@@ -5,7 +5,7 @@
       <v-col cols="12" md="8">
         <room-info
           :room="room"
-          @validation-event="(e) => $emit('validation-event', e)"
+          @validation-event="$emit('validation-event', $event)"
           @delete-event="$emit('delete-event')"
         />
       </v-col>
@@ -31,10 +31,8 @@ export default {
     category: Object,
     queryFill: Object,
   },
-  data: () => ({
-  }),
-  methods: {
-  },
+  data: () => ({}),
+  methods: {},
   computed: {
     ...mapState("roomRates", {
       ratesStatus: "ratesStatus",
@@ -61,12 +59,6 @@ export default {
             referenceNumber: category.rates.regular.referenceNumber,
           },
         ],
-        // rooms: category.rooms.map((key) => ({
-        //   name: key.roomNumber,
-        //   floor: "Floor 1",
-        //   guest: key.guest ? key.guest : "None",
-        //   status: key.status,
-        // })),
       };
 
       category.rates.special.forEach((key) => {
