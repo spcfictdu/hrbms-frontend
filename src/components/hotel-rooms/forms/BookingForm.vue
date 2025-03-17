@@ -174,6 +174,7 @@ export default {
       checkOut: {
         date: null,
       },
+      guests: 0,
     },
     totalPayment: 0,
 
@@ -282,10 +283,13 @@ export default {
 
     // Receipt Computed State
     receiptQuery: function () {
+      const hasDate = this.payload.checkIn.date && this.payload.checkOut.date;
       return {
         roomType: this.query.room,
         roomNumber: this.query.roomNumber,
-        dateRange: [this.payload.checkIn.date, this.payload.checkOut.date],
+        dateRange: hasDate
+          ? [this.payload.checkIn.date, this.payload.checkOut.date]
+          : [],
         extraPersonCount: this.payload.guests,
         addons: this.payload.addons ?? [],
       };

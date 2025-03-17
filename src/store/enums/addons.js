@@ -13,12 +13,12 @@ export const addonsEnum = {
     SET_ADDONS: (state, data) => (state.addons = data),
   },
   actions: {
-    fetchAddons: function ({ commit }) {  
+    fetchAddons: function ({ commit }) {
       const url = `addon`;
       return this.$axios
         .get(url)
         .then((response) => {
-          commit("SET_ADDONS", response.data);
+          commit("SET_ADDONS", response.data.results);
         })
         .catch((error) => {
           console.error("Error fetching addons: ", error);

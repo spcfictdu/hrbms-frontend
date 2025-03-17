@@ -131,7 +131,7 @@ export default {
     value: {
       immediate: true,
       handler: function (v) {
-        if (v.length > 0) {
+        if (v && v.length > 0) {
           this.addons = v;
         }
       },
