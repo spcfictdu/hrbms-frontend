@@ -1,40 +1,50 @@
 <template>
-  <div>
-    <GuestDetails
-      :guest="guest"
-      @query_params="fetchGuestDetails"
-      v-if="guest && guest.transactions"
-    />
+  <div
+    :class="{
+      'xl-padding': $vuetify.breakpoint.xl,
+      'px-sm-2 py-md-8': $vuetify.breakpoint.lgAndDown,
+    }"
+  >
+    <PageHeader />
+    <RouteLoader :target="hasData" class="mt-10">
+      <GuestDetails :guest="guest" @query_params="fetch" />
+    </RouteLoader>
   </div>
 </template>
 
 <script>
 import GuestDetails from "@/components/guests/GuestDetails.vue";
+import RouteLoader from "@/components/loaders/RouteLoader.vue";
+import PageHeader from "@/components/headers/PageHeader.vue";
 import { mapActions, mapState } from "vuex";
-
 export default {
   name: "GuestDetailsView",
-  components: { GuestDetails },
+  components: { GuestDetails, RouteLoader, PageHeader },
+  props: { id: String },
   data: () => ({}),
-  computed: {
-    ...mapState("guest", {
-      guest: "guest",
-    }),
+  created() {
+    this.fetch();
   },
   methods: {
     ...mapActions("guest", ["fetchGuest"]),
-    fetchGuestDetails: function (query_params) {
-      const id = this.$route.params.id;
-      this.fetchGuest({
-        id: id,
-        queryParams: query_params,
+    fetch: async function (queryParams = {}) {
+      await this.fetchGuest({
+        id: this.id,
+        queryParams,
       });
     },
   },
-  created() {
-    this.fetchGuestDetails();
+  computed: {
+    ...mapState("guest", ["guest"]),
+    hasData: function () {
+      return !!this.guest ?? false;
+    },
   },
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.xl-padding {
+  padding: 0 300px 0 300px;
+}
+</style>

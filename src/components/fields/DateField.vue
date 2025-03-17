@@ -24,7 +24,9 @@
       :min="minDate"
       @change="handleDate"
       :readonly="readonly"
-    ></v-date-picker>
+    >
+      <slot />
+    </v-date-picker>
   </v-menu>
 </template>
 

@@ -17,9 +17,10 @@ export default [
     path: "/guests/:id",
     name: "guest",
     component: () => import("@/views/guest-list/GuestDetailsView.vue"),
+    props: (route) => ({ id: String(route.params.id) }),
     meta: {
+      name: "Guest Details",
       selectedMainNav: "Guests",
     },
-    props: true,
   },
 ];

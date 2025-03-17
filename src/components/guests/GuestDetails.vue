@@ -1,67 +1,55 @@
 <template>
-  <v-container>
-    <div
-      :class="{
-        'xl-padding mt-n6': $vuetify.breakpoint.xl,
-        'px-sm-2 mx-md-n3 my-md-5 mx-sm-n3 my-sm-n6':
-          $vuetify.breakpoint.lgAndDown,
-      }"
-    >
-      <v-row v-if="!$vuetify.breakpoint.xs">
-        <v-col cols="12">
-          <div class="text-h5 text-sm-h6 font-weight-bold mb-1">
-            Guest Details
-          </div>
-        </v-col>
-      </v-row>
-      <v-divider v-if="!$vuetify.breakpoint.xs" class="my-3" />
-      <GuestInfo
-        :guest="guest"
-        class="mb-5"
+  <div>
+    <GuestInfo :guest="guest" class="mb-5" />
+
+    <v-card flat>
+      <GuestTableHeader :guest="guest" @onQuery="searchQuery" />
+
+      <PaginatedTable
+        :headers="headers"
+        :items="guestTransactions"
+        :footerProps="footerProps"
+        itemKey="reference"
+        disableSort
+        @click:row="pushToTransactionRoute"
       />
-      <v-row>
-        <v-col cols="12">
-          <v-card elevation="0">
-            <GuestCardHeader :guest="guest" @search-query="searchQuery" />
-            <v-data-table
-              :headers="headers"
-              :items="guestTransactions"
-              class="ma-5"
-              item-key="reference"
-              :footer-props="{
-                itemsPerPage: [5, 10, 15],
-              }"
-              @click:row="(v) => pushToTransactionRoute(v)"
-              :options.sync="options"
-              disable-sort
-            >
-              <template v-slot:[`item.status`]="{ item }">
-                <v-chip
-                  :color="statusColors[item.status.toLowerCase()]"
-                  dark
-                  small
-                  class="text-overline"
-                >
-                  {{ item.status }}
-                </v-chip>
-              </template>
-            </v-data-table>
-          </v-card>
-        </v-col>
-      </v-row>
-    </div>
-  </v-container>
+      <v-data-table
+        :headers="headers"
+        :items="guestTransactions"
+        class="ma-5"
+        item-key="reference"
+        :footer-props="{
+          itemsPerPage: [5, 10, 15],
+        }"
+        @click:row="(v) => pushToTransactionRoute(v)"
+        :options.sync="options"
+        disable-sort
+      >
+        <template v-slot:[`item.status`]="{ item }">
+          <v-chip
+            :color="statusColors[item.status.toLowerCase()]"
+            dark
+            small
+            class="text-overline"
+          >
+            {{ item.status }}
+          </v-chip>
+        </template>
+      </v-data-table>
+    </v-card>
+  </div>
 </template>
 
 <script>
-import GuestCardHeader from "./GuestCardHeader.vue";
+import GuestTableHeader from "../table-headers/GuestTableHeader.vue";
+import PaginatedTable from "../tables/PaginatedTable.vue";
 import GuestInfo from "./GuestInfo.vue";
 import { format, parseISO } from "date-fns";
 import TablePagination from "@/mixins/TablePagination";
 
 export default {
   name: "GuestDetails",
-  components: { GuestInfo, GuestCardHeader },
+  components: { GuestInfo, GuestTableHeader, PaginatedTable },
   mixins: [TablePagination],
   props: {
     guest: {
@@ -86,9 +74,11 @@ export default {
       reserved: "reserved",
       confirmed: "confirmed",
     },
-    title: "",
     confirmationRoute: ["RESERVED"],
     checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
+    footerProps: {
+      itemsPerPage: [5, 10, 15],
+    },
   }),
   methods: {
     pushToTransactionRoute: function (value) {
@@ -159,8 +149,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.xl-padding {
-  padding: 0 288px 0 288px;
-}
-</style>
+<style scoped></style>
