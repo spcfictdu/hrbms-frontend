@@ -1,9 +1,10 @@
 <template>
   <div class="mt-10">
     <CategoryForm
-      @validation-event="assessRequestCategory"
+      @validation-event="handleRequest"
       :filledCategory="roomCategory"
       :action="formTitle"
+      :loading="loading.form"
     />
   </div>
 </template>
@@ -33,35 +34,43 @@ export default {
       "fetchRoomCategory",
       "createRoomCategory",
       "updateRoomCategory",
-      "triggerLoading",
+      "setLoading",
     ]),
+    ...mapActions("alerts", ["requireAlertFn"]),
     fetch: async function () {
       if (this.formTitle === "UPDATE") {
-        await this.fetchRoomCategory({
-          roomTypeReferenceNumber: this.roomCategoryReferenceNumber,
-        });
+        await this.fetchRoomCategory(this.roomCategoryReferenceNumber);
       }
     },
-    assessRequestCategory: function (payload) {
-      this.triggerLoading(true);
-      if (this.meta.status === "NEW") {
-        this.createRoomCategory(payload);
-      } else {
-        this.updateRoomCategory({
-          roomTypeReferenceNumber: this.referenceNumber,
-          payload: payload,
+    handleRequest: function (payload) {
+      // Prefetch alerts: success, error
+      this.requireAlertFn(2);
+      this.setLoading({ key: "form", value: true });
+
+      const requests = {
+        NEW: ({ data }) => this.createRoomCategory(data),
+        UPDATE: ({ data, referenceNumber }) =>
+          this.updateRoomCategory({
+            roomTypeReferenceNumber: referenceNumber,
+            payload: data,
+          }),
+      };
+
+      const actionsFn = requests[this.formTitle];
+
+      if (actionsFn) {
+        actionsFn({
+          data: payload,
+          referenceNumber: this.roomCategoryReferenceNumber,
+        }).then(() => {
+          this.setLoading({ key: "form", value: false });
         });
       }
     },
   },
   computed: {
-    ...mapState("roomCategories", {
-      roomCategory: "roomCategory",
-      metaLoading: "meta",
-    }),
+    ...mapState("roomCategories", ["roomCategory", "loading"]),
   },
-
-  watch: {},
 };
 </script>
 

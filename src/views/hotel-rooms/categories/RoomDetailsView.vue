@@ -9,7 +9,7 @@
           :category="roomCategory"
           @reservation-event="requestReservation"
           @validation-event="handleRequest($event)"
-          @delete-event="deleteRequestCategory"
+          @delete-event="handleDeleteCategory"
         />
       </v-col>
     </v-row>
@@ -89,7 +89,9 @@ export default {
       }
       this.setLoading({ key: "dialog", value: false });
     },
-    deleteRequestCategory: function () {
+    handleDeleteCategory: function () {
+      // Prefetch alerts: success, error
+      this.requireAlertFn(2);
       this.setCategoryLoading({ key: "delete", value: true });
 
       this.deleteRoomCategory(this.roomCategoryReferenceNumber)

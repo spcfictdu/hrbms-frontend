@@ -54,6 +54,7 @@ export default {
       type: String,
       default: "addons",
     },
+    value: Array,
   },
   data: () => ({
     addons: [
@@ -125,6 +126,14 @@ export default {
           v.length === 1 && v[0].name === null && v[0].quantity === 1;
 
         this.$emit("onInput", isDefault ? nullPayload : v);
+      },
+    },
+    value: {
+      immediate: true,
+      handler: function (v) {
+        if (v.length > 0) {
+          this.addons = v;
+        }
       },
     },
   },

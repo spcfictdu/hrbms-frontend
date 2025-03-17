@@ -22,6 +22,7 @@ export const roomCategories = {
     loading: {
       fetch: false,
       delete: false,
+      form: false,
     },
   }),
   getters: {},

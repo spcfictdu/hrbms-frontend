@@ -88,7 +88,7 @@
       :onClose="() => setDialogFn({ key: 'category_delete', value: false })"
       :message="deleteMessage"
       :loading="category_loading.delete"
-      @delete-event="$emit('delete-event')"
+      @onDelete="$emit('delete-event')"
     />
   </div>
 </template>

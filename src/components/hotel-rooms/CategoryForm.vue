@@ -8,14 +8,14 @@
       />
     </v-col>
     <v-col cols="12" md="7">
-      <v-form lazy-validation ref="form" @submit.prevent="">
+      <v-form lazy-validation ref="form" @submit.prevent="handleSubmit">
         <div class="d-flex align-start justify-space-between mb-4 mb-md-0">
           <div>
             <p class="text-h6 font-weight-bold">{{ action }} ROOM CATEGORY</p>
           </div>
 
           <div class="d-none d-md-flex">
-            <v-btn color="primary" elevation="0" @click="requestRoomUpdate"
+            <v-btn color="primary" depressed type="submit" :loading="loading"
               >Save</v-btn
             >
           </div>
@@ -26,7 +26,7 @@
             <FormField label="Category">
               <v-text-field
                 :rules="rules.name"
-                v-model="payload.category"
+                v-model="payload.name"
                 dense
                 hide-details="auto"
                 outlined
@@ -51,11 +51,11 @@
           <v-col cols="12" sm="4">
             <FormField label="Max Occupancy">
               <v-text-field
-                v-model.number="payload.maxOccupancy"
+                v-model.number="payload.capacity"
                 type="number"
                 dense
                 hide-details="auto"
-                :rules="rules.maxOccupancy"
+                :rules="rules.capacity"
                 outlined
                 required
               />
@@ -95,7 +95,7 @@
                 <v-col cols="auto">
                   <v-checkbox
                     :ripple="false"
-                    v-model="payload.nonSmoking"
+                    v-model="payload.isNonSmoking"
                     label="Non-Smoking"
                     hide-details="auto"
                     dense
@@ -115,6 +115,7 @@
               <AmenityField
                 class="mb-4"
                 fetchAction="amenities"
+                :value="payload.amenities"
                 @onInput="(v) => evaluateValue('amenities', v)"
               />
 
@@ -171,8 +172,9 @@
             <v-btn
               block
               color="primary"
-              elevation="0"
-              @click="requestRoomUpdate"
+              depressed
+              :loading="loading"
+              type="submit"
               >Save</v-btn
             >
           </v-col>
@@ -183,7 +185,6 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
 import RoomCategoryImages from "./categories/RoomCategoryImages.vue";
 import FormField from "../fields/FormField.vue";
 import FormSection from "../sections/FormSection.vue";
@@ -201,6 +202,7 @@ export default {
   props: {
     filledCategory: Object,
     action: String,
+    loading: Boolean,
   },
   data: () => ({
     // Meta
@@ -240,12 +242,12 @@ export default {
 
     // Local Payload
     payload: {
-      category: null,
+      name: null,
       description: null,
-      maxOccupancy: null,
+      capacity: null,
       bedSize: null,
       propertySize: null,
-      nonSmoking: false,
+      isNonSmoking: false,
       balconyOrTerrace: false,
       amenities: [],
       rates: [
@@ -298,47 +300,37 @@ export default {
         }
       }
     },
-    requestRoomUpdate: function () {
-      let payload = {};
+    handleSubmit: function () {
+      let payload = {
+        ...this.payload,
+      };
       const images = this.images;
 
       if (this.$refs.form.validate()) {
-        if (action === "NEW") {
-          payload = {
-            ...this.payload,
-            rates: this.ratesReducer(this.payload.rates),
-            images,
+        if (this.action === "NEW") {
+          payload.rates = this.ratesReducer(this.payload.rates);
+          payload.images = images;
+        } else if (this.action === "UPDATE") {
+          payload.images = {
+            delete: this.imageMutation(images).deleted,
+            add: this.imageMutation(images).added,
+            update: this.imageMutation(images).updated,
           };
-        } else if (action === "UPDATE") {
-          payload = {
-            ...this.payload,
-            amenities: {
-              delete: this.amenityMutation(this.payload.amenities).deleted,
-              add: this.amenityMutation(this.payload.amenities).added,
-            },
-            images: {
-              delete: this.imageMutation(this.payload.images).deleted,
-              add: this.imageMutation(this.payload.images).added,
-              update: this.imageMutation(this.payload.images).updated,
-            },
-          };
-
           delete payload.rates;
         }
-
-        const formData = assignFormData(payload);
+        const formData = this.assignFormData(payload);
         this.$emit("validation-event", formData);
       }
     },
     assignCategoryValues: function (newVal) {
       if (this.action === "UPDATE") {
         this.payload = {
-          category: newVal.name,
+          name: newVal.name,
           description: newVal.description,
           bedSize: newVal.bedSize,
           propertySize: newVal.propertySize,
-          maxOccupancy: newVal.capacity,
-          nonSmoking: newVal.isNonSmoking,
+          capacity: newVal.capacity,
+          isNonSmoking: newVal.isNonSmoking,
           balconyOrTerrace: newVal.balconyOrTerrace,
           amenities: newVal.amenities,
         };
@@ -349,21 +341,21 @@ export default {
         });
       } else if (this.action === "NEW") {
         this.payload = {
-          category: null,
+          name: null,
           description: null,
           bedSize: null,
           propertySize: null,
-          maxOccupancy: null,
-          nonSmoking: false,
+          capacity: null,
+          isNonSmoking: false,
           balconyOrTerrace: false,
           amenities: [],
           rates: this.payload.rates.map(({ day }) => ({ day, rate: null })),
         };
         this.images = [];
-        this.imagesUrl.forEach((item) => {
-          item.url = "";
-          item.file = null;
-        });
+        this.imagesUrl = this.imagesUrl.map(() => ({
+          url: "",
+          file: null,
+        }));
       }
     },
     ratesReducer: function (rates) {
@@ -372,15 +364,15 @@ export default {
         return acc;
       }, {});
     },
-    amenityMutation: function (amenities) {
-      const oldVal = this.filledCategory.amenities;
-      const added = amenities.filter((item) => !oldVal.includes(item));
-      const deleted = oldVal.filter((item) => !amenities.includes(item));
-      return {
-        added: added,
-        deleted: deleted,
-      };
-    },
+    // amenityMutation: function (amenities) {
+    //   const oldVal = this.filledCategory.amenities;
+    //   const added = amenities.filter((item) => !oldVal.includes(item));
+    //   const deleted = oldVal.filter((item) => !amenities.includes(item));
+    //   return {
+    //     added: added,
+    //     deleted: deleted,
+    //   };
+    // },
     imageMutation: function (images) {
       const oldVal = this.filledCategory.images;
       const added = images.filter((item) => !oldVal.includes(item));
@@ -426,7 +418,7 @@ export default {
       let errors = {};
       errors.name = [(v) => !!v || "Category name is required"];
       errors.description = [(v) => !!v || "Description is required"];
-      errors.maxOccupancy = [(v) => !!v || "Maximum occupancy is required"];
+      errors.capacity = [(v) => !!v || "Capacity is required"];
       errors.bedSize = [(v) => !!v || "Bed size is required"];
       errors.propertySize = [(v) => !!v || "Property size is required"];
       errors.amenities = [(v) => !!v.length > 0 || "Amenities is required"];
