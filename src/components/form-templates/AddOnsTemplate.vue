@@ -1,7 +1,7 @@
 <template>
   <FormSection title="Add-Ons">
     <AmenityField
-      :value="fill.addons"
+      :value="fill?.addons"
       @onInput="(v) => handleAmenityChange(v)"
     />
   </FormSection>

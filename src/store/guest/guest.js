@@ -10,16 +10,11 @@ export const guest = {
   state: () => ({
     guests: [],
     guest: {},
-    alertProperties: {
-      message: "",
-      type: "",
-    },
   }),
   getters: {},
   mutations: {
     SET_GUESTS: (state, data) => (state.guests = data),
     SET_GUEST: (state, data) => (state.guest = data),
-    SET_ALERT_PROPERTIES: (state, data) => (state.alertProperties = data),
   },
   actions: {
     fetchGuests: function ({ commit }, queryParams = {}) {
@@ -31,10 +26,6 @@ export const guest = {
           commit("SET_GUESTS", response.data.results);
         })
         .catch((error) => {
-          commit("SET_ALERT_PROPERTIES", {
-            message: error.response.data.message,
-            type: "error",
-          });
           console.error("Error fetching guests: ", error);
         });
     },
@@ -54,23 +45,15 @@ export const guest = {
       const url = `guest/delete/${id}`;
       return this.$axios
         .delete(url)
-        .then((response) => {
+        .then(() => {
           this.$router.replace({
             name: "Guests",
           });
           dispatch("transaction/fetchTransactions", id, { root: true })
-          commit("SET_ALERT_PROPERTIES", {
-            message: response.data.message,
-            type: "success",
-          });
         })
-        .catch((error) => {
+        .catch(() => {
           this.$router.replace({
             name: "Guests",
-          });
-          commit("SET_ALERT_PROPERTIES", {
-            message: error.response.data.message,
-            type: "error",
           });
         });
     },

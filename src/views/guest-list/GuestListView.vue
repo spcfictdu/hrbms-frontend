@@ -7,13 +7,13 @@
   >
     <PageHeader />
     <RouteLoader :target="hasData" class="mt-10">
-      <GuestListTable :guests="guests" @query_params="paginationGuestTable" />
+      <GuestListTable :guests="guests" @onQuery="fetch($event)" />
     </RouteLoader>
   </div>
 </template>
 
 <script>
-import GuestListTable from "@/components/guests/GuestListTable.vue";
+import GuestListTable from "@/components/tables/variants/GuestListTable.vue";
 import PageHeader from "@/components/headers/PageHeader.vue";
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import { mapActions, mapState } from "vuex";
@@ -31,10 +31,7 @@ export default {
     },
   },
   computed: {
-    ...mapState("guest", {
-      guests: "guests",
-      alertProperties: "alertProperties",
-    }),
+    ...mapState("guest", ["guests"]),
     hasData: function () {
       return !!this.guests ?? false;
     },
