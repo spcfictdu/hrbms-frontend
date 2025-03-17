@@ -1,6 +1,9 @@
 <template>
   <FormSection title="Add-Ons">
-    <AmenityField @onInput="(v) => handleAmenityChange(v)" />
+    <AmenityField
+      :value="fill.addons"
+      @onInput="(v) => handleAmenityChange(v)"
+    />
   </FormSection>
 </template>
 
@@ -10,6 +13,9 @@ import FormField from "../fields/FormField.vue";
 import AmenityField from "../fields/AmenityField.vue";
 export default {
   name: "AddOnsTemplate",
+  props: {
+    fill: Object,
+  },
   components: {
     FormSection,
     FormField,
