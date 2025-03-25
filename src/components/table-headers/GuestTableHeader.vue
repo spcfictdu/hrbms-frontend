@@ -75,7 +75,7 @@ export default {
         this.$set(this.queryParams, key, null);
       });
 
-      this.$emit("search-query", this.query_params);
+      this.$emit("onQuery", this.queryParams);
     },
     evaluateValue: function (key, value) {
       this.queryParams[key] = value;

@@ -3,59 +3,45 @@
     <GuestInfo :guest="guest" class="mb-5" />
 
     <v-card flat>
-      <GuestTableHeader :guest="guest" @onQuery="searchQuery" />
+      <GuestTableHeader :guest="guest" @onQuery="assignParams($event)" />
 
-      <PaginatedTable
-        :headers="headers"
-        :items="guestTransactions"
-        :footerProps="footerProps"
-        itemKey="reference"
-        disableSort
-        @click:row="pushToTransactionRoute"
-      />
-      <v-data-table
-        :headers="headers"
-        :items="guestTransactions"
-        class="ma-5"
-        item-key="reference"
-        :footer-props="{
-          itemsPerPage: [5, 10, 15],
-        }"
-        @click:row="(v) => pushToTransactionRoute(v)"
-        :options.sync="options"
-        disable-sort
-      >
-        <template v-slot:[`item.status`]="{ item }">
-          <v-chip
-            :color="statusColors[item.status.toLowerCase()]"
-            dark
-            small
-            class="text-overline"
-          >
-            {{ item.status }}
-          </v-chip>
-        </template>
-      </v-data-table>
+      <div class="pa-5">
+        <DefaultTable
+          :headers="headers"
+          :items="guestTransactions"
+          :footerProps="footerProps"
+          itemKey="reference"
+          disableSort
+          @click:row="pushToTransactionRoute"
+        >
+          <template v-slot:[`item.status`]="{ item }">
+            <v-chip
+              :color="statusColors[item.status.toLowerCase()]"
+              dark
+              small
+              class="text-overline"
+            >
+              {{ item.status }}
+            </v-chip>
+          </template>
+        </DefaultTable>
+      </div>
     </v-card>
   </div>
 </template>
 
 <script>
 import GuestTableHeader from "../table-headers/GuestTableHeader.vue";
-import PaginatedTable from "../tables/PaginatedTable.vue";
+import DefaultTable from "../tables/DefaultTable.vue";
 import GuestInfo from "./GuestInfo.vue";
 import { format, parseISO } from "date-fns";
-import TablePagination from "@/mixins/TablePagination";
-
+import { assignParams } from "@/mixins/FormattingFunctions";
 export default {
   name: "GuestDetails",
-  components: { GuestInfo, GuestTableHeader, PaginatedTable },
-  mixins: [TablePagination],
+  components: { GuestInfo, GuestTableHeader, DefaultTable },
+  mixins: [assignParams],
   props: {
-    guest: {
-      type: Object,
-      required: true,
-    },
+    guest: Object,
   },
   data: () => ({
     headers: [
@@ -74,6 +60,12 @@ export default {
       reserved: "reserved",
       confirmed: "confirmed",
     },
+    redirectRoutes: {
+      RESERVED: "Confirmation",
+      CONFIRMED: "CheckInOut",
+      "CHECKED-IN": "CheckInOut",
+      "CHECKED-OUT": "CheckInOut",
+    },
     confirmationRoute: ["RESERVED"],
     checkInCheckOutRoute: ["CONFIRMED", "CHECKED-IN", "CHECKED-OUT"],
     footerProps: {
@@ -82,39 +74,12 @@ export default {
   }),
   methods: {
     pushToTransactionRoute: function (value) {
-      let payload = {
-        status: value.status,
-        referenceNumber: value.reference,
-      };
-      if (this.confirmationRoute.includes(payload.status)) {
-        this.$router.push({
-          name: "Confirmation",
-          params: {
-            referenceNumber: payload.referenceNumber,
-          },
-        });
-      } else if (this.checkInCheckOutRoute.includes(payload.status)) {
-        this.$router.push({
-          name: "CheckInOut",
-          params: {
-            referenceNumber: payload.referenceNumber,
-          },
-        });
-      }
-    },
-    searchQuery: function (query_params) {
-      if (this.query_params.perPage) {
-        query_params.perPage = this.query_params.perPage;
-      }
-
-      if (this.query_params.page) {
-        delete this.query_params.page;
-      }
-
-      this.assignParams(query_params);
-    },
-    size: function () {
-      return this.$vuetify.breakpoint;
+      this.$router.push({
+        name: this.redirectRoutes[value.status],
+        params: {
+          referenceNumber: value.referenceNumber,
+        },
+      });
     },
   },
   computed: {
@@ -145,7 +110,15 @@ export default {
           }));
     },
   },
-  watch: {},
+  watch: {
+    queryParams: {
+      deep: true,
+      handler: function (v) {
+        console.log(v);
+        this.$emit("onQuery", v);
+      },
+    },
+  },
 };
 </script>
 
