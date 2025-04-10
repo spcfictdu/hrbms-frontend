@@ -75,7 +75,7 @@ export default {
       return this.updateTransaction(payload)
         .then(() => {
           if (payload.status === "RESERVED") {
-            this.$router.push({
+            this.$router.replace({
               name: "CheckInOut",
               params: { referenceNumber: payload.referenceNumber },
             });
