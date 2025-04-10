@@ -4,14 +4,20 @@ import store from "..";
 
 Vue.use(Vuex);
 
+const whichAPI = (role) => `user/${role.toLowerCase()}/login`;
+const whichUserKey = {
+  ADMIN: "username",
+  GUEST: "email",
+};
+const whichlogoutRoute = {
+  ADMIN: "Sign In",
+  GUEST: "Guest Sign In",
+};
+
 export const authentication = {
   namespaced: true,
   state: {
     currentUser: null,
-    loginStatus: {
-      message: "",
-      status: "", //SUCCESS, ERROR
-    },
   },
   getters: {
     getCurrentUser: (state) => state.currentUser,
@@ -21,51 +27,33 @@ export const authentication = {
     SET_LOGIN_STATUS: (state, data) => (state.loginStatus = data),
   },
   actions: {
-    async login({ commit }, { user, loginRole }) {
-      // Set Login Path for Backend
-      const loginPath = {
-        ADMIN: "user/admin/login",
-        GUEST: "user/guest/login",
-      };
-      const userKey = {
-        ADMIN: "username",
-        GUEST: "email",
-      };
+    login: async function ({ commit }, { user, loginRole }) {
+      const url = whichAPI(loginRole);
 
       const payload = {
         password: user.password,
-        [userKey[loginRole]]: user.username,
+        [whichUserKey[loginRole]]: user.username,
       };
 
       try {
-        const url = loginPath[loginRole];
-
         let response = await this.$axios.post(url, payload);
         commit("SET_CURRENT_USER", response.data.results);
-        commit("SET_LOGIN_STATUS", {
-          message: response.data.message,
-          status: "SUCCESS",
-        });
 
         if (response.data.results.role !== "GUEST") {
-          await this.$router.push({ name: "Dashboard" });
+          this.$router.push({ name: "Dashboard" });
         } else {
           store.dispatch("account/fetchAccountInfo");
-          await this.$router.push({ name: "Guest Dashboard" });
+          this.$router.push({ name: "Guest Dashboard" });
         }
       } catch (error) {
-        commit("SET_LOGIN_STATUS", {
-          message: error.response.data.message,
-          status: "ERROR",
-        });
+        this.$store.dispatch(
+          "alerts/triggerError",
+          error.response.data.message
+        );
       }
     },
-
-    async logout({ commit }, role) {
-      const routeNames = {
-        ADMIN: "Sign In",
-        GUEST: "Guest Sign In",
-      };
+    logout: async function ({ commit }, role) {
+      const url = "user/logout";
 
       try {
         const config = {
@@ -74,26 +62,27 @@ export const authentication = {
           },
         };
 
-        const url = "user/logout";
-
         await this.$axios.get(url, config);
         return response;
       } catch (error) {
-        console.log("Error executing logout", error);
+        this.$store.dispatch(
+          "alerts/triggerError",
+          error.response.data.message
+        );
       } finally {
         // Remove Persisted State
         commit("SET_CURRENT_USER", null);
         store.dispatch("account/removeUserInfo");
 
         // Back To Login
-        await this.$router.push({ name: routeNames[role] });
+        await this.$router.push({ name: whichlogoutRoute[role] });
       }
     },
+    register: async function ({ commit }, data) {
+      const url = "user/register";
+      const loginUrl = "user/guest/login";
 
-    async register({ commit }, data) {
       try {
-        const url = "user/register";
-        const loginUrl = "user/guest/login";
         let payload = {
           password: data.password,
           firstName: data.firstName,
@@ -106,7 +95,7 @@ export const authentication = {
 
         let response = await this.$axios.post(url, payload);
 
-        if (response.data.code === 200) {
+        if (response.data.code === 201) {
           const loginPayload = {
             email: payload.email,
             password: payload.password,
@@ -114,13 +103,9 @@ export const authentication = {
 
           let response = await this.$axios.post(loginUrl, loginPayload);
 
-          if (response.data.code === 200) {
+          if (response.data.code === 201) {
             store.dispatch("account/fetchAccountInfo");
             commit("SET_CURRENT_USER", response.data.results);
-            commit("SET_LOGIN_STATUS", {
-              message: response.data.message,
-              status: "SUCCESS",
-            });
 
             if (store.state.publicRooms.temporaryData) {
               await this.$router.push({
@@ -133,13 +118,12 @@ export const authentication = {
           }
         }
       } catch (error) {
-        commit("SET_LOGIN_STATUS", {
-          message: error.response.data.message,
-          status: "ERROR",
-        });
+        this.$store.dispatch(
+          "alerts/triggerError",
+          error.response.data.message
+        );
       }
     },
-
     clearUserData({ commit }) {
       commit("SET_CURRENT_USER", null);
       store.dispatch("publicRooms/clearTempData");

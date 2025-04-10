@@ -11,6 +11,9 @@ export default [
     path: "/sign-in",
     name: "Guest Sign In",
     component: GuestSignInView,
+    props: (route) => ({
+      method: route.query.method,
+    }),
     meta: {
       name: "Guest Sign In",
       isLogin: true,

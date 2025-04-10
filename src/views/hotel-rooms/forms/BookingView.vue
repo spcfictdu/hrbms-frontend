@@ -56,7 +56,12 @@ export default {
       if (!this.user && payload?.action === "REGISTER") {
         formattedPayload.query = this.$route.query;
         return this.storeTemporaryData(formattedPayload).then(() =>
-          this.$router.replace({ name: "Guest Sign In" })
+          this.$router.replace({
+            name: "Guest Sign In",
+            query: {
+              method: "register",
+            },
+          })
         );
       }
 
