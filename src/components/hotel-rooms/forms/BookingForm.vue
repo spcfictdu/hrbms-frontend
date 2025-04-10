@@ -81,7 +81,7 @@
 
           <!-- Add-Ons -->
           <v-divider />
-          <AddOnsTemplate @emit-transaction="assignPayload" />
+          <AddOnsTemplate :fill="fill" @emit-transaction="assignPayload" />
 
           <!-- Payment -->
           <div v-if="showPayment" class="pb-8">

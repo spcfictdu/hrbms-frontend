@@ -103,17 +103,17 @@ export const authentication = {
 
           let response = await this.$axios.post(loginUrl, loginPayload);
 
-          if (response.data.code === 201) {
+          if (response.data.code === 200) {
             store.dispatch("account/fetchAccountInfo");
             commit("SET_CURRENT_USER", response.data.results);
 
             if (store.state.publicRooms.temporaryData) {
-              await this.$router.push({
+              this.$router.push({
                 name: "Guest Booking",
                 query: store.state.publicRooms.temporaryData.query,
               });
             } else {
-              await this.$router.push({ name: "Guest Dashboard" });
+              this.$router.push({ name: "Guest Dashboard" });
             }
           }
         }
