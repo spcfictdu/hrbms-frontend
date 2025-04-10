@@ -1,15 +1,17 @@
 <template>
   <div>
     <v-card flat class="sign-in-card ma-auto">
-      <v-avatar size="128" class="mt-n16 fcpc-logo">
-        <v-img src="../../assets/FCPCLogo2.jpg" />
-      </v-avatar>
-      <v-card-title class="text-subtitle-1 text-sm-h5">{{
-        schoolName
-      }}</v-card-title>
-      <v-card-subtitle class="text-subtitle-1 mt-2 font-weight-bold"
-        >SIGN IN</v-card-subtitle
-      >
+      <div class="header-container">
+        <v-avatar size="128" class="mt-n16 fcpc-logo">
+          <v-img src="../../assets/FCPCLogo2.jpg" />
+        </v-avatar>
+        <v-card-title class="text-subtitle-1 text-sm-h5">{{
+          schoolName
+        }}</v-card-title>
+        <v-card-subtitle class="text-subtitle-1 mt-2 font-weight-bold"
+          >SIGN IN</v-card-subtitle
+        >
+      </div>
 
       <v-alert :value="showAlert" type="error" class="w-full">
         {{ alertMeta.message }}
@@ -100,6 +102,13 @@ export default {
   flex-direction: column;
   align-items: stretch;
   justify-content: center;
+}
+
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .fcpc-logo {
