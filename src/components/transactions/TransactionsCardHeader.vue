@@ -2,107 +2,79 @@
   <TableFilter
     :numberOfItems="transactions.pagination.total"
     item="TRANSACTIONS"
-    :searchFn="searchFunction"
-    :clearFn="clearQuery"
+    :searchFn="handleSearch"
+    :clearFn="handleClear"
     :loaded="hasData"
   >
     <v-col cols="12" sm="6" md="4">
-      <span class="text-caption ml-2">First Name</span>
-      <v-text-field
-        outlined
-        dense
-        hide-details="auto"
-        v-model="query_params.firstName"
-      ></v-text-field>
+      <FormField label="First Name">
+        <v-text-field
+          outlined
+          dense
+          hide-details="auto"
+          v-model="queryParams.firstName"
+        ></v-text-field>
+      </FormField>
     </v-col>
     <v-col cols="12" sm="6" md="4">
-      <span class="text-caption ml-2">Middle Name</span>
-      <v-text-field
-        outlined
-        dense
-        hide-details="auto"
-        v-model="query_params.middleName"
-      ></v-text-field>
+      <FormField label="Middle Name">
+        <v-text-field
+          outlined
+          dense
+          hide-details="auto"
+          v-model="queryParams.middleName"
+        ></v-text-field>
+      </FormField>
     </v-col>
     <v-col cols="12" sm="6" md="4">
-      <span class="text-caption ml-2">Last Name</span>
-      <v-text-field
-        outlined
-        dense
-        hide-details="auto"
-        v-model="query_params.lastName"
-      ></v-text-field>
+      <FormField label="Last Name">
+        <v-text-field
+          outlined
+          dense
+          hide-details="auto"
+          v-model="queryParams.lastName"
+        ></v-text-field>
+      </FormField>
     </v-col>
     <v-col cols="12" sm="6" md="4">
-      <span class="text-caption ml-2">Reference</span>
-      <v-text-field
-        outlined
-        dense
-        hide-details="auto"
-        v-model="query_params.referenceNumber"
-      ></v-text-field>
+      <FormField label="Reference">
+        <v-text-field
+          outlined
+          dense
+          hide-details="auto"
+          v-model="queryParams.referenceNumber"
+        ></v-text-field>
+      </FormField>
     </v-col>
     <v-col cols="12" sm="6" md="4">
-      <span class="text-caption ml-2">Check-in Date</span>
-      <v-menu
-        v-model="menuCheckIn"
-        :close-on-content-click="false"
-        offset-y
-        transition="scale-transition"
-        min-width="auto"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-text-field
-            v-model="query_params.checkInDate"
-            v-on="on"
-            v-bind="attrs"
-            outlined
-            dense
-            readonly
-            hide-details="auto"
-          >
-          </v-text-field>
-        </template>
-        <v-date-picker
-          v-model="query_params.checkInDate"
-          @input="menuCheckIn = false"
+      <FormField label="Check-in Date">
+        <DateField
+          :model="queryParams.checkInDate"
+          @input="evaluateValue('checkInDate', $event)"
         >
-          <v-btn color="primary" block @click="clearDate('Check In')"
+          <v-btn
+            color="primary"
+            block
+            @click="evaluateValue('checkInDate', null)"
             >Clear</v-btn
           >
-        </v-date-picker>
-      </v-menu>
+        </DateField>
+      </FormField>
     </v-col>
     <v-col cols="12" sm="6" md="4">
-      <span class="text-caption ml-2">Check-out Date</span>
-      <v-menu
-        v-model="menuCheckOut"
-        :close-on-content-click="false"
-        offset-y
-        transition="scale-transition"
-        min-width="auto"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-text-field
-            v-model="query_params.checkOutDate"
-            v-on="on"
-            v-bind="attrs"
-            outlined
-            dense
-            readonly
-            hide-details="auto"
-          >
-          </v-text-field>
-        </template>
-        <v-date-picker
-          v-model="query_params.checkOutDate"
-          @input="menuCheckOut = false"
+      <FormField label="Check-out Date">
+        <DateField
+          :model="queryParams.checkOutDate"
+          @input="evaluateValue('checkOutDate', $event)"
         >
-          <v-btn color="primary" block @click="clearDate('Check Out')"
+          <v-btn
+            color="primary"
+            block
+            @click="evaluateValue('checkOutDate', null)"
             >Clear</v-btn
           >
-        </v-date-picker>
-      </v-menu>
+        </DateField>
+      </FormField>
     </v-col>
   </TableFilter>
 </template>
@@ -110,10 +82,12 @@
 <script>
 import TableFilter from "../table-headers/TableFilter.vue";
 import TablePagination from "@/mixins/TablePagination";
+import FormField from "../fields/FormField.vue";
+import DateField from "../fields/DateField.vue";
 
 export default {
   name: "TrasactionsCardHeader",
-  components: { TableFilter },
+  components: { TableFilter, FormField, DateField },
   props: {
     transactions: {
       type: Object,
@@ -122,6 +96,14 @@ export default {
   },
   mixins: [TablePagination],
   data: () => ({
+    queryParams: {
+      firstName: null,
+      middleName: null,
+      lastName: null,
+      referenceNumber: null,
+      checkInDate: null,
+      checkOutDate: null,
+    },
     show: false,
     menuCheckIn: false,
     menuCheckOut: false,
@@ -131,11 +113,21 @@ export default {
     indeterminateValue: 0,
   }),
   methods: {
+    handleSearch() {
+      this.$emit("query-request", this.queryParams);
+    },
     searchFunction: function () {
       if (Object.keys(this.query_params).length !== 0) {
         this.$emit("query-request", this.query_params);
         this.loadingAction();
       }
+    },
+    handleClear() {
+      Object.keys(this.queryParams).forEach((key) => {
+        this.$set(this.queryParams, key, null);
+      });
+
+      this.handleSearch()
     },
     clearQuery: function () {
       let query = [
@@ -164,6 +156,9 @@ export default {
         this.indeterminate = false;
       }, 3000);
       this.indeterminateValue = 100;
+    },
+    evaluateValue(key, value) {
+      this.queryParams[key] = value;
     },
     clearDate: function (dateType) {
       if (dateType === "Check In") {
