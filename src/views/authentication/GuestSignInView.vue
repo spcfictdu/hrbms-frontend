@@ -3,9 +3,11 @@
     <v-card flat class="sign-in-card ma-auto">
       <div class="sign-in-container">
         <v-avatar size="128" class="mt-n16 fcpc-logo">
-          <v-img src="../../assets/FCPCLogo2.jpg" />
+          <v-img :src="institution.logo" />
         </v-avatar>
-        <v-card-title class="sign-in-title">{{ schoolName }}</v-card-title>
+        <v-card-title class="sign-in-title">{{
+          institution.name
+        }}</v-card-title>
         <v-card-subtitle class="text-caption font-weight-regular white--text">
           SIGN IN
         </v-card-subtitle>
@@ -93,7 +95,11 @@ export default {
     method: String,
   },
   data: () => ({
-    schoolName: "First City Providential College",
+    institution: {
+      name: "Systems Plus College Foundation",
+      acronym: "SPCF",
+      logo: require("@/assets/logos/SPCFLogo.png"),
+    },
 
     // Meta
     showPassword: false,

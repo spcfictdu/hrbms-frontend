@@ -3,10 +3,10 @@
     <v-card flat class="sign-in-card ma-auto">
       <div class="header-container">
         <v-avatar size="128" class="mt-n16 fcpc-logo">
-          <v-img src="../../assets/FCPCLogo2.jpg" />
+          <v-img :src="institution.logo" />
         </v-avatar>
         <v-card-title class="text-subtitle-1 text-sm-h5">{{
-          schoolName
+          institution.name
         }}</v-card-title>
         <v-card-subtitle class="text-subtitle-1 mt-2 font-weight-bold"
           >SIGN IN</v-card-subtitle
@@ -45,7 +45,11 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "SignInView",
   data: () => ({
-    schoolName: "First City Providential College",
+    institution: {
+      name: "Systems Plus College Foundation",
+      acronym: "SPCF",
+      logo: require("@/assets/logos/SPCFLogo.png"),
+    },
     user: {
       username: null,
       password: null,
