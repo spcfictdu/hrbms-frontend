@@ -55,14 +55,16 @@ export default {
       // Storing temporary data for rebooking after registration.
       if (!this.user && payload?.action === "REGISTER") {
         formattedPayload.query = this.$route.query;
-        return this.storeTemporaryData(formattedPayload).then(() =>
-          this.$router.replace({
-            name: "Guest Sign In",
-            query: {
-              method: "register",
-            },
-          })
-        );
+        return this.storeTemporaryData(formattedPayload)
+          .then(() =>
+            this.$router.replace({
+              name: "Guest Sign In",
+              query: {
+                method: "register",
+              },
+            })
+          )
+          .finally(() => this.setLoading({ key: "dialog", value: false }));
       }
 
       // Create transaction

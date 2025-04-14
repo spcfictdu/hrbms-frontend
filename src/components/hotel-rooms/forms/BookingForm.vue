@@ -223,7 +223,7 @@ export default {
       };
 
       this.$emit("onSubmit", payload);
-      this.resetDialog("WARNING");
+      this.resetDialog("warning");
     },
     handleOnConfirmed: function () {
       this.$emit("onSubmit", this.payload);
