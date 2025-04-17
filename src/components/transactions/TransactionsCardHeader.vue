@@ -81,7 +81,6 @@
 
 <script>
 import TableFilter from "../table-headers/TableFilter.vue";
-import TablePagination from "@/mixins/TablePagination";
 import FormField from "../fields/FormField.vue";
 import DateField from "../fields/DateField.vue";
 
@@ -94,7 +93,6 @@ export default {
       required: true,
     },
   },
-  mixins: [TablePagination],
   data: () => ({
     queryParams: {
       firstName: null,
