@@ -2,7 +2,7 @@
   <v-card flat>
     <transactions-card-header
       :transactions="transactions"
-      @query-request="searchFunction"
+      @onQuery="searchFunction"
     />
     <v-data-table
       :headers="headers"

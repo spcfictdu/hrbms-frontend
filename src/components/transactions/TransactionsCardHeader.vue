@@ -107,7 +107,7 @@ export default {
   }),
   methods: {
     handleSearch() {
-      this.$emit("query-request", this.queryParams);
+      this.$emit("onQuery", this.queryParams);
     },
     handleClear() {
       Object.keys(this.queryParams).forEach((key) => {
