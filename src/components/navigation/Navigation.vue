@@ -14,7 +14,7 @@
             class="white--text d-none d-md-flex align-center w-full justify-start"
           >
             <v-avatar size="40">
-              <img src="../../assets/FCPCLogo.png" />
+              <img :src="institution.logo" />
             </v-avatar>
             <div class="ml-2 d-none d-lg-flex flex-column">
               <p class="text-subtitle-2 pa-0 ma-0">{{ institution.acronym }}</p>
@@ -123,9 +123,9 @@ export default {
   name: "Navigation",
   data: () => ({
     institution: {
-      name: "First City Providential College",
-      acronym: "FCPC",
-      logo: null,
+      name: "Systems Plus College Foundation",
+      acronym: "SPCF",
+      logo: require("@/assets/logos/SPCFLogo.png"),
     },
 
     activeButton: null,

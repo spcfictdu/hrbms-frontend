@@ -24,7 +24,7 @@ export default {
     target: Boolean,
   },
   data: () => ({
-    logo: require("@/assets/SPCFLogo.png"),
+    logo: require("@/assets/logos/SPCFLogo.png"),
   }),
 };
 </script>

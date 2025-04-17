@@ -1,27 +1,23 @@
 <template>
   <div>
-    <v-card elevation="0" class="sign-in-card ma-auto">
-      <v-avatar size="128" class="mt-n16 fcpc-logo">
-        <v-img src="../../assets/FCPCLogo2.jpg" />
-      </v-avatar>
-      <v-card-title class="text-subtitle-1 text-sm-h5">{{
-        schoolName
-      }}</v-card-title>
-      <v-card-subtitle class="text-subtitle-1 mt-2 font-weight-bold"
-        >SIGN IN</v-card-subtitle
-      >
-
-      <div class="alert-container">
-        <v-alert v-if="isShowAlert" type="error" class="w-full">
-          {{ loginStatus.message ?? loginStatus.message }}
-        </v-alert>
+    <v-card flat class="sign-in-card ma-auto">
+      <div class="header-container">
+        <v-avatar size="128" class="mt-n16 fcpc-logo">
+          <v-img :src="institution.logo" />
+        </v-avatar>
+        <v-card-title class="text-subtitle-1 text-sm-h5">{{
+          institution.name
+        }}</v-card-title>
+        <v-card-subtitle class="text-subtitle-1 mt-2 font-weight-bold"
+          >SIGN IN</v-card-subtitle
+        >
       </div>
 
-      <v-form
-        ref="form"
-        class="text-fields-container"
-        @submit.prevent="authenticateUser"
-      >
+      <v-alert :value="showAlert" type="error" class="w-full">
+        {{ alertMeta.message }}
+      </v-alert>
+
+      <v-form ref="form" @submit.prevent="handleAuth">
         <v-text-field v-model="user.username" outlined label="Username" />
         <v-text-field
           v-model="user.password"
@@ -49,53 +45,50 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "SignInView",
   data: () => ({
-    schoolName: "First City Providential College",
+    institution: {
+      name: "Systems Plus College Foundation",
+      acronym: "SPCF",
+      logo: require("@/assets/logos/SPCFLogo.png"),
+    },
     user: {
       username: null,
       password: null,
     },
     loginRole: "ADMIN",
-    isShowAlert: false,
+    showAlert: false,
     loading: false,
   }),
 
   computed: {
-    ...mapState("authentication", {
-      loginStatus: (state) => state.loginStatus,
-      currentUser: (state) => state.currentUser,
-    }),
+    ...mapState("authentication", ["currentUser"]),
+    ...mapState("alerts", ["alertMeta"]),
   },
-
   methods: {
     ...mapActions("authentication", ["login"]),
+    handleAuth: async function () {
+      if (!this.$refs.form.validate()) return;
 
-    authenticateUser: async function () {
-      if (this.$refs.form.validate()) {
-        this.loading = true;
+      this.loading = true;
+
+      try {
         await this.login({
           user: this.user,
           loginRole: this.loginRole,
         });
+      } finally {
         this.loading = false;
       }
-    },
-
-    triggerAlert: function (value) {
-      this.isShowAlert = value;
     },
   },
 
   watch: {
-    loginStatus: {
+    alertMeta: {
       deep: true,
-      handler: function (newVal) {
-        //Opens the error alert message when the login fails
-        if (newVal.status.toLowerCase() === "error") {
-          this.triggerAlert(true);
-          let interval = setInterval(() => {
-            this.triggerAlert(false);
-            clearInterval(interval);
-          }, 3000);
+      handler: function (v) {
+        if (v.status === "error") {
+          this.showAlert = true;
+        } else {
+          this.showAlert = false;
         }
       },
     },
@@ -111,20 +104,18 @@ export default {
   padding: 1.5rem;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
   justify-content: center;
+}
+
+.header-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 .fcpc-logo {
   border: 5px solid white;
-}
-
-.text-fields-container {
-  width: 100%;
-  margin-bottom: 2rem;
-}
-
-.alert-container {
-  width: 100%;
 }
 </style>

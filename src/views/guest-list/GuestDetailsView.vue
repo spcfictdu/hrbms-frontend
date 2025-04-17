@@ -7,7 +7,7 @@
   >
     <PageHeader />
     <RouteLoader :target="hasData" class="mt-10">
-      <GuestDetails :guest="guest" @query_params="fetch" />
+      <GuestDetails :guest="guest" @onQuery="fetch" />
     </RouteLoader>
   </div>
 </template>
