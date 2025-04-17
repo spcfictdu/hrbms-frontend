@@ -1,6 +1,6 @@
 <template>
   <TableFilter
-    :numberOfItems="transactions.pagination.total"
+    :numberOfItems="transactionsData.pagination.total"
     item="TRANSACTIONS"
     :searchFn="handleSearch"
     :clearFn="handleClear"
@@ -88,7 +88,7 @@ export default {
   name: "TrasactionsCardHeader",
   components: { TableFilter, FormField, DateField },
   props: {
-    transactions: {
+    transactionsData: {
       type: Object,
       required: true,
     },
@@ -120,7 +120,7 @@ export default {
   },
   computed: {
     hasData() {
-      return !!this.transactions ?? false;
+      return !!this.transactionsData ?? false;
     },
   },
 };

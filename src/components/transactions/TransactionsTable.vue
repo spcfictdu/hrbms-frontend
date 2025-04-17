@@ -1,7 +1,7 @@
 <template>
   <v-card flat>
     <transactions-card-header
-      :transactions="transactions"
+      :transactionsData="transactions"
       @onQuery="searchFunction"
     />
     <v-data-table
