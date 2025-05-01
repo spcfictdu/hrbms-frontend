@@ -1,38 +1,36 @@
 <template>
   <v-card flat>
-    <transactions-card-header
+    <TransactionsCardHeader
       :transactionsData="transactions"
       @onQuery="searchFunction"
     />
-    <v-data-table
-      :headers="headers"
-      :items="mappedTransactions"
-      item-key="reference"
-      group-by="date"
-      class="ma-5"
-      @click:row="(v) => requestRouteEvent(v)"
-      :footer-props="{
-        itemsPerPage: [5, 10, 15],
-      }"
-      :server-items-length="transactions.pagination.total"
-      :options.sync="options"
-      disable-sort
-    >
-      <template v-slot:[`item.status`]="{ item }">
-        <v-chip
-          :color="statusColors[item.status.toLowerCase()]"
-          dark
-          small
-          class="text-overline"
-          >{{ item.status }}</v-chip
-        >
-      </template>
-      <template v-slot:[`group.header`]="{ group }">
-        <td :colspan="headers.length" class="pl-8">
-          {{ group }}
-        </td>
-      </template>
-    </v-data-table>
+    <div class="pa-5">
+      <PaginatedTable
+        :headers="headers"
+        :items="mappedTransactions"
+        itemKey="reference"
+        groupBy="date"
+        @click:row="(v) => requestRouteEvent(v)"
+        :footerProps="footerProps"
+        :serverItemsLength="transactions.pagination.total"
+        disableSort
+      >
+        <template v-slot:[`item.status`]="{ item }">
+          <v-chip
+            :color="statusColors[item.status.toLowerCase()]"
+            dark
+            small
+            class="text-overline"
+            >{{ item.status }}</v-chip
+          >
+        </template>
+        <template v-slot:[`group.header`]="{ group }">
+          <td :colspan="headers.length" class="pl-8">
+            {{ group }}
+          </td>
+        </template>
+      </PaginatedTable>
+    </div>
   </v-card>
 </template>
 
@@ -40,11 +38,12 @@
 import TransactionsCardHeader from "./TransactionsCardHeader.vue";
 import { format, parseISO } from "date-fns";
 import TablePagination from "@/mixins/TablePagination";
+import PaginatedTable from "../tables/PaginatedTable.vue";
 
 export default {
   name: "TransactionsTable",
   mixins: [TablePagination],
-  components: { TransactionsCardHeader },
+  components: { TransactionsCardHeader, PaginatedTable },
   props: {
     transactions: {
       type: Object,
@@ -99,6 +98,9 @@ export default {
       confirmed: "confirmed",
     },
     transactionList: [],
+    footerProps: {
+      itemsPerPage: [5, 10, 15],
+    },
   }),
   methods: {
     requestRouteEvent: function (value) {
