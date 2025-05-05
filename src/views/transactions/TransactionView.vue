@@ -10,7 +10,7 @@
       <TransactionsTable
         :transactions="transactions"
         @route-event="redirectRoute"
-        @query_params="fetch"
+        @onQuery="fetch"
       />
     </RouteLoader>
   </div>

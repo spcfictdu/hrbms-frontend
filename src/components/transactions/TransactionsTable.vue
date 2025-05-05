@@ -2,7 +2,7 @@
   <v-card flat>
     <TransactionsCardHeader
       :transactionsData="transactions"
-      @onQuery="searchFunction"
+      @onQuery="assignParams($event)"
     />
     <div class="pa-5">
       <PaginatedTable
@@ -10,7 +10,8 @@
         :items="mappedTransactions"
         itemKey="reference"
         groupBy="date"
-        @click:row="(v) => requestRouteEvent(v)"
+        @onQuery="assignParams($event)"
+        @click:row="requestRouteEvent($event)"
         :footerProps="footerProps"
         :serverItemsLength="transactions.pagination.total"
         disableSort
@@ -37,21 +38,17 @@
 <script>
 import TransactionsCardHeader from "./TransactionsCardHeader.vue";
 import { format, parseISO } from "date-fns";
-import TablePagination from "@/mixins/TablePagination";
+import { assignParams } from "@/mixins/FormattingFunctions";
 import PaginatedTable from "../tables/PaginatedTable.vue";
 
 export default {
   name: "TransactionsTable",
-  mixins: [TablePagination],
+  mixins: [assignParams],
   components: { TransactionsCardHeader, PaginatedTable },
   props: {
-    transactions: {
-      type: Object,
-      required: true,
-    },
+    transactions: Object,
   },
   data: () => ({
-    title: "",
     headers: [
       {
         text: "Name",
@@ -97,9 +94,8 @@ export default {
       reserved: "reserved",
       confirmed: "confirmed",
     },
-    transactionList: [],
     footerProps: {
-      itemsPerPage: [5, 10, 15],
+      itemsPerPageOptions: [5, 10, 15],
     },
   }),
   methods: {
@@ -110,22 +106,8 @@ export default {
       };
       this.$emit("route-event", routeParams);
     },
-    searchFunction: function (query_params) {
-      if (this.query_params.perPage) {
-        query_params.perPage = this.query_params.perPage;
-      }
-
-      if (this.query_params.page) {
-        delete this.query_params.page;
-      }
-
-      this.assignParams(query_params);
-    },
   },
   computed: {
-    size() {
-      return this.$vuetify.breakpoint;
-    },
     mappedTransactions() {
       return this.transactions
         ? this.transactions.data.map((item) => ({
@@ -144,17 +126,11 @@ export default {
     },
   },
   watch: {
-    size: {
-      immediate: true,
+    queryParams: {
       deep: true,
-      handler(newVal) {
-        if (newVal.xs) {
-          this.title = "d-flex text-h6 font-weight-bold justify-center mt-n3";
-        } else if (newVal.sm) {
-          this.title = "text-h6 font-weight-bold mb-1";
-        } else {
-          this.title = "text-h5 font-weight-bold mb-1";
-        }
+      handler: function (v) {
+        console.log(v);
+        this.$emit("onQuery", v);
       },
     },
   },

@@ -11,7 +11,7 @@
     :disable-sort="disableSort"
     @click:row="$emit('click:row', $event)"
   >
-   <template v-for="(_, slot) in $scopedSlots" v-slot:[slot]="scope">
+    <template v-for="(_, slot) in $scopedSlots" v-slot:[slot]="scope">
       <slot :name="slot" v-bind="scope" />
     </template>
   </v-data-table>
@@ -43,6 +43,14 @@ export default {
     // Items to include in the query params
     includedItems: ["page", "itemsPerPage", "sortBy", "sortDesc"],
   }),
+  watch: {
+    footerProps: {
+      immediate: true,
+      handler: function (v) {
+        console.log("footerProps", v);
+      },
+    },
+  },
 };
 </script>
 
