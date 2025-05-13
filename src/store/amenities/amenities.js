@@ -10,11 +10,13 @@ export const amenities = {
     loading: {
       dialog: false,
     },
+    activeAmenitiesTab: "Amenities",
   }),
   getters: {},
   mutations: {
     SET_AMENITIES: (state, data) => (state.amenities = data),
     SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
+    SET_ACTIVE_AMENITIES_TAB: (state, tab) => (state.activeAmenitiesTab = tab),
   },
   actions: {
     setLoading: function ({ commit }, { key, value }) {
@@ -79,5 +81,7 @@ export const amenities = {
           );
         });
     },
+    setActiveAmenitiesTab: ({ commit }, tab) =>
+      commit("SET_ACTIVE_AMENITIES_TAB", tab),
   },
 };

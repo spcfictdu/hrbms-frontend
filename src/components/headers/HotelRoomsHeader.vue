@@ -3,7 +3,9 @@
     <div
       class="w-full d-flex flex-column flex-sm-row align-center justify-space-between"
     >
-      <p class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-1">
+      <p
+        class="text-md-h5 text-h6 text-uppercase font-weight-bold mb-2 mb-sm-1"
+      >
         {{ $route.meta.name }}
       </p>
       <div class="w-full d-none d-sm-flex flex-row align-center justify-center">
@@ -36,12 +38,26 @@
       </div>
     </div>
 
-    <v-divider />
-
     <div
       v-if="!$route.meta.hideInputs"
-      class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-2"
+      class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-6"
     >
+      <!-- Amenities Tabs -->
+      <div v-if="$route.name === 'Amenities'">
+        <v-btn
+          v-for="tab in amenitiesTabs"
+          :key="tab"
+          rounded
+          depressed
+          :color="activeAmenitiesTab === tab ? 'primary' : 'lightBg'"
+          :class="{ 'inactive-tab': activeAmenitiesTab !== tab }"
+          class="font-weight-bold px-8 mr-3"
+          @click="setActiveAmenitiesTab(tab)"
+        >
+          {{ tab }}
+        </v-btn>
+      </div>
+
       <div class="w-full d-flex align-center order-first order-md-last ml-auto">
         <v-text-field
           block
@@ -55,12 +71,13 @@
           class="mr-2 ml-md-2 d-none"
           v-model="search"
         />
-        <div v-if="!$route.meta.hideAddButton">
+
+        <div v-if="!$route.meta.hideAddButton" class="ml-5">
           <v-btn
             outlined
             rounded
             color="primary"
-            class="d-none d-md-flex"
+            class="d-none d-md-flex font-weight-bold add-button-bg"
             @click="redirect(addButton)"
           >
             <v-icon left>mdi-plus</v-icon>
@@ -73,9 +90,32 @@
             elevation="0"
             color="primary"
             @click="redirect(addButton)"
-            class="d-flex d-md-none"
+            class="d-flex d-md-none font-weight-bold add-button-bg"
           >
             <v-icon left>mdi-plus</v-icon>{{ addButton.name }}
+          </v-btn>
+        </div>
+
+        <!-- Add-ons button -->
+        <div v-if="$route.name === 'Amenities'" class="ml-5">
+          <v-btn
+            outlined
+            rounded
+            color="primary"
+            class="d-none d-md-flex font-weight-bold add-button-bg"
+          >
+            <v-icon left>mdi-plus</v-icon>
+            Add-ons
+          </v-btn>
+
+          <v-btn
+            rounded
+            outlined
+            elevation="0"
+            color="primary"
+            class="d-flex d-md-none font-weight-bold add-button-bg"
+          >
+            <v-icon left>mdi-plus</v-icon>Add-ons
           </v-btn>
         </div>
       </div>
@@ -97,6 +137,7 @@
       </div>
     </div>
 
+    <v-divider />
     <!-- <div class="d-flex flex-column flex-md-row align-center py-3">
       <div class="chip-wrapper order-last order-md-first">
         <v-chip
@@ -131,7 +172,7 @@
 
 <script>
 import { assignParams } from "@/mixins/FormattingFunctions";
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 mapActions;
 export default {
@@ -156,23 +197,11 @@ export default {
         name: "Categories",
         route: "Room Categories",
       },
-      // {
-      //   name: "Availability",
-      //   route: "Availability",
-      // },
     ],
-    // chips: [
-    //   "All",
-    //   "Deluxe",
-    //   "Junior",
-    //   "Executive",
-    //   "Presidential",
-    //   "Superior",
-    //   "Standard",
-    //   "Family",
-    // ],
+    amenitiesTabs: ["Amenities", "Add-ons"],
   }),
   computed: {
+    ...mapState("amenities", ["activeAmenitiesTab"]),
     activeRouteButton: function () {
       return this.activeButton;
     },
@@ -226,6 +255,7 @@ export default {
   },
   methods: {
     ...mapActions("dialogs", ["setDialogFn"]),
+    ...mapActions('amenities', ["setActiveAmenitiesTab"]),
     redirect: function (route) {
       this.activeButton = route.name;
 
@@ -306,5 +336,13 @@ export default {
 
 .header-nav-buttons:hover {
   background-color: #ecefff;
+}
+
+.add-button-bg {
+  background-color: #fcfcfc;
+}
+
+.inactive-tab {
+  color: #555555;
 }
 </style>

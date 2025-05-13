@@ -1,7 +1,8 @@
 <template>
   <RouteLoader :target="hasData" class="mt-10">
-    <amenities-component
-      :amenities="amenities"
+    <component
+      :is="activeTab"
+      :amenities="activeTab === 'AmenitiesComponent' ? amenities : undefined"
       @request-event="handleRequest"
     />
   </RouteLoader>
@@ -9,11 +10,12 @@
 
 <script>
 import AmenitiesComponent from "@/components/hotel-rooms/amenities/AmenitiesComponent.vue";
+import AddOnsComponent from "@/components/hotel-rooms/amenities/AddOnsComponent.vue";
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "AmenitiesView",
-  components: { AmenitiesComponent, RouteLoader },
+  components: { AmenitiesComponent, AddOnsComponent, RouteLoader },
   data: () => ({
     dialogKeys: {
       add: "amenity_dialog",
@@ -67,7 +69,10 @@ export default {
     },
   },
   computed: {
-    ...mapState("amenities", ["amenities"]),
+    ...mapState("amenities", ["amenities", "activeAmenitiesTab"]),
+    activeTab() {
+      return this.activeAmenitiesTab === "Amenities" ? "AmenitiesComponent" : "AddOnsComponent"
+    },
     hasData: function () {
       return !!this.amenities ?? false;
     },
