@@ -10,7 +10,9 @@ import getBackend from "./utils/urls";
 
 Vue.config.productionTip = false;
 
-const axiosInstance = axios.create({ baseURL: getBackend("local") });
+const backendAPI = getBackend("local");
+
+const axiosInstance = axios.create({ baseURL: backendAPI });
 
 if (auth.token()) {
   axiosInstance.defaults.headers.common["Authorization"] =
@@ -27,7 +29,7 @@ axiosInstance.interceptors.request.use((config) => {
 
 Vue.prototype.$axios = axiosInstance;
 Vue.prototype.$auth = auth;
-Vue.prototype.$apiPath = "http://192.168.31.231";
+Vue.prototype.$apiPath = backendAPI;
 
 Vuex.Store.prototype.$axios = axiosInstance;
 Vuex.Store.prototype.$router = router;
