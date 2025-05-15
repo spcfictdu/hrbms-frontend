@@ -12,7 +12,7 @@ Vue.config.productionTip = false;
 
 const backendAPI = getBackend("local");
 
-const axiosInstance = axios.create({ baseURL: backendAPI });
+const axiosInstance = axios.create({ baseURL: `${backendAPI}/api` });
 
 if (auth.token()) {
   axiosInstance.defaults.headers.common["Authorization"] =
