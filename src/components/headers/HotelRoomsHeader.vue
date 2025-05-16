@@ -51,7 +51,7 @@
           depressed
           :color="activeAmenitiesTab === tab ? 'primary' : 'lightBg'"
           :class="{ 'inactive-tab': activeAmenitiesTab !== tab }"
-          class="font-weight-bold px-8 mr-3"
+          class="font-weight-bold px-6 mr-3"
           @click="setActiveAmenitiesTab(tab)"
         >
           {{ tab }}
