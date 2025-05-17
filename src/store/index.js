@@ -10,6 +10,7 @@ import { roomRates } from "./categories/room-rates";
 import { rooms } from "./rooms/rooms";
 import { roomCategories } from "./categories/room-categories";
 import { amenities } from "./amenities/amenities";
+import { addOns } from "./addOns/addOns";
 import { occupied } from "./occupied/occupied";
 import { publicRooms } from "./public/public-rooms";
 import { account } from "@/store/account/account";
@@ -38,6 +39,7 @@ export default new Vuex.Store({
     rooms,
     roomCategories,
     amenities,
+    addOns,
     occupied,
     publicRooms,
     account,
