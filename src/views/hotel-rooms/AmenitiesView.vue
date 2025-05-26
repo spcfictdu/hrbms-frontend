@@ -3,6 +3,7 @@
     <component
       :is="activeTab"
       :amenities="activeTab === 'AmenitiesComponent' ? amenities : undefined"
+      :addOns="activeTab === 'AddOnsComponent' ? addOns : undefined"
       @request-event="handleRequest"
     />
   </RouteLoader>
@@ -36,8 +37,11 @@ export default {
     ]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("dialogs", ["setDialogFn"]),
+    ...mapActions("addOns", ["fetchAddOns"]),
+
     fetch: async function () {
       await this.fetchAmenities();
+      await this.fetchAddOns();
     },
     handleRequest: async function (payload) {
       // Prefetch the alerts: success, error
@@ -70,6 +74,7 @@ export default {
   },
   computed: {
     ...mapState("amenities", ["amenities", "activeAmenitiesTab"]),
+    ...mapState('addOns', ['addOns']),
     activeTab() {
       return this.activeAmenitiesTab === "Amenities" ? "AmenitiesComponent" : "AddOnsComponent"
     },

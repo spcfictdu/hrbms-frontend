@@ -16,20 +16,13 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
 import AddOnItem from "../addOns/AddOnItem.vue";
 
 export default {
   name: "AddOnsComponent",
   components: { AddOnItem },
-  methods: {
-    ...mapActions("addOns", ["fetchAddOns"]),
-  },
-  computed: {
-    ...mapState("addOns", ["addOns"]),
-  },
-  created() {
-    this.fetchAddOns();
+  props: {
+    addOns: Array,
   },
 };
 </script>
