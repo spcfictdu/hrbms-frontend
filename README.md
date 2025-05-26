@@ -77,6 +77,20 @@ The application follows a modular architecture with clear separation of concerns
 - **Service Layer**: API integration and third-party services
 - **Utility Layer**: Helper functions and shared logic
 
+## 📚 Dependencies Guide
+
+| Documentation           | Link                                              | Description                       |
+| ----------------------- | ------------------------------------------------- | --------------------------------- |
+| **Vue 2**               | https://v2.vuejs.org/                             | Vue 2 Documentation               |
+| **Vuetify 2**           | https://v2.vuetifyjs.com/en/                      | Vuetify 2 Documentation           |
+| **Vuex 3**              | https://v3.vuex.vuejs.org/                        | Vuex 3 Documentation              |
+| **vuex-persistedstate** | https://www.npmjs.com/package/vuex-persistedstate | vuex-persistedstate Documentation |
+| **Vue Router 3**        | https://v3.router.vuejs.org/                      | Vue Router 3 Documentation        |
+| **Axios**               | https://axios-http.com/docs/intro                 | Axios Documentation               |
+| **date-fns**            | https://date-fns.org/                             | date-fns Documentation            |
+| **html2canvas**         | https://www.npmjs.com/package/html2canvas/v/1.4.1 | html2canvas Documentation         |
+| **vue-the-mask**        | https://www.npmjs.com/package/vue-the-mask        | vue-the-mask Documentation        |
+
 ## 🚀 Project Setup
 
 ### Install Dependencies
