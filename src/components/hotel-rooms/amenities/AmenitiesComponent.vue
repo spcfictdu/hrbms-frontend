@@ -27,7 +27,7 @@
                   ? 'font-weight-medium'
                   : 'font-weight-regular'
               "
-              @click="selectAmenity(amenity.name)"
+              @click="setSelectedAmenity(amenity.name)"
               v-bind="attrs"
               v-on="on"
             >
@@ -39,7 +39,7 @@
               v-for="(option, index) in options"
               :key="index"
               @click="
-                selectedOption(
+                selectOption(
                   option.value,
                   amenity.referenceNumber,
                   amenity.name
@@ -58,45 +58,17 @@
         </v-menu>
       </v-col>
     </v-row>
-    <DeleteDialog
-      :opened="amenity_delete"
-      :onClose="() => setDialogFn({ key: 'amenity_delete', value: false })"
-      :loading="loading.dialog"
-      message="Amenity"
-      @onDelete="requestAction"
-    />
-    <AmenityDialog
-      :opened="amenity_dialog"
-      :onClose="() => setDialogFn({ key: 'amenity_dialog', value: false })"
-      :meta="meta"
-      :loading="loading.dialog"
-      @amenity-request="requestAction"
-    />
   </div>
 </template>
 
 <script>
-import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
-import AmenityDialog from "@/components/dialogs/AmenityDialog.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "AmenitiesComponent",
-  components: { DeleteDialog, AmenityDialog },
   props: {
     data: Array,
   },
   data: () => ({
-    selectedAmenity: null,
-    payload: {
-      requestType: null,
-    },
-
-    // Dialog Meta
-    meta: {
-      action: "", // Add Amenity, Edit Amenity, Delete Amenity
-      value: null,
-    },
-
     // Menu Options
     options: [
       {
@@ -113,90 +85,28 @@ export default {
     isSmall: false,
     isLarge: true,
     menuWidth: 150,
-
-    dialogKeys: {
-      edit: "amenity_dialog",
-      delete: "amenity_delete",
-    },
   }),
 
   methods: {
-    ...mapActions("amenities", []),
-    ...mapActions("dialogs", ["setDialogFn"]),
-    selectAmenity: function (amenity) {
-      this.selectedAmenity = amenity;
-    },
+    ...mapActions("amenities", ["setSelectedAmenity"]),
+
     itemColor: function (item) {
       if (item === "Delete Amenity") {
         return "warning--text";
       }
     },
-    selectedOption: function (option, refNum, amenityName) {
-      const options = {
-        edit: () => {
-          this.meta = {
-            action: "Edit",
-            value: amenityName,
-          };
-          this.payload = {
-            refNum,
-            requestType: "edit",
-          };
-        },
-        delete: () => {
-          this.meta.action = "Delete";
-          this.payload = {
-            refNum,
-            requestType: "delete",
-          };
-        },
-      };
 
-      if (options[option]) {
-        this.setDialogFn({ key: this.dialogKeys[option], value: true });
-        options[option]();
-      }
-    },
-    requestAction: function (requestData) {
-      // Assign data to payload if action is Add or Edit
-      if (["Add", "Edit"].includes(this.meta.action)) {
-        this.payload.data = requestData;
-      }
-      this.$emit("request-event", this.payload);
-      this.selectedAmenity = null;
-    },
-    resetMeta: function () {
-      this.meta = {
-        action: "",
-        value: null,
-      };
-      this.payload = {
-        requestType: null,
-      };
+    selectOption(option, refNum, amenityName) {
+      this.$emit("onSelect", option, refNum, amenityName);
     },
   },
   computed: {
-    ...mapState("dialogs", ["amenity_dialog", "amenity_delete"]),
-    ...mapState("amenities", ["loading"]),
+    ...mapState("amenities", ["loading", "selectedAmenity"]),
     size() {
       return this.$vuetify.breakpoint;
     },
   },
   watch: {
-    amenity_dialog: {
-      deep: true,
-      handler: function (v) {
-        if (v) {
-          // if action is an empty string, set it to Add
-          if (this.meta.action === "") {
-            this.meta.action = "Add";
-            this.payload.requestType = "add";
-          }
-        } else {
-          this.resetMeta();
-        }
-      },
-    },
     size: {
       immediate: true,
       deep: true,
