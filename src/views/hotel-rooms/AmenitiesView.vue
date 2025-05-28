@@ -2,7 +2,7 @@
   <RouteLoader :target="hasData" class="mt-10">
     <component
       :is="activeTab"
-      :data ="data"
+      :data ="componentData"
       @request-event="handleRequest"
     />
   </RouteLoader>
@@ -77,7 +77,7 @@ export default {
     activeTab() {
       return this.activeAmenitiesTab === "Amenities" ? "AmenitiesComponent" : "AddOnsComponent"
     },
-    data() {
+    componentData() {
       return this.activeTab === "AmenitiesComponent" ? this.amenities : this.addOns;
     },
     hasData: function () {
