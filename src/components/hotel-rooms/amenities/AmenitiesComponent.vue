@@ -2,7 +2,7 @@
   <div>
     <v-row justify="start">
       <v-col
-        v-for="amenity in amenities"
+        v-for="amenity in data"
         :key="amenity.name"
         class="pb-3 pb-sm-2"
         cols="12"
@@ -83,7 +83,7 @@ export default {
   name: "AmenitiesComponent",
   components: { DeleteDialog, AmenityDialog },
   props: {
-    amenities: Array,
+    data: Array,
   },
   data: () => ({
     selectedAmenity: null,

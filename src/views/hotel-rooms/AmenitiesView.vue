@@ -2,8 +2,7 @@
   <RouteLoader :target="hasData" class="mt-10">
     <component
       :is="activeTab"
-      :amenities="activeTab === 'AmenitiesComponent' ? amenities : undefined"
-      :addOns="activeTab === 'AddOnsComponent' ? addOns : undefined"
+      :data ="data"
       @request-event="handleRequest"
     />
   </RouteLoader>
@@ -77,6 +76,9 @@ export default {
     ...mapState('addOns', ['addOns']),
     activeTab() {
       return this.activeAmenitiesTab === "Amenities" ? "AmenitiesComponent" : "AddOnsComponent"
+    },
+    data() {
+      return this.activeTab === "AmenitiesComponent" ? this.amenities : this.addOns;
     },
     hasData: function () {
       return !!this.amenities ?? false;

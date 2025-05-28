@@ -2,7 +2,7 @@
   <div>
     <v-row justify="start">
       <v-col
-        v-for="addOn in addOns"
+        v-for="addOn in data"
         :key="addOn.name"
         class="pb-3 pb-sm-2"
         cols="12"
@@ -22,7 +22,7 @@ export default {
   name: "AddOnsComponent",
   components: { AddOnItem },
   props: {
-    addOns: Array,
+    data: Array,
   },
 };
 </script>
