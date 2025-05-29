@@ -72,7 +72,30 @@
           v-model="search"
         />
 
-        <div v-if="!$route.meta.hideAddButton" class="ml-5">
+        <div v-for="button in addButtons" :key="button.name" class="ml-5">
+          <v-btn
+            outlined
+            rounded
+            color="primary"
+            class="d-none d-md-flex font-weight-bold add-button-bg"
+            @click="handleClick(button)"
+          >
+            <v-icon left>mdi-plus</v-icon>
+            {{ button.name }}
+          </v-btn>
+          <v-btn
+            rounded
+            outlined
+            elevation="0"
+            color="primary"
+            @click="handleClick(button)"
+            class="d-flex d-md-none font-weight-bold add-button-bg"
+          >
+            <v-icon left>mdi-plus</v-icon>{{ button.name }}
+          </v-btn>
+        </div>
+
+        <!-- <div class="ml-5">
           <v-btn
             outlined
             rounded
@@ -94,10 +117,10 @@
           >
             <v-icon left>mdi-plus</v-icon>{{ addButton.name }}
           </v-btn>
-        </div>
+        </div> -->
 
         <!-- Add-ons button -->
-        <div v-if="$route.name === 'Amenities'" class="ml-5">
+        <!-- <div v-if="$route.name === 'Amenities'" class="ml-5">
           <v-btn
             outlined
             rounded
@@ -117,7 +140,7 @@
           >
             <v-icon left>mdi-plus</v-icon>Add-ons
           </v-btn>
-        </div>
+        </div> -->
       </div>
 
       <div
@@ -202,6 +225,7 @@ export default {
   }),
   computed: {
     ...mapState("amenities", ["activeAmenitiesTab"]),
+    ...mapState("dialogs", ["dialog_message"]),
     activeRouteButton: function () {
       return this.activeButton;
     },
@@ -225,37 +249,51 @@ export default {
         ? [{ roomType: "All", referenceNumber: "" }, ...data]
         : [];
     },
-    addButton: function () {
+    addButtons: function () {
       const metaName = this.$route.meta.name;
-      let buttonData = {
-        name: null,
-        route: null,
-      };
+      const buttonsData = [];
       switch (metaName) {
         case "Amenities":
-          buttonData.name = "Amenity";
-          buttonData.action = () => {
-            this.setDialogFn({ key: "amenity_dialog", value: true });
-          };
+          buttonsData.push({
+            name: "Amenity",
+            action: () => {
+              this.setDialogFn({ key: "amenity_dialog", value: true });
+            },
+          });
+          buttonsData.push({
+            name: "Add-ons",
+            action: () => {
+              this.setDialogFn({ key: "addOn_dialog", value: true });
+            },
+          });
           break;
         case "Occupied Rooms":
-          buttonData.name = "Room";
-          buttonData.action = () => {
-            this.setDialogFn({ key: "room_dialog", value: true });
-          };
+          buttonsData.push({
+            name: "Room",
+            action: () => {
+              this.setDialogFn({ key: "room_dialog", value: true });
+            },
+          });
           break;
         case "Room Categories":
-          buttonData.name = "Category";
-          buttonData.route = { name: "Categories", route: "Create Room" };
+          buttonsData.push({
+            name: "Category",
+            route: { name: "Categories", route: "Create Room" },
+          });
           break;
         default:
       }
-      return buttonData;
+      return buttonsData;
     },
   },
   methods: {
-    ...mapActions("dialogs", ["setDialogFn"]),
-    ...mapActions('amenities', ["setActiveAmenitiesTab"]),
+    ...mapActions("dialogs", ["setDialogFn", "setDialogMessage"]),
+    ...mapActions("amenities", ["setActiveAmenitiesTab"]),
+    handleClick(button) {
+      if (this.$route.name === "Amenities") this.setDialogMessage(button.name);
+
+      this.redirect(button);
+    },
     redirect: function (route) {
       this.activeButton = route.name;
 

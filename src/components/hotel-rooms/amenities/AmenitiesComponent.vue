@@ -89,6 +89,7 @@ export default {
 
   methods: {
     ...mapActions("amenities", ["setSelectedAmenity"]),
+    ...mapActions("dialogs", ["setDialogMessage"]),
 
     itemColor: function (item) {
       if (item === "Delete Amenity") {
@@ -97,6 +98,7 @@ export default {
     },
 
     selectOption(option, refNum, amenityName) {
+      this.setDialogMessage("Amenity");
       this.$emit("onSelect", option, refNum, amenityName);
     },
   },

@@ -8,18 +8,24 @@
         @onSelect="selectedOption"
       />
     </RouteLoader>
-    <AmenityDialog
-      :opened="amenity_dialog"
-      :onClose="() => setDialogFn({ key: 'amenity_dialog', value: false })"
+    <AddDialog
+      :opened="openedAddDialog"
+      :onClose="() => setDialogFn({ key: openedDialogKey, value: false })"
       :meta="meta"
       :loading="loading.dialog"
-      @amenity-request="requestAction"
+      :message="dialog_message"
+      @onSubmit="requestAction"
     />
     <DeleteDialog
-      :opened="amenity_delete"
-      :onClose="() => setDialogFn({ key: 'amenity_delete', value: false })"
+      :opened="openedDeleteDialog"
+      :onClose="
+        () => {
+          setActionToAdd();
+          setDialogFn({ key: openedDialogKey, value: false });
+        }
+      "
       :loading="loading.dialog"
-      message="Amenity"
+      :message="dialog_message"
       @onDelete="requestAction"
     />
   </div>
@@ -29,16 +35,16 @@
 import AmenitiesComponent from "@/components/hotel-rooms/amenities/AmenitiesComponent.vue";
 import AddOnsComponent from "@/components/hotel-rooms/amenities/AddOnsComponent.vue";
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
-import AmenityDialog from "@/components/dialogs/AmenityDialog.vue";
+import AddDialog from "@/components/dialogs/AddDialog.vue";
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 export default {
   name: "AmenitiesView",
   components: {
     AmenitiesComponent,
     AddOnsComponent,
     RouteLoader,
-    AmenityDialog,
+    AddDialog,
     DeleteDialog,
   },
   data: () => ({
@@ -152,9 +158,20 @@ export default {
         options[option]();
       }
     },
+    setActionToAdd() {
+      this.meta.action = "Add";
+      this.payload.requestType = "add";
+    },
   },
   computed: {
-    ...mapState("dialogs", ["amenity_dialog", "amenity_delete"]),
+    ...mapState("dialogs", [
+      "amenity_dialog",
+      "amenity_delete",
+      "addOn_dialog",
+      "addOn_delete",
+      "dialog_message",
+    ]),
+    ...mapGetters("dialogs", ["openedDialogKey"]),
     ...mapState("amenities", ["amenities", "activeAmenitiesTab", "loading"]),
     ...mapState("addOns", ["addOns"]),
     activeTab() {
@@ -170,16 +187,38 @@ export default {
     hasData: function () {
       return !!this.amenities ?? false;
     },
+    openedAddDialog() {
+      return this.amenity_dialog || this.addOn_dialog;
+    },
+    openedDeleteDialog() {
+      return this.amenity_delete || this.addOn_delete;
+    },
+    message() {
+      return this.dialog_message ?? "";
+    },
   },
   watch: {
     amenity_dialog: {
       deep: true,
       handler: function (v) {
         if (v) {
+          // console.log(this.meta.action);
           // if action is an empty string, set it to Add
           if (this.meta.action === "") {
-            this.meta.action = "Add";
-            this.payload.requestType = "add";
+            this.setActionToAdd();
+          }
+        } else {
+          this.resetMeta();
+        }
+      },
+    },
+    addOn_dialog: {
+      deep: true,
+      handler: function (v) {
+        if (v) {
+          // if action is an empty string, set it to Add
+          if (this.meta.action === "") {
+            this.setActionToAdd();
           }
         } else {
           this.resetMeta();

@@ -3,16 +3,30 @@
     :opened="opened"
     :onClose="onClose"
     :action="meta.action"
-    title="Amenity"
+    :title="message"
     maxWidth="600"
     @onSubmit="handleSubmit"
   >
-    <FormField label="Amenity Name" class="mb-4">
+    <FormField :label="`${this.message} Name`" class="mb-4">
       <v-text-field
         v-model="payload.name"
         outlined
         dense
-        :rules="rules.amenityName"
+        :rules="rules.inputName"
+        hide-details="auto"
+      ></v-text-field>
+    </FormField>
+
+    <FormField
+      v-if="message === 'Add-ons'"
+      :label="`${this.message} Price`"
+      class="mb-4"
+    >
+      <v-text-field
+        v-model="payload.price"
+        outlined
+        dense
+        :rules="rules.addOnPrice"
         hide-details="auto"
       ></v-text-field>
     </FormField>
@@ -42,9 +56,10 @@
 import DialogTemplate from "./DialogTemplate.vue";
 import FormField from "../fields/FormField.vue";
 export default {
-  name: "AmenityDialog",
+  name: "AddDialog",
   components: { DialogTemplate, FormField },
   props: {
+    message: String,
     opened: Boolean,
     onClose: Function,
     meta: Object,
@@ -53,18 +68,20 @@ export default {
   data: () => ({
     payload: {
       name: "",
+      price: null,
     },
   }),
   computed: {
     rules: function () {
       const errors = {};
-      errors.amenityName = [(v) => !!v || "Amenity Name is required"];
+      errors.inputName = [(v) => !!v || `${this.message} Name is required`];
+      errors.addOnPrice = [(v) => !isNaN(v) || "Please enter a valid number."];
       return errors;
     },
   },
   methods: {
     handleSubmit: function () {
-      this.$emit("amenity-request", this.payload);
+      this.$emit("onSubmit", this.payload);
     },
   },
   watch: {
@@ -81,5 +98,3 @@ export default {
   },
 };
 </script>
-
-<style scoped></style>
