@@ -65,6 +65,22 @@ export const addOns = {
           );
         });
     },
+    deleteAddOn({ dispatch }, refNum) {
+      const url = `addon/delete/${refNum}`;
+      return this.$axios
+        .delete(url)
+        .then((response) => {
+          dispatch("fetchAddOns");
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
+        })
+        .catch((error) => {
+          console.error("Error deleting add-on: ", error);
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
+        });
+    },
     setSelectedAddOn: ({ commit }, addOn) =>
       commit("SET_SELECTED_ADDON", addOn),
   },

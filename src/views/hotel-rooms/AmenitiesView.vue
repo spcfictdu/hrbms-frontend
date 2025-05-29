@@ -68,6 +68,7 @@ export default {
       addOn: {
         add: "addOn_dialog",
         edit: "addOn_dialog",
+        delete: "addOn_delete",
       },
     },
   }),
@@ -85,7 +86,12 @@ export default {
     ]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("dialogs", ["setDialogFn"]),
-    ...mapActions("addOns", ["fetchAddOns", "createAddOn", "updateAddOn"]),
+    ...mapActions("addOns", [
+      "fetchAddOns",
+      "createAddOn",
+      "updateAddOn",
+      "deleteAddOn",
+    ]),
 
     fetch: async function () {
       await this.fetchAmenities();
