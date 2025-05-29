@@ -49,6 +49,22 @@ export const addOns = {
           );
         });
     },
+    updateAddOn({ dispatch }, { refNum, data }) {
+      const url = `addon/update/${refNum}`;
+      return this.$axios
+        .put(url, data)
+        .then((response) => {
+          dispatch("fetchAddOns");
+          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
+        })
+        .catch((error) => {
+          console.error("Error updating add-on: ", error);
+          this.$store.dispatch(
+            "alerts/triggerError",
+            error.response.data.message
+          );
+        });
+    },
     setSelectedAddOn: ({ commit }, addOn) =>
       commit("SET_SELECTED_ADDON", addOn),
   },
