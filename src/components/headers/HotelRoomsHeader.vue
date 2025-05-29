@@ -261,7 +261,7 @@ export default {
             },
           });
           buttonsData.push({
-            name: "Add-ons",
+            name: "Add-on",
             action: () => {
               this.setDialogFn({ key: "addOn_dialog", value: true });
             },

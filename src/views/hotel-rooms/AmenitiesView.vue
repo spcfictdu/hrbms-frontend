@@ -54,14 +54,20 @@ export default {
 
     // Dialog Meta
     meta: {
-      action: "", // Add Amenity, Edit Amenity, Delete Amenity
-      value: null,
+      action: "", // Add, Edit, Delete
+      name: null,
+      price: null,
     },
 
     dialogKeys: {
-      add: "amenity_dialog",
-      edit: "amenity_dialog",
-      delete: "amenity_delete",
+      amenity: {
+        add: "amenity_dialog",
+        edit: "amenity_dialog",
+        delete: "amenity_delete",
+      },
+      addOn: {
+        add: "addOn_dialog",
+      },
     },
   }),
   created() {
@@ -78,7 +84,7 @@ export default {
     ]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("dialogs", ["setDialogFn"]),
-    ...mapActions("addOns", ["fetchAddOns"]),
+    ...mapActions("addOns", ["fetchAddOns", "createAddOn"]),
 
     fetch: async function () {
       await this.fetchAmenities();
@@ -90,7 +96,8 @@ export default {
       this.setLoading({ key: "dialog", value: true });
 
       // Designate Requests
-      const requests = {
+      let requests;
+      const amenityRequests = {
         add: () => this.createAmenity(payload.data),
         delete: () => this.deleteAmenity(payload.refNum),
         edit: () =>
@@ -99,6 +106,18 @@ export default {
             data: payload.data,
           }),
       };
+      const addOnRequests = {
+        add: () => this.createAddOn(payload.data),
+        delete: () => this.deleteAddOn(payload.refNum),
+        edit: () =>
+          this.updateAddOn({
+            refNum: payload.refNum,
+            data: payload.data,
+          }),
+      };
+
+      requests =
+        this.dialog_message === "Amenity" ? amenityRequests : addOnRequests;
 
       // Await the request
       if (requests[payload.requestType]) {
@@ -108,7 +127,7 @@ export default {
       // Close the dialog and finish loading
       this.setLoading({ key: "dialog", value: false });
       this.setDialogFn({
-        key: this.dialogKeys[payload.requestType],
+        key: this.key(payload.requestType),
         value: false,
       });
     },
@@ -125,19 +144,21 @@ export default {
     resetMeta() {
       this.meta = {
         action: "",
-        value: null,
+        name: null,
+        price: null,
       };
       this.payload = {
         requestType: null,
       };
     },
 
-    selectedOption(option, refNum, amenityName) {
+    selectedOption(option, refNum, name, price) {
       const options = {
         edit: () => {
           this.meta = {
             action: "Edit",
-            value: amenityName,
+            name,
+            price,
           };
           this.payload = {
             refNum,
@@ -154,13 +175,18 @@ export default {
       };
 
       if (options[option]) {
-        this.setDialogFn({ key: this.dialogKeys[option], value: true });
+        this.setDialogFn({ key: this.key(option), value: true });
         options[option]();
       }
     },
     setActionToAdd() {
       this.meta.action = "Add";
       this.payload.requestType = "add";
+    },
+    key(option) {
+      return this.dialog_message === "Amenity"
+        ? this.dialogKeys.amenity[option]
+        : this.dialogKeys.addOn[option];
     },
   },
   computed: {
@@ -202,7 +228,6 @@ export default {
       deep: true,
       handler: function (v) {
         if (v) {
-          // console.log(this.meta.action);
           // if action is an empty string, set it to Add
           if (this.meta.action === "") {
             this.setActionToAdd();

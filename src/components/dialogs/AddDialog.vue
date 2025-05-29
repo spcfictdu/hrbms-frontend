@@ -18,7 +18,7 @@
     </FormField>
 
     <FormField
-      v-if="message === 'Add-ons'"
+      v-if="message === 'Add-on'"
       :label="`${this.message} Price`"
       class="mb-4"
     >
@@ -68,7 +68,7 @@ export default {
   data: () => ({
     payload: {
       name: "",
-      price: null,
+      price: "",
     },
   }),
   computed: {
@@ -89,9 +89,11 @@ export default {
       immediate: true,
       handler: function (v) {
         if (v && this.meta.action === "Edit") {
-          this.payload.name = this.meta.value;
+          this.payload.name = this.meta.name;
+          this.payload.price = this.meta.price;
         } else {
           this.payload.name = "";
+          this.payload.price = "";
         }
       },
     },

@@ -9,7 +9,7 @@
         md="3"
         sm="4"
       >
-        <AddOnItem :addOn="addOn" />
+        <AddOnItem :addOn="addOn" @onSelect="handleSelect" />
       </v-col>
     </v-row>
   </div>
@@ -23,6 +23,11 @@ export default {
   components: { AddOnItem },
   props: {
     data: Array,
+  },
+  methods: {
+    handleSelect(option, refNum, addOnName, addOnPrice) {
+      this.$emit("onSelect", option, refNum, addOnName, addOnPrice);
+    },
   },
 };
 </script>
