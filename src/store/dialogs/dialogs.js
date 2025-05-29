@@ -31,10 +31,17 @@ export const dialogs = {
     SET_DIALOG_MESSAGE: (state, message) => (state.dialog_message = message),
   },
   actions: {
-    setDialogFn: function ({ commit }, { key, value }) {
+    async setDialogFn({ commit, dispatch }, { key, value }) {
+      await dispatch("resetDialogs");
       commit("SET_DIALOG", { key, value });
     },
     setDialogMessage: ({ commit }, message) =>
       commit("SET_DIALOG_MESSAGE", message),
+    resetDialogs: ({ state, commit }) => {
+      for (const key in state) {
+        if (key === "dialog_message") continue;
+        commit("SET_DIALOG", { key, value: false });
+      }
+    },
   },
 };
