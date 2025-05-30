@@ -88,7 +88,7 @@ export default {
     opened: {
       immediate: true,
       handler: function (v) {
-        if (v && this.meta.action === "Edit") {
+        if (v && this.meta.action === "edit") {
           this.payload.name = this.meta.name;
           this.payload.price = this.meta.price;
         } else {
