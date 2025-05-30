@@ -9,7 +9,7 @@
     </RouteLoader>
     <AddDialog
       :opened="amenity_dialog"
-      :onClose="() => setDialogFn({ key: amenity_dialog, value: false })"
+      :onClose="() => handleClose('amenity_dialog')"
       :meta="meta"
       :loading="loading.dialog"
       :message="dialog_message"
@@ -17,12 +17,7 @@
     />
     <DeleteDialog
       :opened="amenity_delete"
-      :onClose="
-        () => {
-          setActionToAdd();
-          setDialogFn({ key: amenity_delete, value: false });
-        }
-      "
+      :onClose="() => handleClose('amenity_delete')"
       :loading="loading.dialog"
       :message="dialog_message"
       @onDelete="requestAction"
@@ -178,14 +173,16 @@ export default {
         options[option]();
       }
     },
-    setActionToAdd() {
-      this.meta.action = "Add";
-      this.payload.requestType = "add";
-    },
+
     key(option) {
       return this.dialog_message === "Amenity"
         ? this.dialogKeys[option]
         : this.dialogKeys[option];
+    },
+
+    handleClose(dialog) {
+      this.resetMeta();
+      this.setDialogFn({ key: dialog, value: false });
     },
   },
   computed: {
@@ -217,7 +214,8 @@ export default {
         if (v) {
           // if action is an empty string, set it to Add
           if (this.meta.action === "") {
-            this.setActionToAdd();
+            this.meta.action = "Add";
+            this.payload.requestType = "add";
           }
         } else {
           this.resetMeta();
