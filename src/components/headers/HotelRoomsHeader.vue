@@ -263,7 +263,7 @@ export default {
           buttonsData.push({
             name: "Add-on",
             action: () => {
-              this.setDialogFn({ key: "addOn_dialog", value: true });
+              this.setDialogFn({ key: "amenity_dialog", value: true });
             },
           });
           break;

@@ -10,8 +10,6 @@ export const dialogs = {
     logout: false,
     amenity_dialog: false,
     amenity_delete: false,
-    addOn_dialog: false,
-    addOn_delete: false,
     room_dialog: false,
     room_confirm: false,
     room_delete: false,
@@ -19,13 +17,6 @@ export const dialogs = {
     category_rate: false,
     dialog_message: null,
   }),
-  getters: {
-    openedDialogKey: (state) => {
-      for (const key in state) {
-        if (state[key] === true) return key;
-      }
-    },
-  },
   mutations: {
     SET_DIALOG: (state, { key, value }) => (state[key] = value),
     SET_DIALOG_MESSAGE: (state, message) => (state.dialog_message = message),
