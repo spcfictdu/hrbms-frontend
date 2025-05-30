@@ -87,7 +87,6 @@ export default {
       this.setLoading({ key: "dialog", value: true });
 
       // Designate Requests
-      let requests;
       const amenityRequests = {
         add: () => this.createAmenity({ name, price }),
         delete: () => this.deleteAmenity(refNum),
@@ -107,7 +106,7 @@ export default {
           }),
       };
 
-      requests =
+      const requests =
         this.dialog_message === "Amenity" ? amenityRequests : addOnRequests;
 
       // Await the request
