@@ -116,10 +116,7 @@ export default {
 
       // Close the dialog and finish loading
       this.setLoading({ key: "dialog", value: false });
-      this.setDialogFn({
-        key: this.key(action),
-        value: false,
-      });
+      this.handleClose(this.dialogKeys[action]);
     },
 
     requestAction(requestData) {
@@ -160,15 +157,9 @@ export default {
       };
 
       if (options[option]) {
-        this.setDialogFn({ key: this.key(option), value: true });
+        this.setDialogFn({ key: this.dialogKeys[option], value: true });
         options[option]();
       }
-    },
-
-    key(option) {
-      return this.dialog_message === "Amenity"
-        ? this.dialogKeys[option]
-        : this.dialogKeys[option];
     },
 
     handleClose(dialog) {
@@ -200,15 +191,12 @@ export default {
   },
   watch: {
     amenity_dialog: {
-      deep: true,
       handler: function (v) {
         if (v) {
           // if action is an empty string, set it to Add
           if (this.meta.action === "") {
             this.meta.action = "add";
           }
-        } else {
-          this.resetMeta();
         }
       },
     },
