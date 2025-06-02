@@ -68,7 +68,6 @@
           full-width
           prepend-inner-icon="mdi-magnify"
           placeholder="Search for room here..."
-          class="mr-2"
           v-model="search"
           background-color="lightBg"
           @keyup.enter="handleRoomSearch"
@@ -85,7 +84,9 @@
             <v-icon left>mdi-plus</v-icon>
             {{ button.name }}
           </v-btn>
+
           <v-btn
+            v-if="$route.name !== 'Occupied Rooms'"
             rounded
             outlined
             elevation="0"
@@ -94,6 +95,19 @@
             class="d-flex d-md-none font-weight-bold add-button-bg"
           >
             <v-icon left>mdi-plus</v-icon>{{ button.name }}
+          </v-btn>
+
+          <v-btn
+            v-if="$route.name === 'Occupied Rooms'"
+            x-small
+            outlined
+            elevation="0"
+            color="primary"
+            fab
+            @click="handleClick(button)"
+            class="d-flex d-md-none font-weight-bold add-button-bg"
+          >
+            <v-icon>mdi-plus</v-icon>
           </v-btn>
         </div>
 
@@ -389,5 +403,9 @@ export default {
 
 .inactive-tab {
   color: #555555;
+}
+
+.v-text-field__slot input::placeholder {
+  font-size: 12px !important;
 }
 </style>

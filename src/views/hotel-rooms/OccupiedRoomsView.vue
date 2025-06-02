@@ -1,5 +1,8 @@
 <template>
-  <RouteLoader :target="hasData" class="mt-10">
+  <RouteLoader
+    :target="hasData"
+    :class="`${this.$vuetify.breakpoint.xs ? 'mt-2' : 'mt-5'}`"
+  >
     <OccupiedRoomsComponent
       :roomStatuses="roomStatuses"
       @request-event="requestEvent"
