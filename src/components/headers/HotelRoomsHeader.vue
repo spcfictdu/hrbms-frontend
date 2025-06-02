@@ -60,7 +60,7 @@
 
       <div class="w-full d-flex align-center order-first order-md-last ml-auto">
         <v-text-field
-          block
+          v-if="$route.name === 'Occupied Rooms'"
           dense
           rounded
           hide-details
@@ -68,8 +68,10 @@
           full-width
           prepend-inner-icon="mdi-magnify"
           placeholder="Search for room here..."
-          class="mr-2 ml-md-2 d-none"
+          class="mr-2"
           v-model="search"
+          background-color="lightBg"
+          @keyup.enter="handleRoomSearch"
         />
 
         <div v-for="button in addButtons" :key="button.name" class="ml-5">
@@ -145,7 +147,7 @@
 
       <div
         v-if="$router.currentRoute.meta.name !== 'Categories'"
-        class="d-none d-md-flex chip-wrapper order-last order-md-first"
+        class="d-md-flex chip-wrapper order-last order-md-first"
       >
         <v-chip
           small
@@ -195,7 +197,7 @@
 
 <script>
 import { assignParams } from "@/mixins/FormattingFunctions";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 
 mapActions;
 export default {
@@ -289,6 +291,8 @@ export default {
   methods: {
     ...mapActions("dialogs", ["setDialogFn", "setDialogMessage"]),
     ...mapActions("amenities", ["setActiveAmenitiesTab"]),
+    ...mapActions("occupied", ["fetchRoomStatus"]),
+    ...mapMutations("occupied", ["SET_ROOM_SEARCH_QUERY"]),
     handleClick(button) {
       if (this.$route.name === "Amenities") this.setDialogMessage(button.name);
 
@@ -321,6 +325,9 @@ export default {
           return word.charAt(0).toUpperCase() + word.slice(1);
         })
         .join(" ");
+    },
+    handleRoomSearch() {
+      this.SET_ROOM_SEARCH_QUERY(this.search);
     },
   },
   watch: {

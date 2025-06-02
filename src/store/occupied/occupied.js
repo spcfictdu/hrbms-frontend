@@ -14,11 +14,14 @@ export const occupied = {
       delete: false,
       confirm: false,
     },
+    roomSearchQuery: "",
   }),
   getters: {},
   mutations: {
     SET_ROOM_STATUS: (state, data) => (state.roomStatuses = data),
     SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
+    SET_ROOM_SEARCH_QUERY: (state, roomNumber) =>
+      (state.roomSearchQuery = roomNumber),
   },
   actions: {
     setLoading: function ({ commit }, { key, value }) {

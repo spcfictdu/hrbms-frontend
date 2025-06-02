@@ -259,7 +259,7 @@ export default {
   },
   computed: {
     ...mapState("roomTypeEnum", ["roomTypeEnum"]),
-    ...mapState("occupied", ["loading"]),
+    ...mapState("occupied", ["loading", "roomSearchQuery"]),
     ...mapState("dialogs", ["room_dialog", "room_confirm", "room_delete"]),
     buttonDisplay() {
       const countData = this.roomStatuses.roomStatusCount;
@@ -269,16 +269,24 @@ export default {
       }));
     },
     mappedRoomStatuses: function () {
-      return this.roomStatuses
-        ? this.roomStatuses.rooms.map((item) => ({
-            name: item.roomNumber,
-            floor: item.roomFloor,
-            guest: item.guest ? item.guest : "No Occupant",
-            status: item.status,
-            referenceNumber: item.roomReferenceNumber,
-            type: item.roomType,
-          }))
-        : [];
+      if (!this.roomStatuses) return [];
+
+      const roomStatuses = this.roomStatuses.rooms.map((item) => ({
+        name: item.roomNumber,
+        floor: item.roomFloor,
+        guest: item.guest ? item.guest : "No Occupant",
+        status: item.status,
+        referenceNumber: item.roomReferenceNumber,
+        type: item.roomType,
+      }));
+
+      if (this.roomSearchQuery) {
+        return roomStatuses.filter((room) =>
+          room.name.toString().includes(this.roomSearchQuery)
+        );
+      }
+
+      return roomStatuses;
     },
     paginationLength: function () {
       return this.roomStatuses ? this.roomStatuses.pagination.lastPage : 1;
