@@ -70,7 +70,7 @@
           placeholder="Search for room here..."
           v-model="search"
           background-color="lightBg"
-          @keyup.enter="handleRoomSearch"
+          @keyup="handleRoomSearch"
         />
 
         <div v-for="button in addButtons" :key="button.name" class="ml-5">
