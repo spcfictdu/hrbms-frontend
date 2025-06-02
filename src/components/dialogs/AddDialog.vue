@@ -19,7 +19,7 @@
 
     <FormField
       v-if="message === 'Add-on'"
-      :label="`${this.message} Price`"
+      :label="`${this.message} Price (₱)`"
       class="mb-4"
     >
       <v-text-field
