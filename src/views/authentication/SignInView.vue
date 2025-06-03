@@ -5,9 +5,10 @@
         <v-avatar size="128" class="mt-n16 fcpc-logo">
           <v-img :src="institution.logo" />
         </v-avatar>
-        <v-card-title class="text-subtitle-1 text-sm-h5">{{
-          institution.name
-        }}</v-card-title>
+        <v-card-title
+          class="text-subtitle-1 text-sm-h5 text-center word-break-normal"
+          >{{ institution.name }}</v-card-title
+        >
         <v-card-subtitle class="text-subtitle-1 mt-2 font-weight-bold"
           >SIGN IN</v-card-subtitle
         >
@@ -117,5 +118,9 @@ export default {
 
 .fcpc-logo {
   border: 5px solid white;
+}
+
+.word-break-normal {
+  word-break: normal;
 }
 </style>
