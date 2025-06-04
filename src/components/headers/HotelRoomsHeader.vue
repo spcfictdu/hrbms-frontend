@@ -40,7 +40,7 @@
 
     <div
       v-if="!$route.meta.hideInputs"
-      class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-6"
+      class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-6 min-h-88"
     >
       <!-- Amenities Tabs -->
       <div v-if="$route.name === 'Amenities'">
@@ -325,5 +325,9 @@ export default {
 
 .v-text-field__slot input::placeholder {
   font-size: 12px !important;
+}
+
+.min-h-88 {
+  min-height: 88px;
 }
 </style>
