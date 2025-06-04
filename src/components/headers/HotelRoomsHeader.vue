@@ -40,7 +40,7 @@
 
     <div
       v-if="!$route.meta.hideInputs"
-      class="w-full d-flex flex-column flex-md-row align-md-center justify-md-space-between py-6 min-h-88"
+      class="w-full d-flex flex-md-row align-md-center justify-md-space-between py-6 "
     >
       <!-- Amenities Tabs -->
       <div v-if="$route.name === 'Amenities'">
@@ -51,14 +51,14 @@
           depressed
           :color="activeAmenitiesTab === tab ? 'primary' : 'lightBg'"
           :class="{ 'inactive-tab': activeAmenitiesTab !== tab }"
-          class="font-weight-bold px-6 mr-3"
+          class="font-weight-bold px-6 mr-1"
           @click="setActiveAmenitiesTab(tab)"
         >
           {{ tab }}
         </v-btn>
       </div>
 
-      <div class="w-full d-flex align-center order-first order-md-last ml-auto">
+      <div class="w-full d-flex align-center ml-auto">
         <v-text-field
           v-if="$route.name === 'Occupied Rooms'"
           dense
@@ -79,7 +79,7 @@
             outlined
             rounded
             color="primary"
-            class="d-none d-md-flex font-weight-bold add-button-bg ml-5"
+            class="d-none d-md-flex font-weight-bold add-button-bg "
             @click="handleClick(button)"
           >
             <v-icon left>mdi-plus</v-icon>
@@ -94,7 +94,7 @@
             color="primary"
             fab
             @click="handleClick(button)"
-            class="d-flex d-md-none font-weight-bold add-button-bg ml-5"
+            class="d-flex d-md-none font-weight-bold add-button-bg"
           >
             <v-icon>mdi-plus</v-icon>
           </v-btn>
