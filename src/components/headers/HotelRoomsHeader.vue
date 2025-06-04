@@ -73,12 +73,13 @@
           @keyup="handleRoomSearch"
         />
 
-        <div v-for="button in addButtons" :key="button.name" class="ml-5">
+        <div v-for="button in addButtons" :key="button.name">
           <v-btn
+            v-if="isForCurrentTab(button.name) || $route.name !== 'Amenities'"
             outlined
             rounded
             color="primary"
-            class="d-none d-md-flex font-weight-bold add-button-bg"
+            class="d-none d-md-flex font-weight-bold add-button-bg ml-5"
             @click="handleClick(button)"
           >
             <v-icon left>mdi-plus</v-icon>
@@ -86,77 +87,18 @@
           </v-btn>
 
           <v-btn
-            v-if="$route.name !== 'Occupied Rooms'"
-            rounded
-            outlined
-            elevation="0"
-            color="primary"
-            @click="handleClick(button)"
-            class="d-flex d-md-none font-weight-bold add-button-bg"
-          >
-            <v-icon left>mdi-plus</v-icon>{{ button.name }}
-          </v-btn>
-
-          <v-btn
-            v-if="$route.name === 'Occupied Rooms'"
+            v-if="isForCurrentTab(button.name) || $route.name !== 'Amenities'"
             x-small
             outlined
             elevation="0"
             color="primary"
             fab
             @click="handleClick(button)"
-            class="d-flex d-md-none font-weight-bold add-button-bg"
+            class="d-flex d-md-none font-weight-bold add-button-bg ml-5"
           >
             <v-icon>mdi-plus</v-icon>
           </v-btn>
         </div>
-
-        <!-- <div class="ml-5">
-          <v-btn
-            outlined
-            rounded
-            color="primary"
-            class="d-none d-md-flex font-weight-bold add-button-bg"
-            @click="redirect(addButton)"
-          >
-            <v-icon left>mdi-plus</v-icon>
-            {{ addButton.name }}
-          </v-btn>
-
-          <v-btn
-            rounded
-            outlined
-            elevation="0"
-            color="primary"
-            @click="redirect(addButton)"
-            class="d-flex d-md-none font-weight-bold add-button-bg"
-          >
-            <v-icon left>mdi-plus</v-icon>{{ addButton.name }}
-          </v-btn>
-        </div> -->
-
-        <!-- Add-ons button -->
-        <!-- <div v-if="$route.name === 'Amenities'" class="ml-5">
-          <v-btn
-            outlined
-            rounded
-            color="primary"
-            class="d-none d-md-flex font-weight-bold add-button-bg"
-          >
-            <v-icon left>mdi-plus</v-icon>
-            Add-ons
-          </v-btn>
-
-          <v-btn
-            rounded
-            outlined
-            elevation="0"
-            color="primary"
-            class="d-flex d-md-none font-weight-bold add-button-bg"
-          >
-            <v-icon left>mdi-plus</v-icon>Add-ons
-          </v-btn>
-        </div> -->
       </div>
 
       <div
@@ -177,35 +119,6 @@
     </div>
 
     <v-divider />
-    <!-- <div class="d-flex flex-column flex-md-row align-center py-3">
-      <div class="chip-wrapper order-last order-md-first">
-        <v-chip
-          small
-          color="primary"
-          :outlined="chip !== 'All'"
-          v-for="chip in chips"
-          :key="chip"
-        >
-          {{ chip }}
-        </v-chip>
-      </div>
-
-      <div class="d-flex align-center ml-md-auto order-first order-md-last">
-        <v-text-field
-          block
-          dense
-          rounded
-          hide-details
-          filled
-          prepend-inner-icon="mdi-magnify"
-          placeholder="Search for room here..."
-        />
-        <v-btn outlined rounded color="primary" class="ml-4">
-          <v-icon left>mdi-plus</v-icon>
-          ROOM
-        </v-btn>
-      </div>
-    </div> -->
   </v-container>
 </template>
 
@@ -342,6 +255,11 @@ export default {
     },
     handleRoomSearch() {
       this.SET_ROOM_SEARCH_QUERY(this.search);
+    },
+    isForCurrentTab(buttonName) {
+      if (this.activeAmenitiesTab === "Amenities")
+        return "Amenity" === buttonName;
+      if (this.activeAmenitiesTab === "Add-ons") return "Add-on" === buttonName;
     },
   },
   watch: {
