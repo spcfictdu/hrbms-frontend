@@ -1,13 +1,21 @@
 <template>
-  <FormSection title="Booking Summary" class="pb-8" v-if="bookingSummary">
-    <TotalBillCard :value="bookingSummary" :loading="loading" />
+  <FormSection title="Booking Summary" class="pb-8">
+    <TotalBillCard v-if="room" :value="bookingSummary" :loading="loading" />
+    <v-card
+      flat
+      min-height="575"
+      class="d-flex justify-center align-center"
+      v-else
+    >
+      <v-progress-circular color="primary" indeterminate></v-progress-circular>
+    </v-card>
   </FormSection>
 </template>
 
 <script>
 import TotalBillCard from "../hotel-rooms/forms/TotalBillCard.vue";
 import FormSection from "../sections/FormSection.vue";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 export default {
   name: "BookingSummary",
   components: {
@@ -24,6 +32,7 @@ export default {
 
   methods: {
     ...mapActions("roomEnum", ["fetchRoom"]),
+    ...mapMutations("roomEnum", ["SET_ROOM"]),
   },
   computed: {
     ...mapState("roomEnum", ["room"]),
@@ -91,6 +100,9 @@ export default {
         button: this.btnStyling,
       };
     },
+  },
+  beforeDestroy() {
+    this.SET_ROOM(null);
   },
   watch: {
     queryParams: {
