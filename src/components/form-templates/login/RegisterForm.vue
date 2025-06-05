@@ -103,11 +103,9 @@
 
 <script>
 import { mask } from "vue-the-mask";
-import LabelSlot from "@/components/slots/LabelSlot.vue";
 
 export default {
   name: "RegisterForm",
-  components: { LabelSlot },
   directives: { mask },
   data: () => ({
     showPassword: false,

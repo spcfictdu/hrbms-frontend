@@ -86,11 +86,10 @@
 
 <script>
 import { mapState, mapActions } from "vuex";
-import LabelSlot from "../../components/slots/LabelSlot.vue";
 import RegisterForm from "@/components/form-templates/login/RegisterForm.vue";
 export default {
   name: "GuestSignInView",
-  components: { LabelSlot, RegisterForm },
+  components: { RegisterForm },
   props: {
     method: String,
   },

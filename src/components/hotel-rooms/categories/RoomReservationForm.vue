@@ -117,11 +117,9 @@
 </template>
 
 <script>
-import LabelSlot from "@/components/slots/LabelSlot.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "RoomReservationForm",
-  components: { LabelSlot },
   props: {
     roomCategory: String,
     queryFill: Object,

@@ -1,20 +1,19 @@
 <template>
   <div>
-    <LabelSlot :isBold="isBold">{{ label }}</LabelSlot>
+    <div class="text-caption ml-1 mb-1" :class="{ 'text-overline': isBold }">
+      <slot name="label"></slot>
+      {{ label }}
+    </div>
     <slot />
   </div>
 </template>
 
 <script>
-import LabelSlot from "../slots/LabelSlot.vue";
 export default {
   name: "FormField",
-  components: {
-    LabelSlot,
-  },
   props: {
     label: String,
-    isBold: Boolean,
+    isBold: { type: Boolean, default: false },
   },
 };
 </script>

@@ -179,10 +179,8 @@
 
 <script>
 import { parseISO, format } from "date-fns";
-import LabelSlot from "../slots/LabelSlot.vue";
 export default {
   name: "SearchEngine",
-  components: { LabelSlot },
   data: () => ({
     queryParams: {
       checkInDate: null,

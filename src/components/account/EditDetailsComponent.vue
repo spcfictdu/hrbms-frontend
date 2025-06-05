@@ -127,13 +127,12 @@
 </template>
 
 <script>
-import LabelSlot from "@/components/slots/LabelSlot.vue";
 import FormField from "../fields/FormField.vue";
 import { mask } from "vue-the-mask";
 export default {
   name: "EditDetailsComponent",
   directives: { mask },
-  components: { LabelSlot, FormField },
+  components: { FormField },
   props: { accountData: Object, alertMeta: Object, loading: Boolean },
   data: () => ({
     payload: {

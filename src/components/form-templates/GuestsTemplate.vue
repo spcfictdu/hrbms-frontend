@@ -16,13 +16,11 @@
 <script>
 import FormSection from "../sections/FormSection.vue";
 import FormField from "../fields/FormField.vue";
-import LabelSlot from "../slots/LabelSlot.vue";
 import TitleSlot from "../slots/TitleSlot.vue";
 export default {
   name: "GuestsTemplate",
   components: {
     TitleSlot,
-    LabelSlot,
     FormSection,
     FormField,
   },
