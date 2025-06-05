@@ -28,6 +28,8 @@
         dense
         :rules="rules.addOnPrice"
         hide-details="auto"
+        hide-spin-buttons
+        @keydown="validatePriceInput"
       ></v-text-field>
     </FormField>
 
@@ -75,13 +77,30 @@ export default {
     rules: function () {
       const errors = {};
       errors.inputName = [(v) => !!v || `${this.message} Name is required`];
-      errors.addOnPrice = [(v) => !isNaN(v) || "Please enter a valid number."];
+      errors.addOnPrice = [(v) => !isNaN(v) || "Please enter a valid number"];
       return errors;
     },
   },
   methods: {
     handleSubmit: function () {
       this.$emit("onSubmit", this.payload);
+    },
+    validatePriceInput(e) {
+      if (e.key === " ") e.preventDefault();
+
+      const check = e.key.length === 1 && isNaN(e.key);
+      const isDecimal = e.key === ".";
+      const isShortcut = e.metaKey || e.ctrlKey;
+      const hasDecimal = this.payload.price.toString().includes(".");
+
+      if (check && !isShortcut && !isDecimal) {
+        e.preventDefault();
+        return;
+      }
+
+      if (isDecimal && hasDecimal) {
+        e.preventDefault();
+      }
     },
   },
   watch: {
