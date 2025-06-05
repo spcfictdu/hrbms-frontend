@@ -40,7 +40,7 @@
 
     <div
       v-if="!$route.meta.hideInputs"
-      class="w-full d-flex flex-md-row align-md-center justify-md-space-between py-6 "
+      class="w-full d-flex flex-md-row align-md-center justify-md-space-between py-6"
     >
       <!-- Amenities Tabs -->
       <div v-if="$route.name === 'Amenities'">
@@ -71,6 +71,7 @@
           v-model="search"
           background-color="lightBg"
           @keyup="handleRoomSearch"
+          class="mr-3"
         />
 
         <div v-for="button in addButtons" :key="button.name">
@@ -79,7 +80,7 @@
             outlined
             rounded
             color="primary"
-            class="d-none d-md-flex font-weight-bold add-button-bg "
+            class="d-none d-sm-flex font-weight-bold add-button-bg"
             @click="handleClick(button)"
           >
             <v-icon left>mdi-plus</v-icon>
@@ -94,7 +95,7 @@
             color="primary"
             fab
             @click="handleClick(button)"
-            class="d-flex d-md-none font-weight-bold add-button-bg"
+            class="d-flex d-sm-none font-weight-bold add-button-bg"
           >
             <v-icon>mdi-plus</v-icon>
           </v-btn>
