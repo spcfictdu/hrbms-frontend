@@ -51,11 +51,21 @@
           depressed
           :color="activeAmenitiesTab === tab ? 'primary' : 'lightBg'"
           :class="{ 'inactive-tab': activeAmenitiesTab !== tab }"
-          class="font-weight-bold px-6 mr-1"
+          class="font-weight-bold px-6 mr-1 hidden-sm-and-down"
           @click="setActiveAmenitiesTab(tab)"
         >
           {{ tab }}
         </v-btn>
+        <v-autocomplete
+          class="d-md-none"
+          filled
+          rounded
+          dense
+          hide-details="auto"
+          :items="amenitiesTabs"
+          v-model="aminityTabName"
+          @change="setActiveAmenitiesTab(aminityTabName)"
+        />
       </div>
 
       <div class="w-full d-flex align-center ml-auto">
@@ -132,6 +142,7 @@ export default {
   name: "HotelRoomsHeader",
   mixins: [assignParams],
   data: () => ({
+    aminityTabName: "Amenities",
     activeButton: null,
     activeChip: "All",
     search: "",

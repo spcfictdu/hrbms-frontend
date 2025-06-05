@@ -86,7 +86,7 @@ router.beforeEach((to, from, next) => {
 
 router.afterEach((to) => {
   Vue.nextTick(() => {
-    document.title = `${to.name} | HRMS`;
+    document.title = `${to.name} | HRBMS`;
   });
 });
 
