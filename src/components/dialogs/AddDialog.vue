@@ -23,6 +23,7 @@
       class="mb-4"
     >
       <v-text-field
+        type="number"
         v-model="payload.price"
         outlined
         dense
