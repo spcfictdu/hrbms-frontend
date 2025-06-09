@@ -86,9 +86,8 @@
 
     <v-divider class="my-5" />
 
-    <div style="max-width: 225px" class="d-none d-sm-flex">
+    <div style="max-width: 260px" class="d-none d-sm-flex">
       <v-autocomplete
-        class="d-block"
         rounded
         filled
         hide-details="auto"
