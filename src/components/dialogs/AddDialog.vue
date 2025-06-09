@@ -23,13 +23,11 @@
       class="mb-4"
     >
       <v-text-field
-        type="number"
         v-model="payload.price"
         outlined
         dense
         :rules="rules.addOnPrice"
         hide-details="auto"
-        hide-spin-buttons
         @keydown="validatePriceInput"
       ></v-text-field>
     </FormField>
@@ -78,7 +76,7 @@ export default {
     rules: function () {
       const errors = {};
       errors.inputName = [(v) => !!v || `${this.message} Name is required`];
-      errors.addOnPrice = [(v) => !isNaN(v) || "Please enter a valid number"];
+      errors.addOnPrice = [(v) => !isNaN(v) || "Please enter a valid price"];
       return errors;
     },
   },
@@ -87,21 +85,12 @@ export default {
       this.$emit("onSubmit", this.payload);
     },
     validatePriceInput(e) {
-      if (e.key === " ") e.preventDefault();
-
-      const check = e.key.length === 1 && isNaN(e.key);
-      const isDecimal = e.key === ".";
       const isShortcut = e.metaKey || e.ctrlKey;
-      const hasDecimal = this.payload.price.toString().includes(".");
+      const input = `${this.payload.price}${e.key}`;
 
-      if (check && !isShortcut && !isDecimal) {
-        e.preventDefault();
+      if (/^[0-9]*\.?[0-9]*$/.test(input) || e.key.length !== 1 || isShortcut)
         return;
-      }
-
-      if (isDecimal && hasDecimal) {
-        e.preventDefault();
-      }
+      e.preventDefault();
     },
   },
   watch: {
