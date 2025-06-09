@@ -6,9 +6,9 @@
     <v-card flat class="pa-6">
       <v-form lazy-validation ref="form">
         <div class="pb-4">
-          <label-slot>
+          <FormField>
             <template v-slot:label> Check-in Date </template>
-          </label-slot>
+          </FormField>
           <v-menu
             :close-on-content-click="false"
             offset-y
@@ -37,9 +37,9 @@
         </div>
 
         <div class="pb-4">
-          <label-slot>
+          <FormField>
             <template v-slot:label> Check-out Date </template>
-          </label-slot>
+          </FormField>
           <v-menu
             :close-on-content-click="false"
             offset-y
@@ -68,9 +68,9 @@
         </div>
 
         <div class="pb-4">
-          <label-slot>
+          <FormField>
             <template v-slot:label> {{ enumData.label }} </template>
-          </label-slot>
+          </FormField>
           <v-autocomplete
             :items="enumData.enums"
             item-text="roomNumber"
@@ -118,8 +118,11 @@
 
 <script>
 import { mapActions, mapState } from "vuex";
+import FormField from "@/components/fields/FormField.vue";
+
 export default {
   name: "RoomReservationForm",
+  components: { FormField },
   props: {
     roomCategory: String,
     queryFill: Object,

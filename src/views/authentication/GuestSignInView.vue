@@ -21,9 +21,9 @@
         <transition name="fade" mode="out-in">
           <div v-if="!isRegister" key="login">
             <div class="pb-4">
-              <label-slot>
+              <FormField>
                 <template #label> Email</template>
-              </label-slot>
+              </FormField>
               <v-text-field
                 type="email"
                 v-model="user.username"
@@ -37,9 +37,9 @@
             </div>
 
             <div class="pb-4">
-              <label-slot>
+              <FormField>
                 <template #label> Password</template>
-              </label-slot>
+              </FormField>
               <v-text-field
                 v-model="user.password"
                 outlined
@@ -87,9 +87,11 @@
 <script>
 import { mapState, mapActions } from "vuex";
 import RegisterForm from "@/components/form-templates/login/RegisterForm.vue";
+import FormField from "@/components/fields/FormField.vue";
+
 export default {
   name: "GuestSignInView",
-  components: { RegisterForm },
+  components: { RegisterForm, FormField },
   props: {
     method: String,
   },

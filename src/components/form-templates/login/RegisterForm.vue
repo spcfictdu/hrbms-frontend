@@ -1,9 +1,9 @@
 <template>
   <div>
     <div class="pb-4">
-      <label-slot>
+      <FormField>
         <template #label> First Name</template>
-      </label-slot>
+      </FormField>
       <v-text-field
         v-model="payload.firstName"
         outlined
@@ -16,9 +16,9 @@
     </div>
 
     <div class="pb-4">
-      <label-slot>
+      <FormField>
         <template #label> Middle Name</template>
-      </label-slot>
+      </FormField>
       <v-text-field
         v-model="payload.middleName"
         outlined
@@ -31,9 +31,9 @@
     </div>
 
     <div class="pb-4">
-      <label-slot>
+      <FormField>
         <template #label> Last Name</template>
-      </label-slot>
+      </FormField>
       <v-text-field
         v-model="payload.lastName"
         outlined
@@ -46,9 +46,9 @@
     </div>
 
     <div class="pb-4">
-      <label-slot>
+      <FormField>
         <template #label> Mobile Number</template>
-      </label-slot>
+      </FormField>
       <v-text-field
         type="tel"
         v-model="payload.mobileNumber"
@@ -64,9 +64,9 @@
     </div>
 
     <div class="pb-4">
-      <label-slot>
+      <FormField>
         <template #label> Email</template>
-      </label-slot>
+      </FormField>
       <v-text-field
         type="email"
         v-model="payload.email"
@@ -81,9 +81,9 @@
     </div>
 
     <div class="pb-4">
-      <label-slot>
+      <FormField>
         <template #label> Password</template>
-      </label-slot>
+      </FormField>
       <v-text-field
         v-model="payload.password"
         :type="showPassword ? 'text' : 'password'"
@@ -103,9 +103,11 @@
 
 <script>
 import { mask } from "vue-the-mask";
+import FormField from "@/components/fields/FormField.vue";
 
 export default {
   name: "RegisterForm",
+  components: { FormField },
   directives: { mask },
   data: () => ({
     showPassword: false,
