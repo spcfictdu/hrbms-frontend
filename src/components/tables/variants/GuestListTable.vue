@@ -48,7 +48,7 @@ export default {
       },
     ],
     footerProps: {
-      itemsPerPage: [5, 10, 15],
+      itemsPerPageOptions: [5, 10, 15],
     },
   }),
   methods: {
