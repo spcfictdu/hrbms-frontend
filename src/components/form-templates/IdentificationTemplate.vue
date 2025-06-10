@@ -23,6 +23,7 @@
             :rules="rules.IdNumber"
             v-model="payload.id.number"
             @change="emitTransaction"
+            v-mask="'####-####-####-####'"
           ></v-text-field>
         </FormField>
       </v-col>
@@ -33,6 +34,7 @@
 <script>
 import FormField from "../fields/FormField.vue";
 import FormSection from "../sections/FormSection.vue";
+import { mask } from "vue-the-mask";
 export default {
   name: "IdentificationTemplate",
   components: {
@@ -42,6 +44,7 @@ export default {
   props: {
     fill: Object,
   },
+  directives: { mask },
   data: () => ({
     payload: {
       id: {

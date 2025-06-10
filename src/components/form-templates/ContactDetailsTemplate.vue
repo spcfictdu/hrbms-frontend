@@ -12,6 +12,7 @@
             counter="11"
             v-model="payload.contact.phoneNumber"
             @change="emitTransaction"
+            v-mask="['09#########']"
           ></v-text-field>
         </FormField>
       </v-col>
@@ -35,6 +36,7 @@
 <script>
 import FormField from "../fields/FormField.vue";
 import FormSection from "../sections/FormSection.vue";
+import { mask } from "vue-the-mask";
 export default {
   name: "ContactDetailsTemplate",
   components: {
@@ -44,6 +46,7 @@ export default {
   props: {
     fill: Object,
   },
+  directives: { mask },
   data: () => ({
     payload: {
       contact: {
