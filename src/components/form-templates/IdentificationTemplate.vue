@@ -10,20 +10,22 @@
             :items="IdEnums"
             :rules="rules.type"
             v-model="payload.id.type"
-            @change="emitTransaction"
+            @change="handleTypeChange"
           ></v-select>
         </FormField>
       </v-col>
       <v-col cols="12" md="6">
         <FormField label="ID Number">
           <v-text-field
+            ref="idNumberInput"
             dense
             hide-details="auto"
             outlined
             :rules="rules.IdNumber"
             v-model="payload.id.number"
             @change="emitTransaction"
-            v-mask="'####-####-####-####'"
+            @input="payload.id.number = payload.id.number.toLocaleUpperCase()"
+            v-mask="idNumberMask(payload.id.type)"
           ></v-text-field>
         </FormField>
       </v-col>
@@ -57,6 +59,21 @@ export default {
   methods: {
     emitTransaction: function () {
       this.$emit("emit-transaction", this.payload);
+    },
+
+    idNumberMask(idType) {
+      const mask = {
+        "National ID": "####-####-####-####",
+        "Driver's License": "XX-##-XXXXXXXXX-##",
+        Passport: "AX######X",
+      };
+      return mask[idType] ?? "";
+    },
+
+    handleTypeChange() {
+      this.payload.id.number = "";
+      this.$refs.idNumberInput.$refs.input.value = "";
+      this.emitTransaction();
     },
   },
   computed: {
