@@ -64,7 +64,7 @@ export default {
     idNumberMask(idType) {
       const mask = {
         "National ID": "####-####-####-####",
-        "Driver's License": "XX-##-XXXXXXXXX-##",
+        "Driver's License": "X##-##-######",
         Passport: "AX######X",
       };
       return mask[idType] ?? "";
