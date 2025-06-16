@@ -3,17 +3,28 @@
     <div
       class="w-full d-flex flex-column flex-sm-row align-center justify-space-between"
     >
-      <p class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-1">
-        {{ $route.meta.name }}
+      <p
+        class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-1"
+        :class="{ 'text-uppercase': isUpperCase }"
+      >
+        {{ headerText ?? $route.meta.name }}
       </p>
+
+      <slot />
     </div>
-    <v-divider />
+
+    <v-divider :style="{ marginTop: `${dividerMarginTop}px` }" />
   </v-container>
 </template>
 
 <script>
 export default {
   name: "PageHeader",
+  props: {
+    headerText: String,
+    isUpperCase: Boolean,
+    dividerMarginTop: Number,
+  },
   data: () => ({}),
 };
 </script>
