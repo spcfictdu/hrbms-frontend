@@ -43,7 +43,7 @@ export default {
   name: "CashierDrawer",
   components: { CashierDrawerDetails },
   props: {
-    drawerNumber: String,
+    drawerNumber: Number,
     isFirstRow: Boolean,
   },
   data: () => ({
