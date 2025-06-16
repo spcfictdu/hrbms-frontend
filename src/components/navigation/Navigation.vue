@@ -71,7 +71,9 @@
                 </v-icon>
               </v-btn>
 
-              <p class="text-caption mb-0 mt-2 white--text">{{ route.name }}</p>
+              <p class="text-caption mb-0 mt-2 white--text text-center">
+                {{ route.name }}
+              </p>
             </div>
 
             <v-divider vertical class="white" />
@@ -86,7 +88,9 @@
               >
                 <v-icon color="primary"> mdi-logout-variant</v-icon>
               </v-btn>
-              <p class="text-caption mb-0 mt-2 white--text">Sign Out</p>
+              <p class="text-caption mb-0 mt-2 white--text text-center">
+                Sign Out
+              </p>
             </div>
           </div>
         </v-col>
@@ -159,6 +163,12 @@ export default {
           "Room Categories",
           // "Availability",
         ],
+      },
+      {
+        name: "Cashier",
+        route: "Cashier",
+        icon: "mdi-cash-register",
+        childRouteNames: [],
       },
     ],
   }),

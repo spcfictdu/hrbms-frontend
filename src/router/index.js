@@ -9,6 +9,7 @@ import authentication from "./authentication/authentication";
 import publicRoutes from "@/router/public-routes/public-routes";
 import dashboardRoutes from "./dashboard/dashboard";
 import guestUser from "./guest-user/guest-user";
+import cashier from "./cashier/cashier";
 
 Vue.use(VueRouter);
 
@@ -26,6 +27,7 @@ const mappedRoutes = {
       ...roomsList[0].children.map(({ name }) => name),
       ...guestList.map(({ name }) => name),
       ...transaction.map(({ name }) => name),
+      ...cashier.map(({ name }) => name),
     ],
   },
 };
@@ -38,6 +40,7 @@ const routes = [
   ...authentication,
   ...publicRoutes,
   ...guestUser,
+  ...cashier,
 ];
 
 const router = new VueRouter({
