@@ -240,12 +240,22 @@ export default {
     redirect: function (route) {
       this.activeButton = route.name;
 
+      let targetRouteName = null;
+
       if (route.route?.route) {
-        return this.$router.push({ name: route.route.route });
+        targetRouteName = route.route.route;
       } else if (route.route) {
-        return this.$router.push({ name: route.route });
+        targetRouteName = route.route;
       } else {
         return route.action();
+      }
+
+      if (targetRouteName) {
+        this.$router.push({ name: targetRouteName }).catch((err) => {
+          if (err.name !== "NavigationDuplicated") {
+            throw err;
+          }
+        });
       }
     },
     activateChip: function (chip) {
