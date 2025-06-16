@@ -6,15 +6,17 @@
     }"
   >
     <CashierHeader />
+    <CashierDrawerGrid />
   </div>
 </template>
 
 <script>
 import CashierHeader from "@/components/headers/CashierHeader.vue";
+import CashierDrawerGrid from "@/components/cashier/CashierDrawerGrid.vue";
 
 export default {
   name: "CashierView",
-  components: { CashierHeader },
+  components: { CashierHeader, CashierDrawerGrid },
 };
 </script>
 

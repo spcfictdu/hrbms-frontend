@@ -27,8 +27,9 @@ export default new Vuetify({
         occupied: "#DB8300",
         unclean: "#db1a00",
         available: "#00ac30",
-        
       },
     },
+
+    options: { customProperties: true },
   },
 });
