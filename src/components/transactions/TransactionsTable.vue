@@ -129,7 +129,6 @@ export default {
     queryParams: {
       deep: true,
       handler: function (v) {
-        console.log(v);
         this.$emit("onQuery", v);
       },
     },

@@ -43,14 +43,6 @@ export default {
     // Items to include in the query params
     includedItems: ["page", "itemsPerPage", "sortBy", "sortDesc"],
   }),
-  watch: {
-    footerProps: {
-      immediate: true,
-      handler: function (v) {
-        console.log("footerProps", v);
-      },
-    },
-  },
 };
 </script>
 
