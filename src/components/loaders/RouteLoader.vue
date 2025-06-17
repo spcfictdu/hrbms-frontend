@@ -2,7 +2,7 @@
   <div>
     <!-- Fade Transition for Loading -->
     <v-fade-transition mode="out-in" v-if="!showContent">
-      <div class="loading-container">
+      <div class="loading-container" :class="loaderStyles">
         <div class="d-flex flex-column align-center" style="gap: 16px">
           <v-progress-circular
             :value="progress"
@@ -26,6 +26,7 @@ export default {
   name: "RouteLoader",
   props: {
     target: Boolean,
+    loaderStyles: Array,
   },
   data: () => ({
     showContent: false,

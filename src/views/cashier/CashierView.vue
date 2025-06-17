@@ -6,17 +6,21 @@
     }"
   >
     <CashierHeader />
-    <CashierDrawerGrid />
+
+    <RouteLoader :target="true" :loaderStyles="['mt-10']">
+      <CashierDrawerGrid />
+    </RouteLoader>
   </div>
 </template>
 
 <script>
 import CashierHeader from "@/components/headers/CashierHeader.vue";
+import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierDrawerGrid from "@/components/cashier/CashierDrawerGrid.vue";
 
 export default {
   name: "CashierView",
-  components: { CashierHeader, CashierDrawerGrid },
+  components: { CashierHeader, RouteLoader, CashierDrawerGrid },
 };
 </script>
 
