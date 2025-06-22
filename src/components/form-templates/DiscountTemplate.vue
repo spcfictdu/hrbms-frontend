@@ -19,11 +19,14 @@
       <v-col cols="12" v-show="!!payload.discount">
         <FormField>
           <v-text-field
+            ref="idNumberInput"
             dense
             outlined
             hide-details="auto"
             :placeholder="`Enter your ${placeholders[payload.discount]}`"
             v-model="payload.idNumber"
+            @input="payload.idNumber = payload.idNumber.toLocaleUpperCase()"
+            v-mask="idNumberMask(payload.discount)"
           />
         </FormField>
       </v-col>
@@ -34,9 +37,12 @@
 <script>
 import FormSection from "../sections/FormSection.vue";
 import FormField from "../fields/FormField.vue";
+import { mask } from "vue-the-mask";
+
 export default {
   name: "DiscountTemplate",
   components: { FormSection, FormField },
+  directives: { mask },
   data: () => ({
     payload: {
       discount: null,
@@ -60,8 +66,18 @@ export default {
       VOUCHER: "voucherCode",
     },
   }),
+  methods: {
+    idNumberMask(idType) {
+      const mask = {
+        SENIOR: "######",
+        PWD: "##-####-###-#######",
+      };
+      return mask[idType] ?? "XXXXXXXXXXXXXXXX";
+    },
+  },
   watch: {
     "payload.discount": function () {
+      this.$refs.idNumberInput.$refs.input.value = "";
       this.payload.idNumber = null;
     },
     payload: {
