@@ -35,6 +35,7 @@
       <CashierDrawerDetails
         :showDetails="showDetails"
         :sessionData="sessionData"
+        :drawerNumber="drawerNumber"
       />
     </v-card>
   </div>

@@ -13,4 +13,14 @@ export default [
       selectedMainNav: "Cashier",
     },
   },
+  {
+    path: "/cashier/:drawerNumber/:id",
+    name: "Cashier History",
+    component: () => import("@/views/cashier/CashierHistoryView.vue"),
+    props: true,
+    meta: {
+      name: "Cashier History",
+      selectedMainNav: "Cashiers",
+    },
+  },
 ];

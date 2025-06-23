@@ -26,6 +26,12 @@
           v-for="(button, i) in buttons"
           :key="button.text"
           class="mt-2 ms-0"
+          @click="
+            $router.push({
+              name: 'Cashier History',
+              params: { id: sessionData.userId, drawerNumber },
+            })
+          "
         >
           {{ button.text }}
         </v-btn>
@@ -40,6 +46,7 @@ export default {
   props: {
     showDetails: Boolean,
     sessionData: Object,
+    drawerNumber: Number,
   },
   data: () => ({
     buttons: [
