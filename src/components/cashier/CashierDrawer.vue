@@ -34,7 +34,7 @@
 
       <CashierDrawerDetails
         :showDetails="showDetails"
-        :payments="sessionData.payments"
+        :sessionData="sessionData"
       />
     </v-card>
   </div>

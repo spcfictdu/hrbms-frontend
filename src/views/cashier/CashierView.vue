@@ -7,7 +7,7 @@
   >
     <CashierHeader />
 
-    <RouteLoader :target="true" :loaderStyles="['mt-10']">
+    <RouteLoader :target="hasData" :loaderStyles="['mt-10']">
       <CashierDrawerGrid />
     </RouteLoader>
   </div>
@@ -17,13 +17,19 @@
 import CashierHeader from "@/components/headers/CashierHeader.vue";
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierDrawerGrid from "@/components/cashier/CashierDrawerGrid.vue";
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "CashierView",
   components: { CashierHeader, RouteLoader, CashierDrawerGrid },
   methods: {
     ...mapActions("cashier", ["fetchSessions"]),
+  },
+  computed: {
+    ...mapState("cashier", ["sessions"]),
+    hasData() {
+      return !!this.sessions ?? false;
+    },
   },
   created() {
     this.fetchSessions();

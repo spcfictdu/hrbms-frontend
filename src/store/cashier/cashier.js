@@ -19,7 +19,6 @@ export const cashier = {
       return this.$axios
         .get(url)
         .then((response) => {
-          console.log(response);
           commit("SET_SESSIONS", response.data.results);
         })
         .catch((error) => {

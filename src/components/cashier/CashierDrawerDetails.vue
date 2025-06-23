@@ -6,7 +6,11 @@
       <v-card-text>
         <v-container>
           <v-row>
-            <v-col v-for="payment in payments" :key="payment.name" cols="6">
+            <v-col
+              v-for="payment in drawerDetails"
+              :key="payment.name"
+              cols="6"
+            >
               <div>{{ payment.name.replaceAll("_", " ") }}</div>
               <div class="font-weight-bold">PHP {{ payment.totalAmount }}</div>
             </v-col>
@@ -35,7 +39,7 @@ export default {
   name: "CashierDrawerDetails",
   props: {
     showDetails: Boolean,
-    payments: Array,
+    sessionData: Object,
   },
   data: () => ({
     buttons: [
@@ -47,5 +51,21 @@ export default {
       },
     ],
   }),
+  computed: {
+    drawerDetails() {
+      const drawerDetails = [
+        {
+          name: "Opening Balance",
+          totalAmount: this.sessionData.openingBalance ?? "0.00",
+        },
+        {
+          name: "Closing Balance",
+          totalAmount: this.sessionData.closingBalance ?? "0.00",
+        },
+        ...this.sessionData.payments,
+      ];
+      return drawerDetails;
+    },
+  },
 };
 </script>
