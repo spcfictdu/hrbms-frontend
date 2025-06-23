@@ -12,7 +12,8 @@
             >First Floor Lobby</v-card-title
           >
           <v-card-text>
-            LAST OPENED BY | <span class="font-weight-bold">S45</span>
+            LAST OPENED BY |
+            <span class="font-weight-bold">S{{ sessionData.userId }}</span>
           </v-card-text>
         </div>
 
@@ -31,7 +32,10 @@
         </v-card-actions>
       </div>
 
-      <CashierDrawerDetails :showDetails="showDetails" />
+      <CashierDrawerDetails
+        :showDetails="showDetails"
+        :payments="sessionData.payments"
+      />
     </v-card>
   </div>
 </template>
@@ -45,6 +49,7 @@ export default {
   props: {
     drawerNumber: Number,
     isFirstRow: Boolean,
+    sessionData: Object,
   },
   data: () => ({
     showDetails: false,

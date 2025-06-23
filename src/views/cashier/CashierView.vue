@@ -17,10 +17,17 @@
 import CashierHeader from "@/components/headers/CashierHeader.vue";
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierDrawerGrid from "@/components/cashier/CashierDrawerGrid.vue";
+import { mapActions } from "vuex";
 
 export default {
   name: "CashierView",
   components: { CashierHeader, RouteLoader, CashierDrawerGrid },
+  methods: {
+    ...mapActions("cashier", ["fetchSessions"]),
+  },
+  created() {
+    this.fetchSessions();
+  },
 };
 </script>
 

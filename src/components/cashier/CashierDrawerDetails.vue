@@ -6,9 +6,9 @@
       <v-card-text>
         <v-container>
           <v-row>
-            <v-col v-for="n in 10" :key="n" cols="6">
-              <div>Cash</div>
-              <div class="font-weight-bold">PHP 0.00</div>
+            <v-col v-for="payment in payments" :key="payment.name" cols="6">
+              <div>{{ payment.name.replaceAll("_", " ") }}</div>
+              <div class="font-weight-bold">PHP {{ payment.totalAmount }}</div>
             </v-col>
           </v-row>
         </v-container>
@@ -35,6 +35,7 @@ export default {
   name: "CashierDrawerDetails",
   props: {
     showDetails: Boolean,
+    payments: Array,
   },
   data: () => ({
     buttons: [

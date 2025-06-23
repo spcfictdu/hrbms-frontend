@@ -16,6 +16,7 @@ import { publicRooms } from "./public/public-rooms";
 import { account } from "@/store/account/account";
 import { alerts } from "@/store/alerts/alerts";
 import { dialogs } from "./dialogs/dialogs";
+import { cashier } from "./cashier/cashier";
 
 // Enums
 import {
@@ -43,6 +44,7 @@ export default new Vuex.Store({
     occupied,
     publicRooms,
     account,
+    cashier,
 
     // Enums
     roomTypeEnum,

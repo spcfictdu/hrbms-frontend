@@ -1,8 +1,18 @@
 <template>
   <v-container>
     <v-row>
-      <v-col v-for="(n, i) in 6" :key="n" cols="12" sm="6" lg="4">
-        <CashierDrawer :drawerNumber="n" :isFirstRow="isFirstRow(i)" />
+      <v-col
+        v-for="(session, i) in sessions"
+        :key="session.userId"
+        cols="12"
+        sm="6"
+        lg="4"
+      >
+        <CashierDrawer
+          :drawerNumber="i + 1"
+          :isFirstRow="isFirstRow(i)"
+          :sessionData="session"
+        />
       </v-col>
     </v-row>
   </v-container>
@@ -10,6 +20,7 @@
 
 <script>
 import CashierDrawer from "./CashierDrawer.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "CashierDrawerGrid",
@@ -22,6 +33,9 @@ export default {
       if (breakpoint === "sm" || breakpoint === "md") row = 2;
       return index < row;
     },
+  },
+  computed: {
+    ...mapState("cashier", ["sessions"]),
   },
 };
 </script>
