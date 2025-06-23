@@ -49,19 +49,19 @@ export default {
       idNumber: null,
     },
     discounts: [
-      { text: "Senior Citizen", value: "SENIOR" },
+      { text: "Senior Citizen", value: "SNR" },
       { text: "PWD", value: "PWD" },
       { text: "Voucher", value: "VOUCHER" },
     ],
 
     placeholders: {
-      SENIOR: "Senior Citizen ID number",
+      SNR: "Senior Citizen ID number",
       PWD: "PWD ID number",
       VOUCHER: "voucher code",
     },
 
     secondParam: {
-      SENIOR: "idNumber",
+      SNR: "idNumber",
       PWD: "idNumber",
       VOUCHER: "voucherCode",
     },
@@ -69,7 +69,7 @@ export default {
   methods: {
     idNumberMask(idType) {
       const mask = {
-        SENIOR: "######",
+        SNR: "######",
         PWD: "##-####-###-#######",
       };
       return mask[idType] ?? "XXXXXXXXXXXXXXXX";

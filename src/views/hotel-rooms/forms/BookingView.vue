@@ -118,6 +118,16 @@ export default {
         value.guest.accountId = payload.accountId;
       }
 
+      if (payload.discount) {
+        value.discount = payload.discount;
+
+        if (payload.discount === "VOUCHER") {
+          value.voucherCode = payload.voucherCode;
+        } else {
+          value.idNumber = payload.idNumber;
+        }
+      }
+
       if (payload.addons) {
         value.addons = payload.addons.map(({ name, quantity }) => ({
           name,
