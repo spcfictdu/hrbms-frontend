@@ -62,7 +62,7 @@ export const authentication = {
           },
         };
 
-        await this.$axios.get(url, config);
+        const response = await this.$axios.get(url, config);
         return response;
       } catch (error) {
         this.$store.dispatch(
