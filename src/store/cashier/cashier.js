@@ -3,6 +3,8 @@ import Vuex from "vuex";
 
 Vue.use(Vuex);
 
+import { functions } from "@/utils/functions";
+
 export const cashier = {
   namespaced: true,
   state: () => ({
@@ -26,10 +28,12 @@ export const cashier = {
           console.error("Error fetching sessions: ", error);
         });
     },
-    fetchHistory({ commit }, userId) {
+    fetchHistory({ commit }, { userId, queryParams = {} }) {
       const url = `cashier-session/${userId}/show-history`;
+      const queryUrl = functions.query(url, queryParams);
+
       return this.$axios
-        .get(url)
+        .get(queryUrl)
         .then((response) => {
           commit("SET_CURR_USER_HISTORY", response.data.results);
         })

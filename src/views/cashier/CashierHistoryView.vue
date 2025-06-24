@@ -12,7 +12,7 @@
     </PageHeader>
 
     <RouteLoader :target="hasData" class="mt-10">
-      <CashierHistoryTable :history="currUserHistory" />
+      <CashierHistoryTable :history="currUserHistory" @onQuery="fetch" />
     </RouteLoader>
   </div>
 </template>
@@ -29,6 +29,9 @@ export default {
   props: { id: String, drawerNumber: String },
   methods: {
     ...mapActions("cashier", ["fetchHistory"]),
+    async fetch(queryParams = {}) {
+      await this.fetchHistory({ userId: this.id, queryParams });
+    },
   },
   computed: {
     ...mapState("cashier", ["currUserHistory"]),
@@ -36,8 +39,8 @@ export default {
       return !!this.currUserHistory ?? false;
     },
   },
-  async created() {
-    await this.fetchHistory(this.id);
+  created() {
+    this.fetch();
   },
 };
 </script>

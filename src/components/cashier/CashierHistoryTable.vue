@@ -13,6 +13,8 @@
         groupBy="date"
         :footerProps="footerProps"
         :serverItemsLength="history.meta.total"
+        disableSort
+        @onQuery="assignParams($event)"
       >
         <template v-slot:[`item.MOP`]="{ item }">
           <v-chip
@@ -36,12 +38,14 @@
 <script>
 import PaginatedTable from "../tables/PaginatedTable.vue";
 import { format, parseISO } from "date-fns";
+import { assignParams } from "@/mixins/FormattingFunctions";
 import CashierHistoryTableHeader from "./CashierHistoryTableHeader.vue";
 
 export default {
   name: "CashierHistoryTable",
   components: { PaginatedTable, CashierHistoryTableHeader },
   props: { history: Object },
+  mixins: [assignParams],
   data: () => ({
     headers: [
       {
@@ -85,12 +89,13 @@ export default {
       CHEQUE: "cheque",
     },
     footerProps: {
-      itemsPerPageOptions: [],
-      itemsPerPageText: "",
+      itemsPerPageOptions: [2, 2],
+      itemsPerPageText: "Sessions per page:",
     },
   }),
   computed: {
     mappedHistory() {
+      console.log(this.history);
       if (this.history) {
         const transactions = [];
         for (const session of this.history.data) {
@@ -112,6 +117,14 @@ export default {
         return transactions;
       }
       return [];
+    },
+  },
+  watch: {
+    queryParams: {
+      deep: true,
+      handler: function (v) {
+        this.$emit("onQuery", v);
+      },
     },
   },
 };
