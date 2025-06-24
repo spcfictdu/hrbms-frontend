@@ -3,12 +3,15 @@
     <div
       class="w-full d-flex flex-column flex-sm-row align-center justify-space-between"
     >
-      <p
-        class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-1"
-        :class="{ 'text-uppercase': isUpperCase }"
-      >
-        {{ headerText ?? $route.meta.name }}
-      </p>
+      <div>
+        <p
+          class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-1"
+          :class="{ 'text-uppercase': isUpperCase }"
+        >
+          {{ headerText ?? $route.meta.name }}
+        </p>
+        <slot name="subtitle"></slot>
+      </div>
 
       <slot />
     </div>

@@ -29,7 +29,10 @@
           @click="
             $router.push({
               name: 'Cashier History',
-              params: { id: sessionData.userId, drawerNumber },
+              params: {
+                id: String(sessionData.userId),
+                drawerNumber: String(drawerNumber),
+              },
             })
           "
         >

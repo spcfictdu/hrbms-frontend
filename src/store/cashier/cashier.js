@@ -31,7 +31,6 @@ export const cashier = {
       return this.$axios
         .get(url)
         .then((response) => {
-          console.log(response);
           commit("SET_CURR_USER_HISTORY", response.data.results);
         })
         .catch((error) => {

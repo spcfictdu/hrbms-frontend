@@ -27,6 +27,12 @@ export default new Vuetify({
         occupied: "#DB8300",
         unclean: "#db1a00",
         available: "#00ac30",
+
+        // Mode of Payment
+        cash: "#00ac30",
+        gCash: "#2f45b7",
+        creditCard: "#e9a700",
+        cheque: "#df18ff",
       },
     },
 
