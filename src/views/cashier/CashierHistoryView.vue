@@ -11,7 +11,7 @@
       </template>
     </PageHeader>
 
-    <RouteLoader :target="true" class="mt-10">
+    <RouteLoader :target="hasData" class="mt-10">
       <CashierHistoryTable :history="currUserHistory" />
     </RouteLoader>
   </div>
@@ -32,6 +32,9 @@ export default {
   },
   computed: {
     ...mapState("cashier", ["currUserHistory"]),
+    hasData() {
+      return !!this.currUserHistory ?? false;
+    },
   },
   async created() {
     await this.fetchHistory(this.id);
@@ -39,4 +42,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style scoped>
+.xl-padding {
+  padding: 0 300px 0 300px;
+}
+</style>
