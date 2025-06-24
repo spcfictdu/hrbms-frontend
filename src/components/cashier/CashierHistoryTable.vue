@@ -85,8 +85,8 @@ export default {
       CHEQUE: "cheque",
     },
     footerProps: {
-      itemsPerPageOptions: [2, 4, 8],
-      itemsPerPageText: "Sessions per page:",
+      itemsPerPageOptions: [],
+      itemsPerPageText: "",
     },
   }),
   computed: {
@@ -104,7 +104,7 @@ export default {
               refund: "0.00",
               voided: "0.00",
               time: format(parseISO(item.createdAt), "H:mm:ss"),
-              date: format(parseISO(item.createdAt), "MMMM dd, yyyy"),
+              date: format(parseISO(session.openedAt), "MMMM dd, yyyy"),
               paymentId: item.paymentId,
             }))
           );
@@ -116,3 +116,10 @@ export default {
   },
 };
 </script>
+
+<style>
+.v-data-footer {
+  justify-content: end;
+  min-height: 59px;
+}
+</style>
