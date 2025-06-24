@@ -7,7 +7,9 @@
   >
     <PageHeader headerText="Transactions">
       <template #subtitle>
-        <p>Cashier Drawer {{ drawerNumber }} | First Floor Lobby</p>
+        <p class="grey--text text--darken-2">
+          Cashier Drawer {{ drawerNumber }} | First Floor Lobby
+        </p>
       </template>
     </PageHeader>
 
