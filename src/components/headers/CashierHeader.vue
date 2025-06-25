@@ -1,10 +1,6 @@
 <template>
   <div>
-    <PageHeader
-      headerText="Cashier Terminal"
-      :isUpperCase="true"
-      :dividerMarginTop="48"
-    >
+    <PageHeader :isUpperCase="true" :dividerMarginTop="48">
       <CashierTerminalActions />
     </PageHeader>
   </div>

@@ -5,12 +5,12 @@ Vue.use(VueRouter);
 
 export default [
   {
-    path: "/cashier",
-    name: "Cashier",
-    component: () => import("@/views/cashier/CashierView.vue"),
+    path: "/cashier-terminal",
+    name: "Cashier Terminal",
+    component: () => import("@/views/cashier/CashierTerminalView.vue"),
     meta: {
-      name: "Cashier",
-      selectedMainNav: "Cashier",
+      name: "Cashier Terminal",
+      selectedMainNav: "Cashier Terminal",
     },
   },
   {

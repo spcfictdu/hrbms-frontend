@@ -166,7 +166,7 @@ export default {
       },
       {
         name: "Cashier",
-        route: "Cashier",
+        route: "Cashier Terminal",
         icon: "mdi-cash-register",
         childRouteNames: [],
       },
