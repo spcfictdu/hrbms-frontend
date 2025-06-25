@@ -11,7 +11,10 @@ export const cashier = {
     sessions: [],
     currUserHistory: [],
   }),
-  getters: {},
+  getters: {
+    getSession: (state) => (userId) =>
+      state.sessions.find((s) => Number(userId) === s.userId),
+  },
   mutations: {
     SET_SESSIONS: (state, data) => (state.sessions = data),
     SET_CURR_USER_HISTORY: (state, data) => (state.currUserHistory = data),

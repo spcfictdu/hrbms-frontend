@@ -1,7 +1,7 @@
 <template>
   <div>
-    <PageHeader :isUpperCase="true" :dividerMarginTop="48">
-      <CashierTerminalActions />
+    <PageHeader :isUpperCase="true" :dividerMarginTop="dividerMarginTop">
+      <CashierTerminalActions v-if="$route.name === 'Cashier Terminal'" />
     </PageHeader>
   </div>
 </template>
@@ -13,6 +13,7 @@ import CashierTerminalActions from "../cashier/CashierTerminalActions.vue";
 export default {
   name: "CashierHeader",
   components: { PageHeader, CashierTerminalActions },
+  props: { dividerMarginTop: Number },
   data: () => ({}),
 };
 </script>

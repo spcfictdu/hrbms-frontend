@@ -5,7 +5,7 @@
       'px-sm-2 py-md-8': $vuetify.breakpoint.lgAndDown,
     }"
   >
-    <CashierHeader />
+    <CashierHeader :dividerMarginTop="48" />
 
     <RouteLoader :target="hasData" :loaderStyles="['mt-10']">
       <CashierDrawerGrid />

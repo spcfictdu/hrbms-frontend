@@ -26,15 +26,7 @@
           v-for="(button, i) in buttons"
           :key="button.text"
           class="mt-2 ms-0"
-          @click="
-            $router.push({
-              name: 'Cashier History',
-              params: {
-                id: String(sessionData.userId),
-                drawerNumber: String(drawerNumber),
-              },
-            })
-          "
+          @click="() => $router.push(button.route)"
         >
           {{ button.text }}
         </v-btn>
@@ -51,17 +43,31 @@ export default {
     sessionData: Object,
     drawerNumber: Number,
   },
-  data: () => ({
-    buttons: [
-      {
-        text: "View Cashier History",
-      },
-      {
-        text: "View Cashier Drawer",
-      },
-    ],
-  }),
+  data: () => ({}),
   computed: {
+    buttons() {
+      return [
+        {
+          text: "View Cashier History",
+          route: {
+            name: "Cashier History",
+            params: {
+              id: String(this.sessionData.userId),
+              drawerNumber: String(this.drawerNumber),
+            },
+          },
+        },
+        {
+          text: "View Cashier Drawer",
+          route: {
+            name: "Cashier",
+            params: {
+              id: String(this.sessionData.userId),
+            },
+          },
+        },
+      ];
+    },
     drawerDetails() {
       const drawerDetails = [
         {
