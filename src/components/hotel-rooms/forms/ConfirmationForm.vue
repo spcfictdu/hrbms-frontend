@@ -14,22 +14,22 @@
       <v-row>
         <v-col cols="12" md="6" v-if="isAdmin">
           <!-- Transaction -->
-          <v-divider />
+          <!-- <v-divider />
           <transaction-template
             :statuses="statuses"
             @emit-transaction="assignPayload"
-          />
+          /> -->
 
           <!-- Discount -->
-          <v-divider />
-          <DiscountTemplate @emit-transaction="assignPayload" />
+          <!-- <v-divider />
+          <DiscountTemplate @emit-transaction="assignPayload" /> -->
 
           <!-- Payment -->
-          <v-divider />
+          <!-- <v-divider />
           <payment-template
             :isGreater="totalPayment"
             @emit-transaction="assignPayload"
-          />
+          /> -->
         </v-col>
         <v-col cols="12" :md="isAdmin ? 6 : 12">
           <!-- Booking Summary -->

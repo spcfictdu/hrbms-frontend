@@ -4,7 +4,9 @@
       <confirmation-form
         ref="confirmationForm"
         @onCancel="handleCancel"
-        @onSubmit="handleClickEvent"
+        @onSubmit="
+          $router.push({ name: 'Cashier', params: { id: String(userId) } })
+        "
         :value="transaction"
       />
     </RouteLoader>
@@ -25,13 +27,21 @@ export default {
     referenceNumber: String,
   },
   data: () => ({
+    userId: null,
     cancelRoutes: {
       GUEST: "Guest Account Details",
       ADMIN: "Transactions",
     },
   }),
-  created: function () {
-    this.fetch();
+  created: async function () {
+    await this.fetch();
+
+    const userFullName = `${this.$auth.user().firstName} ${
+      this.$auth.user().lastName
+    }`;
+    this.userId = this.sessions.find(
+      (s) => s.userFullName === userFullName
+    ).userId;
   },
   methods: {
     ...mapActions("transaction", [
@@ -41,8 +51,10 @@ export default {
       "setLoading",
     ]),
     ...mapActions("alerts", ["requireAlertFn"]),
+    ...mapActions("cashier", ["fetchSessions"]),
     fetch: async function () {
       await this.fetchTransaction(this.referenceNumber);
+      await this.fetchSessions();
     },
     handleCancel: function (payload) {
       // Prefetch the alert function: success, warning errors.
@@ -91,6 +103,7 @@ export default {
   },
   computed: {
     ...mapState("transaction", ["transaction"]),
+    ...mapState("cashier", ["sessions"]),
     hasData: function () {
       return !!this.transaction ?? false;
     },

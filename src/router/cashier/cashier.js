@@ -21,6 +21,10 @@ export default [
     meta: {
       name: "Cashier",
       selectedMainNav: "Cashier Terminal",
+      formBtn: {
+        title: "Record Payment",
+        outlined: false,
+      },
     },
   },
   {

@@ -22,7 +22,12 @@
               append-icon="mdi-magnify"
               v-model="guestName"
               class="mr-3"
-              @input="guestName = guestName.toUpperCase()"
+              @input="
+                {
+                  guestName = guestName.toUpperCase();
+                  selectedTransaction = null;
+                }
+              "
             />
           </FormSection>
 
@@ -31,7 +36,7 @@
               v-for="transaction in filteredTransactions"
               :key="transaction.transactionRefNum"
               :transaction="transaction"
-              @onClick="(v) => (selectedTransaction = v)"
+              @onClick="handleClick"
             />
           </div>
 
@@ -79,9 +84,19 @@ export default {
   data: () => ({
     guestName: "",
     selectedTransaction: null,
+    formDetails: null,
   }),
   methods: {
     ...mapActions("transaction", ["fetchTransactions"]),
+    handleClick(referenceNum, fullName) {
+      this.selectedTransaction = referenceNum;
+      this.guestName = fullName;
+    },
+    loadSessionStorage() {
+      const formDetails = JSON.parse(sessionStorage.getItem("formDetails"));
+      if (!formDetails || !formDetails.lastName) return;
+      this.formDetails = formDetails;
+    },
   },
   computed: {
     ...mapState("transaction", ["transactions"]),
@@ -90,18 +105,22 @@ export default {
         if (this.selectedTransaction) {
           return this.selectedTransaction === t.transactionRefNum;
         }
+
         return t.fullName.match(this.guestName);
       });
     },
   },
   async created() {
     await this.fetchTransactions();
-    console.log(this.transactions);
-  },
-  watch: {
-    guestName() {
-      this.selectedTransaction = null;
-    },
+    this.loadSessionStorage();
+
+    if (this.formDetails) {
+      const transaction = this.transactions.data.find(
+        (t) => this.formDetails.roomNumber === String(t.room)
+      );
+      this.selectedTransaction = transaction.transactionRefNum;
+      this.guestName = transaction.fullName;
+    }
   },
 };
 </script>

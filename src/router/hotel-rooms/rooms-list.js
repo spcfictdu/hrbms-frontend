@@ -124,7 +124,7 @@ export default [
           name: "Booking",
           hideInputs: true,
           formBtn: {
-            title: "Record Payment",
+            title: "Confirm Reservation",
             outlined: false,
           },
         },

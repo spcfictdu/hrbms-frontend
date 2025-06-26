@@ -208,6 +208,7 @@ export default {
           }
         }
       }
+
       if (this.hasFills)
         sessionStorage.setItem("formDetails", JSON.stringify(this.payload));
     },
@@ -349,7 +350,7 @@ export default {
         title:
           this.payload.status === "CONFIRMED"
             ? "Record Payment"
-            : "Save Reservation",
+            : "Record Reservation",
         outlined: false,
       };
     },
@@ -401,6 +402,8 @@ export default {
           this.payload.checkIn.date = newVal.checkInDate;
           this.payload.checkOut.date = newVal.checkOutDate;
         }
+
+        this.payload.roomNumber = newVal.roomNumber;
       },
     },
     "payload.status": {

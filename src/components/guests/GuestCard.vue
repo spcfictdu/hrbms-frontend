@@ -1,6 +1,8 @@
 <template>
   <v-card
-    @click="$emit('onClick', transaction.transactionRefNum)"
+    @click="
+      $emit('onClick', transaction.transactionRefNum, transaction.fullName)
+    "
     flat
     class="mb-5"
   >
