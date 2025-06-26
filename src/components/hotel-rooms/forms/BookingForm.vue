@@ -186,6 +186,8 @@ export default {
       confirmation: false,
       warning: false,
     },
+
+    formDetails: null,
   }),
 
   methods: {
@@ -206,6 +208,18 @@ export default {
           }
         }
       }
+      if (this.hasFills)
+        sessionStorage.setItem("formDetails", JSON.stringify(this.payload));
+    },
+    loadSessionStorage() {
+      const formDetails = JSON.parse(sessionStorage.getItem("formDetails"));
+      if (!formDetails || !formDetails.lastName) return;
+      this.formDetails = formDetails;
+      const { firstName, middleName, lastName } = this.formDetails;
+
+      this.autofill = middleName
+        ? `${lastName}, ${firstName} ${middleName}`
+        : `${lastName}, ${firstName}`;
     },
     handleWhichDialog: function () {
       if (this.$refs.form.validate()) {
@@ -236,7 +250,7 @@ export default {
       const autofilledObject = this.fills.guests
         .filter((item) => item.full_name === newVal)
         .map((item) => ({
-          id: item.id,
+          accountId: item.id,
           city: item.city,
           email: item.email,
           first_name: item.first_name,
@@ -246,8 +260,32 @@ export default {
           province: item.province,
         }));
 
-      this.fill = autofilledObject[0];
-      this.payload.accountId = autofilledObject[0].id;
+      const fill = autofilledObject[0];
+      if (this.formDetails) {
+        if (this.formDetails.status) fill.status = this.formDetails.status;
+
+        if (this.formDetails.checkIn.date) {
+          fill.checkInDate = this.formDetails.checkIn.date;
+          fill.checkInTime = this.formDetails.checkIn.time;
+        }
+
+        if (this.formDetails.checkOut.date) {
+          fill.checkOutDate = this.formDetails.checkOut.date;
+          fill.checkOutTime = this.formDetails.checkOut.time;
+        }
+
+        if (this.formDetails.id && Object.keys(this.formDetails.id).length) {
+          fill.id = {
+            type: this.formDetails.id.type,
+            number: this.formDetails.id.number,
+          };
+        }
+
+        fill.extraPerson = this.formDetails.guests;
+      }
+
+      this.fill = fill;
+      this.payload.accountId = fill.accountId;
       this.$refs.form.resetValidation();
     },
     resetAutoFill: function () {
@@ -344,6 +382,10 @@ export default {
         message,
       };
     },
+
+    hasFills() {
+      return !!Object.keys(this.fills).length;
+    },
   },
   watch: {
     query: {
@@ -378,6 +420,9 @@ export default {
           this.resetAutoFill();
         }
       },
+    },
+    fills() {
+      this.loadSessionStorage();
     },
     guestAutofill: {
       immediate: true,
