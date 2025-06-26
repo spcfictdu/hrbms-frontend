@@ -143,6 +143,8 @@ export default {
   computed: {
     ...mapState("transaction", ["transactions", "loading", "transaction"]),
     filteredTransactions() {
+      if (!this.transactions) return [];
+
       return this.transactions.data.filter((t) => {
         if (this.selectedTransaction) {
           return this.selectedTransaction === t.transactionRefNum;
@@ -152,6 +154,8 @@ export default {
       });
     },
     receiptQuery() {
+      if (!this.transaction) return {};
+
       return {
         roomType: this.transaction.room.name,
         roomNumber: this.transaction.room.number,
@@ -164,6 +168,8 @@ export default {
       };
     },
     clientMeta() {
+      if (!this.transaction) return {};
+
       return {
         status: this.transaction.transaction.status,
         clientName: this.transaction.guestName,
@@ -181,8 +187,9 @@ export default {
 
     if (this.formDetails) {
       const transaction = this.transactions.data.find(
-        (t) => this.formDetails.roomNumber === String(t.room)
+        (t) => this.formDetails.roomNumber === t.room
       );
+      if (!transaction) return;
       this.selectedTransaction = transaction.transactionRefNum;
       this.guestName = transaction.fullName;
     }
