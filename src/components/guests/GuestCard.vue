@@ -10,6 +10,7 @@
       <div class="d-flex align-center justify-space-between">
         <div class="text-uppercase font-weight-bold">Guest Details</div>
         <v-chip
+          class="font-weight-bold"
           dark
           small
           :color="statusColors[transaction.status.toLowerCase()]"
