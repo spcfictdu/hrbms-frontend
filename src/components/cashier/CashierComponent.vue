@@ -10,7 +10,12 @@
       </div>
     </div>
 
-    <v-form class="mt-12">
+    <v-form
+      class="mt-12"
+      ref="form"
+      lazy-validation
+      @submit.prevent="handleTransactionUpdate"
+    >
       <v-row>
         <v-col cols="12" md="6">
           <v-divider></v-divider>
@@ -51,10 +56,19 @@
 
         <v-col v-if="selectedTransaction" cols="12" md="6">
           <v-divider></v-divider>
-          <PaymentTemplate />
+          <PaymentTemplate
+            :isGreater="totalPayment"
+            @emit-transaction="assignPayload"
+          />
 
-          <!-- <v-divider></v-divider>
-          <BookingSummary /> -->
+          <v-divider></v-divider>
+          <BookingSummary
+            :loading="loading.form"
+            :queryParams="receiptQuery"
+            :clientMeta="clientMeta"
+            :btnStyling="btnStyling"
+            @totalPayment="(v) => (totalPayment = v)"
+          />
         </v-col>
       </v-row>
     </v-form>
@@ -82,12 +96,40 @@ export default {
   },
   props: { session: Object },
   data: () => ({
+    payload: {
+      payment: {
+        amountReceived: 0,
+        paymentType: null,
+      },
+    },
     guestName: "",
     selectedTransaction: null,
     formDetails: null,
+    totalPayment: 0,
   }),
   methods: {
     ...mapActions("transaction", ["fetchTransactions"]),
+    assignPayload(payload) {
+      for (const key in payload) {
+        if (Object.hasOwnProperty.call(payload, key)) {
+          this.$set(this.payload, key, payload[key]);
+        }
+      }
+    },
+    handleTransactionUpdate() {
+      const { referenceNumber, status } = this.transaction.transaction;
+      const { payment } = this.payload;
+
+      let payload = {
+        referenceNumber,
+        status,
+        ...payment,
+      };
+
+      if (this.$refs.form.validate()) {
+        this.$emit("onSubmit", payload);
+      }
+    },
     handleClick(referenceNum, fullName) {
       this.selectedTransaction = referenceNum;
       this.guestName = fullName;
@@ -99,7 +141,7 @@ export default {
     },
   },
   computed: {
-    ...mapState("transaction", ["transactions"]),
+    ...mapState("transaction", ["transactions", "loading", "transaction"]),
     filteredTransactions() {
       return this.transactions.data.filter((t) => {
         if (this.selectedTransaction) {
@@ -108,6 +150,29 @@ export default {
 
         return t.fullName.match(this.guestName);
       });
+    },
+    receiptQuery() {
+      return {
+        roomType: this.transaction.room.name,
+        roomNumber: this.transaction.room.number,
+        dateRange: [
+          this.transaction.transaction.checkInDate,
+          this.transaction.transaction.checkOutDate,
+        ],
+        extraPersonCount: this.transaction.transaction.extraPerson,
+        addons: this.transaction.priceSummary.fullAddons,
+      };
+    },
+    clientMeta() {
+      return {
+        status: this.transaction.transaction.status,
+        clientName: this.transaction.guestName,
+        amountReceived: this.payload.payment.amountReceived,
+      };
+    },
+    btnStyling() {
+      const btnProps = this.$route.meta.formBtn;
+      return btnProps;
     },
   },
   async created() {

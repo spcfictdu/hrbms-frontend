@@ -8,7 +8,7 @@
     <CashierHeader :dividerMarginTop="12" />
 
     <RouteLoader :target="true" :loaderStyles="['mt-10']" class="mt-4">
-      <CashierComponent :session="session" />
+      <CashierComponent :session="session" @onSubmit="handleClickEvent" />
     </RouteLoader>
   </div>
 </template>
@@ -24,6 +24,40 @@ export default {
   name: "CashierView",
   methods: {
     ...mapActions("cashier", ["fetchSessions"]),
+    ...mapActions("alerts", ["requireAlertFn"]),
+    ...mapActions("transaction", [
+      "updateTransaction",
+      "fetchTransaction",
+      "setLoading",
+    ]),
+    handleClickEvent(payload) {
+      const fn = this.$route.meta.formBtn.title.toUpperCase();
+      if (fn === "PRINT") {
+        return this.$refs.confirmationForm.handlePrinting();
+      }
+
+      // Prefetch the alert function: success, warning errors.
+      this.requireAlertFn(2);
+      this.setLoading({ key: "form", value: true });
+
+      console.log(payload);
+
+      return this.updateTransaction(payload)
+        .then(() => {
+          if (payload.status === "RESERVED") {
+            this.$router.replace({
+              name: "CheckInOut",
+              params: { referenceNumber: payload.referenceNumber },
+            });
+          } else {
+            this.fetchTransaction(payload.referenceNumber);
+          }
+        })
+        .catch((err) => {})
+        .finally(() => {
+          this.setLoading({ key: "form", value: false });
+        });
+    },
   },
   computed: {
     ...mapGetters("cashier", ["getSession"]),
