@@ -86,14 +86,22 @@ export default {
   computed: {
     ...mapState("transaction", ["transactions"]),
     filteredTransactions() {
-      return this.transactions.data.filter((t) =>
-        t.fullName.match(this.guestName)
-      );
+      return this.transactions.data.filter((t) => {
+        if (this.selectedTransaction) {
+          return this.selectedTransaction === t.transactionRefNum;
+        }
+        return t.fullName.match(this.guestName);
+      });
     },
   },
   async created() {
     await this.fetchTransactions();
     console.log(this.transactions);
+  },
+  watch: {
+    guestName() {
+      this.selectedTransaction = null;
+    },
   },
 };
 </script>
