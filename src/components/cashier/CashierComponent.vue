@@ -76,7 +76,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapMutations } from "vuex";
 import AddOnsTemplate from "../form-templates/AddOnsTemplate.vue";
 import BookingSummary from "../form-templates/BookingSummary.vue";
 import DiscountTemplate from "../form-templates/DiscountTemplate.vue";
@@ -108,7 +108,8 @@ export default {
     totalPayment: 0,
   }),
   methods: {
-    ...mapActions("transaction", ["fetchTransactions"]),
+    ...mapActions("transaction", ["fetchTransactions", "fetchTransaction"]),
+    ...mapMutations("transaction", ["SET_TRANSACTION"]),
     assignPayload(payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
@@ -130,9 +131,10 @@ export default {
         this.$emit("onSubmit", payload);
       }
     },
-    handleClick(referenceNum, fullName) {
+    async handleClick(referenceNum, fullName) {
       this.selectedTransaction = referenceNum;
       this.guestName = fullName;
+      await this.fetchTransaction(this.selectedTransaction);
     },
     loadSessionStorage() {
       const formDetails = JSON.parse(sessionStorage.getItem("formDetails"));
@@ -143,15 +145,15 @@ export default {
   computed: {
     ...mapState("transaction", ["transactions", "loading", "transaction"]),
     filteredTransactions() {
-      if (!this.transactions) return [];
+      return (
+        this.transactions.data.filter((t) => {
+          if (this.selectedTransaction) {
+            return this.selectedTransaction === t.transactionRefNum;
+          }
 
-      return this.transactions.data.filter((t) => {
-        if (this.selectedTransaction) {
-          return this.selectedTransaction === t.transactionRefNum;
-        }
-
-        return t.fullName.match(this.guestName);
-      });
+          return t.fullName.toUpperCase().match(this.guestName.toUpperCase());
+        }) ?? []
+      );
     },
     receiptQuery() {
       if (!this.transaction) return {};
@@ -183,6 +185,13 @@ export default {
   },
   async created() {
     await this.fetchTransactions();
+
+    if (this.transaction) {
+      this.selectedTransaction = this.transaction.transaction.referenceNumber;
+      this.guestName = this.transaction.guestName;
+      return;
+    }
+
     this.loadSessionStorage();
 
     if (this.formDetails) {
@@ -192,7 +201,11 @@ export default {
       if (!transaction) return;
       this.selectedTransaction = transaction.transactionRefNum;
       this.guestName = transaction.fullName;
+      await this.fetchTransaction(this.selectedTransaction);
     }
+  },
+  beforeDestroy() {
+    this.SET_TRANSACTION(null);
   },
 };
 </script>
