@@ -121,11 +121,11 @@ export default {
     addons: {
       deep: true,
       handler: function (v) {
-        const nullPayload = null;
+        const emptyPaylod = [];
         const isDefault =
           v.length === 1 && v[0].name === null && v[0].quantity === 1;
 
-        this.$emit("onInput", isDefault ? nullPayload : v);
+        this.$emit("onInput", isDefault ? emptyPaylod : v);
       },
     },
     value: {
