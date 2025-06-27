@@ -80,18 +80,20 @@
           />
 
           <!-- Add-Ons -->
-          <v-divider />
-          <AddOnsTemplate :fill="fill" @emit-transaction="assignPayload" />
+          <div v-if="payload.status === 'RESERVED'">
+            <v-divider />
+            <AddOnsTemplate :fill="fill" @emit-transaction="assignPayload" />
+          </div>
 
           <!-- Payment -->
-          <div v-if="showPayment" class="pb-8">
+          <!-- <div v-if="showPayment" class="pb-8">
             <v-divider />
             <payment-template
               :fill="fill"
               :isGreater="totalPayment"
               @emit-transaction="assignPayload"
             />
-          </div>
+          </div> -->
 
           <!-- Booking Summary -->
           <v-divider />
