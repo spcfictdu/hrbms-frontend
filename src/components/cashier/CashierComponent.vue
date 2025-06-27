@@ -44,7 +44,7 @@
 
           <div v-if="selectedTransaction">
             <v-divider></v-divider>
-            <AddOnsTemplate />
+            <AddOnsTemplate @emit-transaction="assignPayload" />
 
             <v-divider></v-divider>
             <DiscountTemplate />
@@ -117,10 +117,12 @@ export default {
     handleTransactionUpdate() {
       const { referenceNumber, status } = this.transaction.transaction;
       const { payment } = this.payload;
+      const { addons } = this.payload;
 
       let payload = {
         referenceNumber,
         status,
+        addons,
         ...payment,
       };
 
@@ -163,6 +165,8 @@ export default {
     receiptQuery() {
       if (!this.transaction) return {};
 
+      console.log(this.transaction);
+
       return {
         roomType: this.transaction.room.name,
         roomNumber: this.transaction.room.number,
@@ -171,7 +175,9 @@ export default {
           this.transaction.transaction.checkOutDate,
         ],
         extraPersonCount: this.transaction.transaction.extraPerson,
-        addons: this.transaction.priceSummary.fullAddons,
+        addons: this.payload.addons ?? [],
+
+        // addons: this.transaction.priceSummary.fullAddons,
       };
     },
     clientMeta() {

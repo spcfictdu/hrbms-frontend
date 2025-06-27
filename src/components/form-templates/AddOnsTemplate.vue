@@ -28,7 +28,10 @@ export default {
   }),
   methods: {
     handleAmenityChange: function (v) {
-      this.payload.addons = v;
+      this.payload.addons = v.map(({ name, quantity }) => ({
+        name,
+        quantity: String(quantity),
+      }));
       this.$emit("emit-transaction", this.payload);
     },
   },
