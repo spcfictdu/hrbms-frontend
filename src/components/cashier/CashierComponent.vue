@@ -33,7 +33,7 @@
             />
           </FormSection>
 
-          <div v-if="guestName">
+          <div v-if="guestName && filteredTransactions.length">
             <GuestCard
               v-for="transaction in filteredTransactions"
               :key="transaction.transactionRefNum"
@@ -44,7 +44,7 @@
 
           <div v-if="selectedTransaction">
             <v-divider></v-divider>
-            <AddOnsTemplate @emit-transaction="assignPayload" />
+            <AddOnsTemplate :fill="fill" @emit-transaction="assignPayload" />
 
             <v-divider></v-divider>
             <DiscountTemplate />
@@ -103,6 +103,7 @@ export default {
     selectedTransaction: null,
     formDetails: null,
     totalPayment: 0,
+    fill: null,
   }),
   methods: {
     ...mapActions("transaction", ["fetchTransactions", "fetchTransaction"]),
@@ -110,14 +111,18 @@ export default {
     assignPayload(payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
-          this.$set(this.payload, key, payload[key]);
+          const value = payload[key];
+          if (value === null) {
+            this.$delete(this.payload, key);
+          } else {
+            this.$set(this.payload, key, payload[key]);
+          }
         }
       }
     },
     handleTransactionUpdate() {
       const { referenceNumber, status } = this.transaction.transaction;
-      const { payment } = this.payload;
-      const { addons } = this.payload;
+      const { payment, addons } = this.payload;
 
       let payload = {
         referenceNumber,
@@ -131,9 +136,25 @@ export default {
       }
     },
     async handleClick(referenceNum, fullName) {
+      // Reset payload and fill
+      this.payload = {
+        payment: {
+          amountReceived: 0,
+          paymentType: null,
+        },
+      };
+      this.fill = null;
+
       this.selectedTransaction = referenceNum;
       this.guestName = fullName;
+
       await this.fetchTransaction(this.selectedTransaction);
+      this.fill = {
+        addons: this.transaction.priceSummary.fullAddons.map((fa) => ({
+          name: fa.name.trim(),
+          quantity: fa.quantity,
+        })),
+      };
     },
     loadSessionStorage() {
       const formDetails = JSON.parse(sessionStorage.getItem("formDetails"));
@@ -144,9 +165,8 @@ export default {
   computed: {
     ...mapState("transaction", ["transactions", "loading", "transaction"]),
     activeTransactions() {
-      return (
-        this.transactions.data.filter((t) => t.status !== "CHECKED-OUT") ?? []
-      );
+      if (!this.transactions) return [];
+      return this.transactions.data.filter((t) => t.status !== "CHECKED-OUT");
     },
     guestNames() {
       return this.activeTransactions.map((t) => t.fullName);
@@ -165,9 +185,7 @@ export default {
     receiptQuery() {
       if (!this.transaction) return {};
 
-      console.log(this.transaction);
-
-      return {
+      const receiptQuery = {
         roomType: this.transaction.room.name,
         roomNumber: this.transaction.room.number,
         dateRange: [
@@ -175,10 +193,12 @@ export default {
           this.transaction.transaction.checkOutDate,
         ],
         extraPersonCount: this.transaction.transaction.extraPerson,
-        addons: this.payload.addons ?? [],
-
-        // addons: this.transaction.priceSummary.fullAddons,
+        addons: this.transaction.priceSummary.fullAddons,
       };
+
+      receiptQuery.addons = this.payload.addons;
+
+      return receiptQuery;
     },
     clientMeta() {
       if (!this.transaction) return {};
@@ -198,25 +218,28 @@ export default {
     },
   },
   async created() {
-    await this.fetchTransactions();
+    await this.fetchTransactions({ perPage: 100 });
+    // await this.fetchTransactions();
 
     if (this.transaction) {
-      this.selectedTransaction = this.transaction.transaction.referenceNumber;
-      this.guestName = this.transaction.guestName;
+      this.handleClick(
+        this.transaction.transaction.referenceNumber,
+        this.transaction.guestName
+      );
       return;
     }
 
-    this.loadSessionStorage();
+    // this.loadSessionStorage();
 
-    if (this.formDetails) {
-      const transaction = this.transactions.data.find(
-        (t) => this.formDetails.roomNumber === t.room
-      );
-      if (!transaction) return;
-      this.selectedTransaction = transaction.transactionRefNum;
-      this.guestName = transaction.fullName;
-      await this.fetchTransaction(this.selectedTransaction);
-    }
+    // if (this.formDetails) {
+    //   const transaction = this.transactions.data.find(
+    //     (t) => this.formDetails.roomNumber === t.room
+    //   );
+    //   if (!transaction) return;
+    //   this.selectedTransaction = transaction.transactionRefNum;
+    //   this.guestName = transaction.fullName;
+    //   await this.fetchTransaction(this.selectedTransaction);
+    // }
   },
   beforeDestroy() {
     this.SET_TRANSACTION(null);

@@ -118,6 +118,10 @@ export default {
           }),
         };
 
+        if (!data.addons) {
+          this.$delete(data, "addons");
+        }
+
         await this.fetchRoom(data);
 
         // Needed by the Parent Component
