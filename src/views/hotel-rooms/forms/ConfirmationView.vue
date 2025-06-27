@@ -5,7 +5,10 @@
         ref="confirmationForm"
         @onCancel="handleCancel"
         @onSubmit="
-          $router.push({ name: 'Cashier', params: { id: String(userId) } })
+          () => {
+            $router.push({ name: 'Cashier', params: { id: String(userId) } });
+            fetchTransaction(referenceNumber);
+          }
         "
         :value="transaction"
       />

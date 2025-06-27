@@ -12,12 +12,19 @@
 
 <script>
 import HotelRoomsHeader from "../../components/headers/HotelRoomsHeader.vue";
+import { mapMutations } from "vuex";
 export default {
   name: "HotelRoomsView",
   components: { HotelRoomsHeader },
   data: () => ({
     hello: "world",
   }),
+  beforeDestroy() {
+    this.SET_TRANSACTION(null);
+  },
+  methods: {
+    ...mapMutations("transaction", ["SET_TRANSACTION"]),
+  },
 };
 </script>
 

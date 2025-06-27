@@ -9,7 +9,7 @@
 <script>
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import ConfirmedDetails from "../../../components/hotel-rooms/forms/ConfirmedDetails.vue";
-import { mapActions, mapState, mapMutations } from "vuex";
+import { mapActions, mapState } from "vuex";
 export default {
   name: "CheckInAndOut",
   components: {
@@ -22,9 +22,6 @@ export default {
   created() {
     this.fetch();
   },
-  beforeDestroy() {
-    this.SET_TRANSACTION(null);
-  },
   methods: {
     ...mapActions("transaction", [
       "fetchTransaction",
@@ -32,7 +29,6 @@ export default {
       "setLoading",
     ]),
     ...mapActions("alerts", ["requireAlertFn"]),
-    ...mapMutations("transaction", ["SET_TRANSACTION"]),
     fetch: async function () {
       this.fetchTransaction(this.referenceNumber);
     },
