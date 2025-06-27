@@ -20,19 +20,16 @@
         <v-col cols="12" md="6">
           <v-divider></v-divider>
           <FormSection title="Guest Name">
-            <v-text-field
+            <v-autocomplete
+              :items="guestNames"
               dense
               hide-details
               outlined
-              append-icon="mdi-magnify"
               v-model="guestName"
               class="mr-3"
-              @input="
-                {
-                  guestName = guestName.toUpperCase();
-                  selectedTransaction = null;
-                }
-              "
+              clearable
+              @input="selectedTransaction = null"
+              @keydown="selectedTransaction = null"
             />
           </FormSection>
 
@@ -144,9 +141,17 @@ export default {
   },
   computed: {
     ...mapState("transaction", ["transactions", "loading", "transaction"]),
+    activeTransactions() {
+      return (
+        this.transactions.data.filter((t) => t.status !== "CHECKED-OUT") ?? []
+      );
+    },
+    guestNames() {
+      return this.activeTransactions.map((t) => t.fullName);
+    },
     filteredTransactions() {
       return (
-        this.transactions.data.filter((t) => {
+        this.activeTransactions.filter((t) => {
           if (this.selectedTransaction) {
             return this.selectedTransaction === t.transactionRefNum;
           }
@@ -181,6 +186,9 @@ export default {
     btnStyling() {
       const btnProps = this.$route.meta.formBtn;
       return btnProps;
+    },
+    guestNameChange() {
+      return this.guestName;
     },
   },
   async created() {
