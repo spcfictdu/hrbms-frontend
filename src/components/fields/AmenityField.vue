@@ -2,7 +2,7 @@
   <FormField label="Amenities">
     <div class="d-flex flex-column" style="gap: 8px">
       <div
-        class="d-flex align-center flex-nowrap"
+        class="d-flex align-start flex-nowrap"
         style="gap: 16px"
         v-for="(addon, index) in addons"
         :key="index"

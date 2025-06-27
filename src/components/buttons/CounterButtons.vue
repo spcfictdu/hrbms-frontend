@@ -1,5 +1,5 @@
 <template>
-  <div class="d-flex align-center flex-nowrap" style="gap: 8px">
+  <div class="d-flex mt-6px align-center flex-nowrap" style="gap: 8px">
     <v-btn
       small
       color="white"
@@ -39,4 +39,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.mt-6px {
+  margin-top: 6px;
+}
+</style>
