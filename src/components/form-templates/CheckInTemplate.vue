@@ -88,6 +88,7 @@ export default {
           this.$emit("emit-transaction", this.payload);
         } else {
           this.payload.checkIn.date = null;
+          this.payload.checkIn.time = null;
         }
       },
     },

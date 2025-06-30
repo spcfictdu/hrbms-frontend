@@ -22,7 +22,7 @@
         />
 
         <CounterButtons
-          :quantity="addon.quantity"
+          :quantity="Number(addon.quantity)"
           :incrementFn="() => addon.quantity++"
           :decrementFn="() => decrementQuantity(index)"
         />

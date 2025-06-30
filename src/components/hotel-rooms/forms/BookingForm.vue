@@ -188,10 +188,27 @@ export default {
       confirmation: false,
       warning: false,
     },
-
-    formDetails: null,
   }),
-
+  created() {
+    if (!this.formDetails) return;
+    this.fill = {
+      status: this.formDetails.status,
+      first_name: this.formDetails.firstName,
+      middle_name: this.formDetails.middleName,
+      last_name: this.formDetails.lastName,
+      province: this.formDetails.address.province,
+      city: this.formDetails.address.city,
+      phone_number: this.formDetails.contact?.phoneNumber,
+      email: this.formDetails.contact?.email,
+      id: this.formDetails.id,
+      checkInDate: this.formDetails.checkIn?.date,
+      checkInTime: this.formDetails.checkIn?.time,
+      checkOutDate: this.formDetails.checkOut?.date,
+      checkOutTime: this.formDetails.checkOut?.time,
+      extraPerson: this.formDetails.guests,
+      addons: this.formDetails.addons,
+    };
+  },
   methods: {
     triggerDialog: function (type) {
       this.dialog[type] = true;
@@ -213,16 +230,6 @@ export default {
 
       if (this.hasFills)
         sessionStorage.setItem("formDetails", JSON.stringify(this.payload));
-    },
-    loadSessionStorage() {
-      const formDetails = JSON.parse(sessionStorage.getItem("formDetails"));
-      if (!formDetails || !formDetails.lastName) return;
-      this.formDetails = formDetails;
-      const { firstName, middleName, lastName } = this.formDetails;
-
-      this.autofill = middleName
-        ? `${lastName}, ${firstName} ${middleName}`
-        : `${lastName}, ${firstName}`;
     },
     handleWhichDialog: function () {
       if (this.$refs.form.validate()) {
@@ -311,6 +318,9 @@ export default {
   computed: {
     ...mapState("transaction", ["loading"]),
     ...mapState("vouchers", ["activeVoucher"]),
+    formDetails() {
+      return JSON.parse(sessionStorage.getItem("formDetails"));
+    },
     userRole: function () {
       return this.$auth.user()?.role;
     },
@@ -416,6 +426,9 @@ export default {
           this.payload.payment.amountReceived = null;
           this.payload.payment.paymentType = null;
         }
+        if (newVal === "CONFIRMED") {
+          this.payload.addons = [];
+        }
       },
     },
     autofill: {
@@ -428,7 +441,15 @@ export default {
       },
     },
     fills() {
-      this.loadSessionStorage();
+      if (!this.formDetails) return;
+      const { firstName, middleName, lastName } = this.formDetails;
+
+      const fullName = middleName
+        ? `${lastName}, ${firstName} ${middleName}`
+        : `${lastName}, ${firstName}`;
+
+      if (this.fills.guests.find((g) => g.full_name === fullName))
+        this.autofill = fullName;
     },
     guestAutofill: {
       immediate: true,

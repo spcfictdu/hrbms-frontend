@@ -308,6 +308,8 @@ export default {
   },
   beforeDestroy() {
     this.SET_TRANSACTION(null);
+    sessionStorage.removeItem("formDetails");
+    sessionStorage.removeItem("payload");
   },
 };
 </script>

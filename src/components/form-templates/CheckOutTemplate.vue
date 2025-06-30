@@ -80,6 +80,7 @@ export default {
           this.$emit("emit-transaction", this.payload);
         } else {
           this.payload.checkOut.date = null;
+          this.payload.checkOut.time = null;
         }
       },
     },

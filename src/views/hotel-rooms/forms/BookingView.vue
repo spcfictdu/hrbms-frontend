@@ -112,6 +112,7 @@ export default {
         .finally(() => {
           this.setLoading({ key: "dialog", value: false });
         });
+      sessionStorage.removeItem("formDetails");
     },
     assignObject: function (payload) {
       // RESERVED INITIAL VALUE
