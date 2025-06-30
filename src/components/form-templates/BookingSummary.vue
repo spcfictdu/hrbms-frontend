@@ -36,6 +36,7 @@ export default {
   },
   computed: {
     ...mapState("roomEnum", ["room"]),
+    ...mapState("vouchers", ["activeVoucher"]),
     bookingSummary: function () {
       const room = this.room ? this.room[0] : null;
 
@@ -65,32 +66,54 @@ export default {
         );
       }
 
+      const roundToTwoDecimal = (val) => Math.round(val * 100) / 100;
+
+      const roomTotal = room.roomRatesArray.reduce(
+        (total, room) => total + room.rate,
+        0
+      );
+
+      const extraPersonTotal = room.roomRatesArray.reduce(
+        (total, room) => total + room.extraPersonRate,
+        0
+      );
+
+      const totalWithoutAddons = roomTotal + extraPersonTotal;
+
       // Total Bill
       const total = room.roomTotalWithExtraPerson;
 
       // Total Received
       const totalReceived = this.clientMeta.amountReceived;
 
+      const discountedValue = roundToTwoDecimal(
+        totalWithoutAddons * (room.discount.split("%")[0] * 0.01)
+      );
+
       // Total Outstanding Bill
       const totalOutstanding =
         total - totalReceived < 0 ? 0 : total - totalReceived;
 
       // Total Change
-      const totalChange = totalReceived > total ? totalReceived - total : 0;
+      const totalChange = roundToTwoDecimal(
+        totalReceived > total ? totalReceived - total : 0
+      );
 
-      // console.log(room);
-      return {
+      const summary = {
         receiptHeader: data,
         receiptEnums: {
           type: room.roomType,
           roomNumber: room.roomNumber,
           capacity: room.roomTypeCapacity,
           roomFloor: room.roomFloor,
-          roomTotal: room.roomTotal,
-          extraPersonTotal: room.extraPersonTotal,
-          total: room.roomTotalWithExtraPerson,
+          roomTotal,
+          extraPersonTotal,
+          total: roomTotal + extraPersonTotal + room.addonsTotal,
           roomRatesArray: room.roomRatesArray,
           addonsArray: room.addons,
+          discount: room.discount,
+          discountedValue,
+          addonsTotal: room.addonsTotal,
         },
         clientInput: {
           totalReceived: totalReceived,
@@ -99,6 +122,12 @@ export default {
         },
         button: this.btnStyling,
       };
+
+      if (this.activeVoucher) {
+        summary.receiptEnums.voucherCode = this.activeVoucher.code;
+      }
+
+      return summary;
     },
   },
   beforeDestroy() {

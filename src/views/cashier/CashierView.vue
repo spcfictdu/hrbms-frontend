@@ -30,6 +30,7 @@ export default {
       "fetchTransaction",
       "setLoading",
     ]),
+    ...mapActions("vouchers", ["fetchVouchers"]),
     handleClickEvent(payload) {
       const fn = this.$route.meta.formBtn.title.toUpperCase();
       if (fn === "PRINT") {
@@ -67,6 +68,7 @@ export default {
   },
   created() {
     this.fetchSessions();
+    this.fetchVouchers();
   },
 };
 </script>

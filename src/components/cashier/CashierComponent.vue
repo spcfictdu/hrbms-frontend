@@ -47,7 +47,7 @@
             <AddOnsTemplate :fill="fill" @emit-transaction="assignPayload" />
 
             <v-divider></v-divider>
-            <DiscountTemplate />
+            <DiscountTemplate @emit-transaction="assignPayload" />
           </div>
         </v-col>
 
@@ -122,12 +122,14 @@ export default {
     },
     handleTransactionUpdate() {
       const { referenceNumber, status } = this.transaction.transaction;
-      const { payment, addons } = this.payload;
+      const { payment, addons, discount, idNumber } = this.payload;
 
       let payload = {
         referenceNumber,
         status,
         addons,
+        discount,
+        idNumber,
         ...payment,
       };
 
@@ -164,6 +166,7 @@ export default {
   },
   computed: {
     ...mapState("transaction", ["transactions", "loading", "transaction"]),
+    ...mapState("vouchers", ["activeVoucher"]),
     activeTransactions() {
       if (!this.transactions) return [];
       return this.transactions.data.filter((t) => t.status !== "CHECKED-OUT");
@@ -195,6 +198,19 @@ export default {
         extraPersonCount: this.transaction.transaction.extraPerson,
         addons: this.transaction.priceSummary.fullAddons,
       };
+
+      if (!this.payload.discount) {
+        this.$delete(receiptQuery, "discount");
+        this.$delete(receiptQuery, "voucherCode");
+      }
+
+      if (this.payload.discount && this.payload.discount !== "VOUCHER")
+        receiptQuery.discount = this.payload.discount;
+
+      if (this.activeVoucher && this.payload.discount === "VOUCHER") {
+        receiptQuery.voucherCode = this.activeVoucher.code;
+        receiptQuery.discount = this.payload.discount;
+      }
 
       receiptQuery.addons = this.payload.addons;
 

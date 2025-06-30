@@ -63,7 +63,7 @@
             v-for="(i, index) in value.receiptEnums.addonsArray"
             :key="'addons' + index"
           >
-            <div>{{ i.name }} x {{ i.quantity }} @  ₱{{ i.unit_price }}</div>
+            <div>{{ i.name }} x {{ i.quantity }} @ ₱{{ i.unit_price }}</div>
             <div>₱ {{ i.total }}</div>
           </div>
         </div>
@@ -86,11 +86,42 @@
 
     <v-divider />
 
+    <div v-if="value.receiptEnums.addonsArray.length">
+      <div
+        class="d-flex justify-space-between align-center my-3 font-weight-regular"
+      >
+        <div>Add-ons Total:</div>
+        <div>
+          ₱
+          {{ value.receiptEnums.addonsTotal }}
+        </div>
+      </div>
+      <v-divider />
+    </div>
+
     <div class="my-3 font-weight-regular">
       <div class="d-flex justify-space-between align-center">
         <div>Total:</div>
         <div>₱ {{ value.receiptEnums.total }}</div>
       </div>
+
+      <div
+        v-if="
+          value.receiptEnums.discount && value.receiptEnums.discount !== '0%'
+        "
+      >
+        <div>Discount:</div>
+        <div class="d-flex justify-space-between align-center">
+          <div class="font-italic ms-3">
+            {{ value.receiptEnums.voucherCode }}
+            {{ value.receiptEnums.discount }}
+          </div>
+          <div class="font-italic font-weight-bold">
+            - ₱ {{ value.receiptEnums.discountedValue ?? 0 }}
+          </div>
+        </div>
+      </div>
+
       <div class="d-flex justify-space-between align-center">
         <div>Total Received:</div>
         <div>₱ {{ value.clientInput.totalReceived }}</div>

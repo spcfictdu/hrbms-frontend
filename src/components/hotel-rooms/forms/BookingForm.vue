@@ -55,10 +55,10 @@
           />
 
           <!-- Discount -->
-          <div v-if="showDiscount">
+          <!-- <div v-if="showDiscount">
             <v-divider />
             <DiscountTemplate @emit-transaction="assignPayload" />
-          </div>
+          </div> -->
         </v-col>
 
         <!-- Right Column -->
@@ -310,6 +310,7 @@ export default {
   },
   computed: {
     ...mapState("transaction", ["loading"]),
+    ...mapState("vouchers", ["activeVoucher"]),
     userRole: function () {
       return this.$auth.user()?.role;
     },

@@ -138,7 +138,7 @@ export default {
       return { checkIn, checkOut };
     },
     receiptQuery: function () {
-      return {
+      const receiptQuery = {
         roomType: this.value.room.name,
         roomNumber: this.value.room.number,
         dateRange: [
@@ -147,7 +147,15 @@ export default {
         ],
         extraPersonCount: this.value.transaction.extraPerson,
         addons: this.value.priceSummary.fullAddons,
+        discount: this.value.priceSummary.discountName,
       };
+
+      if (!this.value.priceSummary.discountName) {
+        this.$delete(receiptQuery, "discount");
+        this.$delete(receiptQuery, "voucherCode");
+      }
+
+      return receiptQuery;
     },
     clientMeta: function () {
       return {
