@@ -352,7 +352,7 @@ export default {
       return {
         title:
           this.payload.status === "CONFIRMED"
-            ? "Record Payment"
+            ? "Record Booking"
             : "Record Reservation",
         outlined: false,
       };

@@ -91,8 +91,9 @@ export default {
       );
 
       // Total Outstanding Bill
-      const totalOutstanding =
-        total - totalReceived < 0 ? 0 : total - totalReceived;
+      const totalOutstanding = roundToTwoDecimal(
+        total - totalReceived < 0 ? 0 : total - totalReceived
+      );
 
       // Total Change
       const totalChange = roundToTwoDecimal(

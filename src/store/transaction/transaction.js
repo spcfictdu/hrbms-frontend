@@ -25,6 +25,8 @@ export const transaction = {
     SET_PREVIOUS_TRANSACTIONS: (state, data) =>
       (state.previousTransactions = data),
     SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
+    ADD_TRANSACTION: (state, transaction) =>
+      state.transactions.data.push(transaction),
   },
   actions: {
     setLoading: function ({ commit }, { key, value }) {

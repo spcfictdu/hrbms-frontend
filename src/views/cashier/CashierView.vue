@@ -22,10 +22,23 @@ export default {
   components: { RouteLoader, CashierHeader, CashierComponent },
   props: { id: String },
   name: "CashierView",
+  data: () => ({
+    routes: {
+      GUEST: {
+        RESERVED: "Guest Confirmation",
+      },
+      ADMIN: {
+        RESERVED: "Confirmation",
+        CONFIRMED: "CheckInOut",
+        CHECKED_OUT: "CheckInOut",
+      },
+    },
+  }),
   methods: {
     ...mapActions("cashier", ["fetchSessions"]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("transaction", [
+      "createTransaction",
       "updateTransaction",
       "fetchTransaction",
       "setLoading",
@@ -41,7 +54,26 @@ export default {
       this.requireAlertFn(2);
       this.setLoading({ key: "form", value: true });
 
-      console.log(payload);
+      if (payload.status === "CONFIRMED")
+        return this.createTransaction(payload)
+          .then((response) => {
+            const { status, referenceNumber } = response.data.results;
+            const route = this.user
+              ? this.routes[this.userRole][status]
+              : "Public Dashboard";
+
+            if (this.userRole === "GUEST") this.clearTempData();
+
+            // If user is not logged in, redirect to public dashboard
+            this.$router[this.user ? "push" : "replace"]({
+              name: route,
+              ...(this.user && { params: { referenceNumber } }),
+            });
+          })
+          .catch((err) => {})
+          .finally(() => {
+            this.setLoading({ key: "form", value: false });
+          });
 
       return this.updateTransaction(payload)
         .then(() => {
@@ -64,6 +96,12 @@ export default {
     ...mapGetters("cashier", ["getSession"]),
     session() {
       return this.getSession(this.id);
+    },
+    user: function () {
+      return this.$auth.user();
+    },
+    userRole: function () {
+      return this.$auth.user()?.role;
     },
   },
   created() {

@@ -18,6 +18,7 @@ export default {
     BookingForm,
   },
   data: () => ({
+    userId: null,
     routes: {
       GUEST: {
         RESERVED: "Guest Confirmation",
@@ -29,8 +30,15 @@ export default {
       },
     },
   }),
-  created: function () {
-    this.fetch();
+  created: async function () {
+    await this.fetch();
+
+    const userFullName = `${this.$auth.user().firstName} ${
+      this.$auth.user().lastName
+    }`;
+    this.userId = this.sessions.find(
+      (s) => s.userFullName === userFullName
+    ).userId;
   },
   methods: {
     ...mapActions("transaction", [
@@ -40,6 +48,7 @@ export default {
     ]),
     ...mapActions("publicRooms", ["storeTemporaryData", "clearTempData"]),
     ...mapActions("alerts", ["requireAlertFn"]),
+    ...mapActions("cashier", ["fetchSessions"]),
     handleCreateTransaction: function (payload) {
       // Prefetch required alerts
       this.requireAlertFn(2);
@@ -50,6 +59,22 @@ export default {
         ["REGISTER", "MAYBE"].includes(payload?.action) && !this.user
           ? this.assignObject(payload.payload)
           : this.assignObject(payload);
+
+      if (payload.status === "CONFIRMED") {
+        sessionStorage.setItem(
+          "payload",
+          JSON.stringify({
+            ...formattedPayload,
+            roomNumber: payload.roomNumber,
+          })
+        );
+        this.$router.push({
+          name: "Cashier",
+          params: { id: String(this.userId) },
+        });
+        this.setLoading({ key: "dialog", value: false });
+        return;
+      }
 
       // Check if a user will register or proceed without registering.
       // Storing temporary data for rebooking after registration.
@@ -136,18 +161,21 @@ export default {
       }
       return value;
     },
-    fetch: function () {
+    fetch: async function () {
       const referenceNumber = this.query.referenceNumber;
 
       if (this.userRole === "ADMIN") {
         this.fetchPreviousFormTransactions(referenceNumber);
       }
+
+      await this.fetchSessions();
     },
   },
   computed: {
     ...mapState("transaction", ["previousTransactions"]),
     ...mapState("account", ["userInfo"]),
     ...mapState("publicRooms", ["temporaryData"]),
+    ...mapState("cashier", ["sessions"]),
     returnPreviousTransactions() {
       return this.previousTransactions ? this.previousTransactions : {};
     },

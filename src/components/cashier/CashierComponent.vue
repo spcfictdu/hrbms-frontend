@@ -101,13 +101,14 @@ export default {
     },
     guestName: "",
     selectedTransaction: null,
-    formDetails: null,
     totalPayment: 0,
     fill: null,
   }),
   methods: {
     ...mapActions("transaction", ["fetchTransactions", "fetchTransaction"]),
     ...mapMutations("transaction", ["SET_TRANSACTION"]),
+    ...mapMutations("transaction", ["ADD_TRANSACTION"]),
+    ...mapActions("roomEnum", ["fetchRoom"]),
     assignPayload(payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
@@ -124,7 +125,7 @@ export default {
       const { referenceNumber, status } = this.transaction.transaction;
       const { payment, addons, discount, idNumber } = this.payload;
 
-      let payload = {
+      const reservationPayload = {
         referenceNumber,
         status,
         addons,
@@ -133,8 +134,19 @@ export default {
         ...payment,
       };
 
+      const bookingPayload = {
+        ...this.savedPayload,
+        addons,
+        discount,
+        idNumber,
+        payment,
+      };
+
       if (this.$refs.form.validate()) {
-        this.$emit("onSubmit", payload);
+        this.$emit(
+          "onSubmit",
+          status === "BOOKED" ? bookingPayload : reservationPayload
+        );
       }
     },
     async handleClick(referenceNum, fullName) {
@@ -150,6 +162,7 @@ export default {
       this.selectedTransaction = referenceNum;
       this.guestName = fullName;
 
+      if (this.formDetails) return;
       await this.fetchTransaction(this.selectedTransaction);
       this.fill = {
         addons: this.transaction.priceSummary.fullAddons.map((fa) => ({
@@ -158,15 +171,17 @@ export default {
         })),
       };
     },
-    loadSessionStorage() {
-      const formDetails = JSON.parse(sessionStorage.getItem("formDetails"));
-      if (!formDetails || !formDetails.lastName) return;
-      this.formDetails = formDetails;
-    },
   },
   computed: {
     ...mapState("transaction", ["transactions", "loading", "transaction"]),
     ...mapState("vouchers", ["activeVoucher"]),
+    ...mapState("roomEnum", ["room"]),
+    formDetails() {
+      return JSON.parse(sessionStorage.getItem("formDetails"));
+    },
+    savedPayload() {
+      return JSON.parse(sessionStorage.getItem("payload"));
+    },
     activeTransactions() {
       if (!this.transactions) return [];
       return this.transactions.data.filter((t) => t.status !== "CHECKED-OUT");
@@ -245,17 +260,51 @@ export default {
       return;
     }
 
-    // this.loadSessionStorage();
+    if (this.savedPayload && this.formDetails) {
+      const { firstName, middleName, lastName } = this.savedPayload.guest;
+      const fullName = middleName
+        ? `${lastName}, ${firstName} ${middleName}`
+        : `${lastName}, ${firstName}`;
 
-    // if (this.formDetails) {
-    //   const transaction = this.transactions.data.find(
-    //     (t) => this.formDetails.roomNumber === t.room
-    //   );
-    //   if (!transaction) return;
-    //   this.selectedTransaction = transaction.transactionRefNum;
-    //   this.guestName = transaction.fullName;
-    //   await this.fetchTransaction(this.selectedTransaction);
-    // }
+      await this.fetchRoom({
+        roomNumber: this.formDetails.roomNumber,
+      });
+
+      const transaction = {
+        booked: null,
+        checkInDate: this.savedPayload.checkIn.date,
+        checkOutDate: this.savedPayload.checkOut.date,
+        fullName,
+        occupants: this.room[0].roomTypeCapacity,
+        room: Number(this.savedPayload.roomNumber),
+        status: "BOOKED",
+        roomType: this.room[0].roomType,
+        transactionRefNum: this.savedPayload.room.referenceNumber,
+      };
+      this.ADD_TRANSACTION(transaction);
+
+      const activeTransaction = {
+        guestName: fullName,
+        room: {
+          name: transaction.roomType,
+          number: transaction.room,
+        },
+        transaction: {
+          checkInDate: transaction.checkInDate,
+          checkOutDate: transaction.checkOutDate,
+          extraPerson: this.savedPayload.guest.extraPerson,
+          status: transaction.status,
+        },
+        priceSummary: {
+          fullAddons: [],
+        },
+      };
+      this.SET_TRANSACTION(activeTransaction);
+      this.handleClick(
+        transaction.transactionRefNum,
+        this.transaction.guestName
+      );
+    }
   },
   beforeDestroy() {
     this.SET_TRANSACTION(null);
