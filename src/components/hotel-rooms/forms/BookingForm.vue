@@ -386,13 +386,15 @@ export default {
       return statuses;
     },
     confirmationMeta: function () {
+      const status =
+        this.payload.status === "CONFIRMED" ? "booking" : "reservation";
       const message =
         this.$auth.user()?.role === "ADMIN"
-          ? "Are you sure you want to proceed with the reservation?"
-          : "Are you sure you want to proceed with the reservation? If you save the reservation, personnel will be automatically notified that the room is hosting guests";
+          ? `Are you sure you want to proceed with the ${status}?`
+          : `Are you sure you want to proceed with the ${status}? If you save the reservation, personnel will be automatically notified that the room is hosting guests`;
       return {
         action: "Save",
-        actionType: "Reservation",
+        actionType: status,
         message,
       };
     },
