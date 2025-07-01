@@ -10,7 +10,7 @@
             v-model="payload.cardNumber"
             :rules="[
               (v) => !!v || 'Card Number is required',
-              (v) => v.length === 16 || 'Card Number must be 16 digits',
+              (v) => v?.length === 16 || 'Card Number must be 16 digits',
             ]"
             placeholder="0123 4567 8901 2344"
           ></v-text-field>
@@ -36,7 +36,7 @@
                 dense
                 hide-details="auto"
                 outlined
-                v-model="payload.expirationDate"
+                v-model="payload.expiration_date"
                 placeholder="MM/YY"
                 :rules="[(v) => !!v || 'Expiry Date is required']"
               ></v-text-field>
@@ -68,7 +68,7 @@ export default {
     payload: {
       cardNumber: null,
       cardHolderName: null,
-      expirationDate: null,
+      expiration_date: null,
       cvc: null,
     },
   }),
