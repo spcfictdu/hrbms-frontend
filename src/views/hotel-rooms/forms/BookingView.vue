@@ -33,6 +33,7 @@ export default {
   created: async function () {
     await this.fetch();
 
+    if (!this.user || this.userRole !== "ADMIN") return;
     const userFullName = `${this.$auth.user().firstName} ${
       this.$auth.user().lastName
     }`;
@@ -167,9 +168,8 @@ export default {
 
       if (this.userRole === "ADMIN") {
         this.fetchPreviousFormTransactions(referenceNumber);
+        await this.fetchSessions();
       }
-
-      await this.fetchSessions();
     },
   },
   computed: {
