@@ -123,7 +123,7 @@ export default {
     },
     handleTransactionUpdate() {
       const { referenceNumber, status } = this.transaction.transaction;
-      const { payment, addons, discount, idNumber } = this.payload;
+      const { payment, addons, discount, idNumber, voucherCode } = this.payload;
 
       const reservationPayload = {
         referenceNumber,
@@ -131,6 +131,7 @@ export default {
         addons,
         discount,
         idNumber,
+        voucherCode,
         ...payment,
       };
 
@@ -138,8 +139,10 @@ export default {
         ...this.savedPayload,
         addons,
         discount,
+        voucherCode,
         idNumber,
         payment,
+        status,
       };
 
       if (this.$refs.form.validate()) {
