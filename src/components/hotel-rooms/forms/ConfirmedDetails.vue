@@ -158,10 +158,16 @@ export default {
       return receiptQuery;
     },
     clientMeta: function () {
+      const amountReceived =
+        this.value.paymentSummary.reduce(
+          (total, payment) => total + Number(payment.amountReceived),
+          0
+        ) ?? 0;
+
       return {
         status: this.value.transaction.status,
         clientName: this.value.guestName,
-        amountReceived: this.value.paymentSummary.amountReceived,
+        amountReceived,
       };
     },
     btnStyling: function () {

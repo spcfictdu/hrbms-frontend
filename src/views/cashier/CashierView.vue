@@ -54,8 +54,10 @@ export default {
       this.requireAlertFn(2);
       this.setLoading({ key: "form", value: true });
 
-      if (payload.status === "CONFIRMED")
-        return this.createTransaction(payload)
+      if (payload.status === "BOOKED") {
+        const updatedStatus = payload;
+        updatedStatus.status = "CONFIRMED";
+        return this.createTransaction(updatedStatus)
           .then((response) => {
             const { status, referenceNumber } = response.data.results;
             const route = this.user
@@ -74,10 +76,10 @@ export default {
           .finally(() => {
             this.setLoading({ key: "form", value: false });
           });
-
+      }
       return this.updateTransaction(payload)
         .then(() => {
-          if (payload.status === "RESERVED") {
+          if (payload.status === "RESERVED" || payload.status === "CONFIRMED") {
             this.$router.replace({
               name: "CheckInOut",
               params: { referenceNumber: payload.referenceNumber },

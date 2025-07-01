@@ -53,10 +53,7 @@
 
         <v-col v-if="selectedTransaction" cols="12" md="6">
           <v-divider></v-divider>
-          <PaymentTemplate
-            :isGreater="totalPayment"
-            @emit-transaction="assignPayload"
-          />
+          <PaymentTemplate @emit-transaction="assignPayload" />
 
           <v-divider></v-divider>
           <BookingSummary
@@ -237,10 +234,18 @@ export default {
     clientMeta() {
       if (!this.transaction) return {};
 
+      const transactionPaymentSummary =
+        this.transaction.paymentSummary.reduce(
+          (total, payment) => total + Number(payment.amountReceived),
+          0
+        ) ?? 0;
+      const amountReceived =
+        transactionPaymentSummary + this.payload.payment.amountReceived;
+
       return {
         status: this.transaction.transaction.status,
         clientName: this.transaction.guestName,
-        amountReceived: this.payload.payment.amountReceived,
+        amountReceived,
       };
     },
     btnStyling() {
@@ -301,6 +306,7 @@ export default {
         priceSummary: {
           fullAddons: [],
         },
+        paymentSummary: [],
       };
       this.SET_TRANSACTION(activeTransaction);
       this.handleClick(

@@ -74,7 +74,6 @@ export default {
     CreditCardForm,
   },
   props: {
-    isGreater: Number,
     fill: Object,
   },
   data: () => ({
@@ -132,8 +131,9 @@ export default {
       const errors = {};
       errors.amountReceived = [
         !!this.payload.payment.paymentType || "Type is required",
-        (v) => !!v || "Amount is required",
-        (v) => v >= this.isGreater || "Amount should be greater than total",
+        (v) =>
+          (this.payload.payment.paymentType === "CASH" && (v === 0 || !!v)) ||
+          "Amount is required",
       ];
       return errors;
     },
