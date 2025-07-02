@@ -30,9 +30,25 @@ export default {
     hasData() {
       return !!this.sessions ?? false;
     },
+    user() {
+      return this.$auth.user();
+    },
+    userRole() {
+      return this.$auth.user()?.role;
+    },
   },
-  created() {
-    this.fetchSessions();
+  async created() {
+    await this.fetchSessions();
+
+    if (!this.user || this.userRole !== "FRONT DESK") return;
+    const userFullName = `${this.$auth.user().firstName} ${
+      this.$auth.user().lastName
+    }`;
+    const userId = this.sessions.find(
+      (s) => s.userFullName === userFullName
+    ).userId;
+
+    this.$router.replace({ name: "Cashier", params: { id: String(userId) } });
   },
 };
 </script>
