@@ -23,10 +23,12 @@
       </p>
 
       <div>
-        <div>Standard</div>
+        <div>{{ transaction.room.name }}</div>
         <div>
-          <span class="font-weight-medium">Room {{ transaction.room }}</span> |
-          {{ transaction.occupants }} Maximum Occupancy
+          <span class="font-weight-medium"
+            >Room {{ transaction.room.number }}</span
+          >
+          | {{ transaction.room.capacity }} Maximum Occupancy
         </div>
       </div>
     </v-card-text>
