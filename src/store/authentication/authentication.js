@@ -11,6 +11,7 @@ const whichUserKey = {
 };
 const whichlogoutRoute = {
   ADMIN: "Sign In",
+  "FRONT DESK": "Sign In",
   GUEST: "Guest Sign In",
 };
 
