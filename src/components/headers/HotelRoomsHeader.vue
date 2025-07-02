@@ -84,7 +84,7 @@
           class="mr-3"
         />
 
-        <div v-for="button in addButtons" :key="button.name">
+        <div v-for="button in dynamicAddButtons" :key="button.name">
           <v-btn
             v-if="isForCurrentTab(button.name) || $route.name !== 'Amenities'"
             outlined
@@ -230,6 +230,9 @@ export default {
         default:
       }
       return buttonsData;
+    },
+    dynamicAddButtons() {
+      return this.$auth.user().role === "ADMIN" ? this.addButtons : [];
     },
   },
   methods: {

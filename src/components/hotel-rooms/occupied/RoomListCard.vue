@@ -180,7 +180,12 @@ export default {
         UNALLOCATED: ["Make unallocated"],
       };
 
-      return menu.filter(({ text }) => !filters[room.status].includes(text));
+      const filtered = menu.filter(
+        ({ text }) => !filters[room.status].includes(text)
+      );
+      if (this.$auth.user()?.role === "ADMIN") return filtered;
+      if (room.status === "UNALLOCATED") return filtered.slice(0, -2);
+      return filtered.slice(0, -1);
     },
   },
 };
