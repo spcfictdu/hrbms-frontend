@@ -119,7 +119,7 @@ export default {
             checkIn: item.checkInDate,
             checkOut: item.checkOutDate,
             booked: item.booked,
-            room: item.room,
+            room: item.room.number,
             total: item.total,
           }))
         : [];
