@@ -57,6 +57,11 @@ export default {
     },
   }),
   created() {
+    if (this.$auth.user()?.role === "FRONT DESK") {
+      this.$router.replace({ name: "Occupied Rooms" });
+      return;
+    }
+
     this.fetch();
   },
   methods: {

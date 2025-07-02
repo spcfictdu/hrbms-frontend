@@ -14,7 +14,7 @@
           :plain="route.name !== activeRouteButton"
           :text="route.name === activeRouteButton"
           elevation="0"
-          v-for="(route, index) in routes"
+          v-for="(route, index) in dynamicRoutes"
           :key="'route' + index"
           @click="redirect(route)"
           >{{ route.name.toUpperCase() }}</v-btn
@@ -30,7 +30,7 @@
           :plain="route.name !== activeRouteButton"
           :text="route.name === activeRouteButton"
           elevation="0"
-          v-for="(route, index) in routes"
+          v-for="(route, index) in dynamicRoutes"
           :key="'route' + index"
           @click="redirect(route)"
           >{{ route.name.toUpperCase() }}</v-btn
@@ -167,6 +167,11 @@ export default {
   computed: {
     ...mapState("amenities", ["activeAmenitiesTab"]),
     ...mapState("dialogs", ["dialog_message"]),
+    dynamicRoutes() {
+      return this.$auth.user().role === "ADMIN"
+        ? this.routes
+        : this.routes.slice(1);
+    },
     activeRouteButton: function () {
       return this.activeButton;
     },
