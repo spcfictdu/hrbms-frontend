@@ -283,20 +283,19 @@ export default {
         checkInDate: this.savedPayload.checkIn.date,
         checkOutDate: this.savedPayload.checkOut.date,
         fullName,
-        occupants: this.room[0].roomTypeCapacity,
-        room: Number(this.savedPayload.roomNumber),
+        room: {
+          name: this.room[0].roomType,
+          number: Number(this.savedPayload.roomNumber),
+          capacity: this.room[0].roomTypeCapacity,
+        },
         status: "BOOKED",
-        roomType: this.room[0].roomType,
         transactionRefNum: this.savedPayload.room.referenceNumber,
       };
       this.ADD_TRANSACTION(transaction);
 
       const activeTransaction = {
         guestName: fullName,
-        room: {
-          name: transaction.roomType,
-          number: transaction.room,
-        },
+        room: transaction.room,
         transaction: {
           checkInDate: transaction.checkInDate,
           checkOutDate: transaction.checkOutDate,

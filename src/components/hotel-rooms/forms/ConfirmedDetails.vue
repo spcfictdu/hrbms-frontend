@@ -148,12 +148,15 @@ export default {
         extraPersonCount: this.value.transaction.extraPerson,
         addons: this.value.priceSummary.fullAddons,
         discount: this.value.priceSummary.discountName,
-        voucherCode: this.value.priceSummary.voucherCode,
       };
 
       if (!this.value.priceSummary.discountName) {
         this.$delete(receiptQuery, "discount");
         this.$delete(receiptQuery, "voucherCode");
+      }
+
+      if (this.activeVoucher && this.payload.discount === "VOUCHER") {
+        receiptQuery.voucherCode = this.value.priceSummary.voucherCode;
       }
 
       return receiptQuery;
