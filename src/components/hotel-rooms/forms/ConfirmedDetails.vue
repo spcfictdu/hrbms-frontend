@@ -148,6 +148,7 @@ export default {
         extraPersonCount: this.value.transaction.extraPerson,
         addons: this.value.priceSummary.fullAddons,
         discount: this.value.priceSummary.discountName,
+        voucherCode: this.value.priceSummary.voucherCode,
       };
 
       if (!this.value.priceSummary.discountName) {
