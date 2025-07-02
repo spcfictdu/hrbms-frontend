@@ -68,7 +68,8 @@ export default {
       const currentRoute = this.$route.meta;
       return {
         primary:
-          this.$auth.user()?.role === "ADMIN" &&
+          (this.$auth.user()?.role === "ADMIN" ||
+            this.$auth.user()?.role === "FRONT DESK") &&
           !(currentRoute["isPublic"] || currentRoute["isGuest"]),
         secondary: currentRoute["isPublic"] || currentRoute["isGuest"],
       };
