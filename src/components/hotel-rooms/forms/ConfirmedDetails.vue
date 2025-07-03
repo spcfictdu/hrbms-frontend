@@ -155,7 +155,7 @@ export default {
         this.$delete(receiptQuery, "voucherCode");
       }
 
-      if (this.activeVoucher && this.payload.discount === "VOUCHER") {
+      if (this.value.priceSummary.discountName === "VOUCHER") {
         receiptQuery.voucherCode = this.value.priceSummary.voucherCode;
       }
 

@@ -75,7 +75,10 @@ export default {
       return this.payload.checkIn.time ? this.formatTime(dateString) : null;
     },
     isDisabled: function () {
-      return this.$auth.user()?.role !== "ADMIN" ? true : false;
+      return (
+        this.$auth.user()?.role !== "ADMIN" &&
+        this.$auth.user()?.role !== "FRONT DESK"
+      );
     },
   },
   watch: {

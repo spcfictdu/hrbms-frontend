@@ -2,7 +2,7 @@
   <div>
     <div
       class="d-flex justify-end align-center mb-2"
-      v-if="userRole === 'ADMIN'"
+      v-if="userRole === 'ADMIN' || userRole === 'FRONT DESK'"
     >
       <div style="max-width: 300px">
         <v-select

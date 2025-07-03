@@ -67,7 +67,10 @@ export default {
       return errors;
     },
     isDisabled: function () {
-      return this.$auth.user()?.role !== "ADMIN" ? true : false;
+      return (
+        this.$auth.user()?.role !== "ADMIN" &&
+        this.$auth.user()?.role !== "FRONT DESK"
+      );
     },
   },
   watch: {

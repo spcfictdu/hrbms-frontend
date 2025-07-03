@@ -166,7 +166,7 @@ export default {
     fetch: async function () {
       const referenceNumber = this.query.referenceNumber;
 
-      if (this.userRole === "ADMIN") {
+      if (this.userRole === "ADMIN" || this.userRole === "FRONT DESK") {
         this.fetchPreviousFormTransactions(referenceNumber);
         await this.fetchSessions();
       }
