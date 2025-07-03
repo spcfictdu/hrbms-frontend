@@ -12,7 +12,7 @@
       @submit.prevent="handleTransactionUpdate"
     >
       <v-row>
-        <v-col cols="12" md="6" v-if="isAdmin">
+        <v-col cols="12" md="6" v-if="isStaff">
           <!-- <v-divider />
           <transaction-template
             :statuses="statuses"
@@ -28,7 +28,7 @@
             @emit-transaction="assignPayload"
           /> -->
         </v-col>
-        <v-col cols="12" :md="isAdmin ? 6 : 12">
+        <v-col cols="12" :md="isStaff ? 6 : 12">
           <!-- Booking Summary -->
           <v-divider />
           <BookingSummary
@@ -158,8 +158,9 @@ export default {
       const btnProps = this.$route.meta.formBtn;
       return btnProps;
     },
-    isAdmin: function () {
-      return this.$auth.user()?.role === "ADMIN";
+    isStaff: function () {
+      const role = this.$auth.user()?.role;
+      return role === "ADMIN" || role === "FRONT DESK";
     },
   },
 };
