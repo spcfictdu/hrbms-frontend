@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 import { auth } from "@/utils/auth";
 
 export default {
@@ -133,58 +133,78 @@ export default {
     },
 
     activeButton: null,
-
-    routes: [
-      {
-        name: "Dashboard",
-        route: "Dashboard",
-        icon: "mdi-view-dashboard-outline",
-        childRouteNames: [],
-      },
-      {
-        name: "Transactions",
-        route: "Transactions",
-        icon: "mdi-clipboard-text-clock-outline",
-        childRouteNames: [],
-      },
-      {
-        name: "Guests",
-        route: "Guests",
-        icon: "mdi-account-multiple-outline",
-        childRouteNames: [],
-      },
-      {
-        name: "Hotel Rooms",
-        route: "Amenities",
-        icon: "mdi-sofa-single-outline",
-        childRouteNames: [
-          "Amenities",
-          "Occupied Rooms",
-          "Room Categories",
-          // "Availability",
-        ],
-      },
-      {
-        name: "Cashier",
-        route: "Cashier Terminal",
-        icon: "mdi-cash-register",
-        childRouteNames: [],
-      },
-    ],
   }),
   computed: {
+    ...mapState("cashier", ["sessions"]),
     activeRouteButton: function () {
       return this.activeButton
         ? this.activeButton
         : this.$route.meta.selectedMainNav;
     },
+    routes() {
+      return [
+        {
+          name: "Dashboard",
+          route: "Dashboard",
+          icon: "mdi-view-dashboard-outline",
+          childRouteNames: [],
+        },
+        {
+          name: "Transactions",
+          route: "Transactions",
+          icon: "mdi-clipboard-text-clock-outline",
+          childRouteNames: [],
+        },
+        {
+          name: "Guests",
+          route: "Guests",
+          icon: "mdi-account-multiple-outline",
+          childRouteNames: [],
+        },
+        {
+          name: "Hotel Rooms",
+          route: this.isAdmin ? "Amenities" : "Occupied Rooms",
+          icon: "mdi-sofa-single-outline",
+          childRouteNames: [
+            "Amenities",
+            "Occupied Rooms",
+            "Room Categories",
+            // "Availability",
+          ],
+        },
+        {
+          name: "Cashier",
+          route: this.isAdmin
+            ? "Cashier Terminal"
+            : { name: "Cashier", params: { id: null } },
+          icon: "mdi-cash-register",
+          childRouteNames: [],
+        },
+      ];
+    },
+    isAdmin() {
+      return this.$auth.user()?.role === "ADMIN";
+    },
   },
 
   methods: {
     ...mapActions("authentication", ["logout"]),
+    ...mapActions("cashier", ["fetchSessions"]),
 
-    redirect: function (route) {
+    async redirect(route) {
       this.activeButton = route.name;
+      if (typeof route.route === "object") {
+        await this.fetchSessions();
+        const userFullName = `${this.$auth.user().firstName} ${
+          this.$auth.user().lastName
+        }`;
+        const id = this.sessions.find(
+          (s) => s.userFullName === userFullName
+        ).userId;
+        route.route.params.id = String(id);
+        return this.$router.push(route.route);
+      }
+
       return this.$router.push({ name: route.route });
     },
 

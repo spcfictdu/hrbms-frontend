@@ -107,7 +107,6 @@ export default {
     },
   },
   created() {
-    this.fetchSessions();
     this.fetchVouchers();
   },
 };
