@@ -63,7 +63,7 @@
             v-for="(i, index) in value.receiptEnums.addonsArray"
             :key="'addons' + index"
           >
-            <div>{{ i.name }} x {{ i.quantity }} @ ₱{{ i.unit_price }}</div>
+            <div>{{ i.name }} x {{ i.quantity }} @ ₱{{ i.unitPrice }}</div>
             <div>₱ {{ i.total }}</div>
           </div>
         </div>
