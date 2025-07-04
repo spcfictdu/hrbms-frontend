@@ -28,6 +28,11 @@ export default {
         CONFIRMED: "CheckInOut",
         CHECKED_OUT: "CheckInOut",
       },
+      "FRONT DESK": {
+        RESERVED: "Confirmation",
+        CONFIRMED: "CheckInOut",
+        CHECKED_OUT: "CheckInOut",
+      },
     },
   }),
   created: async function () {
