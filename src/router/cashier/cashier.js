@@ -37,4 +37,15 @@ export default [
       selectedMainNav: "Cashier Terminal",
     },
   },
+  {
+    path: "/cashier-transactions/:drawerNumber/:id/:transactionId",
+    name: "Cashier Transaction Details",
+    component: () =>
+      import("@/views/cashier/CashierTransactionDetailsView.vue"),
+    props: true,
+    meta: {
+      name: "Cashier Transaction Details",
+      selectedMainNav: "Cashier Terminal",
+    },
+  },
 ];
