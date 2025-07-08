@@ -5,7 +5,12 @@
       Cashier Drawer {{ drawerNumber }}
     </p>
 
-    <v-card flat class="my-6">
+    <v-card
+      flat
+      class="my-6"
+      @click="showDetails = !showDetails"
+      :ripple="false"
+    >
       <div class="d-flex flex-column flex-md-row">
         <div class="ps-2">
           <v-card-title class="font-weight-bold"
@@ -23,11 +28,11 @@
             small
             depressed
             rounded
-            :color="showDetails ? 'lightBg' : 'primary'"
+            :color="sessionData.status === 'ACTIVE' ? 'lightBg' : 'primary'"
             class="px-6"
-            @click="showDetails = !showDetails"
+            @click.stop="toggleSessionStatus"
           >
-            {{ showDetails ? "CLOSE" : "OPEN" }}
+            {{ sessionData.status === "ACTIVE" ? "CLOSE" : "OPEN" }}
           </v-btn>
         </v-card-actions>
       </div>
@@ -55,6 +60,11 @@ export default {
   data: () => ({
     showDetails: false,
   }),
+  methods: {
+    toggleSessionStatus() {
+      //
+    },
+  },
 };
 </script>
 
