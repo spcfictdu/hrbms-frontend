@@ -6,6 +6,10 @@
     min-width="auto"
     max-width="290"
     v-model="menu"
+    ref="menu"
+    @input="
+      (value) => value && $refs.picker && ($refs.picker.selectingHour = true)
+    "
   >
     <template #activator="{ attrs, on }">
       <v-text-field
@@ -20,6 +24,7 @@
       ></v-text-field>
     </template>
     <v-time-picker
+      ref="picker"
       v-if="disabled"
       v-model="time"
       scrollable
