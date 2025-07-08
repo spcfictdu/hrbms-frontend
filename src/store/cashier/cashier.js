@@ -21,7 +21,7 @@ export const cashier = {
   },
   actions: {
     fetchSessions({ commit }) {
-      const url = `cashier-session?status=ACTIVE`;
+      const url = `cashier-session`;
       return this.$axios
         .get(url)
         .then((response) => {
@@ -31,6 +31,7 @@ export const cashier = {
           console.error("Error fetching sessions: ", error);
         });
     },
+
     fetchHistory({ commit }, { userId, queryParams = {} }) {
       const url = `cashier-session/${userId}/show-history`;
       const queryUrl = functions.query(url, queryParams);
