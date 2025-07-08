@@ -13,7 +13,7 @@
       </template>
     </PageHeader>
 
-    <RouteLoader :target="true" class="mt-10">
+    <RouteLoader :target="hasData" class="mt-10">
       <CashierTransactionDetailsTable
         :transactionDetails="transactionDetails"
       />
@@ -38,12 +38,24 @@ export default {
     },
   },
   computed: {
-    ...mapState("cashier", ["currUserHistory"]),
     hasData() {
-      return !!this.currUserHistory ?? false;
+      return !!this.transactionDetails ?? false;
     },
     transactionDetails() {
-      return;
+      return {
+        data: [
+          {
+            status: "Paid",
+            product: "Junior Suite Deluxe",
+            price: "2,500.00",
+            quantity: 1,
+            totalPrice: "2,500.00",
+            discount: "0.00",
+            paymentType: "CREDIT_CARD",
+            time: "12:32:40",
+          },
+        ],
+      };
     },
   },
   created() {

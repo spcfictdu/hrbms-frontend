@@ -10,80 +10,93 @@
     />
 
     <div class="pa-5">
-      <PaginatedTable
+      <DefaultTable
         :headers="headers"
         :items="mappedTransactionDetails"
         itemKey="paymentId"
-        groupBy="date"
         :footerProps="footerProps"
-        :serverItemsLength="transactionDetails?.meta.total"
         disableSort
         @onQuery="assignParams($event)"
       >
-        <template v-slot:[`item.MOP`]="{ item }">
+        <template v-slot:[`item.paymentType`]="{ item }">
           <v-chip
-            :color="mopColors[item.MOP]"
+            :color="mopColors[item.paymentType]"
             dark
             small
             class="text-overline"
-            >{{ item.MOP.replaceAll("_", " ") }}</v-chip
+            >{{ item.paymentType.replaceAll("_", " ") }}</v-chip
           >
         </template>
-        <template v-slot:[`group.header`]="{ group }">
-          <td :colspan="headers.length" class="pl-8">
-            {{ group }}
-          </td>
+
+        <template v-slot:[`item.menu`]>
+          <v-menu offset-x left>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
+
+            <v-list>
+              <v-list-item v-for="(item, i) in menuItems" :key="i">
+                <v-list-item-title>{{ item.text }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
         </template>
-      </PaginatedTable>
+      </DefaultTable>
     </div>
   </v-card>
 </template>
 
 <script>
-import PaginatedTable from "../tables/PaginatedTable.vue";
+import DefaultTable from "../tables/DefaultTable.vue";
 import { format, parseISO } from "date-fns";
 import { assignParams } from "@/mixins/FormattingFunctions";
 import CashierTransactionDetailsTableHeader from "./CashierTransactionDetailsTableHeader.vue";
 
 export default {
   name: "CashierTransactionDetalisTable",
-  components: { PaginatedTable, CashierTransactionDetailsTableHeader },
+  components: { DefaultTable, CashierTransactionDetailsTableHeader },
   props: { transactionDetails: Object },
   mixins: [assignParams],
   data: () => ({
     headers: [
       {
-        text: "Employee ID",
-        value: "employeeId",
+        text: "Status",
+        value: "status",
         width: "180px",
       },
       {
-        text: "MOP",
-        value: "MOP",
+        text: "Product",
+        value: "product",
       },
       {
-        text: "Guest Name",
-        value: "guestName",
+        text: "Price",
+        value: "price",
       },
       {
-        text: "Total Payment",
-        value: "totalPayment",
+        text: "Quantity",
+        value: "quantity",
+      },
+      {
+        text: "Total Price",
+        value: "totalPrice",
       },
       {
         text: "Discount",
         value: "discount",
       },
       {
-        text: "Refund",
-        value: "refund",
-      },
-      {
-        text: "Voided",
-        value: "voided",
+        text: "Payment Type",
+        value: "paymentType",
       },
       {
         text: "Time",
         value: "time",
+      },
+      {
+        text: "",
+        value: "menu",
       },
     ],
     mopColors: {
@@ -93,32 +106,24 @@ export default {
       CHEQUE: "cheque",
     },
     footerProps: {
-      itemsPerPageOptions: [2, 2],
-      itemsPerPageText: "Sessions per page:",
+      itemsPerPageOptions: [5, 10, 15],
     },
+    menuItems: [{ text: "Issue Refund" }, { text: "Void Payment" }],
   }),
   computed: {
     mappedTransactionDetails() {
       console.log(this.transactionDetails);
       if (this.transactionDetails) {
-        const transactions = [];
-        for (const session of this.transactionDetails.data) {
-          transactions.push(
-            ...session.payments.map((item) => ({
-              employeeId: "S" + this.$route.params.id,
-              MOP: item.paymentType,
-              totalPayment: item.amountReceived,
-              guestName: item.guestName,
-              discount: item.discount,
-              refund: "0.00",
-              voided: "0.00",
-              time: format(parseISO(item.createdAt), "H:mm:ss"),
-              date: format(parseISO(session.openedAt), "MMMM dd, yyyy"),
-              paymentId: item.paymentId,
-            }))
-          );
-        }
-        return transactions;
+        return this.transactionDetails.data.map((t) => ({
+          status: t.status,
+          product: t.product,
+          price: t.price,
+          quantity: t.quantity,
+          totalPrice: t.totalPrice,
+          discount: t.discount,
+          paymentType: t.paymentType,
+          time: t.time,
+        }));
       }
       return [];
     },
