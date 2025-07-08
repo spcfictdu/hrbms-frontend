@@ -36,9 +36,15 @@
               </v-btn>
             </template>
 
-            <v-list>
-              <v-list-item v-for="(item, i) in menuItems" :key="i">
-                <v-list-item-title>{{ item.text }}</v-list-item-title>
+            <v-list dense class="py-0">
+              <v-list-item
+                class="menu-border"
+                v-for="(item, i) in menuItems"
+                :key="i"
+              >
+                <v-list-item-title class="text-body-2 font-weight-regular">{{
+                  item.text
+                }}</v-list-item-title>
               </v-list-item>
             </v-list>
           </v-menu>
@@ -64,7 +70,6 @@ export default {
       {
         text: "Status",
         value: "status",
-        width: "180px",
       },
       {
         text: "Product",
@@ -138,3 +143,9 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.menu-border {
+  border-bottom: 1px solid #e6e2e2;
+}
+</style>
