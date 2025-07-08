@@ -50,7 +50,7 @@ export default {
         {
           text: "View Cashier History",
           route: {
-            name: "Cashier History",
+            name: "Cashier Transaction List",
             params: {
               id: String(this.sessionData.userId),
               drawerNumber: String(this.drawerNumber),

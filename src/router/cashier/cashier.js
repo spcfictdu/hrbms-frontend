@@ -28,12 +28,12 @@ export default [
     },
   },
   {
-    path: "/cashier/:drawerNumber/:id",
-    name: "Cashier History",
-    component: () => import("@/views/cashier/CashierHistoryView.vue"),
+    path: "/cashier-transactions/:drawerNumber/:id",
+    name: "Cashier Transaction List",
+    component: () => import("@/views/cashier/CashierTransactionListView.vue"),
     props: true,
     meta: {
-      name: "Cashier History",
+      name: "Cashier Transaction List",
       selectedMainNav: "Cashier Terminal",
     },
   },

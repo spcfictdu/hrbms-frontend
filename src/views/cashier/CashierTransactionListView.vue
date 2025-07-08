@@ -27,7 +27,7 @@ import { mapActions, mapState } from "vuex";
 
 export default {
   components: { RouteLoader, PageHeader, CashierHistoryTable },
-  name: "CashierHistoryView",
+  name: "CashierTransactionListView",
   props: { id: String, drawerNumber: String },
   methods: {
     ...mapActions("cashier", ["fetchHistory"]),
