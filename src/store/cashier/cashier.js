@@ -20,10 +20,11 @@ export const cashier = {
     SET_CURR_USER_HISTORY: (state, data) => (state.currUserHistory = data),
   },
   actions: {
-    fetchSessions({ commit }) {
+    fetchSessions({ commit }, queryParams = {}) {
       const url = `cashier-session`;
+      const queryUrl = functions.query(url, queryParams);
       return this.$axios
-        .get(url)
+        .get(queryUrl)
         .then((response) => {
           commit("SET_SESSIONS", response.data.results);
         })

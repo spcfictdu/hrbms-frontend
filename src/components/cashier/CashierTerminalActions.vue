@@ -10,6 +10,7 @@
         :plain="action.plain"
         :color="action.plain ? '' : 'lightBg'"
         class="font-weight-bold px-8 ml-3"
+        @click="action.action"
       >
         {{ action.name }}
       </v-btn>
@@ -25,6 +26,7 @@
         :plain="action.plain"
         :color="action.plain ? '' : 'lightBg'"
         class="font-weight-bold px-6 ml-3"
+        @click="action.action"
       >
         {{ action.name }}
       </v-btn>
@@ -33,21 +35,32 @@
 </template>
 
 <script>
+import { mapActions } from "vuex";
+
 export default {
   name: "CashierTerminalActions",
-  data: () => ({
-    terminalActions: [
-      {
-        name: "Open",
-      },
-      {
-        name: "Close",
-      },
-      {
-        name: "Reset",
-        plain: true,
-      },
-    ],
-  }),
+  data: () => ({}),
+  methods: {
+    ...mapActions("cashier", ["fetchSessions"]),
+  },
+  computed: {
+    terminalActions() {
+      return [
+        {
+          name: "Open",
+          action: () => this.fetchSessions({ status: "ACTIVE" }),
+        },
+        {
+          name: "Close",
+          action: () => this.fetchSessions({ status: "INACTIVE" }),
+        },
+        {
+          name: "Reset",
+          plain: true,
+          action: () => this.fetchSessions(),
+        },
+      ];
+    },
+  },
 };
 </script>
