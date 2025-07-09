@@ -231,8 +231,12 @@ export default {
       if (this.payload.discount && this.payload.discount !== "VOUCHER")
         receiptQuery.discount = this.payload.discount;
 
-      if (this.activeVoucher && this.payload.discount === "VOUCHER") {
-        receiptQuery.voucherCode = this.activeVoucher.code;
+      if (
+        (this.activeVoucher && this.payload.discount === "VOUCHER") ||
+        this.transaction.priceSummary.discount !== "0%"
+      ) {
+        receiptQuery.voucherCode =
+          this.activeVoucher?.code ?? this.payload.voucherCode;
         receiptQuery.discount = this.payload.discount;
       }
 

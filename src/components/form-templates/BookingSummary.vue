@@ -124,8 +124,9 @@ export default {
         button: this.btnStyling,
       };
 
-      if (this.activeVoucher) {
-        summary.receiptEnums.voucherCode = this.activeVoucher.code;
+      if (this.queryParams.voucherCode) {
+        summary.receiptEnums.voucherCode =
+          this.activeVoucher?.code ?? this.queryParams.voucherCode;
       }
 
       return summary;
@@ -151,6 +152,9 @@ export default {
         if (!data.addons) {
           this.$delete(data, "addons");
         }
+
+        if (!data.discount) this.$delete(data, "discount");
+        if (!data.voucherCode) this.$delete(data, "voucherCode");
 
         await this.fetchRoom(data);
 
