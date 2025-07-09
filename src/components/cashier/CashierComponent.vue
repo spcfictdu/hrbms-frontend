@@ -100,6 +100,7 @@ export default {
     selectedTransaction: null,
     totalPayment: 0,
     fill: null,
+    tempAddons: [],
   }),
   methods: {
     ...mapActions("transaction", ["fetchTransactions", "fetchTransaction"]),
@@ -112,6 +113,8 @@ export default {
           const value = payload[key];
           if (value === null) {
             this.$delete(this.payload, key);
+          } else if (key === "addons") {
+            this.$set(this.payload, key, [...this.tempAddons, ...value]);
           } else {
             this.$set(this.payload, key, payload[key]);
           }
@@ -167,11 +170,24 @@ export default {
       if (this.formDetails) return;
       await this.fetchTransaction(this.selectedTransaction);
 
+      this.tempAddons = this.transaction.priceSummary.fullAddons.map((fa) => ({
+        name: fa.name.trim(),
+        quantity: String(fa.quantity),
+      }));
+
+      // this.payload = {
+      //   ...this.payload,
+      //   addons: this.transaction.priceSummary.fullAddons.map((fa) => ({
+      //     name: fa.name.trim(),
+      //     quantity: fa.quantity,
+      //   })),
+      // };
+
       this.fill = {
-        addons: this.transaction.priceSummary.fullAddons.map((fa) => ({
-          name: fa.name.trim(),
-          quantity: fa.quantity,
-        })),
+        // addons: this.transaction.priceSummary.fullAddons.map((fa) => ({
+        //   name: fa.name.trim(),
+        //   quantity: fa.quantity,
+        // })),
         discount: {
           discount: this.transaction.priceSummary.discountName,
           idNumber:
@@ -240,7 +256,7 @@ export default {
         receiptQuery.discount = this.payload.discount;
       }
 
-      receiptQuery.addons = this.payload.addons;
+      receiptQuery.addons = this.payload.addons ?? this.tempAddons;
 
       return receiptQuery;
     },

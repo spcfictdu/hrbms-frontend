@@ -111,7 +111,7 @@ export default {
           extraPersonTotal,
           total: roomTotal + extraPersonTotal + room.addonsTotal,
           roomRatesArray: room.roomRatesArray,
-          addonsArray: room.addons,
+          addonsArray: [...room.addons],
           discount: room.discount,
           discountedValue,
           addonsTotal: room.addonsTotal,
