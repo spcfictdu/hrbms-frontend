@@ -13,7 +13,8 @@
             item-text="text"
             item-value="value"
             v-model="payload.discount"
-            @change="SET_ACTIVE_VOUCHER(null)"
+            @change="handleDiscountChange"
+            :disabled="disabled"
           />
         </FormField>
       </v-col>
@@ -29,6 +30,7 @@
             @input="payload.idNumber = payload.idNumber.toLocaleUpperCase()"
             @blur="validateVoucher"
             v-mask="idNumberMask(payload.discount)"
+            :disabled="disabled"
           />
         </FormField>
       </v-col>
@@ -45,12 +47,16 @@ import { mapGetters, mapMutations } from "vuex";
 export default {
   name: "DiscountTemplate",
   components: { FormSection, FormField },
+  props: { fill: Object },
   directives: { mask },
   data: () => ({
     payload: {
       discount: null,
       idNumber: null,
     },
+
+    disabled: false,
+
     discounts: [
       { text: "Senior Citizen", value: "SNR" },
       { text: "PWD", value: "PWD" },
@@ -71,10 +77,18 @@ export default {
   }),
   methods: {
     ...mapMutations("vouchers", ["SET_ACTIVE_VOUCHER"]),
+
     handleInput() {
       payload.idNumber = payload.idNumber.toLocaleUpperCase();
       this.validateVoucher();
     },
+
+    handleDiscountChange() {
+      this.SET_ACTIVE_VOUCHER(null);
+      this.$refs.idNumberInput.$refs.input.value = "";
+      this.payload.idNumber = null;
+    },
+
     validateVoucher() {
       if (this.payload.discount !== "VOUCHER") return;
 
@@ -85,6 +99,7 @@ export default {
       }
       this.SET_ACTIVE_VOUCHER(voucher);
     },
+
     idNumberMask(idType) {
       const mask = {
         SNR: "######",
@@ -97,9 +112,14 @@ export default {
     ...mapGetters("vouchers", ["getVoucher"]),
   },
   watch: {
-    "payload.discount": function () {
-      this.$refs.idNumberInput.$refs.input.value = "";
-      this.payload.idNumber = null;
+    fill(val) {
+      if (!Object.values(val.discount).every((v) => !!v)) {
+        this.disabled = false;
+        return;
+      }
+
+      this.payload = val.discount;
+      this.disabled = true;
     },
     payload: {
       deep: true,

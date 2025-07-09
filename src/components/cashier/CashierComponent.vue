@@ -47,7 +47,7 @@
             <AddOnsTemplate :fill="fill" @emit-transaction="assignPayload" />
 
             <v-divider></v-divider>
-            <DiscountTemplate @emit-transaction="assignPayload" />
+            <DiscountTemplate :fill="fill" @emit-transaction="assignPayload" />
           </div>
         </v-col>
 
@@ -166,11 +166,18 @@ export default {
 
       if (this.formDetails) return;
       await this.fetchTransaction(this.selectedTransaction);
+
       this.fill = {
         addons: this.transaction.priceSummary.fullAddons.map((fa) => ({
           name: fa.name.trim(),
           quantity: fa.quantity,
         })),
+        discount: {
+          discount: this.transaction.priceSummary.discountName,
+          idNumber:
+            this.transaction.priceSummary.idNumber ??
+            this.transaction.priceSummary.voucherCode,
+        },
       };
     },
   },
