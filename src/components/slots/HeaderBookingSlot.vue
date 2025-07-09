@@ -31,7 +31,7 @@
     </div>
     <slot name="button">
       <v-btn
-        v-if="$auth.user().role === 'ADMIN' && showButton(status.type)"
+        v-if="isStaff && showButton(status.type)"
         class="mt-2 mt-sm-0"
         :block="$vuetify.breakpoint.xs ? true : false"
         @click="$emit('button-event')"
@@ -83,6 +83,10 @@ export default {
     },
     client() {
       return this.headerData.client;
+    },
+    isStaff() {
+      const role = this.$auth.user()?.role;
+      return role === "ADMIN" || role === "FRONT DESK";
     },
   },
 };
