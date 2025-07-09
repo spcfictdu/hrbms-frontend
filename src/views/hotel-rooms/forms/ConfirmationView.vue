@@ -34,6 +34,7 @@ export default {
     cancelRoutes: {
       GUEST: "Guest Account Details",
       ADMIN: "Transactions",
+      "FRONT DESK": "Transactions",
     },
   }),
   created: async function () {
