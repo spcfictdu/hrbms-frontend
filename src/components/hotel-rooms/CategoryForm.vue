@@ -332,7 +332,10 @@ export default {
           capacity: newVal.capacity,
           isNonSmoking: newVal.isNonSmoking,
           balconyOrTerrace: newVal.balconyOrTerrace,
-          amenities: newVal.amenities,
+          amenities: newVal.amenities.map((a) => ({
+            ...a,
+            name: a.name.toUpperCase(),
+          })),
         };
         this.images = newVal.images;
         this.imagesUrl.forEach((item, index) => {
