@@ -150,6 +150,8 @@ export default {
       }
     },
     async handleClick(referenceNum, fullName) {
+      if (this.selectedTransaction === referenceNum) return;
+
       // Reset payload and fill
       this.payload = {
         payment: {
