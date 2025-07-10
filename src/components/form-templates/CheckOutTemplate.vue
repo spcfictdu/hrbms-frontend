@@ -14,7 +14,6 @@
       <v-col cols="12" md="6">
         <FormField label="Time">
           <TimeField
-            :disabled="!isDisabled"
             :model="payload.checkOut.time"
             :rules="rules.time"
             @input="(v) => evaluateValue(v, 'time')"
@@ -66,12 +65,12 @@ export default {
       errors.time = [(v) => !!v || "Time is required"];
       return errors;
     },
-    isDisabled: function () {
-      return (
-        this.$auth.user()?.role !== "ADMIN" &&
-        this.$auth.user()?.role !== "FRONT DESK"
-      );
-    },
+    // isDisabled: function () {
+    //   return (
+    //     this.$auth.user()?.role !== "ADMIN" &&
+    //     this.$auth.user()?.role !== "FRONT DESK"
+    //   );
+    // },
   },
   watch: {
     fill: {

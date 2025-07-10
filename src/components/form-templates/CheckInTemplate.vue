@@ -15,7 +15,6 @@
         <FormField label="Time">
           <TimeField
             :model="payload.checkIn.time"
-            :disabled="!isDisabled"
             :rules="rules.time"
             @input="(v) => evaluateValue(v, 'time')"
           />
@@ -74,12 +73,12 @@ export default {
       const dateString = `${now}T${this.payload.checkIn.time}:00`;
       return this.payload.checkIn.time ? this.formatTime(dateString) : null;
     },
-    isDisabled: function () {
-      return (
-        this.$auth.user()?.role !== "ADMIN" &&
-        this.$auth.user()?.role !== "FRONT DESK"
-      );
-    },
+    // isDisabled: function () {
+    //   return (
+    //     this.$auth.user()?.role !== "ADMIN" &&
+    //     this.$auth.user()?.role !== "FRONT DESK"
+    //   );
+    // },
   },
   watch: {
     fill: {

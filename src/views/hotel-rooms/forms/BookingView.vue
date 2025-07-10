@@ -197,12 +197,12 @@ export default {
     guestAutofill: function () {
       let fill = {};
 
-      if (!this.user) {
-        fill = {
-          checkInTime: "14:00",
-          checkOutTime: "11:00",
-        };
-      }
+      // if (!this.user) {
+      //   fill = {
+      //     checkInTime: "14:00",
+      //     checkOutTime: "11:00",
+      //   };
+      // }
 
       if (this.userRole === "GUEST") {
         if (this.temporaryData) {
@@ -235,8 +235,8 @@ export default {
             email: this.userInfo.email,
             city: this.userInfo.address.city,
             province: this.userInfo.address.province,
-            checkInTime: "14:00",
-            checkOutTime: "11:00",
+            // checkInTime: "14:00",
+            // checkOutTime: "11:00",
           };
         }
       }

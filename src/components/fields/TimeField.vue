@@ -25,7 +25,7 @@
     </template>
     <v-time-picker
       ref="picker"
-      v-if="disabled"
+      v-if="!disabled"
       v-model="time"
       scrollable
       active-picker="HOUR"
@@ -43,7 +43,7 @@ export default {
     rules: Array,
     model: String,
     value: String,
-    disabled: Boolean,
+    disabled: { type: Boolean, default: false },
   },
   data: () => ({
     menu: false,
