@@ -133,6 +133,7 @@ export default {
         !!this.payload.payment.paymentType || "Type is required",
         (v) =>
           (this.payload.payment.paymentType === "CASH" && (v === 0 || !!v)) ||
+          !!v ||
           "Amount is required",
       ];
       return errors;
