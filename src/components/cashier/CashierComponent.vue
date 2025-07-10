@@ -167,7 +167,13 @@ export default {
       this.selectedTransaction = referenceNum;
       this.guestName = fullName;
 
-      if (this.formDetails) return;
+      if (this.formDetails && this.selectedTransaction.length <= 8) {
+        await this.fetchRoom({
+          roomNumber: this.formDetails.roomNumber,
+        });
+        this.addBookedTransaction();
+        return;
+      }
       await this.fetchTransaction(this.selectedTransaction);
 
       this.tempAddons = this.transaction.priceSummary.fullAddons.map((fa) => ({
@@ -195,6 +201,30 @@ export default {
             this.transaction.priceSummary.voucherCode,
         },
       };
+    },
+
+    addBookedTransaction() {
+      const activeTransaction = {
+        guestName: this.fullName,
+        room: {
+          name: this.room[0].roomType,
+          number: Number(this.savedPayload.roomNumber),
+          capacity: this.room[0].roomTypeCapacity,
+        },
+        transaction: {
+          checkInDate: this.savedPayload.checkIn.date,
+          checkOutDate: this.savedPayload.checkOut.date,
+          extraPerson: this.savedPayload.guest.extraPerson,
+          status: "BOOKED",
+        },
+        priceSummary: {
+          fullAddons: [],
+        },
+        paymentSummary: [],
+        transactionRefNum: this.savedPayload.room.referenceNumber,
+      };
+      this.SET_TRANSACTION(activeTransaction);
+      return activeTransaction;
     },
   },
   computed: {
@@ -284,6 +314,14 @@ export default {
     guestNameChange() {
       return this.guestName;
     },
+    fullName() {
+      const { firstName, middleName, lastName } = this.savedPayload.guest;
+      const fullName = middleName
+        ? `${lastName}, ${firstName} ${middleName}`
+        : `${lastName}, ${firstName}`;
+
+      return fullName;
+    },
   },
   async created() {
     await this.fetchTransactions({ perPage: 100 });
@@ -298,11 +336,6 @@ export default {
     }
 
     if (this.savedPayload && this.formDetails) {
-      const { firstName, middleName, lastName } = this.savedPayload.guest;
-      const fullName = middleName
-        ? `${lastName}, ${firstName} ${middleName}`
-        : `${lastName}, ${firstName}`;
-
       await this.fetchRoom({
         roomNumber: this.formDetails.roomNumber,
       });
@@ -311,7 +344,7 @@ export default {
         booked: null,
         checkInDate: this.savedPayload.checkIn.date,
         checkOutDate: this.savedPayload.checkOut.date,
-        fullName,
+        fullName: this.fullName,
         room: {
           name: this.room[0].roomType,
           number: Number(this.savedPayload.roomNumber),
@@ -322,23 +355,9 @@ export default {
       };
       this.ADD_TRANSACTION(transaction);
 
-      const activeTransaction = {
-        guestName: fullName,
-        room: transaction.room,
-        transaction: {
-          checkInDate: transaction.checkInDate,
-          checkOutDate: transaction.checkOutDate,
-          extraPerson: this.savedPayload.guest.extraPerson,
-          status: transaction.status,
-        },
-        priceSummary: {
-          fullAddons: [],
-        },
-        paymentSummary: [],
-      };
-      this.SET_TRANSACTION(activeTransaction);
+      const activeTransaction = this.addBookedTransaction();
       this.handleClick(
-        transaction.transactionRefNum,
+        activeTransaction.transactionRefNum,
         this.transaction.guestName
       );
     }
