@@ -75,6 +75,9 @@ export const authentication = {
         commit("SET_CURRENT_USER", null);
         store.dispatch("account/removeUserInfo");
 
+        // Clear session storage
+        sessionStorage.clear();
+
         // Back To Login
         await this.$router.push({ name: whichlogoutRoute[role] });
       }
