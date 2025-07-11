@@ -150,7 +150,7 @@ export default {
           checkInDate: this.payload.checkInDate,
           checkOutDate: this.payload.checkOutDate,
         };
-
+        sessionStorage.removeItem("formDetails");
         this.$emit("reservation-event", payload);
       }
     },
