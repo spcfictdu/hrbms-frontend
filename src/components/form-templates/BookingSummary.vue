@@ -159,7 +159,7 @@ export default {
         await this.fetchRoom(data);
 
         // Needed by the Parent Component
-        this.$emit("capacity", this.room[0].extraPersonCapacity);
+        this.$emit("capacity", this.room[0].extraPersonCapacity || [0]);
         this.$emit("totalPayment", this.room[0].roomTotalWithExtraPerson);
       },
     },
