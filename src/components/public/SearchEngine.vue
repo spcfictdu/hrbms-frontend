@@ -103,7 +103,10 @@
                       :value="formattedDate(queryParams.checkOutDate)"
                     ></v-text-field>
                   </template>
-                  <v-date-picker v-model="queryParams.checkOutDate">
+                  <v-date-picker
+                    v-model="queryParams.checkOutDate"
+                    :min="minDate"
+                  >
                     <v-btn
                       block
                       color="primary"
