@@ -30,11 +30,13 @@ export default {
       ADMIN: {
         RESERVED: "Confirmation",
         CONFIRMED: "CheckInOut",
+        CHECKED_IN: "CheckInOut",
         CHECKED_OUT: "CheckInOut",
       },
       "FRONT DESK": {
         RESERVED: "Confirmation",
         CONFIRMED: "CheckInOut",
+        CHECKED_IN: "CheckInOut",
         CHECKED_OUT: "CheckInOut",
       },
     },
@@ -82,16 +84,13 @@ export default {
             this.setLoading({ key: "form", value: false });
           });
       }
+
       return this.updateTransaction(payload)
         .then(() => {
-          if (payload.status === "RESERVED" || payload.status === "CONFIRMED") {
-            this.$router.replace({
-              name: "CheckInOut",
-              params: { referenceNumber: payload.referenceNumber },
-            });
-          } else {
-            this.fetchTransaction(payload.referenceNumber);
-          }
+          this.$router.replace({
+            name: "CheckInOut",
+            params: { referenceNumber: payload.referenceNumber },
+          });
         })
         .catch((err) => {})
         .finally(() => {
