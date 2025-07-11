@@ -38,7 +38,11 @@ export default {
   created: async function () {
     await this.fetch();
 
-    if (!this.user || this.userRole !== "ADMIN") return;
+    if (
+      !this.user ||
+      (this.userRole !== "ADMIN" && this.userRole !== "FRONT DESK")
+    )
+      return;
     const userFullName = `${this.$auth.user().firstName} ${
       this.$auth.user().lastName
     }`;
