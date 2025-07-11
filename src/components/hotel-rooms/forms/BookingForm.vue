@@ -139,6 +139,7 @@ import DiscountTemplate from "@/components/form-templates/DiscountTemplate.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import WarningDialog from "@/components/dialogs/WarningDialog.vue";
 import { mapState } from "vuex";
+
 export default {
   name: "BookingForm",
   components: {
@@ -196,8 +197,8 @@ export default {
       first_name: this.formDetails.firstName,
       middle_name: this.formDetails.middleName,
       last_name: this.formDetails.lastName,
-      province: this.formDetails.address.province,
-      city: this.formDetails.address.city,
+      province: this.formDetails.address?.province,
+      city: this.formDetails.address?.city,
       phone_number: this.formDetails.contact?.phoneNumber,
       email: this.formDetails.contact?.email,
       id: this.formDetails.id,
@@ -228,8 +229,7 @@ export default {
         }
       }
 
-      if (this.hasFills)
-        sessionStorage.setItem("formDetails", JSON.stringify(this.payload));
+      sessionStorage.setItem("formDetails", JSON.stringify(this.payload));
     },
     handleWhichDialog: function () {
       if (this.$refs.form.validate()) {
@@ -302,6 +302,23 @@ export default {
       this.fill = null;
       delete this.payload.accountId;
       this.$refs.form.resetValidation();
+
+      // Reset payload
+      this.payload = {
+        payment: {
+          paymentType: null,
+          amountReceived: 0,
+        },
+        checkIn: {
+          date: null,
+        },
+        checkOut: {
+          date: null,
+        },
+        guests: 0,
+      };
+
+      sessionStorage.removeItem("formDetails");
     },
     autofillDates: function (newVal) {
       this.fill = {
