@@ -78,8 +78,12 @@ export default {
           name: "Closing Balance",
           totalAmount: this.sessionData.closingBalance ?? "0.00",
         },
-        ...this.sessionData.payments,
       ];
+
+      if (this.sessionData.payments) {
+        drawerDetails.push(...this.sessionData.payments);
+      }
+
       return drawerDetails;
     },
   },

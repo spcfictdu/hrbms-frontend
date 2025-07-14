@@ -35,29 +35,29 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapMutations } from "vuex";
 
 export default {
   name: "CashierTerminalActions",
   data: () => ({}),
   methods: {
-    ...mapActions("cashier", ["fetchSessions"]),
+    ...mapMutations("cashier", ["SET_FILTERED_SESSIONS"]),
   },
   computed: {
     terminalActions() {
       return [
         {
           name: "Open",
-          action: () => this.fetchSessions({ status: "ACTIVE" }),
+          action: () => this.SET_FILTERED_SESSIONS("ACTIVE"),
         },
         {
           name: "Close",
-          action: () => this.fetchSessions({ status: "INACTIVE" }),
+          action: () => this.SET_FILTERED_SESSIONS("INACTIVE"),
         },
         {
           name: "Reset",
           plain: true,
-          action: () => this.fetchSessions(),
+          action: () => this.SET_FILTERED_SESSIONS(),
         },
       ];
     },

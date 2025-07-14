@@ -10,6 +10,7 @@ export const cashier = {
   state: () => ({
     sessions: [],
     currUserHistory: [],
+    filteredSessions: [],
   }),
   getters: {
     getSession: (state) => (userId) =>
@@ -18,10 +19,23 @@ export const cashier = {
   mutations: {
     SET_SESSIONS: (state, data) => (state.sessions = data),
     SET_CURR_USER_HISTORY: (state, data) => (state.currUserHistory = data),
+    SET_FILTERED_SESSIONS: (state, status) => {
+      if (!status) {
+        state.filteredSessions = state.sessions;
+        return;
+      }
+
+      state.filteredSessions = state.sessions.filter((s) => {
+        if (status === "INACTIVE") {
+          return status === s.status || typeof s.status === "undefined";
+        }
+        return status === s.status;
+      });
+    },
   },
   actions: {
     fetchSessions({ commit }, queryParams = {}) {
-      const url = `cashier-session`;
+      const url = `cashier-session/show-cashiers`;
       const queryUrl = functions.query(url, queryParams);
       return this.$axios
         .get(queryUrl)
@@ -30,20 +44,6 @@ export const cashier = {
         })
         .catch((error) => {
           console.error("Error fetching sessions: ", error);
-        });
-    },
-
-    fetchHistory({ commit }, { userId, queryParams = {} }) {
-      const url = `cashier-session/${userId}/show-history`;
-      const queryUrl = functions.query(url, queryParams);
-
-      return this.$axios
-        .get(queryUrl)
-        .then((response) => {
-          commit("SET_CURR_USER_HISTORY", response.data.results);
-        })
-        .catch((error) => {
-          console.error("Error fetching cashier history: ", error);
         });
     },
   },
