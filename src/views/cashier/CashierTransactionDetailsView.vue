@@ -30,7 +30,7 @@ import { mapActions, mapState } from "vuex";
 export default {
   components: { RouteLoader, PageHeader, CashierTransactionDetailsTable },
   name: "CashierTransactionDetailsView",
-  props: { id: String, drawerNumber: String, transactionId: String },
+  props: { id: String, drawerNumber: String, paymentId: String },
   methods: {
     ...mapActions("cashier", ["fetchHistory"]),
     async fetch(queryParams = {}) {

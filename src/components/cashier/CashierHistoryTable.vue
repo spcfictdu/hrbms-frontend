@@ -15,6 +15,7 @@
         :serverItemsLength="history.meta.total"
         disableSort
         @onQuery="assignParams($event)"
+        @click:row="handleSelectRow"
       >
         <template v-slot:[`item.MOP`]="{ item }">
           <v-chip
@@ -93,6 +94,14 @@ export default {
       itemsPerPageText: "Sessions per page:",
     },
   }),
+  methods: {
+    handleSelectRow(row) {
+      this.$router.push({
+        name: "Cashier Transaction Details",
+        params: { ...this.$route.params, paymentId: String(row.paymentId) },
+      });
+    },
+  },
   computed: {
     mappedHistory() {
       console.log(this.history);
