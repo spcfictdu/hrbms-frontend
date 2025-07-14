@@ -56,7 +56,6 @@
 
 <script>
 import DefaultTable from "../tables/DefaultTable.vue";
-import { format, parseISO } from "date-fns";
 import { assignParams } from "@/mixins/FormattingFunctions";
 import CashierTransactionDetailsTableHeader from "./CashierTransactionDetailsTableHeader.vue";
 
@@ -113,7 +112,7 @@ export default {
     footerProps: {
       itemsPerPageOptions: [5, 10, 15],
     },
-    menuItems: [{ text: "Issue Refund" }, { text: "Void Payment" }],
+    menuItems: [{ text: "Refund Payment" }, { text: "Void Transaction" }],
   }),
   computed: {
     mappedTransactionDetails() {
