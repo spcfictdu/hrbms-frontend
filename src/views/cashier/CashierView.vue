@@ -7,7 +7,7 @@
   >
     <CashierHeader :dividerMarginTop="12" />
 
-    <RouteLoader :target="true" :loaderStyles="['mt-10']" class="mt-4">
+    <RouteLoader :target="hasData" :loaderStyles="['mt-10']" class="mt-4">
       <CashierComponent :session="session" @onSubmit="handleClickEvent" />
     </RouteLoader>
   </div>
@@ -109,9 +109,13 @@ export default {
     userRole: function () {
       return this.$auth.user()?.role;
     },
+    hasData() {
+      return !!this.session;
+    },
   },
   created() {
     this.fetchVouchers();
+    this.fetchSessions();
   },
 };
 </script>
