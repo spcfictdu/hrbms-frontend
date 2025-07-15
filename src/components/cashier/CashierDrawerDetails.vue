@@ -26,7 +26,7 @@
           v-for="(button, i) in buttons"
           :key="button.text"
           class="mt-2 ms-0"
-          @click="() => $router.push(button.route)"
+          @click.stop="() => $router.push(button.route)"
         >
           {{ button.text }}
         </v-btn>
