@@ -46,5 +46,19 @@ export const cashier = {
           console.error("Error fetching sessions: ", error);
         });
     },
+
+    fetchHistory({ commit }, { userId, queryParams = {} }) {
+      const url = `cashier-session/${userId}/show-history`;
+      const queryUrl = functions.query(url, queryParams);
+
+      return this.$axios
+        .get(queryUrl)
+        .then((response) => {
+          commit("SET_CURR_USER_HISTORY", response.data.results);
+        })
+        .catch((error) => {
+          console.error("Error fetching cashier history: ", error);
+        });
+    },
   },
 };
