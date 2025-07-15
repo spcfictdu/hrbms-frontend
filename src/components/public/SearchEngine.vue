@@ -14,11 +14,16 @@
         <div>
           <v-card
             class="search-container py-4 px-4 px-md-0 py-md-2 pr-md-2 d-flex flex-column flex-md-row justify-start align-start align-md-center"
-            :class="{ 'gap-spacing': $vuetify.breakpoint.smAndDown }"
+            :class="{
+              'gap-spacing': $vuetify.breakpoint.smAndDown,
+            }"
           >
             <div
               class="ml-0 pr-0 ml-md-6 pr-md-2 d-flex flex-grow-0 flex-md-grow-1 overflow-y-hidden"
-              :class="{ 'primary--text': isActive(menu) }"
+              :class="{
+                'primary--text': isActive(menu),
+                'warning--text': isActive(checkInDateInputWarning && !menu),
+              }"
             >
               <i class="fi fi-sr-calendar-day calendar-icon align-self-end"></i>
               <div class="d-flex flex-column flex-grow-1 flex-md-grow-0">
@@ -50,11 +55,13 @@
                       readonly
                       hide-details="auto"
                       :value="formattedDate(queryParams.checkInDate)"
+                      :rules="rules.checkInDate"
                     ></v-text-field>
                   </template>
                   <v-date-picker
                     v-model="queryParams.checkInDate"
                     :min="minDate"
+                    :rules="rules.checkInDate"
                   >
                     <v-btn block color="primary" @click="resetDates('CHECK IN')"
                       >Clear</v-btn
@@ -68,7 +75,10 @@
 
             <div
               class="ml-0 pr-0 ml-md-6 pr-md-2 d-flex flex-grow-0 flex-md-grow-1 overflow-y-hidden"
-              :class="{ 'primary--text': isActive(menu_2) }"
+              :class="{
+                'primary--text': isActive(menu_2),
+                'warning--text': isActive(checkOutDateInputWarning && !menu_2),
+              }"
             >
               <i class="fi fi-sr-calendar-day calendar-icon"></i>
 
@@ -101,11 +111,13 @@
                       readonly
                       hide-details="auto"
                       :value="formattedDate(queryParams.checkOutDate)"
+                      :rules="rules.checkOutDate"
                     ></v-text-field>
                   </template>
                   <v-date-picker
                     v-model="queryParams.checkOutDate"
                     :min="minDate"
+                    :rules="rules.checkOutDate"
                   >
                     <v-btn
                       block
@@ -192,6 +204,8 @@ export default {
     },
     menu: false,
     menu_2: false,
+    checkInDateInputWarning: false,
+    checkOutDateInputWarning: false,
     guestInputState: false,
     guestInputWarning: false,
     minDate: new Date().toISOString().slice(0, 10),
@@ -204,10 +218,23 @@ export default {
       return !!state;
     },
     submitQuery: function () {
+      this.validateDates();
       this.validateGuests();
-      if (this.$refs.form.validate()) {
+
+      if (
+        this.$refs.form.validate() &&
+        !this.checkInDateInputWarning &&
+        !this.checkOutDateInputWarning
+      ) {
         this.$emit("queryParams", this.queryParams);
       }
+    },
+    validateDates() {
+      if (!this.queryParams.checkInDate) this.checkInDateInputWarning = true;
+      else this.checkInDateInputWarning = false;
+
+      if (!this.queryParams.checkOutDate) this.checkOutDateInputWarning = true;
+      else this.checkOutDateInputWarning = false;
     },
     validateGuests: function () {
       if (this.queryParams.numberOfGuests <= 0) {
@@ -247,11 +274,20 @@ export default {
   computed: {
     rules: function () {
       let errors = {};
+      errors.checkInDate = [(v) => v !== "Preferred Date" || ""];
+      errors.checkOutDate = [(v) => v !== "Preferred Date" || ""];
       errors.numberOfGuests = [(v) => v > 0 || ""];
       return errors;
     },
   },
-  watch: {},
+  watch: {
+    "queryParams.checkInDate"(val) {
+      this.checkInDateInputWarning = !val;
+    },
+    "queryParams.checkOutDate"(val) {
+      this.checkOutDateInputWarning = !val;
+    },
+  },
 };
 </script>
 
