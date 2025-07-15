@@ -12,7 +12,7 @@
         itemKey="paymentId"
         groupBy="date"
         :footerProps="footerProps"
-        :serverItemsLength="history.meta.total"
+        :serverItemsLength="history.meta?.total"
         disableSort
         @onQuery="assignParams($event)"
         @click:row="handleSelectRow"
@@ -105,7 +105,7 @@ export default {
   computed: {
     mappedHistory() {
       console.log(this.history);
-      if (this.history) {
+      if (this.history?.data) {
         const transactions = [];
         for (const session of this.history.data) {
           transactions.push(

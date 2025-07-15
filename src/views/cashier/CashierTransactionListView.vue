@@ -14,7 +14,7 @@
     </PageHeader>
 
     <RouteLoader :target="hasData" class="mt-10">
-      <CashierHistoryTable :history="currUserHistory" @onQuery="fetch" />
+      <CashierHistoryTable :history="history" @onQuery="fetch" />
     </RouteLoader>
   </div>
 </template>
@@ -37,6 +37,9 @@ export default {
   },
   computed: {
     ...mapState("cashier", ["currUserHistory"]),
+    history() {
+      return this.currUserHistory?.data ? this.currUserHistory : {};
+    },
     hasData() {
       return !!this.currUserHistory ?? false;
     },
