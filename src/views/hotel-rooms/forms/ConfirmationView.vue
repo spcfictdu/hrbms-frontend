@@ -44,7 +44,7 @@ export default {
       this.$auth.user().lastName
     }`;
     this.userId = this.sessions.find(
-      (s) => s.userFullName === userFullName
+      (s) => s.userFullName === userFullName && s.status === "ACTIVE"
     ).userId;
   },
   methods: {

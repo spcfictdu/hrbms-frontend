@@ -199,7 +199,7 @@ export default {
           this.$auth.user().lastName
         }`;
         const id = this.sessions.find(
-          (s) => s.userFullName === userFullName
+          (s) => s.userFullName === userFullName && s.status === "ACTIVE"
         ).userId;
         route.route.params.id = String(id);
         return this.$router.push(route.route);
