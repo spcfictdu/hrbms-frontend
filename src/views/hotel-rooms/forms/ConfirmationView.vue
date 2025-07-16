@@ -4,12 +4,7 @@
       <confirmation-form
         ref="confirmationForm"
         @onCancel="handleCancel"
-        @onSubmit="
-          () => {
-            $router.push({ name: 'Cashier', params: { id: String(userId) } });
-            fetchTransaction(referenceNumber);
-          }
-        "
+        @onSubmit="handleClickEvent"
         :value="transaction"
       />
     </RouteLoader>
@@ -40,6 +35,13 @@ export default {
   created: async function () {
     await this.fetch();
 
+    if (
+      !this.user ||
+      (this.userRole !== "ADMIN" && this.userRole !== "FRONT DESK")
+    ) {
+      return;
+    }
+
     const userFullName = `${this.$auth.user().firstName} ${
       this.$auth.user().lastName
     }`;
@@ -58,7 +60,9 @@ export default {
     ...mapActions("cashier", ["fetchSessions"]),
     fetch: async function () {
       await this.fetchTransaction(this.referenceNumber);
-      await this.fetchSessions();
+
+      if (this.userRole === "ADMIN" || this.userRole === "FRONT DESK")
+        await this.fetchSessions();
     },
     handleCancel: function (payload) {
       // Prefetch the alert function: success, warning errors.
@@ -78,31 +82,37 @@ export default {
           this.setLoading({ key: "cancel", value: false });
         });
     },
-    handleClickEvent: function (payload) {
+    handleClickEvent: function () {
       const fn = this.$route.meta.formBtn.title.toUpperCase();
       if (fn === "PRINT") {
         return this.$refs.confirmationForm.handlePrinting();
       }
 
-      // Prefetch the alert function: success, warning errors.
-      this.requireAlertFn(2);
-      this.setLoading({ key: "form", value: true });
+      this.$router.push({
+        name: "Cashier",
+        params: { id: String(this.userId) },
+      });
+      this.fetchTransaction(this.referenceNumber);
 
-      return this.updateTransaction(payload)
-        .then(() => {
-          if (payload.status === "RESERVED") {
-            this.$router.replace({
-              name: "CheckInOut",
-              params: { referenceNumber: payload.referenceNumber },
-            });
-          } else {
-            this.fetchTransaction(payload.referenceNumber);
-          }
-        })
-        .catch((err) => {})
-        .finally(() => {
-          this.setLoading({ key: "form", value: false });
-        });
+      // // Prefetch the alert function: success, warning errors.
+      // this.requireAlertFn(2);
+      // this.setLoading({ key: "form", value: true });
+
+      // return this.updateTransaction(payload)
+      //   .then(() => {
+      //     if (payload.status === "RESERVED") {
+      //       this.$router.replace({
+      //         name: "CheckInOut",
+      //         params: { referenceNumber: payload.referenceNumber },
+      //       });
+      //     } else {
+      //       this.fetchTransaction(payload.referenceNumber);
+      //     }
+      //   })
+      //   .catch((err) => {})
+      //   .finally(() => {
+      //     this.setLoading({ key: "form", value: false });
+      //   });
     },
   },
   computed: {
@@ -113,6 +123,9 @@ export default {
     },
     userRole: function () {
       return this.$auth.user().role;
+    },
+    user: function () {
+      return this.$auth.user();
     },
   },
 };

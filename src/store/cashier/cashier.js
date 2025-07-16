@@ -35,6 +35,7 @@ export const cashier = {
   },
   actions: {
     fetchSessions({ commit }, queryParams = {}) {
+      // const url = `cashier-session/show-cashiers`;
       const url = `cashier-session`;
       const queryUrl = functions.query(url, queryParams);
       return this.$axios
