@@ -8,6 +8,7 @@
         :rules="rules.firstName"
         v-model="payload.firstName"
         @change="emitTransaction"
+        :readonly="readonly"
       ></v-text-field>
     </FormField>
 
@@ -18,6 +19,7 @@
         outlined
         v-model="payload.middleName"
         @change="emitTransaction"
+        :readonly="readonly"
       ></v-text-field>
     </FormField>
 
@@ -29,6 +31,7 @@
         :rules="rules.lastName"
         v-model="payload.lastName"
         @change="emitTransaction"
+        :readonly="readonly"
       ></v-text-field>
     </FormField>
   </FormSection>
@@ -45,6 +48,10 @@ export default {
   },
   props: {
     fill: Object,
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     payload: {

@@ -11,6 +11,7 @@
             :rules="rules.type"
             v-model="payload.id.type"
             @change="handleTypeChange"
+            :readonly="readonly"
           ></v-select>
         </FormField>
       </v-col>
@@ -26,6 +27,7 @@
             @change="emitTransaction"
             @input="payload.id.number = payload.id.number.toLocaleUpperCase()"
             v-mask="idNumberMask(payload.id.type)"
+            :readonly="readonly"
           ></v-text-field>
         </FormField>
       </v-col>
@@ -45,6 +47,10 @@ export default {
   },
   props: {
     fill: Object,
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   directives: { mask },
   data: () => ({

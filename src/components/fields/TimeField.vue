@@ -7,6 +7,7 @@
     max-width="290"
     v-model="menu"
     ref="menu"
+    :disabled="readonly"
     @input="
       (value) => value && $refs.picker && ($refs.picker.selectingHour = true)
     "
@@ -25,11 +26,12 @@
     </template>
     <v-time-picker
       ref="picker"
-      v-if="!disabled"
+      v-if="readonly"
       v-model="time"
       scrollable
       active-picker="HOUR"
       @change="handleTime"
+      :readonly="readonly"
     ></v-time-picker>
   </v-menu>
 </template>
@@ -44,6 +46,10 @@ export default {
     model: String,
     value: String,
     disabled: { type: Boolean, default: false },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     menu: false,

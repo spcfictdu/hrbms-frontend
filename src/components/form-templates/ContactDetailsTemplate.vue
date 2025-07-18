@@ -13,6 +13,7 @@
             v-model="payload.contact.phoneNumber"
             @change="emitTransaction"
             v-mask="['09#########']"
+            :readonly="readonly"
           ></v-text-field>
         </FormField>
       </v-col>
@@ -26,6 +27,7 @@
             :rules="rules.email"
             v-model="payload.contact.email"
             @change="emitTransaction"
+            :readonly="readonly"
           ></v-text-field>
         </FormField>
       </v-col>
@@ -45,6 +47,10 @@ export default {
   },
   props: {
     fill: Object,
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   directives: { mask },
   data: () => ({

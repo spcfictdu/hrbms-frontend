@@ -8,7 +8,7 @@
       icon
       class="primary"
       style="border-radius: 5px"
-      @click="decrementFn"
+      @click="readonly && decrementFn"
     >
       <v-icon>mdi-minus</v-icon>
     </v-btn>
@@ -21,7 +21,7 @@
       icon
       class="primary"
       style="border-radius: 5px"
-      @click="incrementFn"
+      @click="readonly && incrementFn"
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>
@@ -35,6 +35,10 @@ export default {
     quantity: Number,
     incrementFn: Function,
     decrementFn: Function,
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
 };
 </script>

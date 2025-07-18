@@ -10,9 +10,10 @@
         @change="emitTransaction"
         item-text="status"
         item-value="value"
-        clearable
+        :clearable="!readonly"
         :rules="rules.status"
         required
+        :readonly="readonly"
       />
     </FormField>
   </FormSection>
@@ -30,6 +31,10 @@ export default {
   props: {
     statuses: Array,
     fill: Object,
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     payload: {

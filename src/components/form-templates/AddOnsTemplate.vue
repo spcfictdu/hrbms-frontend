@@ -3,6 +3,7 @@
     <AmenityField
       :value="fill?.addons"
       @onInput="(v) => handleAmenityChange(v)"
+      :readonly="readonly"
     />
   </FormSection>
 </template>
@@ -15,6 +16,10 @@ export default {
   name: "AddOnsTemplate",
   props: {
     fill: Object,
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: {
     FormSection,

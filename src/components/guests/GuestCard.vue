@@ -79,7 +79,7 @@ export default {
     ...mapActions("transaction", ["fetchTransaction"]),
     ...mapActions("guest", ["fetchGuest"]),
 
-    async setFormDetails(action) {
+    async setFormDetails() {
       await this.fetchTransaction(this.transaction.transactionRefNum);
       await this.fetchGuest({ id: this.transaction.guestId });
 
@@ -118,7 +118,6 @@ export default {
         addons: this.fetchedTransaction.priceSummary.fullAddons.map(
           ({ name, quantity }) => ({ name, quantity: String(quantity) })
         ),
-        action,
         transactionRefNum: this.transaction.transactionRefNum,
       };
 
@@ -126,7 +125,7 @@ export default {
     },
 
     async redirectToForm(action) {
-      await this.setFormDetails(action);
+      await this.setFormDetails();
 
       this.$router.push({
         name: "Booking",
@@ -134,6 +133,7 @@ export default {
           room: this.transaction.room.name,
           referenceNumber: this.transaction.room.referenceNumber,
           roomNumber: this.transaction.room.number,
+          action,
         },
       });
     },

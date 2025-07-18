@@ -8,6 +8,7 @@
         outlined
         @change="emitTransaction"
         :items="guestsEnums"
+        :readonly="readonly"
       ></v-select>
     </FormField>
   </FormSection>
@@ -27,6 +28,10 @@ export default {
   props: {
     guestsEnums: Array,
     fill: Object,
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     payload: {

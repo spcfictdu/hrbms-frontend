@@ -15,7 +15,8 @@
           :items="fills.guests"
           item-text="full_name"
           v-model="autofill"
-          clearable
+          :clearable="!readonlyInputs"
+          :readonly="readonlyInputs"
         ></v-select>
       </div>
     </div>
@@ -30,21 +31,31 @@
             :statuses="statuses"
             @emit-transaction="assignPayload"
             :fill="fill"
+            :readonly="readonlyInputs"
           />
 
           <!-- Guest Name -->
           <v-divider />
-          <guest-name-template @emit-transaction="assignPayload" :fill="fill" />
+          <guest-name-template
+            @emit-transaction="assignPayload"
+            :fill="fill"
+            :readonly="readonlyInputs"
+          />
 
           <!-- Address -->
           <v-divider />
-          <address-template @emit-transaction="assignPayload" :fill="fill" />
+          <address-template
+            @emit-transaction="assignPayload"
+            :fill="fill"
+            :readonly="readonlyInputs"
+          />
 
           <!-- Contact Details -->
           <v-divider />
           <contact-details-template
             @emit-transaction="assignPayload"
             :fill="fill"
+            :readonly="readonlyInputs"
           />
 
           <!-- ID -->
@@ -52,6 +63,7 @@
           <identification-template
             @emit-transaction="assignPayload"
             :fill="fill"
+            :readonly="readonlyInputs"
           />
 
           <!-- Discount -->
@@ -65,11 +77,19 @@
         <v-col cols="12" md="6">
           <!-- Check In -->
           <v-divider />
-          <check-in-template :fill="fill" @emit-transaction="assignPayload" />
+          <check-in-template
+            :fill="fill"
+            @emit-transaction="assignPayload"
+            :readonly="readonlyInputs"
+          />
 
           <!-- Check Out -->
           <v-divider />
-          <check-out-template :fill="fill" @emit-transaction="assignPayload" />
+          <check-out-template
+            :fill="fill"
+            @emit-transaction="assignPayload"
+            :readonly="readonlyInputs"
+          />
 
           <!-- Guests -->
           <v-divider />
@@ -77,12 +97,17 @@
             :guestsEnums="extraRoomCapacity"
             :fill="fill"
             @emit-transaction="assignPayload"
+            :readonly="readonlyInputs"
           />
 
           <!-- Add-Ons -->
           <div v-if="payload.status === 'RESERVED'">
             <v-divider />
-            <AddOnsTemplate :fill="fill" @emit-transaction="assignPayload" />
+            <AddOnsTemplate
+              :fill="fill"
+              @emit-transaction="assignPayload"
+              :readonly="readonlyInputs"
+            />
           </div>
 
           <!-- Payment -->
@@ -421,12 +446,17 @@ export default {
       };
     },
     btnStyling: function () {
-      if (this.formDetailsAction === "Edit") {
+      if (this.formDetailsAction === "Edit")
         return {
           title: "Edit",
           outlined: false,
         };
-      }
+
+      if (this.readonlyInputs)
+        return {
+          title: "Back to Cashier",
+          outlined: false,
+        };
 
       return {
         title:
@@ -482,7 +512,11 @@ export default {
     },
 
     formDetailsAction() {
-      return this.formDetails?.action;
+      return this.$route.query.action;
+    },
+
+    readonlyInputs() {
+      return this.formDetailsAction === "View";
     },
   },
   watch: {

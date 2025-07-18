@@ -141,7 +141,7 @@
       </div>
     </div>
 
-    <v-card-actions class="pa-0">
+    <v-card-actions v-if="value.button" class="pa-0">
       <v-btn
         type="submit"
         :loading="loading"

@@ -8,6 +8,7 @@
         :rules="rules.province"
         v-model="payload.address.province"
         @change="emitTransaction"
+        :readonly="readonly"
       ></v-text-field>
     </FormField>
 
@@ -19,6 +20,7 @@
         :rules="rules.city"
         v-model="payload.address.city"
         @change="emitTransaction"
+        :readonly="readonly"
       ></v-text-field>
     </FormField>
   </FormSection>
@@ -35,6 +37,10 @@ export default {
   },
   props: {
     fill: Object,
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     payload: {

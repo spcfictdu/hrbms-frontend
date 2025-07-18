@@ -19,12 +19,14 @@
           :rules="[
             (v) => (addons.length > 1 ? !!v || 'Add-on is required' : true),
           ]"
+          :readonly="readonly"
         />
 
         <CounterButtons
           :quantity="Number(addon.quantity)"
           :incrementFn="() => addon.quantity++"
           :decrementFn="() => decrementQuantity(index)"
+          :readonly="readonly"
         />
       </div>
     </div>
@@ -36,6 +38,7 @@
       class="mt-4"
       small
       @click="handleAddItem"
+      :disabled="readonly"
     >
       Add More
     </v-btn>
@@ -55,6 +58,10 @@ export default {
       default: "addons",
     },
     value: Array,
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     addons: [

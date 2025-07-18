@@ -8,6 +8,7 @@
             :rules="rules.date"
             :minDate="minDate"
             @input="(v) => evaluateValue(v, 'date')"
+            :readonly="readonly"
           />
         </FormField>
       </v-col>
@@ -17,6 +18,7 @@
             :model="payload.checkIn.time"
             :rules="rules.time"
             @input="(v) => evaluateValue(v, 'time')"
+            :readonly="readonly"
           />
         </FormField>
       </v-col>
@@ -39,6 +41,10 @@ export default {
   },
   props: {
     fill: Object,
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     payload: {

@@ -6,6 +6,7 @@
     v-model="menu"
     min-width="auto"
     max-width="290"
+    :disabled="readonly"
   >
     <template #activator="{ on, attrs }">
       <v-text-field
