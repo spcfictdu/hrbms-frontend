@@ -84,6 +84,8 @@ export default {
   },
   computed: {
     rules: function () {
+      if (this.readonly) return { type: [], IdNumber: [] };
+
       const errors = {};
       errors.type = [(v) => !!v || "Id type is required"];
       errors.IdNumber = [(v) => !!v || "Id number is required"];

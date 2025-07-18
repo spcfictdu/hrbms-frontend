@@ -237,8 +237,13 @@ export default {
     };
   },
   methods: {
-    ...mapActions("transaction", ["updateTransaction", "setLoading"]),
+    ...mapActions("transaction", [
+      "updateTransaction",
+      "setLoading",
+      "fetchTransaction",
+    ]),
     ...mapActions("alerts", ["requireAlertFn"]),
+    ...mapActions("cashier", ["fetchSessions"]),
 
     triggerDialog: function (type) {
       this.dialog[type] = true;
@@ -261,6 +266,29 @@ export default {
       sessionStorage.setItem("formDetails", JSON.stringify(this.payload));
     },
     handleWhichDialog: function () {
+      if (this.readonlyInputs) {
+        if (
+          !this.user ||
+          (this.userRole !== "ADMIN" && this.userRole !== "FRONT DESK")
+        )
+          return;
+
+        const userFullName = `${this.$auth.user().firstName} ${
+          this.$auth.user().lastName
+        }`;
+        const userId = this.sessions.find(
+          (s) => s.userFullName === userFullName && s.status === "ACTIVE"
+        ).userId;
+
+        this.fetchTransaction(this.guestDetailsMeta.transactionRefNum);
+        this.$router.push({
+          name: "Cashier",
+          params: { id: String(userId) },
+        });
+        sessionStorage.removeItem("guestDetailsMeta");
+        return;
+      }
+
       if (this.$refs.form.validate()) {
         if (this.$auth.user()) {
           this.triggerDialog("confirmation");
@@ -285,7 +313,7 @@ export default {
 
       try {
         const updatedTransaction = {
-          referenceNumber: this.formDetails.transactionRefNum,
+          referenceNumber: this.guestDetailsMeta.transactionRefNum,
           checkInDate: this.payload.checkIn.date,
           checkInTime: this.payload.checkIn.time,
           checkOutDate: this.payload.checkOut.date,
@@ -315,6 +343,7 @@ export default {
         this.setLoading({ key: "form", value: false });
       }
     },
+
     handleOnConfirmed: function () {
       if (this.formDetailsAction === "Edit") {
         this.handleEdit();
@@ -325,6 +354,7 @@ export default {
       if (this.$auth.user()) {
         this.resetDialog("confirmation");
       }
+      sessionStorage.removeItem("guestDetailsMeta");
     },
     assignAutoFill: function (newVal) {
       const autofilledObject = this.fills.guests
@@ -405,9 +435,16 @@ export default {
   computed: {
     ...mapState("transaction", ["loading"]),
     ...mapState("vouchers", ["activeVoucher"]),
+    ...mapState("cashier", ["sessions"]),
+
     formDetails() {
       return JSON.parse(sessionStorage.getItem("formDetails"));
     },
+
+    guestDetailsMeta() {
+      return JSON.parse(sessionStorage.getItem("guestDetailsMeta"));
+    },
+
     userRole: function () {
       return this.$auth.user()?.role;
     },
@@ -512,11 +549,19 @@ export default {
     },
 
     formDetailsAction() {
-      return this.$route.query.action;
+      return this.guestDetailsMeta?.action;
     },
 
     readonlyInputs() {
       return this.formDetailsAction === "View";
+    },
+
+    user: function () {
+      return this.$auth.user();
+    },
+
+    userRole: function () {
+      return this.$auth.user()?.role;
     },
   },
   watch: {

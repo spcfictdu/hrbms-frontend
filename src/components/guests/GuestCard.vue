@@ -127,13 +127,20 @@ export default {
     async redirectToForm(action) {
       await this.setFormDetails();
 
+      sessionStorage.setItem(
+        "guestDetailsMeta",
+        JSON.stringify({
+          action,
+          transactionRefNum: this.transaction.transactionRefNum,
+        })
+      );
+
       this.$router.push({
         name: "Booking",
         query: {
           room: this.transaction.room.name,
           referenceNumber: this.transaction.room.referenceNumber,
           roomNumber: this.transaction.room.number,
-          action,
         },
       });
     },
