@@ -138,7 +138,7 @@ import AddOnsTemplate from "@/components/form-templates/AddOnsTemplate.vue";
 import DiscountTemplate from "@/components/form-templates/DiscountTemplate.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import WarningDialog from "@/components/dialogs/WarningDialog.vue";
-import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "BookingForm",
@@ -192,6 +192,7 @@ export default {
   }),
   created() {
     if (!this.formDetails) return;
+
     this.fill = {
       status: this.formDetails.status,
       first_name: this.formDetails.firstName,
@@ -211,6 +212,9 @@ export default {
     };
   },
   methods: {
+    ...mapActions("transaction", ["updateTransaction", "setLoading"]),
+    ...mapActions("alerts", ["requireAlertFn"]),
+
     triggerDialog: function (type) {
       this.dialog[type] = true;
     },
@@ -249,8 +253,49 @@ export default {
       this.$emit("onSubmit", payload);
       this.resetDialog("warning");
     },
+
+    async handleEdit() {
+      this.requireAlertFn(2);
+      this.setLoading({ key: "form", value: true });
+
+      try {
+        const updatedTransaction = {
+          referenceNumber: this.formDetails.transactionRefNum,
+          checkInDate: this.payload.checkIn.date,
+          checkInTime: this.payload.checkIn.time,
+          checkOutDate: this.payload.checkOut.date,
+          checkOutTime: this.payload.checkOut.time,
+          guest: {
+            firstName: this.payload.firstName,
+            middleName: this.payload.middleName,
+            lastName: this.payload.lastName,
+            address: this.payload.address,
+            contact: {
+              email: this.payload.contact.email,
+              phoneNum: this.payload.contact.phoneNumber,
+            },
+            id: this.payload.id,
+            extraPerson: this.payload.guests,
+          },
+        };
+        await this.updateTransaction(updatedTransaction);
+
+        this.$router.replace({
+          name: "Confirmation",
+          params: { referenceNumber: updatedTransaction.referenceNumber },
+        });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        this.setLoading({ key: "form", value: false });
+      }
+    },
     handleOnConfirmed: function () {
-      this.$emit("onSubmit", this.payload);
+      if (this.formDetailsAction === "Edit") {
+        this.handleEdit();
+      } else {
+        this.$emit("onSubmit", this.payload);
+      }
 
       if (this.$auth.user()) {
         this.resetDialog("confirmation");
@@ -376,6 +421,13 @@ export default {
       };
     },
     btnStyling: function () {
+      if (this.formDetailsAction === "Edit") {
+        return {
+          title: "Edit",
+          outlined: false,
+        };
+      }
+
       return {
         title:
           this.payload.status === "CONFIRMED"
@@ -405,6 +457,15 @@ export default {
     confirmationMeta: function () {
       const status =
         this.payload.status === "CONFIRMED" ? "booking" : "reservation";
+
+      if (this.formDetailsAction) {
+        return {
+          action: this.formDetailsAction,
+          actionType: status,
+          message: "Are you sure you want to edit your reservation?",
+        };
+      }
+
       const message =
         this.$auth.user()?.role === "ADMIN"
           ? `Are you sure you want to proceed with the ${status}?`
@@ -418,6 +479,10 @@ export default {
 
     hasFills() {
       return !!Object.keys(this.fills).length;
+    },
+
+    formDetailsAction() {
+      return this.formDetails?.action;
     },
   },
   watch: {

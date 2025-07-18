@@ -61,6 +61,8 @@
 </template>
 
 <script>
+import { mapActions, mapState } from "vuex";
+
 export default {
   name: "GuestCard",
   props: { transaction: Object },
@@ -73,29 +75,104 @@ export default {
     },
   }),
 
+  methods: {
+    ...mapActions("transaction", ["fetchTransaction"]),
+    ...mapActions("guest", ["fetchGuest"]),
+
+    async setFormDetails(action) {
+      await this.fetchTransaction(this.transaction.transactionRefNum);
+      await this.fetchGuest({ id: this.transaction.guestId });
+
+      const {
+        firstName,
+        middleName,
+        lastName,
+        province,
+        city,
+        phone: phoneNumber,
+        email,
+      } = this.guest;
+
+      const formDetails = {
+        firstName,
+        middleName,
+        lastName,
+        address: {
+          city,
+          province,
+        },
+        contact: {
+          email,
+          phoneNumber,
+        },
+        status: this.transaction.status,
+        checkIn: {
+          date: this.transaction.checkInDate,
+          time: this.fetchedTransaction.transaction.checkInTime.slice(0, -3),
+        },
+        checkOut: {
+          date: this.transaction.checkOutDate,
+          time: this.fetchedTransaction.transaction.checkOutTime.slice(0, -3),
+        },
+        guests: this.fetchedTransaction.transaction.extraPerson,
+        addons: this.fetchedTransaction.priceSummary.fullAddons.map(
+          ({ name, quantity }) => ({ name, quantity: String(quantity) })
+        ),
+        action,
+        transactionRefNum: this.transaction.transactionRefNum,
+      };
+
+      sessionStorage.setItem("formDetails", JSON.stringify(formDetails));
+    },
+
+    async redirectToForm(action) {
+      await this.setFormDetails(action);
+
+      this.$router.push({
+        name: "Booking",
+        query: {
+          room: this.transaction.room.name,
+          referenceNumber: this.transaction.room.referenceNumber,
+          roomNumber: this.transaction.room.number,
+        },
+      });
+    },
+  },
+
   computed: {
+    ...mapState("guest", ["guest"]),
+    ...mapState("transaction", { fetchedTransaction: "transaction" }),
+
     menuOptions() {
       const options = [
         {
           title: "View",
-          action: () => {},
-        },
-        {
-          title: "Edit",
-          action: () => {},
+          action: () => {
+            this.redirectToForm("View");
+          },
         },
       ];
 
       if (this.transaction.status === "RESERVED") {
-        options.push({
-          title: "Cancel Reservation",
-          class: "red--text",
-          action: () =>
-            this.$emit("onCancelReservation", {
-              status: this.transaction.status,
-              transactionRefNum: this.transaction.transactionRefNum,
-            }),
-        });
+        options.push(
+          ...[
+            {
+              title: "Edit",
+              action: () => {
+                this.redirectToForm("Edit");
+              },
+            },
+            {
+              title: "Cancel Reservation",
+              class: "red--text",
+              action: () =>
+                this.$emit("onCancelReservation", {
+                  status: this.transaction.status,
+                  transactionRefNum: this.transaction.transactionRefNum,
+                }),
+            },
+          ]
+        );
       }
 
       return options;
