@@ -26,7 +26,7 @@
     </template>
     <v-time-picker
       ref="picker"
-      v-if="readonly"
+      v-if="!readonly"
       v-model="time"
       scrollable
       active-picker="HOUR"

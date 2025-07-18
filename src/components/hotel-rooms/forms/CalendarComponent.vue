@@ -389,6 +389,7 @@ export default {
       };
 
       sessionStorage.removeItem("formDetails");
+      sessionStorage.removeItem("guestDetailsMeta");
       this.$router.push({
         name: "Booking",
         query: {
