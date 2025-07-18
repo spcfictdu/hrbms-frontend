@@ -28,11 +28,11 @@
             small
             depressed
             rounded
-            :color="sessionData.status === 'ACTIVE' ? 'lightBg' : 'primary'"
+            :color="sessionData.status === 'ACTIVE' ? 'primary' : 'lightBg'"
             class="px-6"
             @click.stop="toggleSessionStatus"
           >
-            {{ sessionData.status === "ACTIVE" ? "CLOSE" : "OPEN" }}
+            {{ sessionData.status === "ACTIVE" ? "ACTIVE" : "INACTIVE" }}
           </v-btn>
         </v-card-actions>
       </div>

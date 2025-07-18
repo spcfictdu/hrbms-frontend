@@ -8,7 +8,7 @@
         depressed
         small
         :plain="action.plain"
-        :color="action.plain ? '' : 'lightBg'"
+        :color="selectedButtonColor(action)"
         class="font-weight-bold px-8 ml-3"
         @click="action.action"
       >
@@ -24,7 +24,7 @@
         depressed
         x-small
         :plain="action.plain"
-        :color="action.plain ? '' : 'lightBg'"
+        :color="selectedButtonColor(action)"
         class="font-weight-bold px-6 ml-3"
         @click="action.action"
       >
@@ -39,25 +39,42 @@ import { mapMutations } from "vuex";
 
 export default {
   name: "CashierTerminalActions",
-  data: () => ({}),
+  data: () => ({
+    selectedCashiers: null,
+  }),
   methods: {
     ...mapMutations("cashier", ["SET_FILTERED_SESSIONS"]),
+
+    selectedButtonColor(button) {
+      if (button.plain) return;
+
+      return this.selectedCashiers === button.name ? "primary" : "lightBg";
+    },
   },
   computed: {
     terminalActions() {
       return [
         {
           name: "Open",
-          action: () => this.SET_FILTERED_SESSIONS("ACTIVE"),
+          action: () => {
+            this.SET_FILTERED_SESSIONS("ACTIVE");
+            this.selectedCashiers = "Open";
+          },
         },
         {
           name: "Close",
-          action: () => this.SET_FILTERED_SESSIONS("INACTIVE"),
+          action: () => {
+            this.SET_FILTERED_SESSIONS("INACTIVE");
+            this.selectedCashiers = "Close";
+          },
         },
         {
           name: "Reset",
           plain: true,
-          action: () => this.SET_FILTERED_SESSIONS(),
+          action: () => {
+            this.SET_FILTERED_SESSIONS();
+            this.selectedCashiers = null;
+          },
         },
       ];
     },
