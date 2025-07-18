@@ -1,7 +1,11 @@
 <template>
   <v-container class="pa-0">
     <!-- Room Types -->
-    <room-type-buttons :meta="meta" :withAllRooms="withAllRooms" @input-event="assignValue" />
+    <room-type-buttons
+      :meta="meta"
+      :withAllRooms="withAllRooms"
+      @input-event="assignValue"
+    />
 
     <!-- Calendar Component Card -->
     <v-card class="pa-5" flat v-if="requirements">
@@ -379,10 +383,12 @@ export default {
     pushToBooking: function () {
       const room = this.filteredRoom(this.dropdownValue);
       let payload = {
-          type: this.queryParams.roomType,
-          referenceNumber: room.referenceNumber,
-          roomNumber: room.roomNumber,
+        type: this.queryParams.roomType,
+        referenceNumber: room.referenceNumber,
+        roomNumber: room.roomNumber,
       };
+
+      sessionStorage.removeItem("formDetails");
       this.$router.push({
         name: "Booking",
         query: {
