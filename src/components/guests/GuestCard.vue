@@ -9,6 +9,45 @@
     <v-card-text class="black--text">
       <div class="d-flex align-center justify-space-between">
         <div class="text-uppercase font-weight-bold">Guest Details</div>
+
+        <v-menu offset-x left>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon v-bind="attrs" v-on="on">
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list dense class="py-0">
+            <v-list-item
+              class="menu-border"
+              :class="item.class"
+              v-for="(item, i) in menuOptions"
+              :key="i"
+              @click="item.action"
+            >
+              <v-list-item-title class="text-body-2 font-weight-regular">{{
+                item.title
+              }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+
+      <p class="primary--text font-weight-bold text-uppercase">
+        {{ transaction.fullName }}
+      </p>
+
+      <div class="d-flex align-end justify-space-between">
+        <div>
+          <div>{{ transaction.room.name }}</div>
+          <div>
+            <span class="font-weight-medium"
+              >Room {{ transaction.room.number }}</span
+            >
+            | {{ transaction.room.capacity }} Maximum Occupancy
+          </div>
+        </div>
+
         <v-chip
           class="font-weight-bold"
           dark
@@ -16,20 +55,6 @@
           :color="statusColors[transaction.status.toLowerCase()]"
           >{{ transaction.status }}</v-chip
         >
-      </div>
-
-      <p class="primary--text font-weight-bold text-uppercase">
-        {{ transaction.fullName }}
-      </p>
-
-      <div>
-        <div>{{ transaction.room.name }}</div>
-        <div>
-          <span class="font-weight-medium"
-            >Room {{ transaction.room.number }}</span
-          >
-          | {{ transaction.room.capacity }} Maximum Occupancy
-        </div>
       </div>
     </v-card-text>
   </v-card>
@@ -47,5 +72,40 @@ export default {
       confirmed: "confirmed",
     },
   }),
+
+  computed: {
+    menuOptions() {
+      const options = [
+        {
+          title: "View",
+          action: () => {},
+        },
+        {
+          title: "Edit",
+          action: () => {},
+        },
+      ];
+
+      if (this.transaction.status === "RESERVED") {
+        options.push({
+          title: "Cancel Reservation",
+          class: "red--text",
+          action: () =>
+            this.$emit("onCancelReservation", {
+              status: this.transaction.status,
+              transactionRefNum: this.transaction.transactionRefNum,
+            }),
+        });
+      }
+
+      return options;
+    },
+  },
 };
 </script>
+
+<style scoped>
+.menu-border {
+  border-bottom: 1px solid #e6e2e2;
+}
+</style>

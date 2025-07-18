@@ -39,6 +39,7 @@
               :key="transaction.transactionRefNum"
               :transaction="transaction"
               @onClick="handleClick"
+              @onCancelReservation="handleCancelReservation"
             />
           </div>
 
@@ -103,10 +104,16 @@ export default {
     tempAddons: [],
   }),
   methods: {
-    ...mapActions("transaction", ["fetchTransactions", "fetchTransaction"]),
+    ...mapActions("transaction", [
+      "fetchTransactions",
+      "fetchTransaction",
+      "deleteReservation",
+    ]),
     ...mapMutations("transaction", ["SET_TRANSACTION"]),
     ...mapMutations("transaction", ["ADD_TRANSACTION"]),
     ...mapActions("roomEnum", ["fetchRoom"]),
+    ...mapActions("alerts", ["requireAlertFn"]),
+
     assignPayload(payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
@@ -121,6 +128,7 @@ export default {
         }
       }
     },
+
     handleTransactionUpdate() {
       const { referenceNumber, status } = this.transaction.transaction;
       const { payment, addons, discount, idNumber, voucherCode } = this.payload;
@@ -225,6 +233,14 @@ export default {
       };
       this.SET_TRANSACTION(activeTransaction);
       return activeTransaction;
+    },
+
+    async handleCancelReservation(payload) {
+      this.requireAlertFn(2);
+
+      await this.deleteReservation(payload);
+      this.guestName = "";
+      this.selectedTransaction = null;
     },
   },
   computed: {
