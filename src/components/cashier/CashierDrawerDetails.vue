@@ -68,8 +68,32 @@ export default {
         },
       ];
     },
+
     drawerDetails() {
       const drawerDetails = [
+        ...(this.sessionData.payments?.length
+          ? this.sessionData.payments
+          : [
+              {
+                name: "CASH",
+                totalAmount: "0.00",
+              },
+              {
+                name: "GCASH",
+                totalAmount: "0.00",
+              },
+              {
+                name: "CHEQUE",
+                totalAmount: "0.00",
+              },
+              {
+                name: "CREDIT CARD",
+                totalAmount: "0.00",
+              },
+            ]),
+      ];
+
+      drawerDetails.push(
         {
           name: "Opening Balance",
           totalAmount: this.sessionData.openingBalance ?? "0.00",
@@ -78,11 +102,15 @@ export default {
           name: "Closing Balance",
           totalAmount: this.sessionData.closingBalance ?? "0.00",
         },
-      ];
-
-      if (this.sessionData.payments) {
-        drawerDetails.push(...this.sessionData.payments);
-      }
+        {
+          name: "Beginning Balance",
+          totalAmount: this.sessionData.beginningBalance ?? "0.00",
+        },
+        {
+          name: "Opening Adjustment",
+          totalAmount: this.sessionData.openingAdjustment ?? "0.00",
+        }
+      );
 
       return drawerDetails;
     },
