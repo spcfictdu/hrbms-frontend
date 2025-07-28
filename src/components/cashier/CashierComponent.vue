@@ -133,15 +133,21 @@ export default {
       const { referenceNumber, status } = this.transaction.transaction;
       const { payment, addons, discount, idNumber, voucherCode } = this.payload;
 
-      const reservationPayload = {
+      let reservationPayload = {
         referenceNumber,
         status,
         addons,
-        discount,
-        idNumber,
-        voucherCode,
         ...payment,
       };
+
+      if (!Object.values(this.fill.discount).every((v) => !!v)) {
+        reservationPayload = {
+          ...reservationPayload,
+          voucherCode,
+          discount,
+          idNumber,
+        };
+      }
 
       const bookingPayload = {
         ...this.savedPayload,
