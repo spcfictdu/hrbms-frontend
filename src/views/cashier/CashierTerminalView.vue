@@ -10,6 +10,22 @@
     <RouteLoader :target="hasData" :loaderStyles="['mt-10']">
       <CashierDrawerGrid />
     </RouteLoader>
+
+    <ConfirmationDialog
+      :opened="dialog.confirmation"
+      :onClose="() => handleClose('confirmation')"
+      :meta="confirmationDialogMeta"
+      @onProceed="handleProceed"
+    />
+
+    <CashierDialog
+      :opened="dialog.cashier"
+      :onClose="() => handleClose('cashier')"
+      :meta="cashierDialogMeta"
+      :loading="loading.dialog"
+      :balanceData="balanceData"
+      @submit="handleAction"
+    />
   </div>
 </template>
 
@@ -17,22 +33,155 @@
 import CashierHeader from "@/components/headers/CashierHeader.vue";
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierDrawerGrid from "@/components/cashier/CashierDrawerGrid.vue";
-import { mapActions, mapState } from "vuex";
+import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
+import CashierDialog from "@/components/dialogs/CashierDialog.vue";
+import { mapActions, mapState, mapMutations, mapGetters } from "vuex";
 
 export default {
   name: "CashierView",
-  components: { CashierHeader, RouteLoader, CashierDrawerGrid },
-  methods: {
-    ...mapActions("cashier", ["fetchSessions"]),
+  components: {
+    CashierHeader,
+    RouteLoader,
+    CashierDrawerGrid,
+    ConfirmationDialog,
+    CashierDialog,
   },
-  computed: {
-    ...mapState("cashier", ["sessions"]),
-    hasData() {
-      return !!this.sessions ?? false;
+  data: () => ({}),
+  methods: {
+    ...mapActions("cashier", ["startSession", "closeSession", "fetchSessions"]),
+    ...mapMutations("cashier", [
+      "SET_FILTERED_SESSIONS",
+      "SET_DIALOG",
+      "SET_ADJUSTMENT",
+      "SET_CURRENT_CASHIER",
+    ]),
+    ...mapActions("alerts", ["requireAlertFn"]),
+
+    handleClose(dialog) {
+      this.SET_DIALOG({ key: dialog, value: false });
+      this.SET_ADJUSTMENT("");
+    },
+
+    handleProceed() {
+      this.SET_DIALOG({ key: "confirmation", value: false });
+      this.SET_DIALOG({ key: "cashier", value: true });
+    },
+
+    async handleAction(adjustment) {
+      this.requireAlertFn(2);
+
+      const userId = this.currentCashier.session.userId;
+
+      let payload = {
+        ...adjustment,
+      };
+
+      if (this.getCashierAction === "Open") {
+        await this.startSession({ userId, payload });
+      } else {
+        await this.closeSession({
+          userId,
+          payload,
+        });
+      }
+      await this.fetchSessions();
+      this.SET_FILTERED_SESSIONS();
+
+      this.SET_DIALOG({ key: "cashier", value: false });
+      this.SET_CURRENT_CASHIER();
     },
   },
-  created() {
-    this.fetchSessions();
+  computed: {
+    ...mapState("cashier", [
+      "sessions",
+      "dialog",
+      "currentCashier",
+      "loading",
+      "adjustment",
+    ]),
+    ...mapGetters("cashier", [
+      "getCashierAction",
+      "isCurrentCashierSessionless",
+    ]),
+
+    hasData() {
+      return !!this.sessions.length;
+    },
+
+    confirmationDialogMeta() {
+      return {
+        action: this.getCashierAction,
+        actionType:
+          this.getCashierAction === "Open"
+            ? `Cashier Drawer ${this.currentCashier.drawerNumber}?`
+            : "Cashier?",
+      };
+    },
+
+    cashierDialogMeta() {
+      if (this.getCashierAction === "Open")
+        return {
+          action: "Open",
+          actionType: `Cashier Drawer ${this.currentCashier.drawerNumber}`,
+          submitBtnText: this.getCashierAction,
+        };
+
+      return {
+        action: "Adjust",
+        actionType: "Closing Balance",
+        submitBtnText: this.getCashierAction,
+      };
+    },
+
+    balanceData() {
+      if (!this.currentCashier.session) return;
+
+      const { closingBalance, closingAdjustment } = this.currentCashier.session;
+      const newOpeningBalance = this.isCurrentCashierSessionless
+        ? 0
+        : Number(closingBalance) + Number(closingAdjustment);
+      const effectiveAdjustment = this.adjustment === "" ? 0 : this.adjustment;
+
+      if (this.getCashierAction === "Open")
+        return [
+          {
+            name: "Opening Balance",
+            totalAmount: newOpeningBalance,
+          },
+          {
+            name: "Beginning Balance",
+            totalAmount: newOpeningBalance + effectiveAdjustment,
+          },
+        ];
+
+      return [
+        {
+          name: "Opening Balance",
+          totalAmount: this.closingBalance,
+        },
+      ];
+    },
+
+    closingBalance() {
+      if (!this.currentCashier.session) return 0;
+
+      const { beginningBalance, payments } = this.currentCashier.session;
+
+      let paymentTotal = 0;
+      if (payments?.length) {
+        paymentTotal = payments.reduce(
+          (total, payment) => total + Number(payment.totalAmount),
+          0
+        );
+      }
+
+      const closingBalance = Number(beginningBalance) + paymentTotal;
+      return closingBalance;
+    },
+  },
+  async created() {
+    await this.fetchSessions();
+    this.SET_FILTERED_SESSIONS();
   },
 };
 </script>

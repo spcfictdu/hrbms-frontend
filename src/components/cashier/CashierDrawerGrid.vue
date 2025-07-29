@@ -20,13 +20,12 @@
 
 <script>
 import CashierDrawer from "./CashierDrawer.vue";
-import { mapMutations, mapState } from "vuex";
+import { mapState } from "vuex";
 
 export default {
   name: "CashierDrawerGrid",
   components: { CashierDrawer },
   methods: {
-    ...mapMutations("cashier", ["SET_FILTERED_SESSIONS"]),
     isFirstRow(index) {
       const breakpoint = this.$vuetify.breakpoint.name;
       let row = 3;
@@ -35,11 +34,9 @@ export default {
       return index < row;
     },
   },
+
   computed: {
     ...mapState("cashier", ["filteredSessions"]),
-  },
-  created() {
-    this.SET_FILTERED_SESSIONS();
   },
 };
 </script>

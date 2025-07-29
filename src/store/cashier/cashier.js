@@ -11,11 +11,23 @@ export const cashier = {
     sessions: [],
     currUserHistory: [],
     filteredSessions: [],
-    loadingDialog: false,
+    dialog: {
+      confirmation: false,
+      cashier: false,
+    },
+    loading: {
+      dialog: false,
+    },
+    currentCashier: { session: null, drawerNumber: null },
+    adjustment: "",
   }),
   getters: {
     getSession: (state) => (userId) =>
       state.sessions.find((s) => Number(userId) === s.userId),
+    getCashierAction: (state) =>
+      state.currentCashier.session?.status === "ACTIVE" ? "Close" : "Open",
+    isCurrentCashierSessionless: (state) =>
+      !!state.currentCashier.session.message,
   },
   mutations: {
     SET_SESSIONS: (state, data) => (state.sessions = data),
@@ -33,7 +45,13 @@ export const cashier = {
         return status === s.status;
       });
     },
-    SET_LOADING: (state, loadingState) => (state.loadingDialog = loadingState),
+    SET_DIALOG: (state, { key, value }) => (state.dialog[key] = value),
+    SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
+    SET_CURRENT_CASHIER: (state, { session, drawerNumber } = {}) => {
+      state.currentCashier.session = session;
+      state.currentCashier.drawerNumber = drawerNumber;
+    },
+    SET_ADJUSTMENT: (state, adjustment) => (state.adjustment = adjustment),
   },
   actions: {
     fetchSessions({ commit }, queryParams = {}) {
@@ -67,7 +85,7 @@ export const cashier = {
     async startSession({ commit, dispatch }, { userId, payload }) {
       const url = `cashier-session/start/${userId}`;
 
-      commit("SET_LOADING", true);
+      commit("SET_LOADING", { key: "dialog", value: true });
       try {
         const response = await this.$axios.post(url, payload);
         dispatch("alerts/triggerSuccess", response.data.message, {
@@ -80,14 +98,14 @@ export const cashier = {
           root: true,
         });
       } finally {
-        commit("SET_LOADING", false);
+        commit("SET_LOADING", { key: "dialog", value: false });
       }
     },
 
     async closeSession({ commit, dispatch }, { userId, payload }) {
       const url = `cashier-session/close/${userId}`;
 
-      commit("SET_LOADING", true);
+      commit("SET_LOADING", { key: "dialog", value: true });
       try {
         const response = await this.$axios.post(url, payload);
         dispatch("alerts/triggerSuccess", response.data.message, {
@@ -100,7 +118,7 @@ export const cashier = {
           root: true,
         });
       } finally {
-        commit("SET_LOADING", false);
+        commit("SET_LOADING", { key: "dialog", value: false });
       }
     },
   },

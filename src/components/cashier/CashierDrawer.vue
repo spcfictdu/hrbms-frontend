@@ -29,8 +29,8 @@
             depressed
             rounded
             :color="sessionData.status === 'ACTIVE' ? 'primary' : 'lightBg'"
-            class="px-6"
-            @click.stop="toggleSessionStatus"
+            class="px-4"
+            @click.stop="showConfirmationDialog"
           >
             {{ sessionData.status === "ACTIVE" ? "ACTIVE" : "INACTIVE" }}
           </v-btn>
@@ -48,6 +48,7 @@
 
 <script>
 import CashierDrawerDetails from "./CashierDrawerDetails.vue";
+import { mapMutations } from "vuex";
 
 export default {
   name: "CashierDrawer",
@@ -61,8 +62,14 @@ export default {
     showDetails: false,
   }),
   methods: {
-    toggleSessionStatus() {
-      //
+    ...mapMutations("cashier", ["SET_DIALOG", "SET_CURRENT_CASHIER"]),
+
+    showConfirmationDialog() {
+      this.SET_DIALOG({ key: "confirmation", value: true });
+      this.SET_CURRENT_CASHIER({
+        session: this.sessionData,
+        drawerNumber: this.drawerNumber,
+      });
     },
   },
 };
