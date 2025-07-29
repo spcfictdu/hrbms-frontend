@@ -11,6 +11,7 @@ export const cashier = {
     sessions: [],
     currUserHistory: [],
     filteredSessions: [],
+    loadingDialog: false,
   }),
   getters: {
     getSession: (state) => (userId) =>
@@ -32,11 +33,12 @@ export const cashier = {
         return status === s.status;
       });
     },
+    SET_LOADING: (state, loadingState) => (state.loadingDialog = loadingState),
   },
   actions: {
     fetchSessions({ commit }, queryParams = {}) {
-      // const url = `cashier-session/show-cashiers`;
-      const url = `cashier-session`;
+      const url = `cashier-session/show-cashiers`;
+      // const url = `cashier-session`;
       const queryUrl = functions.query(url, queryParams);
       return this.$axios
         .get(queryUrl)
@@ -60,6 +62,46 @@ export const cashier = {
         .catch((error) => {
           console.error("Error fetching cashier history: ", error);
         });
+    },
+
+    async startSession({ commit, dispatch }, { userId, payload }) {
+      const url = `cashier-session/start/${userId}`;
+
+      commit("SET_LOADING", true);
+      try {
+        const response = await this.$axios.post(url, payload);
+        dispatch("alerts/triggerSuccess", response.data.message, {
+          root: true,
+        });
+        return response;
+      } catch (err) {
+        console.error(err);
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+      } finally {
+        commit("SET_LOADING", false);
+      }
+    },
+
+    async closeSession({ commit, dispatch }, { userId, payload }) {
+      const url = `cashier-session/close/${userId}`;
+
+      commit("SET_LOADING", true);
+      try {
+        const response = await this.$axios.post(url, payload);
+        dispatch("alerts/triggerSuccess", response.data.message, {
+          root: true,
+        });
+        return response;
+      } catch (err) {
+        console.error(err);
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+      } finally {
+        commit("SET_LOADING", false);
+      }
     },
   },
 };
