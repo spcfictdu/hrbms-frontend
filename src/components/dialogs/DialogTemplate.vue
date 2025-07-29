@@ -4,6 +4,7 @@
       <DialogToolbar
         class="mb-4"
         :title="action ? `${action} ${title}` : title"
+        :titleClasses="titleClasses"
         @onClose="dialog = false"
       />
       <v-form ref="form" @submit.prevent="handleForm">
@@ -26,6 +27,7 @@ export default {
     title: String,
     opened: Boolean,
     onClose: Function,
+    titleClasses: String,
   },
   data: () => ({
     dialog: false,

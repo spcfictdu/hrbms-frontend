@@ -5,6 +5,7 @@
     >
     <div
       class="transparent-bg text-subtitle-2 text-sm-subtitle-1 font-weight-bold text-uppercase"
+      :class="titleClasses"
     >
       {{ title }}
     </div>
@@ -16,6 +17,7 @@ export default {
   name: "DialogToolbar",
   props: {
     title: String,
+    titleClasses: String,
     withClose: {
       type: Boolean,
       default: false,
