@@ -91,9 +91,6 @@ export default {
                 totalAmount: "0.00",
               },
             ]),
-      ];
-
-      drawerDetails.push(
         {
           name: "Opening Balance",
           totalAmount: this.sessionData.openingBalance ?? "0.00",
@@ -103,14 +100,18 @@ export default {
           totalAmount: this.sessionData.closingBalance ?? "0.00",
         },
         {
+          name: "Opening Adjustment",
+          totalAmount: this.sessionData.openingAdjustment ?? "0.00",
+        },
+        {
+          name: "Closing Adjustment",
+          totalAmount: this.sessionData.closingAdjustment ?? "0.00",
+        },
+        {
           name: "Beginning Balance",
           totalAmount: this.sessionData.beginningBalance ?? "0.00",
         },
-        {
-          name: "Opening Adjustment",
-          totalAmount: this.sessionData.openingAdjustment ?? "0.00",
-        }
-      );
+      ];
 
       return drawerDetails;
     },
