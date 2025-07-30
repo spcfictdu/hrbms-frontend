@@ -163,7 +163,8 @@ export default {
     },
 
     closingBalance() {
-      if (!this.currentCashier.session) return 0;
+      if (!this.currentCashier.session || this.isCurrentCashierSessionless)
+        return 0;
 
       const { beginningBalance, payments } = this.currentCashier.session;
 
