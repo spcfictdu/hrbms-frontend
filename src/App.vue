@@ -81,9 +81,9 @@ export default {
 
   methods: {
     ...mapActions("authentication", ["logout"]),
-    ...mapMutations("cashier", ["SET_DIALOG"]),
+    ...mapMutations("cashier", ["SET_DIALOG", "SET_ADJUSTMENT"]),
     ...mapActions("alerts", ["requireAlertFn"]),
-    ...mapActions("cashier", ["startSession", "closeSession"]),
+    ...mapActions("cashier", ["startSession", "closeSession", "fetchSessions"]),
 
     async handleAction(adjustment) {
       this.requireAlertFn(2);
@@ -102,10 +102,11 @@ export default {
           payload,
         });
       }
-      // await this.fetchSessions();
+      await this.fetchSessions();
       // this.SET_FILTERED_SESSIONS();
 
       this.SET_DIALOG({ key: "cashier", value: false });
+      this.SET_ADJUSTMENT("");
       // this.SET_CURRENT_CASHIER();
     },
   },
