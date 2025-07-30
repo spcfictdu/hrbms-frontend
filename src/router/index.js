@@ -29,6 +29,13 @@ const mappedRoutes = {
       ...transaction.map(({ name }) => name),
       ...cashier.map(({ name }) => name),
     ],
+    "FRONT DESK": [
+      ...dashboardRoutes.map(({ name }) => name),
+      ...roomsList[0].children.map(({ name }) => name),
+      ...guestList.map(({ name }) => name),
+      ...transaction.map(({ name }) => name),
+      ...cashier.map(({ name }) => name),
+    ],
   },
 };
 
@@ -62,6 +69,7 @@ router.beforeEach((to, from, next) => {
   const DASHBOARD_NAME = {
     GUEST: "Public Dashboard",
     ADMIN: "Dashboard",
+    "FRONT DESK": "Dashboard",
   };
 
   if (!loggedIn && !mappedRoutes.publicRoutes.includes(to.name)) {
