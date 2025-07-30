@@ -5,7 +5,12 @@
         First Floor Lobby
       </div>
       <div v-if="session" class="text-uppercase">
-        EMPLOYEE: {{ session.fullName && `${session.fullName} | ` }}
+        EMPLOYEE:
+        <span v-if="session.fullName">{{ session.fullName }}</span>
+        <span v-else>{{
+          `${$auth.user().firstName} ${$auth.user().lastName}`
+        }}</span>
+        |
         <span class="font-weight-bold">S{{ session.userId }}</span>
       </div>
     </div>
