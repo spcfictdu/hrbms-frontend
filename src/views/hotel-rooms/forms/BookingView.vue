@@ -43,12 +43,15 @@ export default {
       (this.userRole !== "ADMIN" && this.userRole !== "FRONT DESK")
     )
       return;
+
     const userFullName = `${this.$auth.user().firstName} ${
       this.$auth.user().lastName
     }`;
-    this.userId = this.sessions.find(
-      (s) => s.userFullName === userFullName && s.status === "ACTIVE"
-    ).userId;
+
+    this.userId = this.sessions.find((s) => {
+      if (this.userRole === "ADMIN") return s.status === "ACTIVE";
+      return s.userFullName === userFullName && s.status === "ACTIVE";
+    }).userId;
   },
   methods: {
     ...mapActions("transaction", [

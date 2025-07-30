@@ -140,7 +140,10 @@ export default {
         ...payment,
       };
 
-      if (!Object.values(this.fill.discount).every((v) => !!v)) {
+      if (
+        this.fill?.discount &&
+        !Object.values(this.fill.discount).every((v) => !!v)
+      ) {
         reservationPayload = {
           ...reservationPayload,
           voucherCode,
@@ -152,7 +155,7 @@ export default {
       const bookingPayload = {
         ...this.savedPayload,
         addons,
-        discount,
+        ...(discount ? discount : {}),
         voucherCode,
         idNumber,
         payment,

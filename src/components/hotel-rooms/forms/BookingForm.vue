@@ -276,9 +276,10 @@ export default {
         const userFullName = `${this.$auth.user().firstName} ${
           this.$auth.user().lastName
         }`;
-        const userId = this.sessions.find(
-          (s) => s.userFullName === userFullName && s.status === "ACTIVE"
-        ).userId;
+        const userId = this.sessions.find((s) => {
+          if (this.userRole === "ADMIN") return s.status === "ACTIVE";
+          return s.userFullName === userFullName && s.status === "ACTIVE";
+        }).userId;
 
         this.fetchTransaction(this.guestDetailsMeta.transactionRefNum);
         this.$router.push({
