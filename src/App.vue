@@ -22,6 +22,15 @@
               }"
             >
               <router-view />
+              <CashierDialog
+                :persistent="true"
+                :onClose="() => SET_DIALOG({ key: 'cashier', value: false })"
+                :opened="dialog.cashier"
+                :meta="cashierDialogMeta"
+                :loading="loading.dialog"
+                :balanceData="balanceData"
+                @submit="handleAction"
+              />
               <AlertComponent />
             </v-main>
           </v-container>
@@ -37,11 +46,13 @@
 
 <script>
 import Navigation from "./components/navigation/Navigation.vue";
-import { mapActions } from "vuex";
 import PublicNavigation from "./components/navigation/PublicNavigation.vue";
 import FooterComponent from "./components/public/FooterComponent.vue";
 import PageLoader from "./components/loaders/PageLoader.vue";
 import AlertComponent from "./components/alerts/AlertComponent.vue";
+import CashierDialog from "@/components/dialogs/CashierDialog.vue";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
+
 export default {
   name: "App",
   components: {
@@ -50,7 +61,9 @@ export default {
     FooterComponent,
     PageLoader,
     AlertComponent,
+    CashierDialog,
   },
+
   data: () => ({
     hasLoaded: false,
     notAllowedRoutes: ["Sign In", "Guest Sign In"],
@@ -59,11 +72,56 @@ export default {
       "Sign In": "image-bg",
       "Guest Sign In": "image-bg-2",
     },
+    cashierDialogMeta: {
+      action: "Open",
+      actionType: "Cashier Drawer",
+      submitBtnText: "Open",
+    },
   }),
+
   methods: {
     ...mapActions("authentication", ["logout"]),
+    ...mapMutations("cashier", ["SET_DIALOG", "SET_CURRENT_CASHIER"]),
+    ...mapActions("alerts", ["requireAlertFn"]),
+    ...mapActions("cashier", ["startSession", "closeSession"]),
+
+    async handleAction(adjustment) {
+      this.requireAlertFn(2);
+
+      const userId = this.$auth.user().userId;
+
+      let payload = {
+        ...adjustment,
+      };
+
+      if (this.getCashierAction === "Open") {
+        await this.startSession({ userId, payload });
+      } else {
+        await this.closeSession({
+          userId,
+          payload,
+        });
+      }
+      // await this.fetchSessions();
+      // this.SET_FILTERED_SESSIONS();
+
+      this.SET_DIALOG({ key: "cashier", value: false });
+      this.SET_CURRENT_CASHIER();
+    },
   },
+
   computed: {
+    ...mapState("cashier", [
+      "dialog",
+      "loading",
+      "currentCashier",
+      "adjustment",
+    ]),
+    ...mapGetters("cashier", [
+      "getCashierAction",
+      "isCurrentCashierSessionless",
+    ]),
+
     navigation: function () {
       const currentRoute = this.$route.meta;
       return {
@@ -73,6 +131,53 @@ export default {
           !(currentRoute["isPublic"] || currentRoute["isGuest"]),
         secondary: currentRoute["isPublic"] || currentRoute["isGuest"],
       };
+    },
+
+    balanceData() {
+      if (!this.currentCashier?.session) return;
+
+      const { closingBalance, closingAdjustment } = this.currentCashier.session;
+      const newOpeningBalance = this.isCurrentCashierSessionless
+        ? 0
+        : Number(closingBalance) + Number(closingAdjustment);
+      const effectiveAdjustment = this.adjustment === "" ? 0 : this.adjustment;
+
+      if (this.getCashierAction === "Open")
+        return [
+          {
+            name: "Opening Balance",
+            totalAmount: newOpeningBalance,
+          },
+          {
+            name: "Beginning Balance",
+            totalAmount: newOpeningBalance + effectiveAdjustment,
+          },
+        ];
+
+      return [
+        {
+          name: "Opening Balance",
+          totalAmount: this.closingBalance,
+        },
+      ];
+    },
+
+    closingBalance() {
+      if (!this.currentCashier?.session || this.isCurrentCashierSessionless)
+        return 0;
+
+      const { beginningBalance, payments } = this.currentCashier.session;
+
+      let paymentTotal = 0;
+      if (payments?.length) {
+        paymentTotal = payments.reduce(
+          (total, payment) => total + Number(payment.totalAmount),
+          0
+        );
+      }
+
+      const closingBalance = Number(beginningBalance) + paymentTotal;
+      return closingBalance;
     },
   },
   mounted() {

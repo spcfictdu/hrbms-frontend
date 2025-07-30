@@ -6,6 +6,7 @@
     :opened="opened"
     :onClose="onClose"
     titleClasses="primary--text"
+    :persistent="persistent"
     @onSubmit="handleSubmit"
   >
     <v-row class="text-body-2 text-uppercase">
@@ -79,6 +80,10 @@ export default {
     loading: Boolean,
     meta: Object,
     balanceData: Array,
+    persistent: {
+      type: Boolean,
+      default: false,
+    },
   },
   data: () => ({
     adjustment: "",

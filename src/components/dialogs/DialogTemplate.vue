@@ -1,5 +1,10 @@
 <template>
-  <v-dialog v-model="dialog" :max-width="maxWidth" overlay-opacity="0.2">
+  <v-dialog
+    v-model="dialog"
+    :max-width="maxWidth"
+    overlay-opacity="0.2"
+    :persistent="persistent"
+  >
     <v-card class="pa-8" rounded="lg" flat>
       <DialogToolbar
         class="mb-4"
@@ -28,6 +33,7 @@ export default {
     opened: Boolean,
     onClose: Function,
     titleClasses: String,
+    persistent: Boolean,
   },
   data: () => ({
     dialog: false,
@@ -44,6 +50,7 @@ export default {
   },
   watch: {
     opened: {
+      immediate: true,
       handler: function (v) {
         this.dialog = v;
 

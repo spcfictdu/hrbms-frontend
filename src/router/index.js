@@ -1,6 +1,7 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
 import { auth } from "@/utils/auth";
+import store from "@/store";
 
 import roomsList from "./hotel-rooms/rooms-list";
 import guestList from "./guest-list/guest-list";
@@ -63,7 +64,7 @@ const router = new VueRouter({
   },
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const loggedIn = auth.user();
   const userRole = auth.user() ? auth.user().role : null;
   const DASHBOARD_NAME = {
@@ -71,6 +72,26 @@ router.beforeEach((to, from, next) => {
     ADMIN: "Dashboard",
     "FRONT DESK": "Dashboard",
   };
+
+  const { state, dispatch, getters, commit } = store;
+
+  if (
+    loggedIn &&
+    userRole === "FRONT DESK" &&
+    mappedRoutes.roleRoutes["FRONT DESK"].includes(to.name) &&
+    !state.cashier.currentCashier.session
+  ) {
+    await dispatch("cashier/fetchSessions");
+    console.log("router fetch");
+
+    const session = getters["cashier/getSession"](loggedIn.userId);
+    commit("cashier/SET_CURRENT_CASHIER", { session });
+    const isSessionInactive = getters["cashier/getCashierAction"] === "Open";
+
+    if (isSessionInactive) {
+      commit("cashier/SET_DIALOG", { key: "cashier", value: true });
+    }
+  }
 
   if (!loggedIn && !mappedRoutes.publicRoutes.includes(to.name)) {
     next({ name: "Public Dashboard" });
