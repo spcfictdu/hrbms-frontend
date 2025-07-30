@@ -6,11 +6,11 @@
       </div>
       <div v-if="session" class="text-uppercase">
         EMPLOYEE:
-        <span v-if="session.fullName">{{ session.fullName }}</span>
-        <span v-else>{{
-          `${$auth.user().firstName} ${$auth.user().lastName}`
+        <span v-if="session.fullName">{{ session.fullName }} | </span>
+        <span v-else-if="!session.message">{{
+          `${$auth.user().firstName} ${$auth.user().lastName} | `
         }}</span>
-        |
+
         <span class="font-weight-bold">S{{ session.userId }}</span>
       </div>
     </div>
