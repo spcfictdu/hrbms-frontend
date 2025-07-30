@@ -117,7 +117,7 @@ export default {
   },
   created() {
     this.fetchVouchers();
-    if (!this.sessions) {
+    if (!this.sessions.length) {
       this.fetchSessions();
     }
   },

@@ -81,7 +81,7 @@ export default {
 
   methods: {
     ...mapActions("authentication", ["logout"]),
-    ...mapMutations("cashier", ["SET_DIALOG", "SET_CURRENT_CASHIER"]),
+    ...mapMutations("cashier", ["SET_DIALOG"]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("cashier", ["startSession", "closeSession"]),
 
@@ -106,7 +106,7 @@ export default {
       // this.SET_FILTERED_SESSIONS();
 
       this.SET_DIALOG({ key: "cashier", value: false });
-      this.SET_CURRENT_CASHIER();
+      // this.SET_CURRENT_CASHIER();
     },
   },
 
