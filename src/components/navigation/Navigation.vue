@@ -195,11 +195,11 @@ export default {
       this.activeButton = route.name;
       if (typeof route.route === "object") {
         await this.fetchSessions();
-        const userFullName = `${this.$auth.user().firstName} ${
-          this.$auth.user().lastName
-        }`;
+        // const userFullName = `${this.$auth.user().firstName} ${
+        //   this.$auth.user().lastName
+        // }`;
         const id = this.sessions.find(
-          (s) => s.userFullName === userFullName && s.status === "ACTIVE"
+          (s) => s.userId === this.$auth.user().userId && s.status === "ACTIVE"
         ).userId;
         route.route.params.id = String(id);
         return this.$router.push(route.route);

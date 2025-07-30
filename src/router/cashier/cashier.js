@@ -11,6 +11,7 @@ export default [
     meta: {
       name: "Cashier Terminal",
       selectedMainNav: "Cashier Terminal",
+      onlyAdmin: true,
     },
   },
   {

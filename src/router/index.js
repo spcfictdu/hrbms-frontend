@@ -32,10 +32,12 @@ const mappedRoutes = {
     ],
     "FRONT DESK": [
       ...dashboardRoutes.map(({ name }) => name),
-      ...roomsList[0].children.map(({ name }) => name),
+      ...roomsList[0].children
+        .filter(({ meta }) => !meta.onlyAdmin)
+        .map(({ name }) => name),
       ...guestList.map(({ name }) => name),
       ...transaction.map(({ name }) => name),
-      ...cashier.map(({ name }) => name),
+      ...cashier.filter(({ meta }) => !meta.onlyAdmin).map(({ name }) => name),
     ],
   },
 };

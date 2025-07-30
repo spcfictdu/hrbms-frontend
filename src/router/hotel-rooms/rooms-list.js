@@ -29,6 +29,7 @@ export default [
         props: true,
         meta: {
           name: "Amenities",
+          onlyAdmin: true,
         },
       },
 
