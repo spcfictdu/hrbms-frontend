@@ -17,7 +17,7 @@
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierHeader from "@/components/headers/CashierHeader.vue";
 import CashierComponent from "@/components/cashier/CashierComponent.vue";
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapState } from "vuex";
 export default {
   components: { RouteLoader, CashierHeader, CashierComponent },
   props: { id: String },
@@ -100,6 +100,8 @@ export default {
   },
   computed: {
     ...mapGetters("cashier", ["getSession"]),
+    ...mapState("cashier", ["sessions"]),
+
     session() {
       return this.getSession(this.id);
     },
@@ -115,7 +117,9 @@ export default {
   },
   created() {
     this.fetchVouchers();
-    this.fetchSessions();
+    if (!this.sessions) {
+      this.fetchSessions();
+    }
   },
 };
 </script>
