@@ -25,7 +25,7 @@
               <CashierDialog
                 :persistent="true"
                 :onClose="() => SET_DIALOG({ key: 'cashier', value: false })"
-                :opened="dialog.cashier"
+                :opened="dialog.cashier && $auth.user().role === 'FRONT DESK'"
                 :meta="cashierDialogMeta"
                 :loading="loading.dialog"
                 :balanceData="balanceData"
