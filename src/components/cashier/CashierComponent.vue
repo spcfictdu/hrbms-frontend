@@ -160,7 +160,7 @@ export default {
       const bookingPayload = {
         ...this.savedPayload,
         addons,
-        ...(discount ? discount : {}),
+        ...(discount && { discount }),
         voucherCode,
         idNumber,
         payment,
