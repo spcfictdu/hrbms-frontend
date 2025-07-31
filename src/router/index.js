@@ -32,12 +32,10 @@ const mappedRoutes = {
     ],
     "FRONT DESK": [
       ...dashboardRoutes.map(({ name }) => name),
-      ...roomsList[0].children
-        .filter(({ meta }) => !meta.onlyAdmin)
-        .map(({ name }) => name),
+      ...roomsList[0].children.map(({ name }) => name),
       ...guestList.map(({ name }) => name),
       ...transaction.map(({ name }) => name),
-      ...cashier.filter(({ meta }) => !meta.onlyAdmin).map(({ name }) => name),
+      ...cashier.map(({ name }) => name),
     ],
   },
 };
@@ -81,7 +79,8 @@ router.beforeEach(async (to, from, next) => {
     loggedIn &&
     userRole === "FRONT DESK" &&
     mappedRoutes.roleRoutes["FRONT DESK"].includes(to.name) &&
-    !state.cashier.currentCashier.session
+    !state.cashier.currentCashier.session &&
+    state.cashier.currentCashier.session?.status !== "ACTIVE"
   ) {
     await dispatch("cashier/fetchSessions");
     console.log("router fetch");
@@ -110,7 +109,10 @@ router.beforeEach(async (to, from, next) => {
     ...mappedRoutes.commonRoutes,
   ];
 
-  if (!allowedRoutes.includes(to.name)) {
+  if (
+    !allowedRoutes.includes(to.name) ||
+    (userRole === "FRONT DESK" && to.meta.onlyAdmin)
+  ) {
     next({ name: DASHBOARD_NAME[userRole] });
     return;
   }
