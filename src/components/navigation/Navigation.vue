@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 import { auth } from "@/utils/auth";
 
 export default {
@@ -190,6 +190,7 @@ export default {
   methods: {
     ...mapActions("authentication", ["logout"]),
     ...mapActions("cashier", ["fetchSessions"]),
+    ...mapMutations("cashier", ["SET_CURRENT_CASHIER"]),
 
     async redirect(route) {
       this.activeButton = route.name;
@@ -218,8 +219,9 @@ export default {
       return false;
     },
 
-    triggerLogout: function () {
-      this.logout(auth.user().role);
+    async triggerLogout() {
+      await this.logout(auth.user().role);
+      this.SET_CURRENT_CASHIER();
     },
   },
 
