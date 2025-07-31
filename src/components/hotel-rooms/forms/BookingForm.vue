@@ -278,7 +278,8 @@ export default {
         }`;
         const userId = this.sessions.find((s) => {
           if (this.userRole === "ADMIN") return s.status === "ACTIVE";
-          return s.userFullName === userFullName && s.status === "ACTIVE";
+          // return s.userFullName === userFullName && s.status === "ACTIVE";
+          return s.userId === this.$auth.user().userId && s.status === "ACTIVE";
         }).userId;
 
         this.fetchTransaction(this.guestDetailsMeta.transactionRefNum);

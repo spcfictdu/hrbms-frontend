@@ -47,7 +47,8 @@ export default {
     }`;
     this.userId = this.sessions.find((s) => {
       if (this.userRole === "ADMIN") return s.status === "ACTIVE";
-      s.userFullName === userFullName && s.status === "ACTIVE";
+      // return s.userFullName === userFullName && s.status === "ACTIVE";
+      return s.userId === this.$auth.user().userId && s.status === "ACTIVE";
     }).userId;
   },
   methods: {
