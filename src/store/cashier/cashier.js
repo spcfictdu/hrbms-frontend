@@ -26,8 +26,14 @@ export const cashier = {
       state.sessions.find((s) => Number(userId) === s.userId),
     getCashierAction: (state) =>
       state.currentCashier.session?.status === "ACTIVE" ? "Close" : "Open",
-    isCurrentCashierSessionless: (state) =>
-      !!state.currentCashier.session.message,
+    isCurrentCashierSessionless: (state) => {
+      const currentCashier = state.currentCashier;
+
+      const isSessionUndefined = !currentCashier?.session;
+      const isSessionLess =
+        currentCashier?.session?.message === "User has no cashier sessions";
+      return isSessionUndefined || isSessionLess;
+    },
   },
   mutations: {
     SET_SESSIONS: (state, data) => (state.sessions = data),
