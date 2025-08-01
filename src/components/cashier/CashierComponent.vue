@@ -167,11 +167,12 @@ export default {
         status,
       };
 
+      const payload = status === "BOOKED" ? bookingPayload : reservationPayload;
+      if (this.$auth.user().role === "ADMIN")
+        payload.cashierId = this.session.userId;
+
       if (this.$refs.form.validate()) {
-        this.$emit(
-          "onSubmit",
-          status === "BOOKED" ? bookingPayload : reservationPayload
-        );
+        this.$emit("onSubmit", payload);
       }
     },
     async handleClick(referenceNum, fullName) {
