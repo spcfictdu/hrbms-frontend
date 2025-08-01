@@ -157,7 +157,7 @@ export default {
 
       return [
         {
-          name: "Opening Balance",
+          name: "Total",
           totalAmount: this.closingBalance,
         },
       ];
