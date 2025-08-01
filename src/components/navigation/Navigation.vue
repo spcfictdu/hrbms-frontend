@@ -84,7 +84,7 @@
                 x-small
                 elevation="0"
                 color="white"
-                @click="triggerLogout"
+                @click="handleLogout"
               >
                 <v-icon color="primary"> mdi-logout-variant</v-icon>
               </v-btn>
@@ -109,7 +109,7 @@
             >
               Sign out
             </p> -->
-            <v-btn fab small elevation="0" color="white" @click="triggerLogout">
+            <v-btn fab small elevation="0" color="white" @click="handleLogout">
               <v-icon color="primary" size="20"> mdi-logout-variant</v-icon>
             </v-btn>
           </div>
@@ -120,7 +120,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import { auth } from "@/utils/auth";
 
 export default {
@@ -136,6 +136,8 @@ export default {
   }),
   computed: {
     ...mapState("cashier", ["sessions"]),
+    ...mapGetters("cashier", ["getSession"]),
+
     activeRouteButton: function () {
       return this.activeButton
         ? this.activeButton
@@ -183,24 +185,24 @@ export default {
       ];
     },
     isAdmin() {
-      return this.$auth.user()?.role === "ADMIN";
+      return auth.user()?.role === "ADMIN";
     },
   },
 
   methods: {
     ...mapActions("authentication", ["logout"]),
     ...mapActions("cashier", ["fetchSessions"]),
-    ...mapMutations("cashier", ["SET_CURRENT_CASHIER"]),
+    ...mapMutations("cashier", ["SET_CURRENT_CASHIER", "SET_DIALOG"]),
 
     async redirect(route) {
       this.activeButton = route.name;
       if (typeof route.route === "object") {
         await this.fetchSessions();
-        // const userFullName = `${this.$auth.user().firstName} ${
-        //   this.$auth.user().lastName
+        // const userFullName = `${auth.user().firstName} ${
+        //   auth.user().lastName
         // }`;
         const id = this.sessions.find(
-          (s) => s.userId === this.$auth.user().userId && s.status === "ACTIVE"
+          (s) => s.userId === auth.user().userId && s.status === "ACTIVE"
         ).userId;
         route.route.params.id = String(id);
         return this.$router.push(route.route);
@@ -217,6 +219,15 @@ export default {
         return true;
       }
       return false;
+    },
+
+    handleLogout() {
+      if (this.isAdmin) return this.triggerLogout();
+
+      const session = this.getSession(auth.user().userId);
+      this.SET_CURRENT_CASHIER({ session });
+
+      this.SET_DIALOG({ key: "cashier", value: true });
     },
 
     async triggerLogout() {

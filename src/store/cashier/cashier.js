@@ -103,6 +103,7 @@ export const cashier = {
         dispatch("alerts/triggerError", err.response.data.message, {
           root: true,
         });
+        return err.response.data;
       } finally {
         commit("SET_LOADING", { key: "dialog", value: false });
       }
@@ -123,6 +124,7 @@ export const cashier = {
         dispatch("alerts/triggerError", err.response.data.message, {
           root: true,
         });
+        return err.response.data;
       } finally {
         commit("SET_LOADING", { key: "dialog", value: false });
       }

@@ -25,7 +25,7 @@
               <CashierDialog
                 :persistent="true"
                 :onClose="() => SET_DIALOG({ key: 'cashier', value: false })"
-                :opened="dialog.cashier && $auth.user().role === 'FRONT DESK'"
+                :opened="dialog.cashier && $auth.user()?.role === 'FRONT DESK'"
                 :meta="cashierDialogMeta"
                 :loading="loading.dialog"
                 :balanceData="balanceData"
@@ -72,16 +72,15 @@ export default {
       "Sign In": "image-bg",
       "Guest Sign In": "image-bg-2",
     },
-    cashierDialogMeta: {
-      action: "Open",
-      actionType: "Cashier Drawer",
-      submitBtnText: "Open",
-    },
   }),
 
   methods: {
     ...mapActions("authentication", ["logout"]),
-    ...mapMutations("cashier", ["SET_DIALOG", "SET_ADJUSTMENT"]),
+    ...mapMutations("cashier", [
+      "SET_DIALOG",
+      "SET_ADJUSTMENT",
+      "SET_CURRENT_CASHIER",
+    ]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("cashier", ["startSession", "closeSession", "fetchSessions"]),
 
@@ -96,13 +95,25 @@ export default {
 
       if (this.getCashierAction === "Open") {
         await this.startSession({ userId, payload });
+        await this.fetchSessions();
       } else {
-        await this.closeSession({
-          userId,
-          payload,
-        });
+        try {
+          const response = await this.closeSession({
+            userId,
+            payload,
+          });
+
+          if (response.error)
+            throw new Error(`Error message: ${response.message}`);
+
+          await this.logout(this.$auth.user().role);
+          console.log("logged out");
+
+          this.SET_CURRENT_CASHIER();
+        } catch (err) {
+          console.error(err);
+        }
       }
-      await this.fetchSessions();
       // this.SET_FILTERED_SESSIONS();
 
       this.SET_DIALOG({ key: "cashier", value: false });
@@ -134,14 +145,41 @@ export default {
       };
     },
 
-    balanceData() {
-      if (!this.currentCashier?.session) return;
+    cashierDialogMeta() {
+      if (this.getCashierAction === "Open")
+        return {
+          action: "Open",
+          actionType: "Cashier Drawer",
+          submitBtnText: this.getCashierAction,
+        };
 
-      const { closingBalance, closingAdjustment } = this.currentCashier.session;
+      return {
+        action: "Adjust",
+        actionType: "Closing Balance",
+        submitBtnText: this.getCashierAction,
+      };
+    },
+
+    balanceData() {
+      const { closingBalance, closingAdjustment } =
+        this.currentCashier.session ?? {};
       const newOpeningBalance = this.isCurrentCashierSessionless
         ? 0
         : Number(closingBalance) + Number(closingAdjustment);
       const effectiveAdjustment = this.adjustment === "" ? 0 : this.adjustment;
+
+      if (!this.currentCashier?.session) {
+        return [
+          {
+            name: "Opening Balance",
+            totalAmount: newOpeningBalance,
+          },
+          {
+            name: "Beginning Balance",
+            totalAmount: newOpeningBalance + effectiveAdjustment,
+          },
+        ];
+      }
 
       if (this.getCashierAction === "Open")
         return [
