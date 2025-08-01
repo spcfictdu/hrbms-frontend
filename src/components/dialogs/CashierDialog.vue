@@ -30,7 +30,12 @@
             type="number"
             hide-spin-buttons
             autofocus
-            :rules="[() => !!closingBalance || 'Closing Balance is required']"
+            :rules="[
+              () =>
+                !!closingBalance ||
+                closingBalance === 0 ||
+                'Closing Balance is required',
+            ]"
           />
         </FormField>
         <FormField :label="fieldLabel.toUpperCase()">
