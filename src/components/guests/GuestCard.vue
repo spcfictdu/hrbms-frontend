@@ -80,8 +80,10 @@ export default {
     ...mapActions("guest", ["fetchGuest"]),
 
     async setFormDetails() {
-      await this.fetchTransaction(this.transaction.transactionRefNum);
-      await this.fetchGuest({ id: this.transaction.guestId });
+      await Promise.all([
+        this.fetchTransaction(this.transaction.transactionRefNum),
+        this.fetchGuest({ id: this.transaction.guestId }),
+      ]);
 
       const {
         firstName,
