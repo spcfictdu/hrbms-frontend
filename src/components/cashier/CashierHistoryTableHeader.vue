@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card-title class="text-subtitle-2 font-weight-black px-7"
-      >{{ numberOfItems }} ITEMS
+      >{{ numberOfItems }} {{ numberOfItems === 1 ? "ITEM" : "ITEMS" }}
     </v-card-title>
 
     <v-progress-linear

@@ -10,6 +10,7 @@
     :options.sync="options"
     :disable-sort="disableSort"
     @click:row="$emit('click:row', $event)"
+    :group-desc="true"
   >
     <template v-for="(_, slot) in $scopedSlots" v-slot:[slot]="scope">
       <slot :name="slot" v-bind="scope" />

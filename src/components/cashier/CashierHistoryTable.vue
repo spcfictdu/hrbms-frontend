@@ -7,7 +7,7 @@
 
     <div class="pa-5">
       <PaginatedTable
-        :headers="headers"
+        :headers="tableHeaders"
         :items="mappedHistory"
         itemKey="paymentId"
         groupBy="date"
@@ -27,7 +27,7 @@
           >
         </template>
         <template v-slot:[`group.header`]="{ group }">
-          <td :colspan="headers.length" class="pl-8">
+          <td :colspan="tableHeaders.length" class="pl-8">
             {{ group }}
           </td>
         </template>
@@ -45,61 +45,23 @@ import CashierHistoryTableHeader from "./CashierHistoryTableHeader.vue";
 export default {
   name: "CashierHistoryTable",
   components: { PaginatedTable, CashierHistoryTableHeader },
-  props: { history: Object },
+  props: { history: [Object, Array], tableHeaders: Array, fetchingTab: Object },
   mixins: [assignParams],
   data: () => ({
-    headers: [
-      {
-        text: "Employee ID",
-        value: "employeeId",
-        width: "180px",
-      },
-      {
-        text: "MOP",
-        value: "MOP",
-      },
-      {
-        text: "Guest Name",
-        value: "guestName",
-      },
-      {
-        text: "Total Payment",
-        value: "totalPayment",
-      },
-      {
-        text: "Discount",
-        value: "discount",
-      },
-      {
-        text: "Refund",
-        value: "refund",
-      },
-      {
-        text: "Voided",
-        value: "voided",
-      },
-      {
-        text: "Time",
-        value: "time",
-      },
-    ],
     mopColors: {
       CASH: "cash",
       CREDIT_CARD: "creditCard",
       GCASH: "gCash",
       CHEQUE: "cheque",
     },
-    footerProps: {
-      itemsPerPageOptions: [2, 2],
-      itemsPerPageText: "Sessions per page:",
-    },
   }),
   methods: {
     handleSelectRow(row) {
-      this.$router.push({
-        name: "Cashier Transaction Details",
-        params: { ...this.$route.params, paymentId: String(row.paymentId) },
-      });
+      if (this.history?.data)
+        this.$router.push({
+          name: "Cashier Transaction Details",
+          params: { ...this.$route.params, paymentId: String(row.paymentId) },
+        });
     },
   },
   computed: {
@@ -110,7 +72,7 @@ export default {
         for (const session of this.history.data) {
           transactions.push(
             ...session.payments.map((item) => ({
-              employeeId: "S" + this.$route.params.id,
+              employee: `${session.firstName} - S${session.userId}`,
               MOP: item.paymentType,
               totalPayment: item.amountReceived,
               guestName: item.guestName,
@@ -124,15 +86,36 @@ export default {
           );
         }
         return transactions;
+      } else {
+        return (
+          this.history.map((item) => ({
+            employee: `${item.userFullName.split(" ")[0]} - S${item.userId}`,
+            openingAdjustment: item.openingBalance ?? "0.00",
+            beginningBalance: item.beginningBalance ?? "0.00",
+            openingBalance: item.openingBalance ?? "0.00",
+            closingBalance: item.closingBalance ?? "0.00",
+            refund: "0.00",
+            voided: "0.00",
+            time: format(parseISO(item.openedAt), "H:mm:ss"),
+            date: format(parseISO(item.openedAt), "MMMM dd, yyyy"),
+          })) || []
+        );
       }
-      return [];
+    },
+
+    footerProps() {
+      return {
+        itemsPerPageOptions: this.history?.data ? [2, 2] : [5, 10, 15],
+        itemsPerPageText: "Sessions per page:",
+      };
     },
   },
   watch: {
     queryParams: {
       deep: true,
       handler: function (v) {
-        this.$emit("onQuery", v);
+        if (this.fetchingTab.title === "Adjustment") return;
+        this.$emit("query", v);
       },
     },
   },

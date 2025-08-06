@@ -9,7 +9,8 @@ export const cashier = {
   namespaced: true,
   state: () => ({
     sessions: [],
-    currUserHistory: [],
+    adjustments: [],
+    currUserHistory: null,
     filteredSessions: [],
     dialog: {
       confirmation: false,
@@ -37,6 +38,7 @@ export const cashier = {
   },
   mutations: {
     SET_SESSIONS: (state, data) => (state.sessions = data),
+    SET_ADJUSTMENTS: (state, data) => (state.adjustments = data),
     SET_CURR_USER_HISTORY: (state, data) => (state.currUserHistory = data),
     SET_FILTERED_SESSIONS: (state, status) => {
       if (!status) {
@@ -71,6 +73,20 @@ export const cashier = {
         })
         .catch((error) => {
           console.error("Error fetching sessions: ", error);
+        });
+    },
+
+    fetchAdjustments({ commit }, queryParams = {}) {
+      // const url = `cashier-session/show-cashiers`;
+      const url = `cashier-session`;
+      const queryUrl = functions.query(url, queryParams);
+      return this.$axios
+        .get(queryUrl)
+        .then((response) => {
+          commit("SET_ADJUSTMENTS", response.data.results);
+        })
+        .catch((error) => {
+          console.error("Error fetching adjustments: ", error);
         });
     },
 
