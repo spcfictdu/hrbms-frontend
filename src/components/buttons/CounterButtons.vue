@@ -8,7 +8,11 @@
       icon
       class="primary"
       style="border-radius: 5px"
-      @click="readonly && decrementFn"
+      @click="
+        () => {
+          if (!readonly) decrementFn();
+        }
+      "
     >
       <v-icon>mdi-minus</v-icon>
     </v-btn>
@@ -21,7 +25,11 @@
       icon
       class="primary"
       style="border-radius: 5px"
-      @click="readonly && incrementFn"
+      @click="
+        () => {
+          if (!readonly) incrementFn();
+        }
+      "
     >
       <v-icon>mdi-plus</v-icon>
     </v-btn>

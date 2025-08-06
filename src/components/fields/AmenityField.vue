@@ -15,7 +15,7 @@
           item-text="name"
           v-model="addon.name"
           :item-disabled="(item) => isItemDisabled(item, index)"
-          clearable
+          :clearable="!readonly"
           :rules="[
             (v) => (addons.length > 1 ? !!v || 'Add-on is required' : true),
           ]"
