@@ -93,15 +93,11 @@ export default {
             ]),
         {
           name: "Refund",
-          totalAmount: this.sessionData.refunded
-            ? this.sessionData.refunded.toFixed(2)
-            : "0.00",
+          totalAmount: this.sessionData.refunded ?? "0.00",
         },
         {
           name: "Voided",
-          totalAmount: this.sessionData.voided
-            ? this.sessionData.voided.toFixed(2)
-            : "0.00",
+          totalAmount: this.sessionData.voided ?? "0.00",
         },
         {
           name: "Opening Balance",
