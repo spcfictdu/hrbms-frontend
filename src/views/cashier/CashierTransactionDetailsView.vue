@@ -15,7 +15,8 @@
 
     <RouteLoader :target="hasData" class="mt-10">
       <CashierTransactionDetailsTable
-        :transactionDetails="transactionDetails"
+        :transactionDetails="transaction"
+        :headerDetails="headerDetails"
       />
     </RouteLoader>
   </div>
@@ -26,35 +27,43 @@ import PageHeader from "@/components/headers/PageHeader.vue";
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierTransactionDetailsTable from "@/components/cashier/CashierTransactionDetailsTable.vue";
 import { mapActions, mapState } from "vuex";
+import { format, parseISO } from "date-fns";
 
 export default {
   components: { RouteLoader, PageHeader, CashierTransactionDetailsTable },
   name: "CashierTransactionDetailsView",
-  props: { id: String, drawerNumber: String, paymentId: String },
+  props: {
+    id: String,
+    drawerNumber: String,
+    transactionReferenceNumber: String,
+  },
   methods: {
     ...mapActions("cashier", ["fetchHistory"]),
-    async fetch(queryParams = {}) {
-      await this.fetchHistory({ userId: this.id, queryParams });
+    ...mapActions("transaction", ["fetchTransaction"]),
+    async fetch() {
+      await this.fetchTransaction(this.transactionReferenceNumber);
     },
   },
   computed: {
+    ...mapState("transaction", ["transaction"]),
     hasData() {
-      return !!this.transactionDetails ?? false;
+      return !!this.transaction ?? false;
     },
-    transactionDetails() {
+    headerDetails() {
+      const totalPayment = this.transaction?.paymentSummary
+        .reduce((total, prev) => total + Number(prev.amountReceived), 0)
+        .toFixed(2);
+
       return {
-        data: [
-          {
-            status: "Paid",
-            product: "Junior Suite Deluxe",
-            price: "2,500.00",
-            quantity: 1,
-            totalPrice: "2,500.00",
-            discount: "0.00",
-            paymentType: "CREDIT_CARD",
-            time: "12:32:40",
-          },
-        ],
+        guestName: this.transaction?.guestName,
+        referenceNumber: this.transactionReferenceNumber,
+        totalPayment,
+        date:
+          this.transaction &&
+          format(
+            parseISO(this.transaction.transaction.createdAt),
+            "MMMM dd, yyyy"
+          ),
       };
     },
   },

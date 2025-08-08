@@ -39,7 +39,7 @@ export default [
     },
   },
   {
-    path: "/cashier-transactions/:drawerNumber/:id/:paymentId",
+    path: "/cashier-transactions/:drawerNumber/:id/:transactionReferenceNumber",
     name: "Cashier Transaction Details",
     component: () =>
       import("@/views/cashier/CashierTransactionDetailsView.vue"),

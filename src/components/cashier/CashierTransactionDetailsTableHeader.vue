@@ -1,7 +1,11 @@
 <template>
   <div>
     <v-row>
-      <v-col v-for="(value, name) in mappedDetails" :key="name">
+      <v-col
+        v-for="(value, name, index) in mappedDetails"
+        :key="name"
+        :md="index === 0 && 4"
+      >
         <v-card-text class="px-7">
           <div class="grey--text font-weight-bold">{{ name }}</div>
           <div class="text-subtitle-1 font-weight-bold">{{ value }}</div>
@@ -31,10 +35,10 @@ export default {
   computed: {
     mappedDetails() {
       return {
-        "Guest Name": this.headerDetails.guestName,
-        "Reference Number": this.headerDetails.referenceNumber,
-        "Total Payment": this.headerDetails.totalPayment,
-        Date: this.headerDetails.date,
+        "Guest Name": this.headerDetails?.guestName,
+        "Reference Number": this.headerDetails?.referenceNumber,
+        "Total Payment": this.headerDetails?.totalPayment,
+        Date: this.headerDetails?.date,
       };
     },
   },

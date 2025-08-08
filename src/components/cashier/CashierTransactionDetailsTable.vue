@@ -1,13 +1,6 @@
 <template>
   <v-card flat>
-    <CashierTransactionDetailsTableHeader
-      :headerDetails="{
-        guestName: 'Dalsie Jane Salunga',
-        referenceNumber: '00112344532',
-        totalPayment: '3,300.00',
-        date: 'May 10, 2024',
-      }"
-    />
+    <CashierTransactionDetailsTableHeader :headerDetails="headerDetails" />
 
     <div class="pa-5">
       <DefaultTable
@@ -16,8 +9,16 @@
         itemKey="paymentId"
         :footerProps="footerProps"
         disableSort
-        @onQuery="assignParams($event)"
+        :hideDefaultFooter="true"
       >
+        <template v-slot:[`item.status`]="{ item }">
+          <span
+            :class="getStatusColor(item.status)"
+            class="font-weight-medium"
+            >{{ item.status }}</span
+          >
+        </template>
+
         <template v-slot:[`item.paymentType`]="{ item }">
           <v-chip
             :color="mopColors[item.paymentType]"
@@ -56,14 +57,13 @@
 
 <script>
 import DefaultTable from "../tables/DefaultTable.vue";
-import { assignParams } from "@/mixins/FormattingFunctions";
 import CashierTransactionDetailsTableHeader from "./CashierTransactionDetailsTableHeader.vue";
+import { format, parseISO } from "date-fns";
 
 export default {
   name: "CashierTransactionDetalisTable",
   components: { DefaultTable, CashierTransactionDetailsTableHeader },
-  props: { transactionDetails: Object },
-  mixins: [assignParams],
+  props: { transactionDetails: Object, headerDetails: Object },
   data: () => ({
     headers: [
       {
@@ -91,8 +91,8 @@ export default {
         value: "discount",
       },
       {
-        text: "Payment Type",
-        value: "paymentType",
+        text: "Payment Method",
+        value: "paymentMethod",
       },
       {
         text: "Time",
@@ -114,31 +114,80 @@ export default {
     },
     menuItems: [{ text: "Refund Payment" }, { text: "Void Transaction" }],
   }),
+  created() {},
+  methods: {
+    getStatusColor(status) {
+      const statusColors = {
+        PAID: "light-green--text accent-3",
+        // PARTIAL: "light-green--text accent-2",
+        PENDING: "primary--text",
+      };
+
+      return statusColors[status];
+    },
+  },
   computed: {
     mappedTransactionDetails() {
       console.log(this.transactionDetails);
-      if (this.transactionDetails) {
-        return this.transactionDetails.data.map((t) => ({
-          status: t.status,
-          product: t.product,
-          price: t.price,
-          quantity: t.quantity,
-          totalPrice: t.totalPrice,
-          discount: t.discount,
-          paymentType: t.paymentType,
-          time: t.time,
-        }));
-      }
-      return [];
+      if (!this.transactionDetails) return;
+
+      const { transaction, room, priceSummary } = this.transactionDetails;
+      return [
+        {
+          status: transaction.paymentStatus,
+          product: room.name,
+          price: priceSummary.roomTotal,
+          quantity: transaction.extraPerson,
+          totalPrice: priceSummary.finalRoomTotal.toFixed(2),
+          discount: (
+            Number(priceSummary.roomTotal) + priceSummary.finalRoomTotal
+          ).toFixed(2),
+          paymentMethod: "",
+          time: format(parseISO(transaction.createdAt), "H:mm:ss"),
+        },
+        ...(priceSummary.fullAddons.length
+          ? priceSummary.fullAddons.map((addon) => ({
+              status: addon.paymentStatus,
+              product: addon.name,
+              price: addon.unit_price,
+              quantity: addon.quantity,
+              totalPrice: addon.total,
+              discount: "0.00",
+              paymentMethod: "",
+              time: format(parseISO(addon.createdAt), "H:mm:ss"),
+            }))
+          : {}),
+      ];
     },
   },
   watch: {
-    queryParams: {
-      deep: true,
-      handler: function (v) {
-        this.$emit("onQuery", v);
-      },
-    },
+    // queryParams: {
+    //   immediate: true,
+    //   deep: true,
+    //   handler: async function (v) {
+    //     const data = {
+    //       ...v,
+    //       ...(v.addons && {
+    //         addons: v.addons
+    //           .filter(({ name }) => name)
+    //           .map(({ name, quantity }) => `${name}-${quantity}`),
+    //       }),
+    //     };
+    //
+    //     if (!data.addons) {
+    //       this.$delete(data, "addons");
+    //     }
+    //
+    //     // if (!data.discount) this.$delete(data, "discount");
+    //     // if (!data.voucherCode) this.$delete(data, "voucherCode");
+    //
+    //     await this.fetchRoom(data);
+    //
+    //     // Needed by the Parent Component
+    //     // this.$emit("capacity", this.room[0].extraPersonCapacity || [0]);
+    //     // this.$emit("totalPayment", this.room[0].roomTotalWithExtraPerson);
+    //   },
+    // },
   },
 };
 </script>

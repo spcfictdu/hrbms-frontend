@@ -60,7 +60,10 @@ export default {
       if (this.history?.data)
         this.$router.push({
           name: "Cashier Transaction Details",
-          params: { ...this.$route.params, paymentId: String(row.paymentId) },
+          params: {
+            ...this.$route.params,
+            transactionReferenceNumber: String(row.referenceNumber),
+          },
         });
     },
   },
@@ -82,6 +85,7 @@ export default {
               time: format(parseISO(item.createdAt), "H:mm:ss"),
               date: format(parseISO(session.openedAt), "MMMM dd, yyyy"),
               paymentId: item.paymentId,
+              referenceNumber: item.referenceNumber,
             }))
           );
         }
