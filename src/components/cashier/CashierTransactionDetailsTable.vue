@@ -228,7 +228,7 @@ export default {
           quantity: transaction.extraPerson,
           totalPrice: priceSummary.finalRoomTotal.toFixed(2),
           discount: (
-            Number(priceSummary.roomTotal) + priceSummary.finalRoomTotal
+            Number(priceSummary.roomTotal) - priceSummary.finalRoomTotal
           ).toFixed(2),
           paymentMethod: "",
           time: format(parseISO(transaction.createdAt), "H:mm:ss"),
@@ -247,7 +247,7 @@ export default {
               addonId: addon.addonId,
               type: "addon",
             }))
-          : {}),
+          : []),
       ];
     },
   },
