@@ -19,20 +19,57 @@
           >
         </template>
 
-        <template v-slot:[`item.paymentType`]="{ item }">
-          <v-chip
-            :color="mopColors[item.paymentType]"
-            dark
-            small
-            class="text-overline"
-            >{{ item.paymentType.replaceAll("_", " ") }}</v-chip
+        <template v-slot:[`item.product`]="{ item }">
+          <span
+            :class="
+              isRefundedOrVoided(item.status) && 'text-decoration-line-through'
+            "
+            >{{ item.product }}</span
           >
         </template>
 
-        <template v-slot:[`item.menu`]>
-          <v-menu offset-x left>
+        <template v-slot:[`item.quantity`]="{ item }">
+          <span
+            :class="
+              isRefundedOrVoided(item.status) && 'text-decoration-line-through'
+            "
+            >{{ item.quantity }}</span
+          >
+        </template>
+
+        <template v-slot:[`item.totalPrice`]="{ item }">
+          <span
+            :class="
+              isRefundedOrVoided(item.status) && 'text-decoration-line-through'
+            "
+            >{{ item.totalPrice }}</span
+          >
+        </template>
+
+        <template v-slot:[`item.paymentMethod`]="{ item }">
+          <v-chip
+            v-if="item.paymentMethod"
+            :color="
+              isRefundedOrVoided(item.status)
+                ? refundedOrVoidedMopColor
+                : mopColors[item.paymentMethod]
+            "
+            dark
+            small
+            class="text-overline"
+            >{{ item.paymentMethod.replaceAll("_", " ") }}</v-chip
+          >
+        </template>
+
+        <template v-slot:[`item.menu`]="{ item }">
+          <v-menu offset-x left :disabled="isRefundedOrVoided(item.status)">
             <template v-slot:activator="{ on, attrs }">
-              <v-btn icon v-bind="attrs" v-on="on">
+              <v-btn
+                icon
+                v-bind="attrs"
+                v-on="on"
+                :disabled="isRefundedOrVoided(item.status)"
+              >
                 <v-icon>mdi-dots-vertical</v-icon>
               </v-btn>
             </template>
@@ -113,14 +150,21 @@ export default {
       itemsPerPageOptions: [5, 10, 15],
     },
     menuItems: [{ text: "Refund Payment" }, { text: "Void Transaction" }],
+    refundedOrVoidedMopColor: "#CACACA",
   }),
   created() {},
   methods: {
+    isRefundedOrVoided(status) {
+      return status === "REFUNDED" || status === "VOIDED";
+    },
+
     getStatusColor(status) {
       const statusColors = {
-        PAID: "light-green--text accent-3",
+        PAID: "light-green--text text--accent-4",
         // PARTIAL: "light-green--text accent-2",
         PENDING: "primary--text",
+        REFUNDED: "red--text text--accent-4",
+        VOIDED: "red--text text--accent-4",
       };
 
       return statusColors[status];
