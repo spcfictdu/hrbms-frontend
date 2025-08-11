@@ -55,6 +55,7 @@ export default {
       CHEQUE: "cheque",
     },
   }),
+
   methods: {
     handleSelectRow(row) {
       if (this.history?.data)
@@ -67,6 +68,7 @@ export default {
         });
     },
   },
+
   computed: {
     mappedHistory() {
       console.log(this.history);
@@ -77,7 +79,7 @@ export default {
             ...session.payments.map((item) => ({
               employee: `${session.firstName} - S${session.userId}`,
               MOP: item.paymentType,
-              totalPayment: item.amountReceived,
+              totalPayment: item.totalReceived,
               guestName: item.guestName,
               discount: item.discount,
               refund: item.refunded,
@@ -90,7 +92,7 @@ export default {
           );
         }
         return transactions;
-      } else {
+      } else if (Array.isArray(this.history)) {
         return (
           this.history.map((item) => ({
             employee: `${item.userFullName.split(" ")[0]} - S${item.userId}`,
@@ -104,7 +106,7 @@ export default {
             date: format(parseISO(item.openedAt), "MMMM dd, yyyy"),
           })) || []
         );
-      }
+      } else return [];
     },
 
     footerProps() {
@@ -114,6 +116,7 @@ export default {
       };
     },
   },
+
   watch: {
     queryParams: {
       deep: true,
