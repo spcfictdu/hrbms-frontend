@@ -77,11 +77,12 @@
             <v-list dense class="py-0">
               <v-list-item
                 class="menu-border"
-                v-for="(item, i) in menuItems"
+                v-for="(menuItem, i) in menuItems(item.status)"
                 :key="i"
+                @click="() => menuItem.action(item)"
               >
                 <v-list-item-title class="text-body-2 font-weight-regular">{{
-                  item.text
+                  menuItem.text
                 }}</v-list-item-title>
               </v-list-item>
             </v-list>
@@ -149,7 +150,6 @@ export default {
     footerProps: {
       itemsPerPageOptions: [5, 10, 15],
     },
-    menuItems: [{ text: "Refund Payment" }, { text: "Void Transaction" }],
     refundedOrVoidedMopColor: "#CACACA",
   }),
   created() {},
@@ -169,7 +169,51 @@ export default {
 
       return statusColors[status];
     },
+
+    getMenuItemPayload(item, status) {
+      let payload = {};
+      if (item.type === "room") {
+        payload = {
+          paymentStatus: status,
+        };
+      } else if (item.type === "addon") {
+        payload = {
+          addonId: item.addonId,
+          addonsPaymentStatus: status,
+        };
+      }
+      return payload;
+    },
+
+    menuItems(status) {
+      if (status === "PARTIAL" || status === "PAID") {
+        return [
+          {
+            text: "Refund Payment",
+            action: (item) => {
+              this.$emit(
+                "transactionUpdate",
+                this.getMenuItemPayload(item, "REFUNDED")
+              );
+            },
+          },
+        ];
+      } else if (status === "PENDING") {
+        return [
+          {
+            text: "Void Transaction",
+            action: (item) => {
+              this.$emit(
+                "transactionUpdate",
+                this.getMenuItemPayload(item, "VOIDED")
+              );
+            },
+          },
+        ];
+      }
+    },
   },
+
   computed: {
     mappedTransactionDetails() {
       console.log(this.transactionDetails);
@@ -188,6 +232,7 @@ export default {
           ).toFixed(2),
           paymentMethod: "",
           time: format(parseISO(transaction.createdAt), "H:mm:ss"),
+          type: "room",
         },
         ...(priceSummary.fullAddons.length
           ? priceSummary.fullAddons.map((addon) => ({
@@ -199,39 +244,12 @@ export default {
               discount: "0.00",
               paymentMethod: "",
               time: format(parseISO(addon.createdAt), "H:mm:ss"),
+              addonId: addon.addonId,
+              type: "addon",
             }))
           : {}),
       ];
     },
-  },
-  watch: {
-    // queryParams: {
-    //   immediate: true,
-    //   deep: true,
-    //   handler: async function (v) {
-    //     const data = {
-    //       ...v,
-    //       ...(v.addons && {
-    //         addons: v.addons
-    //           .filter(({ name }) => name)
-    //           .map(({ name, quantity }) => `${name}-${quantity}`),
-    //       }),
-    //     };
-    //
-    //     if (!data.addons) {
-    //       this.$delete(data, "addons");
-    //     }
-    //
-    //     // if (!data.discount) this.$delete(data, "discount");
-    //     // if (!data.voucherCode) this.$delete(data, "voucherCode");
-    //
-    //     await this.fetchRoom(data);
-    //
-    //     // Needed by the Parent Component
-    //     // this.$emit("capacity", this.room[0].extraPersonCapacity || [0]);
-    //     // this.$emit("totalPayment", this.room[0].roomTotalWithExtraPerson);
-    //   },
-    // },
   },
 };
 </script>

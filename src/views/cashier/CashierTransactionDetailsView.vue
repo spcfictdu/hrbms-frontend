@@ -17,6 +17,7 @@
       <CashierTransactionDetailsTable
         :transactionDetails="transaction"
         :headerDetails="headerDetails"
+        @transactionUpdate="handleTransactionUpdate"
       />
     </RouteLoader>
   </div>
@@ -39,9 +40,27 @@ export default {
   },
   methods: {
     ...mapActions("cashier", ["fetchHistory"]),
-    ...mapActions("transaction", ["fetchTransaction"]),
+    ...mapActions("transaction", ["fetchTransaction", "updateTransaction"]),
+    ...mapActions("alerts", ["requireAlertFn"]),
+
     async fetch() {
       await this.fetchTransaction(this.transactionReferenceNumber);
+    },
+
+    async handleTransactionUpdate(payload) {
+      this.requireAlertFn(2);
+
+      try {
+        await this.updateTransaction({
+          referenceNumber: this.transactionReferenceNumber,
+          cashierId: Number(this.id),
+          ...payload,
+        });
+
+        this.fetchTransaction(this.transactionReferenceNumber);
+      } catch (err) {
+        console.error(err);
+      }
     },
   },
   computed: {
