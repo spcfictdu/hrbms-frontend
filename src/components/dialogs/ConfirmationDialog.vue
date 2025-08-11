@@ -2,6 +2,7 @@
   <DialogTemplate
     :action="meta.action"
     :title="meta.actionType"
+    :titleClasses="meta.titleClasses"
     maxWidth="450"
     :opened="opened"
     :onClose="onClose"

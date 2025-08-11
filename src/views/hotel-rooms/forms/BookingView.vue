@@ -4,6 +4,7 @@
       :query="query"
       :fills="returnPreviousTransactions"
       :guestAutofill="guestAutofill"
+      :cashierUserId="cashierUserId"
       @onSubmit="handleCreateTransaction"
     />
   </div>
@@ -18,7 +19,7 @@ export default {
     BookingForm,
   },
   data: () => ({
-    userId: null,
+    cashierUserId: null,
     routes: {
       GUEST: {
         RESERVED: "Guest Confirmation",
@@ -48,11 +49,11 @@ export default {
     //   this.$auth.user().lastName
     // }`;
 
-    this.userId = this.sessions.find((s) => {
+    this.cashierUserId = this.sessions.find((s) => {
       if (this.userRole === "ADMIN") return s.status === "ACTIVE";
       // return s.userFullName === userFullName && s.status === "ACTIVE";
       return s.userId === this.$auth.user().userId && s.status === "ACTIVE";
-    }).userId;
+    })?.userId;
   },
   methods: {
     ...mapActions("transaction", [
@@ -66,7 +67,6 @@ export default {
     handleCreateTransaction: function (payload) {
       // Prefetch required alerts
       this.requireAlertFn(2);
-      this.setLoading({ key: "dialog", value: true });
 
       // Check if whether a user has an account, then return the right parameters.
       let formattedPayload =
@@ -82,14 +82,20 @@ export default {
             roomNumber: payload.roomNumber,
           })
         );
+
+        if (!this.cashierUserId) {
+          this.$router.push({ name: "Cashier Terminal" });
+          return;
+        }
+
         this.$router.push({
           name: "Cashier",
-          params: { id: String(this.userId) },
+          params: { id: String(this.cashierUserId) },
         });
-        this.setLoading({ key: "dialog", value: false });
         return;
       }
 
+      this.setLoading({ key: "dialog", value: true });
       // Check if a user will register or proceed without registering.
       // Storing temporary data for rebooking after registration.
       if (!this.user && payload?.action === "REGISTER") {

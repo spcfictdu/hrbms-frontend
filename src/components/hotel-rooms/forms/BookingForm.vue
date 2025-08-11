@@ -187,6 +187,7 @@ export default {
     query: Object,
     fills: Object,
     guestAutofill: Object,
+    cashierUserId: Number,
   },
   data: () => ({
     autofill: "",
@@ -266,6 +267,12 @@ export default {
       sessionStorage.setItem("formDetails", JSON.stringify(this.payload));
     },
     handleWhichDialog: function () {
+      // this.cashierUserId = this.sessions.find((s) => {
+      //   if (this.userRole === "ADMIN") return s.status === "ACTIVE";
+      //   return s.userFullName === userFullName && s.status === "ACTIVE";
+      //   return s.userId === this.$auth.user().userId && s.status === "ACTIVE";
+      // })?.userId;
+
       if (this.readonlyInputs) {
         if (
           !this.user ||
@@ -273,30 +280,25 @@ export default {
         )
           return;
 
-        const userFullName = `${this.$auth.user().firstName} ${
-          this.$auth.user().lastName
-        }`;
-        const userId = this.sessions.find((s) => {
-          if (this.userRole === "ADMIN") return s.status === "ACTIVE";
-          // return s.userFullName === userFullName && s.status === "ACTIVE";
-          return s.userId === this.$auth.user().userId && s.status === "ACTIVE";
-        }).userId;
-
+        // const userFullName = `${this.$auth.user().firstName} ${
+        //   this.$auth.user().lastName
+        // }`;
         this.fetchTransaction(this.guestDetailsMeta.transactionRefNum);
         this.$router.push({
           name: "Cashier",
-          params: { id: String(userId) },
+          params: { id: String(this.cashierUserId) },
         });
         sessionStorage.removeItem("guestDetailsMeta");
         return;
       }
 
       if (this.$refs.form.validate()) {
-        if (this.$auth.user()) {
-          this.triggerDialog("confirmation");
-        } else {
+        if (!this.$auth.user()) {
           this.triggerDialog("warning");
+          return;
         }
+
+        this.triggerDialog("confirmation");
       }
     },
     handleWarning: function (action) {
@@ -524,6 +526,14 @@ export default {
       return statuses;
     },
     confirmationMeta: function () {
+      if (!this.cashierUserId && this.payload.status === "CONFIRMED") {
+        return {
+          actionType: "No Cashier Session Open!",
+          titleClasses: "primary--text",
+          message: "Open a Cashier Session?",
+        };
+      }
+
       const status =
         this.payload.status === "CONFIRMED" ? "booking" : "reservation";
 

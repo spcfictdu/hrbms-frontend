@@ -6,6 +6,7 @@
       :loading="loading.cancel"
     >
     </header-booking-slot>
+
     <v-form
       ref="form"
       lazy-validation
@@ -42,6 +43,13 @@
         </v-col>
       </v-row>
     </v-form>
+
+    <ConfirmationDialog
+      :opened="dialog.confirmation"
+      :onClose="() => (dialog.confirmation = false)"
+      :meta="confirmationMeta"
+      @onProceed="$emit('submit')"
+    />
   </div>
 </template>
 
@@ -52,6 +60,7 @@ import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import DiscountTemplate from "@/components/form-templates/DiscountTemplate.vue";
 import PrintingFunction from "@/mixins/PrintingFunction";
+import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import { mapState } from "vuex";
 export default {
   name: "ConfirmationForm",
@@ -62,8 +71,10 @@ export default {
     PaymentTemplate,
     BookingSummary,
     DiscountTemplate,
+    ConfirmationDialog,
   },
   props: {
+    cashierUserId: Number,
     value: Object,
   },
   data: () => ({
@@ -80,6 +91,14 @@ export default {
       },
     ],
     totalPayment: 0,
+    dialog: {
+      confirmation: false,
+    },
+    confirmationMeta: {
+      actionType: "No Cashier Session Open!",
+      message: "Open a Cashier Session?",
+      titleClasses: "primary--text",
+    },
   }),
   methods: {
     assignPayload: function (payload) {
@@ -89,6 +108,7 @@ export default {
         }
       }
     },
+
     handleTransactionUpdate: function () {
       // Assign Variables
       const { referenceNumber, status } = this.value.transaction;
@@ -101,7 +121,11 @@ export default {
       };
 
       if (this.$refs.form.validate()) {
-        this.$emit("onSubmit", payload);
+        if (!this.cashierUserId) {
+          this.dialog.confirmation = true;
+          return;
+        }
+        this.$emit("submit", payload);
       }
     },
     handleCancelButton: function () {
@@ -109,7 +133,7 @@ export default {
         status: this.value.transaction.status,
         transactionRefNum: this.value.transaction.referenceNumber,
       };
-      this.$emit("onCancel", params);
+      this.$emit("cancel", params);
     },
   },
   computed: {

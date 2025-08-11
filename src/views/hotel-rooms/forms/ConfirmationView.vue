@@ -3,8 +3,9 @@
     <RouteLoader :target="hasData">
       <confirmation-form
         ref="confirmationForm"
-        @onCancel="handleCancel"
-        @onSubmit="handleClickEvent"
+        @cancel="handleCancel"
+        @submit="handleClickEvent"
+        :cashierUserId="cashierUserId"
         :value="transaction"
       />
     </RouteLoader>
@@ -25,7 +26,7 @@ export default {
     referenceNumber: String,
   },
   data: () => ({
-    userId: null,
+    cashierUserId: null,
     cancelRoutes: {
       GUEST: "Guest Account Details",
       ADMIN: "Transactions",
@@ -42,14 +43,14 @@ export default {
       return;
     }
 
-    const userFullName = `${this.$auth.user().firstName} ${
-      this.$auth.user().lastName
-    }`;
-    this.userId = this.sessions.find((s) => {
+    // const userFullName = `${this.$auth.user().firstName} ${
+    //   this.$auth.user().lastName
+    // }`;
+    this.cashierUserId = this.sessions.find((s) => {
       if (this.userRole === "ADMIN") return s.status === "ACTIVE";
       // return s.userFullName === userFullName && s.status === "ACTIVE";
       return s.userId === this.$auth.user().userId && s.status === "ACTIVE";
-    }).userId;
+    })?.userId;
   },
   methods: {
     ...mapActions("transaction", [
@@ -90,10 +91,15 @@ export default {
         return this.$refs.confirmationForm.handlePrinting();
       }
 
-      this.$router.push({
-        name: "Cashier",
-        params: { id: String(this.userId) },
-      });
+      if (!this.cashierUserId) {
+        this.$router.push({ name: "Cashier Terminal" });
+      } else {
+        this.$router.push({
+          name: "Cashier",
+          params: { id: String(this.cashierUserId) },
+        });
+      }
+
       this.fetchTransaction(this.referenceNumber);
 
       // // Prefetch the alert function: success, warning errors.
