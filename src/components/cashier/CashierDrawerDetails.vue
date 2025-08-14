@@ -26,7 +26,7 @@
           v-for="(button, i) in buttons"
           :key="button.text"
           class="mt-2 ms-0"
-          @click.stop="() => $router.push(button.route)"
+          @click.stop="button.action"
         >
           {{ button.text }}
         </v-btn>
@@ -36,6 +36,8 @@
 </template>
 
 <script>
+import { mapMutations } from "vuex";
+
 export default {
   name: "CashierDrawerDetails",
   props: {
@@ -44,26 +46,45 @@ export default {
     drawerNumber: Number,
   },
   data: () => ({}),
+  methods: {
+    ...mapMutations("cashier", ["SET_DIALOG", "SET_CURRENT_CASHIER"]),
+
+    showConfirmationDialog() {
+      this.SET_DIALOG({ key: "confirmation", value: true });
+      this.SET_CURRENT_CASHIER({
+        session: this.sessionData,
+        drawerNumber: this.drawerNumber,
+      });
+    },
+  },
   computed: {
     buttons() {
       return [
         {
           text: "View Cashier History",
-          route: {
-            name: "Cashier Transaction List",
-            params: {
-              id: String(this.sessionData.userId),
-              drawerNumber: String(this.drawerNumber),
-            },
-          },
+          action: () =>
+            this.$router.push({
+              name: "Cashier Transaction List",
+              params: {
+                id: String(this.sessionData.userId),
+                drawerNumber: String(this.drawerNumber),
+              },
+            }),
         },
         {
           text: "View Cashier Drawer",
-          route: {
-            name: "Cashier",
-            params: {
-              id: String(this.sessionData.userId),
-            },
+          action: () => {
+            if (this.sessionData.status === "INACTIVE") {
+              this.showConfirmationDialog();
+              return;
+            }
+
+            this.$router.push({
+              name: "Cashier",
+              params: {
+                id: String(this.sessionData.userId),
+              },
+            });
           },
         },
       ];

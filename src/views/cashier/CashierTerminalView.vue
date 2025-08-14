@@ -38,7 +38,7 @@ import CashierDialog from "@/components/dialogs/CashierDialog.vue";
 import { mapActions, mapState, mapMutations, mapGetters } from "vuex";
 
 export default {
-  name: "CashierView",
+  name: "CashierTerminalView",
   components: {
     CashierHeader,
     RouteLoader,
@@ -78,6 +78,7 @@ export default {
 
       if (this.getCashierAction === "Open") {
         await this.startSession({ userId, payload });
+        this.$router.push({ name: "Cashier", params: { id: String(userId) } });
       } else {
         await this.closeSession({
           userId,
