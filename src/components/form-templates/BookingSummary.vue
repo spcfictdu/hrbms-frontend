@@ -100,6 +100,12 @@ export default {
         totalReceived > total ? totalReceived - total : 0
       );
 
+      const existingAddons = this.queryParams.addons.filter((a) => a.addonId);
+      const addonsArray = [
+        ...existingAddons,
+        ...room.addons.splice(existingAddons.length),
+      ];
+
       const summary = {
         receiptHeader: data,
         receiptEnums: {
@@ -107,11 +113,12 @@ export default {
           roomNumber: room.roomNumber,
           capacity: room.roomTypeCapacity,
           roomFloor: room.roomFloor,
+          roomPaymentStatus: this.queryParams.roomPaymentStatus,
           roomTotal,
           extraPersonTotal,
           total: roomTotal + extraPersonTotal + room.addonsTotal,
           roomRatesArray: room.roomRatesArray,
-          addonsArray: [...room.addons],
+          addonsArray,
           discount: room.discount,
           discountedValue,
           addonsTotal: room.addonsTotal,

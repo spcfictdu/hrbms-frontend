@@ -141,6 +141,7 @@ export default {
       const receiptQuery = {
         roomType: this.value.room.name,
         roomNumber: this.value.room.number,
+        roomPaymentStatus: this.value.transaction.paymentStatus,
         dateRange: [
           this.value.transaction.checkInDate,
           this.value.transaction.checkOutDate,

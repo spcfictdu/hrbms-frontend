@@ -38,6 +38,11 @@
       <div class="my-3 font-weight-regular">
         Dates:
         <div
+          :class="{
+            'text-decoration-line-through': isRefundedOrVoided(
+              value.receiptEnums.roomPaymentStatus
+            ),
+          }"
           class="ml-5 d-flex justify-space-between align-center"
           v-for="(i, index) in value.receiptEnums.roomRatesArray"
           :key="'roomRates' + index"
@@ -45,9 +50,22 @@
           <div>{{ i.date }}</div>
           <div>₱ {{ i.rate }}</div>
         </div>
+
+        <div
+          v-if="isRefundedOrVoided(value.receiptEnums.roomPaymentStatus)"
+          class="text-right warning--text"
+        >
+          {{ value.receiptEnums.roomPaymentStatus }}
+        </div>
+
         <div v-if="value.receiptEnums.extraPersonTotal > 0">
           Addt'l Persons Charge:
           <div
+            :class="{
+              'text-decoration-line-through': isRefundedOrVoided(
+                value.receiptEnums.roomPaymentStatus
+              ),
+            }"
             class="ml-5 d-flex justify-space-between align-center"
             v-for="(i, index) in value.receiptEnums.roomRatesArray"
             :key="'roomRates' + index"
@@ -56,15 +74,33 @@
             <div>₱ {{ i.extraPersonRate }}</div>
           </div>
         </div>
+
+        <div
+          v-if="isRefundedOrVoided(value.receiptEnums.roomPaymentStatus)"
+          class="text-right warning--text"
+        >
+          {{ value.receiptEnums.roomPaymentStatus }}
+        </div>
+
         <div v-if="value.receiptEnums.addonsArray.length > 0">
           Addons Charge:
           <div
-            class="ml-5 d-flex justify-space-between align-center"
+            class="ml-5 mb-3"
             v-for="(i, index) in value.receiptEnums.addonsArray"
             :key="'addons' + index"
           >
-            <div>{{ i.name }} x {{ i.quantity }} @ ₱{{ i.unitPrice }}</div>
-            <div>₱ {{ i.total }}</div>
+            <div
+              :class="{
+                'text-decoration-line-through': isRefundedOrVoided(i),
+              }"
+              class="d-flex justify-space-between align-center"
+            >
+              <div>{{ i.name }} x {{ i.quantity }} @ ₱{{ i.unitPrice }}</div>
+              <div>₱ {{ i.total }}</div>
+            </div>
+            <div v-if="isRefundedOrVoided(i)" class="warning--text text-right">
+              {{ i.paymentStatus }}
+            </div>
           </div>
         </div>
       </div>
@@ -122,7 +158,9 @@
         </div>
       </div>
 
-      <div class="d-flex justify-space-between align-center">
+      <div
+        class="d-flex justify-space-between align-center primary--text font-weight-bold"
+      >
         <div>Total Received:</div>
         <div>₱ {{ value.clientInput.totalReceived }}</div>
       </div>
@@ -164,5 +202,11 @@ export default {
     loading: Boolean,
   },
   data: () => ({}),
+  methods: {
+    isRefundedOrVoided(item) {
+      const status = item?.paymentStatus ?? item;
+      return status === "VOIDED" || status === "REFUNDED";
+    },
+  },
 };
 </script>

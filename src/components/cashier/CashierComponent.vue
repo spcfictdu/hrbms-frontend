@@ -200,6 +200,7 @@ export default {
       await this.fetchTransaction(this.selectedTransaction);
 
       this.tempAddons = this.transaction.priceSummary.fullAddons.map((fa) => ({
+        ...fa,
         name: fa.name.trim(),
         quantity: String(fa.quantity),
       }));
