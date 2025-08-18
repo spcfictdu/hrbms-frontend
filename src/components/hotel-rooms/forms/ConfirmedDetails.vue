@@ -94,18 +94,32 @@ export default {
   computed: {
     ...mapState("transaction", ["loading"]),
     headerData: function () {
-      const { transaction, guestName } = this.value;
-      const { checkInDate, checkInTime, checkOutDate, checkOutTime, status } =
-        transaction;
+      const { transaction, guestName, priceSummary } = this.value;
+      const {
+        paymentStatus,
+        checkInDate,
+        checkInTime,
+        checkOutDate,
+        checkOutTime,
+        status,
+      } = transaction;
+      const { fullAddons } = priceSummary;
       const checkInDateTime = `${checkInDate}T${checkInTime}`;
       const checkOutDateTime = `${checkOutDate}T${checkOutTime}`;
       const now = new Date();
 
       // Determine disabled state: false if confirmed and check-in has started, or checked-in and check-out has passed
-      const disabled = !(
+      const isNotWithinDate = !(
         (status === "CONFIRMED" && new Date(checkInDateTime) <= now) ||
         (status === "CHECKED-IN" && new Date(checkOutDateTime) <= now)
       );
+      const hasOutstanding =
+        paymentStatus === "PENDING" ||
+        paymentStatus === "PARTIAL" ||
+        fullAddons.some(
+          (a) => a.paymentStatus === "PENDING" || a.paymentStatus === "PARTIAL"
+        );
+      const disabled = isNotWithinDate || hasOutstanding;
 
       return {
         client: guestName,
