@@ -152,17 +152,16 @@ export default {
       return { checkIn, checkOut };
     },
     receiptQuery: function () {
+      const { transaction, room, priceSummary } = this.value;
+
       const receiptQuery = {
-        roomType: this.value.room.name,
-        roomNumber: this.value.room.number,
-        roomPaymentStatus: this.value.transaction.paymentStatus,
-        dateRange: [
-          this.value.transaction.checkInDate,
-          this.value.transaction.checkOutDate,
-        ],
-        extraPersonCount: this.value.transaction.extraPerson,
-        addons: this.value.priceSummary.fullAddons,
-        discount: this.value.priceSummary.discountName,
+        roomType: room.name,
+        roomNumber: room.number,
+        roomPaymentStatus: transaction.paymentStatus,
+        dateRange: [transaction.checkInDate, transaction.checkOutDate],
+        extraPersonCount: transaction.extraPerson,
+        addons: priceSummary.fullAddons,
+        discount: priceSummary.discountName,
       };
 
       if (!this.value.priceSummary.discountName) {

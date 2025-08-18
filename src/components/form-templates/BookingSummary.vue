@@ -68,20 +68,34 @@ export default {
 
       const roundToTwoDecimal = (val) => Math.round(val * 100) / 100;
 
-      const roomTotal = room.roomRatesArray.reduce(
-        (total, room) => total + room.rate,
-        0
-      );
+      const isRoomRefundedOrVoided = () =>
+        this.queryParams.roomPaymentStatus === "REFUNDED" ||
+        this.queryParams.roomPaymentStatus === "VOIDED";
 
-      const extraPersonTotal = room.roomRatesArray.reduce(
-        (total, room) => total + room.extraPersonRate,
-        0
-      );
+      const roomTotal = isRoomRefundedOrVoided()
+        ? 0
+        : room.roomRatesArray.reduce((total, room) => total + room.rate, 0);
+
+      const extraPersonTotal = isRoomRefundedOrVoided()
+        ? 0
+        : room.roomRatesArray.reduce(
+            (total, room) => total + room.extraPersonRate,
+            0
+          );
 
       const totalWithoutAddons = roomTotal + extraPersonTotal;
 
+      const addonsTotal = roundToTwoDecimal(
+        this.queryParams.addons
+          .filter(
+            (a) =>
+              a.paymentStatus !== "VOIDED" && a.paymentStatus !== "REFUNDED"
+          )
+          .reduce((total, prev) => total + prev.total, 0)
+      );
+
       // Total Bill
-      const total = room.roomTotalWithExtraPerson;
+      const total = totalWithoutAddons + addonsTotal;
 
       // Total Received
       const totalReceived = this.clientMeta.amountReceived;
@@ -116,12 +130,12 @@ export default {
           roomPaymentStatus: this.queryParams.roomPaymentStatus,
           roomTotal,
           extraPersonTotal,
-          total: roomTotal + extraPersonTotal + room.addonsTotal,
+          total,
           roomRatesArray: room.roomRatesArray,
           addonsArray,
           discount: room.discount,
           discountedValue,
-          addonsTotal: room.addonsTotal,
+          addonsTotal,
         },
         clientInput: {
           totalReceived: totalReceived,
