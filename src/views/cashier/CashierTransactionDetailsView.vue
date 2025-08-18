@@ -27,7 +27,7 @@
 import PageHeader from "@/components/headers/PageHeader.vue";
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierTransactionDetailsTable from "@/components/cashier/CashierTransactionDetailsTable.vue";
-import { mapActions, mapState } from "vuex";
+import { mapMutations, mapActions, mapState } from "vuex";
 import { format, parseISO } from "date-fns";
 
 export default {
@@ -42,6 +42,7 @@ export default {
     ...mapActions("cashier", ["fetchHistory"]),
     ...mapActions("transaction", ["fetchTransaction", "updateTransaction"]),
     ...mapActions("alerts", ["requireAlertFn"]),
+    ...mapMutations("transaction", ["SET_TRANSACTION"]),
 
     async fetch() {
       await this.fetchTransaction(this.transactionReferenceNumber);
@@ -88,6 +89,9 @@ export default {
   },
   created() {
     this.fetch();
+  },
+  beforeDestroy() {
+    this.SET_TRANSACTION(null);
   },
 };
 </script>
