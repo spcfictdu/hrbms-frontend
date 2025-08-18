@@ -76,7 +76,10 @@
         </div>
 
         <div
-          v-if="isRefundedOrVoided(value.receiptEnums.roomPaymentStatus)"
+          v-if="
+            isRefundedOrVoided(value.receiptEnums.roomPaymentStatus) &&
+            value.receiptEnums.extraPersonTotal > 0
+          "
           class="text-right warning--text"
         >
           {{ value.receiptEnums.roomPaymentStatus }}
