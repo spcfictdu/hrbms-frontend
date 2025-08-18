@@ -238,7 +238,7 @@ export default {
           ? priceSummary.fullAddons.map((addon) => ({
               status: addon.paymentStatus,
               product: addon.name,
-              price: addon.unit_price,
+              price: addon.unitPrice,
               quantity: addon.quantity,
               totalPrice: addon.total,
               discount: "0.00",
