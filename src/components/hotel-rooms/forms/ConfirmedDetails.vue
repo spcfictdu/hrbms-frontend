@@ -119,7 +119,8 @@ export default {
         fullAddons.some(
           (a) => a.paymentStatus === "PENDING" || a.paymentStatus === "PARTIAL"
         );
-      const disabled = isNotWithinDate || hasOutstanding;
+      const disabled =
+        isNotWithinDate || (hasOutstanding && status === "CHECKED-IN");
 
       return {
         client: guestName,
