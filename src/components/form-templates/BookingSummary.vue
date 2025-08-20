@@ -85,13 +85,14 @@ export default {
 
       const totalWithoutAddons = roomTotal + extraPersonTotal;
 
+      const existingAddons = this.queryParams.addons.filter((a) => a.addonId);
+      const addonsArray = [
+        ...existingAddons,
+        ...room.addons.splice(existingAddons.length),
+      ];
+
       const addonsTotal = roundToTwoDecimal(
-        this.queryParams.addons
-          .filter(
-            (a) =>
-              a.paymentStatus !== "VOIDED" && a.paymentStatus !== "REFUNDED"
-          )
-          .reduce((total, prev) => total + prev.total, 0)
+        addonsArray.reduce((total, prev) => total + prev.total, 0)
       );
 
       // Total Bill
@@ -113,12 +114,6 @@ export default {
       const totalChange = roundToTwoDecimal(
         totalReceived > total ? totalReceived - total : 0
       );
-
-      const existingAddons = this.queryParams.addons.filter((a) => a.addonId);
-      const addonsArray = [
-        ...existingAddons,
-        ...room.addons.splice(existingAddons.length),
-      ];
 
       const summary = {
         receiptHeader: data,
