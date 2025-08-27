@@ -66,7 +66,7 @@ export default {
         transaction: { referenceNumber },
       } = this.value;
       const now = new Date().toISOString();
-      let payload = { referenceNumber };
+      let payload = { referenceNumber, checkInOut: true };
 
       if (!history.checkInDate && !history.checkInTime) {
         payload = {
