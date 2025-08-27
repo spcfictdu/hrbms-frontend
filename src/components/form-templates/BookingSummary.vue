@@ -85,7 +85,9 @@ export default {
 
       const totalWithoutAddons = roomTotal + extraPersonTotal;
 
-      const existingAddons = this.queryParams.addons.filter((a) => a.addonId);
+      const existingAddons = this.queryParams
+        ? this.queryParams.addons.filter((a) => a.addonId)
+        : [];
       const addonsArray = [
         ...existingAddons,
         ...room.addons.splice(existingAddons.length),
