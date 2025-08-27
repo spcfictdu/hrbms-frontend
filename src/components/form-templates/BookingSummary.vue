@@ -91,8 +91,12 @@ export default {
         ...room.addons.splice(existingAddons.length),
       ];
 
+      const validAddons = addonsArray.filter(
+        (a) => a.paymentStatus !== "REFUNDED" && a.paymentStatus !== "VOIDED"
+      );
+
       const addonsTotal = roundToTwoDecimal(
-        addonsArray.reduce((total, prev) => total + prev.total, 0)
+        validAddons.reduce((total, prev) => total + prev.total, 0)
       );
 
       // Total Bill
@@ -107,7 +111,7 @@ export default {
 
       // Total Outstanding Bill
       const totalOutstanding = roundToTwoDecimal(
-        total - totalReceived < 0 ? 0 : total - totalReceived
+        total - totalReceived < 0 ? 0 : total - totalReceived - discountedValue
       );
 
       // Total Change
