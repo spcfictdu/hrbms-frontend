@@ -100,8 +100,8 @@ export default {
             beginningBalance: item.beginningBalance ?? "0.00",
             openingBalance: item.openingBalance ?? "0.00",
             closingBalance: item.closingBalance ?? "0.00",
-            refund: item.refunded.toFixed(2),
-            voided: item.voided.toFixed(2),
+            refund: item.refunded,
+            voided: item.voided,
             time: format(parseISO(item.openedAt), "H:mm:ss"),
             date: format(parseISO(item.openedAt), "MMMM dd, yyyy"),
           })) || []
