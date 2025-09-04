@@ -112,8 +112,9 @@ export default {
       );
 
       // Total Outstanding Bill
+      const calculatedOutstanding = total - totalReceived - discountedValue;
       const totalOutstanding = roundToTwoDecimal(
-        total - totalReceived < 0 ? 0 : total - totalReceived - discountedValue
+        calculatedOutstanding < 0 ? 0 : calculatedOutstanding
       );
 
       // Total Change
@@ -141,7 +142,10 @@ export default {
         clientInput: {
           totalReceived: totalReceived,
           totalOutstanding: totalOutstanding,
-          totalChange: totalChange,
+          totalChange:
+            calculatedOutstanding < 0
+              ? Math.abs(calculatedOutstanding)
+              : totalChange,
         },
         button: this.btnStyling,
       };
