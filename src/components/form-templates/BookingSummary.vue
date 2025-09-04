@@ -35,6 +35,7 @@ export default {
     ...mapMutations("roomEnum", ["SET_ROOM"]),
   },
   computed: {
+    ...mapState("addonsEnum", ["addons"]),
     ...mapState("roomEnum", ["room"]),
     ...mapState("vouchers", ["activeVoucher"]),
     bookingSummary: function () {
@@ -88,10 +89,22 @@ export default {
       const existingAddons = this.queryParams
         ? this.queryParams.addons.filter((a) => a.addonId)
         : [];
-      const addonsArray = [
-        ...existingAddons,
-        ...room.addons.splice(existingAddons.length),
-      ];
+      const newAddons = this.queryParams
+        ? this.queryParams.addons.filter((a) => !a.addonId)
+        : [];
+      const pricedNewAddons = newAddons.reduce((addons, prev) => {
+        const addonDetails = this.addons.find((a) => a.name === prev.name);
+
+        if (!addonDetails) return addons;
+
+        const unitPrice = addonDetails.price;
+        const total = roundToTwoDecimal(
+          Number(unitPrice) * Number(prev.quantity)
+        );
+        const addon = { ...prev, unitPrice, total };
+        return [...addons, addon];
+      }, []);
+      const addonsArray = [...existingAddons, ...pricedNewAddons];
 
       const validAddons = addonsArray.filter(
         (a) => a.paymentStatus !== "REFUNDED" && a.paymentStatus !== "VOIDED"
