@@ -113,14 +113,14 @@ export default {
         (status === "CONFIRMED" && new Date(checkInDateTime) <= now) ||
         (status === "CHECKED-IN" && new Date(checkOutDateTime) <= now)
       );
-      const hasOutstanding =
-        paymentStatus === "PENDING" ||
-        paymentStatus === "PARTIAL" ||
-        fullAddons.some(
-          (a) => a.paymentStatus === "PENDING" || a.paymentStatus === "PARTIAL"
-        );
-      const disabled =
-        isNotWithinDate || (hasOutstanding && status === "CHECKED-IN");
+      // const hasOutstanding =
+      //   paymentStatus === "PENDING" ||
+      //   paymentStatus === "PARTIAL" ||
+      //   fullAddons.some(
+      //     (a) => a.paymentStatus === "PENDING" || a.paymentStatus === "PARTIAL"
+      //   );
+      // const disabled =
+      //   isNotWithinDate || (hasOutstanding && status === "CHECKED-IN");
 
       return {
         client: guestName,
@@ -130,7 +130,7 @@ export default {
         button: {
           title: this.headerBtnText,
           style: { color: "primary", outlined: false },
-          disabled,
+          disabled: isNotWithinDate,
         },
       };
     },
