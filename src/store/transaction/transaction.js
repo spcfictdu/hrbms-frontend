@@ -99,8 +99,10 @@ export const transaction = {
           throw error;
         });
     },
-    updateTransaction: function (_, payload) {
+    updateTransaction: function ({ commit }, payload) {
       const url = `transaction/update`;
+
+      commit("SET_LOADING", { key: "dialog", value: true });
 
       return this.$axios
         .put(url, payload)
@@ -115,7 +117,8 @@ export const transaction = {
             error.response.data.message
           );
           throw error;
-        });
+        })
+        .finally(() => commit("SET_LOADING", { key: "dialog", value: false }));
     },
     fetchPreviousFormTransactions: function ({ commit }, referenceNumber) {
       const url = `transaction/form/${referenceNumber}`;

@@ -15,6 +15,7 @@ export const cashier = {
     dialog: {
       confirmation: false,
       cashier: false,
+      adminPasscode: false,
     },
     loading: {
       dialog: false,

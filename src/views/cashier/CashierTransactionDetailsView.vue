@@ -17,9 +17,24 @@
       <CashierTransactionDetailsTable
         :transactionDetails="transaction"
         :headerDetails="headerDetails"
-        @transactionUpdate="handleTransactionUpdate"
+        @menuSelect="handleMenuSelect"
       />
     </RouteLoader>
+
+    <AdminPasscodeDialog
+      :opened="dialog.adminPasscode"
+      :onClose="() => handleClose('adminPasscode')"
+      :meta="{}"
+      @valid="handleValid"
+    />
+
+    <ConfirmationDialog
+      :opened="dialog.confirmation"
+      :onClose="() => handleClose('confirmation')"
+      :meta="confirmationDialogMeta"
+      :loading="loading.dialog"
+      @onProceed="handleProceed"
+    />
   </div>
 </template>
 
@@ -27,12 +42,24 @@
 import PageHeader from "@/components/headers/PageHeader.vue";
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierTransactionDetailsTable from "@/components/cashier/CashierTransactionDetailsTable.vue";
+import AdminPasscodeDialog from "@/components/dialogs/AdminPasscodeDialog.vue";
+import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import { mapMutations, mapActions, mapState } from "vuex";
 import { format, parseISO } from "date-fns";
 
 export default {
-  components: { RouteLoader, PageHeader, CashierTransactionDetailsTable },
+  components: {
+    RouteLoader,
+    PageHeader,
+    CashierTransactionDetailsTable,
+    AdminPasscodeDialog,
+    ConfirmationDialog,
+  },
   name: "CashierTransactionDetailsView",
+  data: () => ({
+    itemPayload: null,
+    confirmationDialogMeta: {},
+  }),
   props: {
     id: String,
     drawerNumber: String,
@@ -43,6 +70,30 @@ export default {
     ...mapActions("transaction", ["fetchTransaction", "updateTransaction"]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapMutations("transaction", ["SET_TRANSACTION"]),
+    ...mapMutations("cashier", ["SET_DIALOG"]),
+
+    handleMenuSelect(payload) {
+      this.initializeUpdateData(payload);
+    },
+
+    initializeUpdateData({ payload, confirmationDialogMeta }) {
+      this.itemPayload = payload;
+      this.confirmationDialogMeta = confirmationDialogMeta;
+    },
+
+    handleClose(dialog) {
+      this.SET_DIALOG({ key: dialog, value: false });
+    },
+
+    handleValid() {
+      this.SET_DIALOG({ key: "confirmation", value: true });
+    },
+
+    async handleProceed() {
+      await this.handleTransactionUpdate(this.itemPayload);
+      this.itemPayload = null;
+      this.handleClose("confirmation");
+    },
 
     async fetch() {
       await this.fetchTransaction(this.transactionReferenceNumber);
@@ -65,7 +116,9 @@ export default {
     },
   },
   computed: {
-    ...mapState("transaction", ["transaction"]),
+    ...mapState("transaction", ["transaction", "loading"]),
+    ...mapState("cashier", ["dialog"]),
+
     hasData() {
       return !!this.transaction ?? false;
     },

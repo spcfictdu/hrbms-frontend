@@ -97,6 +97,7 @@
 import DefaultTable from "../tables/DefaultTable.vue";
 import CashierTransactionDetailsTableHeader from "./CashierTransactionDetailsTableHeader.vue";
 import { format, parseISO } from "date-fns";
+import { mapMutations } from "vuex";
 
 export default {
   name: "CashierTransactionDetalisTable",
@@ -154,6 +155,8 @@ export default {
   }),
   created() {},
   methods: {
+    ...mapMutations("cashier", ["SET_DIALOG"]),
+
     isRefundedOrVoided(status) {
       return status === "REFUNDED" || status === "VOIDED";
     },
@@ -186,6 +189,16 @@ export default {
     },
 
     menuItems({ status, type }) {
+      const isFrontDeskUser = this.$auth.user()?.role === "FRONT DESK";
+
+      const showDialog = (type) => {
+        if (isFrontDeskUser) {
+          this.SET_DIALOG({ key: "adminPasscode", value: true });
+        } else {
+          this.SET_DIALOG({ key: "confirmation", value: true });
+        }
+      };
+
       if (
         status === "PARTIAL" ||
         status === "PAID" ||
@@ -195,10 +208,15 @@ export default {
           {
             text: "Refund Payment",
             action: (item) => {
-              this.$emit(
-                "transactionUpdate",
-                this.getMenuItemPayload(item, "REFUNDED")
-              );
+              showDialog();
+
+              this.$emit("menuSelect", {
+                payload: this.getMenuItemPayload(item, "REFUNDED"),
+                confirmationDialogMeta: {
+                  action: "Refund",
+                  actionType: "Payment?",
+                },
+              });
             },
           },
         ];
@@ -207,10 +225,15 @@ export default {
           {
             text: "Void Transaction",
             action: (item) => {
-              this.$emit(
-                "transactionUpdate",
-                this.getMenuItemPayload(item, "VOIDED")
-              );
+              showDialog();
+
+              this.$emit("menuSelect", {
+                payload: this.getMenuItemPayload(item, "VOIDED"),
+                confirmationDialogMeta: {
+                  action: "Void",
+                  actionType: "Transaction?",
+                },
+              });
             },
           },
         ];
