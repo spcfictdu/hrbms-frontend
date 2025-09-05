@@ -23,6 +23,7 @@
             >
               <router-view />
               <CashierDialog
+                v-if="$auth.user()?.role === 'FRONT DESK'"
                 :persistent="true"
                 :onClose="() => SET_DIALOG({ key: 'cashier', value: false })"
                 :opened="dialog.cashier && $auth.user()?.role === 'FRONT DESK'"
