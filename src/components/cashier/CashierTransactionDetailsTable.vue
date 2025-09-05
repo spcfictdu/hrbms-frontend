@@ -77,7 +77,7 @@
             <v-list dense class="py-0">
               <v-list-item
                 class="menu-border"
-                v-for="(menuItem, i) in menuItems(item.status)"
+                v-for="(menuItem, i) in menuItems(item)"
                 :key="i"
                 @click="() => menuItem.action(item)"
               >
@@ -185,8 +185,12 @@ export default {
       return payload;
     },
 
-    menuItems(status) {
-      if (status === "PARTIAL" || status === "PAID") {
+    menuItems({ status, type }) {
+      if (
+        status === "PARTIAL" ||
+        status === "PAID" ||
+        (type === "room" && Number(this.headerDetails.totalPayment) > 0)
+      ) {
         return [
           {
             text: "Refund Payment",
