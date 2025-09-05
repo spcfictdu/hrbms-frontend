@@ -136,7 +136,15 @@ export default {
 
     handleTransactionUpdate() {
       const { referenceNumber, status } = this.transaction.transaction;
-      const { payment, addons, discount, idNumber, voucherCode } = this.payload;
+      const {
+        payment,
+        addons: payloadAddons,
+        discount,
+        idNumber,
+        voucherCode,
+      } = this.payload;
+
+      const addons = payloadAddons.slice(this.tempAddons.length);
 
       let reservationPayload = {
         referenceNumber,
