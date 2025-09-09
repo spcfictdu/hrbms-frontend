@@ -85,24 +85,43 @@
           {{ value.receiptEnums.roomPaymentStatus }}
         </div>
 
-        <div v-if="value.receiptEnums.addonsArray.length > 0">
+        <div v-if="value.receiptEnums.addons.length > 0">
           Addons Charge:
           <div
             class="ml-5 mb-3"
-            v-for="(i, index) in value.receiptEnums.addonsArray"
+            v-for="(batch, index) in value.receiptEnums.addons"
             :key="'addons' + index"
           >
-            <div
-              :class="{
-                'text-decoration-line-through': isRefundedOrVoided(i),
-              }"
-              class="d-flex justify-space-between align-center"
-            >
-              <div>{{ i.name }} x {{ i.quantity }} @ ₱{{ i.unitPrice }}</div>
-              <div>₱ {{ i.total }}</div>
+            <v-divider class="mb-3" v-if="index > 0" />
+
+            <div class="grey--text text--darken-1 ml-n3">
+              {{ formatDate(batch[0].createdAt) }}
             </div>
-            <div v-if="isRefundedOrVoided(i)" class="warning--text text-right">
-              {{ i.paymentStatus }}
+
+            <div v-for="addon in batch">
+              <div
+                :class="{
+                  'text-decoration-line-through': isRefundedOrVoided(addon),
+                }"
+                class="d-flex justify-space-between align-center"
+              >
+                <div>
+                  {{ addon.name }} x {{ addon.quantity }} @ ₱{{
+                    addon.unitPrice
+                  }}
+                </div>
+                <div
+                  :class="{ 'red--text': addon.paymentStatus === 'PENDING' }"
+                >
+                  ₱ {{ addon.total }}
+                </div>
+              </div>
+              <div
+                v-if="isRefundedOrVoided(addon)"
+                class="warning--text text-right text-overline mt-n3"
+              >
+                {{ addon.paymentStatus }}
+              </div>
             </div>
           </div>
         </div>
@@ -125,12 +144,12 @@
 
     <v-divider />
 
-    <div v-if="value.receiptEnums.addonsArray.length">
+    <div v-if="value.receiptEnums.addons.length">
       <div
         class="d-flex justify-space-between align-center my-3 font-weight-regular"
       >
         <div>Add-ons Total:</div>
-        <div>
+        <div :class="{ 'red--text': value.receiptEnums.hasPendingAddon }">
           ₱
           {{ value.receiptEnums.addonsTotal }}
         </div>
@@ -198,6 +217,8 @@
 </template>
 
 <script>
+import { parseISO, format } from "date-fns";
+
 export default {
   name: "TotalBillCard",
   props: {
@@ -209,6 +230,12 @@ export default {
     isRefundedOrVoided(item) {
       const status = item?.paymentStatus ?? item;
       return status === "VOIDED" || status === "REFUNDED";
+    },
+
+    formatDate(isoString) {
+      const dateObject = parseISO(isoString);
+      const formattedDate = format(dateObject, "MMM dd, yyyy | h:mm a");
+      return formattedDate;
     },
   },
 };

@@ -92,7 +92,7 @@ export default {
       const newAddons = this.queryParams
         ? this.queryParams.addons.filter((a) => !a.addonId)
         : [];
-      const pricedNewAddons = newAddons.reduce((addons, prev) => {
+      const mockedNewAddons = newAddons.reduce((addons, prev) => {
         const addonDetails = this.addons.find((a) => a.name === prev.name);
 
         if (!addonDetails) return addons;
@@ -101,10 +101,18 @@ export default {
         const total = roundToTwoDecimal(
           Number(unitPrice) * Number(prev.quantity)
         );
-        const addon = { ...prev, unitPrice, total };
+        const addon = {
+          ...prev,
+          unitPrice,
+          total,
+          createdAt: new Date().toISOString(),
+        };
         return [...addons, addon];
       }, []);
-      const addonsArray = [...existingAddons, ...pricedNewAddons];
+      const addonsArray = [...existingAddons, ...mockedNewAddons];
+      const hasPendingAddon = addonsArray.some(
+        (addon) => addon.paymentStatus === "PENDING"
+      );
 
       const validAddons = addonsArray.filter(
         (a) => a.paymentStatus !== "REFUNDED" && a.paymentStatus !== "VOIDED"
@@ -113,6 +121,16 @@ export default {
       const addonsTotal = roundToTwoDecimal(
         validAddons.reduce((total, prev) => total + prev.total, 0)
       );
+
+      console.log(addonsArray);
+      const batchedAddons = addonsArray.reduce((acc, addon) => {
+        const { purchaseBatch } = addon;
+        if (!acc[purchaseBatch]) acc[purchaseBatch] = [];
+        acc[purchaseBatch].push(addon);
+        return acc;
+      }, {});
+
+      const batchedAddonsArray = Object.values(batchedAddons);
 
       // Total Bill
       const total = totalWithoutAddons + addonsTotal;
@@ -149,7 +167,9 @@ export default {
           extraPersonTotal,
           total,
           roomRatesArray: room.roomRatesArray,
-          addonsArray,
+          addons: batchedAddonsArray,
+          hasPendingAddon,
+          // addonsArray,
           discount: room.discount,
           discountedValue,
           addonsTotal,
