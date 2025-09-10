@@ -1,11 +1,18 @@
 <template>
-  <v-container class="pa-0">
-    <div
-      class="w-full d-flex flex-column flex-sm-row align-center justify-space-between"
-    >
-      <div>
+  <v-container class="pa-0 d-flex flex-column">
+    <div class="w-full d-flex flex-sm-row align-center">
+      <v-btn
+        v-if="backButton"
+        class="mr-3 mr-sm-10"
+        icon
+        @click="$router.go(-1)"
+      >
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
+
+      <div class="flex-grow-1 flex-shrink-0">
         <p
-          class="text-md-h5 text-h6 font-weight-bold mb-2 mb-sm-1"
+          class="text-md-h5 text-h6 font-weight-bold mb-1"
           :class="{ 'text-uppercase': isUpperCase }"
         >
           {{ headerText ?? $route.meta.name }}
@@ -27,6 +34,7 @@ export default {
     headerText: String,
     isUpperCase: Boolean,
     dividerMarginTop: Number,
+    backButton: Boolean,
   },
   data: () => ({}),
 };

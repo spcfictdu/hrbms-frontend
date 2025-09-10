@@ -5,7 +5,7 @@
       'px-sm-2 py-md-8': $vuetify.breakpoint.lgAndDown,
     }"
   >
-    <PageHeader headerText="Transactions" :dividerMarginTop="36">
+    <PageHeader backButton headerText="Transactions" :dividerMarginTop="36">
       <template #subtitle>
         <v-btn
           small

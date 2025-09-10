@@ -16,7 +16,7 @@
       </v-btn>
     </div>
 
-    <div class="d-sm-none">
+    <div class="d-flex flex-wrap d-sm-none justify-end">
       <v-btn
         v-for="action in terminalActions"
         :key="action.name"
@@ -25,7 +25,7 @@
         x-small
         :plain="action.plain"
         :color="selectedButtonColor(action)"
-        class="font-weight-bold px-6 ml-3"
+        class="font-weight-bold px-6"
         @click="action.action"
       >
         {{ action.name }}

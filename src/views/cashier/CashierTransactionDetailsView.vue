@@ -5,11 +5,11 @@
       'px-sm-2 py-md-8': $vuetify.breakpoint.lgAndDown,
     }"
   >
-    <PageHeader headerText="Transactions">
+    <PageHeader backButton headerText="Transactions" :dividerMarginTop="18">
       <template #subtitle>
-        <p class="grey--text text--darken-2">
+        <div class="grey--text text--darken-2 mb-1">
           Cashier Drawer {{ drawerNumber }} | First Floor Lobby
-        </p>
+        </div>
       </template>
     </PageHeader>
 
