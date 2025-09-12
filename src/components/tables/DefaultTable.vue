@@ -13,6 +13,8 @@
     @update:options="$emit('update:options', $event)"
     @click:row="$emit('click:row', $event)"
     elevation="0"
+    :height="height"
+    :fixedHeader="fixedHeader"
   >
     <template v-for="(_, slot) in $scopedSlots" v-slot:[slot]="scope">
       <slot :name="slot" v-bind="scope" />
@@ -29,6 +31,7 @@ export default {
     itemKey: String,
     loading: Boolean,
     footerProps: Object,
+    height: String,
     dense: {
       type: Boolean,
       default: false,
@@ -42,6 +45,10 @@ export default {
       default: 10,
     },
     disableSort: {
+      type: Boolean,
+      default: false,
+    },
+    fixedHeader: {
       type: Boolean,
       default: false,
     },

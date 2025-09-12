@@ -6,6 +6,8 @@
       <DefaultTable
         :headers="headers"
         :items="mappedPayments"
+        :height="mappedPayments.length > 4 ? '264px' : undefined"
+        fixedHeader
         hideDefaultFooter
       >
         <template v-slot:[`item.paymentMethod`]="{ item }">
@@ -102,3 +104,9 @@ export default {
   },
 };
 </script>
+
+<styles scoped>
+  .v-data-table__wrapper {
+    max-height: 264px;
+  }
+</styles>
