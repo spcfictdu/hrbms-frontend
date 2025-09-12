@@ -11,7 +11,7 @@ export default [
     meta: {
       name: "Cashier Terminal",
       selectedMainNav: "Cashier Terminal",
-      onlyAdmin: true,
+      // onlyAdmin: true,
     },
   },
   {
@@ -36,7 +36,7 @@ export default [
     meta: {
       name: "Cashier Transaction List",
       selectedMainNav: "Cashier Terminal",
-      onlyAdmin: true,
+      // onlyAdmin: true,
     },
   },
   {
@@ -48,7 +48,7 @@ export default [
     meta: {
       name: "Cashier Transaction Details",
       selectedMainNav: "Cashier Terminal",
-      onlyAdmin: true,
+      // onlyAdmin: true,
     },
   },
 ];

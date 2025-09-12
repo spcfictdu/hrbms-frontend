@@ -176,9 +176,10 @@ export default {
         },
         {
           name: "Cashier",
-          route: this.isAdmin
-            ? "Cashier Terminal"
-            : { name: "Cashier", params: { id: null } },
+          route: "Cashier Terminal",
+          // route: this.isAdmin
+          //   ? "Cashier Terminal"
+          //   : { name: "Cashier", params: { id: null } },
           icon: "mdi-cash-register",
           childRouteNames: [],
         },
