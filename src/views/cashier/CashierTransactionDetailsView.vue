@@ -14,11 +14,21 @@
     </PageHeader>
 
     <RouteLoader :target="hasData" class="mt-10">
-      <CashierTransactionDetailsTable
-        :transactionDetails="transaction"
-        :headerDetails="headerDetails"
-        @menuSelect="handleMenuSelect"
-      />
+      <v-row>
+        <v-col cols="12" md="8" lg="auto">
+          <CashierTransactionDetailsTable
+            :transactionDetails="transaction"
+            @menuSelect="handleMenuSelect"
+          />
+        </v-col>
+
+        <v-col cols="12" md="4" lg="auto">
+          <CashierTransactionPaymentsTable
+            :transactionDetails="transaction"
+            :payments="transaction?.paymentSummary"
+          />
+        </v-col>
+      </v-row>
     </RouteLoader>
 
     <AdminPasscodeDialog
@@ -42,16 +52,17 @@
 import PageHeader from "@/components/headers/PageHeader.vue";
 import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierTransactionDetailsTable from "@/components/cashier/CashierTransactionDetailsTable.vue";
+import CashierTransactionPaymentsTable from "@/components/cashier/CashierTransactionPaymentsTable.vue";
 import AdminPasscodeDialog from "@/components/dialogs/AdminPasscodeDialog.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import { mapMutations, mapActions, mapState } from "vuex";
-import { format, parseISO } from "date-fns";
 
 export default {
   components: {
     RouteLoader,
     PageHeader,
     CashierTransactionDetailsTable,
+    CashierTransactionPaymentsTable,
     AdminPasscodeDialog,
     ConfirmationDialog,
   },
@@ -121,23 +132,6 @@ export default {
 
     hasData() {
       return !!this.transaction ?? false;
-    },
-    headerDetails() {
-      const totalPayment = this.transaction?.paymentSummary
-        .reduce((total, prev) => total + Number(prev.amountReceived), 0)
-        .toFixed(2);
-
-      return {
-        guestName: this.transaction?.guestName,
-        referenceNumber: this.transactionReferenceNumber,
-        totalPayment,
-        date:
-          this.transaction &&
-          format(
-            parseISO(this.transaction.transaction.createdAt),
-            "MMMM dd, yyyy"
-          ),
-      };
     },
   },
   created() {

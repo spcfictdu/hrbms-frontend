@@ -2,14 +2,12 @@
   <v-card flat>
     <CashierTransactionDetailsTableHeader :headerDetails="headerDetails" />
 
-    <div class="pa-5">
+    <div class="px-5 pb-5">
       <DefaultTable
         :headers="headers"
         :items="mappedTransactionDetails"
-        itemKey="paymentId"
         :footerProps="footerProps"
-        disableSort
-        :hideDefaultFooter="true"
+        hideDefaultFooter
       >
         <template v-slot:[`item.status`]="{ item }">
           <span
@@ -102,7 +100,7 @@ import { mapMutations } from "vuex";
 export default {
   name: "CashierTransactionDetalisTable",
   components: { DefaultTable, CashierTransactionDetailsTableHeader },
-  props: { transactionDetails: Object, headerDetails: Object },
+  props: { transactionDetails: Object },
   data: () => ({
     headers: [
       {
@@ -130,16 +128,13 @@ export default {
         value: "discount",
       },
       {
-        text: "Payment Method",
-        value: "paymentMethod",
-      },
-      {
         text: "Time",
         value: "time",
       },
       {
         text: "",
         value: "menu",
+        sortable: false,
       },
     ],
     mopColors: {
@@ -163,7 +158,7 @@ export default {
 
     getStatusColor(status) {
       const statusColors = {
-        PAID: "light-green--text text--accent-4",
+        PAID: "cash--text",
         // PARTIAL: "light-green--text accent-2",
         PENDING: "primary--text",
         REFUNDED: "red--text text--accent-4",
@@ -242,8 +237,29 @@ export default {
   },
 
   computed: {
+    headerDetails() {
+      const totalPurchase = (
+        this.transactionDetails?.priceSummary.finalRoomTotal +
+        this.transactionDetails?.priceSummary.fullAddons.reduce(
+          (total, addon) => total + addon.total,
+          0
+        )
+      ).toFixed(2);
+
+      return {
+        guestName: this.transactionDetails?.guestName,
+        referenceNumber: this.transactionDetails?.transaction.referenceNumber,
+        totalPurchase,
+        date:
+          this.transactionDetails &&
+          format(
+            parseISO(this.transactionDetails.transaction.createdAt),
+            "MMMM dd, yyyy"
+          ),
+      };
+    },
+
     mappedTransactionDetails() {
-      console.log(this.transactionDetails);
       if (!this.transactionDetails) return;
 
       const { transaction, room, priceSummary } = this.transactionDetails;
@@ -257,7 +273,6 @@ export default {
           discount: (
             Number(priceSummary.roomTotal) - priceSummary.finalRoomTotal
           ).toFixed(2),
-          paymentMethod: "",
           time: format(parseISO(transaction.createdAt), "H:mm:ss"),
           type: "room",
         },
@@ -269,7 +284,6 @@ export default {
               quantity: addon.quantity,
               totalPrice: addon.total,
               discount: "0.00",
-              paymentMethod: "",
               time: format(parseISO(addon.createdAt), "H:mm:ss"),
               addonId: addon.addonId,
               type: "addon",

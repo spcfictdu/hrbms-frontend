@@ -1,10 +1,15 @@
 <template>
   <div>
-    <div class="d-flex flex-wrap px-2">
-      <div v-for="(value, name) in mappedDetails" :key="name">
+    <div class="d-flex px-2">
+      <div v-for="header in headerDetails" :key="header.name">
         <v-card-text>
-          <div class="grey--text font-weight-bold">{{ name }}</div>
-          <div class="text-subtitle-1 font-weight-bold">{{ value }}</div>
+          <div class="grey--text font-weight-bold">{{ header.headerText }}</div>
+          <div
+            class="text-subtitle-1 font-weight-bold"
+            :class="header.value.styles"
+          >
+            {{ header.value.text }}
+          </div>
         </v-card-text>
       </div>
     </div>
@@ -20,9 +25,9 @@
 
 <script>
 export default {
-  name: "CashierTransactionDetailsTableHeader",
+  name: "CashierTransactionPaymentsTableHeader",
   props: {
-    headerDetails: Object,
+    headerDetails: Array,
   },
   data: () => ({
     loaderVal: false,
@@ -30,16 +35,22 @@ export default {
   }),
   computed: {
     mappedDetails() {
-      return {
-        "Guest Name": this.headerDetails?.guestName,
-        "Reference Number": this.headerDetails?.referenceNumber,
-        "Total Purchase": this.headerDetails?.totalPurchase,
-        Date: this.headerDetails?.date,
-      };
+      return [
+        {
+          name: "Total Payment",
+          value: "Test",
+          styles: "light-green--text text--accent-4",
+        },
+        {
+          name: "Total Balance",
+          value: "299",
+          styles: "red--text text--accent-4",
+        },
+      ];
     },
   },
   watch: {
-    "headerDetails.referenceNumber": {
+    "headerDetails.length": {
       immediate: true,
       handler: function (v) {
         if (v) {
