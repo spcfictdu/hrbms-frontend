@@ -144,7 +144,7 @@ export default {
         voucherCode,
       } = this.payload;
 
-      const addons = payloadAddons.slice(this.tempAddons.length);
+      const addons = payloadAddons?.slice(this.tempAddons.length);
 
       let reservationPayload = {
         referenceNumber,
