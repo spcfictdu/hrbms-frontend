@@ -98,7 +98,10 @@
               {{ formatDate(batch[0].createdAt) }}
             </div>
 
-            <div v-for="addon in batch">
+            <div
+              v-for="addon in batch"
+              :key="`${index} ${addon?.addonId ?? addon.name}`"
+            >
               <div
                 :class="{
                   'text-decoration-line-through': isRefundedOrVoided(addon),

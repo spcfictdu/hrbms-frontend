@@ -122,7 +122,6 @@ export default {
         validAddons.reduce((total, prev) => total + prev.total, 0)
       );
 
-      console.log(addonsArray);
       const batchedAddons = addonsArray.reduce((acc, addon) => {
         const { purchaseBatch } = addon;
         if (!acc[purchaseBatch]) acc[purchaseBatch] = [];
@@ -133,7 +132,7 @@ export default {
       const batchedAddonsArray = Object.values(batchedAddons);
 
       // Total Bill
-      const total = totalWithoutAddons + addonsTotal;
+      const total = roundToTwoDecimal(totalWithoutAddons + addonsTotal);
 
       // Total Received
       const totalReceived = this.clientMeta.amountReceived;
