@@ -238,12 +238,17 @@ export default {
 
   computed: {
     headerDetails() {
-      const totalPurchase = (
-        this.transactionDetails?.priceSummary.finalRoomTotal +
+      const totalValidAddons =
         this.transactionDetails?.priceSummary.fullAddons.reduce(
-          (total, addon) => total + addon.total,
+          (total, addon) => {
+            if (addon.paymentStatus === "VOIDED") return total;
+            return total + addon.total;
+          },
           0
-        )
+        );
+
+      const totalPurchase = (
+        this.transactionDetails?.priceSummary.finalRoomTotal + totalValidAddons
       ).toFixed(2);
 
       return {
@@ -268,7 +273,7 @@ export default {
           status: transaction.paymentStatus,
           product: room.name,
           price: priceSummary.roomTotal,
-          quantity: transaction.extraPerson,
+          quantity: transaction.extraPerson + 1,
           totalPrice: priceSummary.finalRoomTotal.toFixed(2),
           discount: (
             Number(priceSummary.roomTotal) - priceSummary.finalRoomTotal
