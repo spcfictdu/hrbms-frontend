@@ -14,6 +14,7 @@ export const cashier = {
     filteredSessions: [],
     dialog: {
       confirmation: false,
+      cashierAuth: false,
       cashier: false,
       adminPasscode: false,
     },

@@ -45,7 +45,6 @@
             outlined
             type="number"
             hide-spin-buttons
-            autofocus
             :rules="adjustmentRules"
             @input="() => SET_ADJUSTMENT(adjustment)"
           />

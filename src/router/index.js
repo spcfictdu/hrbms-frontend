@@ -90,7 +90,7 @@ router.beforeEach(async (to, from, next) => {
     const isSessionInactive = getters["cashier/getCashierAction"] === "Open";
 
     if (isSessionInactive) {
-      commit("cashier/SET_DIALOG", { key: "cashier", value: true });
+      commit("cashier/SET_DIALOG", { key: "cashierAuth", value: true });
     }
   }
 

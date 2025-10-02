@@ -228,7 +228,7 @@ export default {
       const session = this.getSession(auth.user().userId);
       this.SET_CURRENT_CASHIER({ session });
 
-      this.SET_DIALOG({ key: "cashier", value: true });
+      this.SET_DIALOG({ key: "cashierAuth", value: true });
     },
 
     async triggerLogout() {

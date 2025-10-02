@@ -24,9 +24,13 @@
               <router-view />
               <CashierDialog
                 v-if="$auth.user()?.role === 'FRONT DESK'"
-                :persistent="true"
-                :onClose="() => SET_DIALOG({ key: 'cashier', value: false })"
-                :opened="dialog.cashier && $auth.user()?.role === 'FRONT DESK'"
+                :persistent="getCashierAction === 'Open'"
+                :onClose="
+                  () => SET_DIALOG({ key: 'cashierAuth', value: false })
+                "
+                :opened="
+                  dialog.cashierAuth && $auth.user()?.role === 'FRONT DESK'
+                "
                 :meta="cashierDialogMeta"
                 :loading="loading.dialog"
                 :balanceData="balanceData"
@@ -98,6 +102,7 @@ export default {
         await this.startSession({ userId, payload });
         await this.fetchSessions();
       } else {
+        console.log("closing session");
         try {
           const response = await this.closeSession({
             userId,
@@ -117,7 +122,7 @@ export default {
       }
       // this.SET_FILTERED_SESSIONS();
 
-      this.SET_DIALOG({ key: "cashier", value: false });
+      this.SET_DIALOG({ key: "cashierAuth", value: false });
       this.SET_ADJUSTMENT("");
       // this.SET_CURRENT_CASHIER();
     },
