@@ -114,7 +114,7 @@ export default {
             name: item.fullName,
             status: item.status,
             reference: item.transactionRefNum,
-            occupants: item.occupants,
+            occupants: item.occupants + 1,
             date: format(parseISO(item.booked), "MMMM dd, yyyy"),
             checkIn: item.checkInDate,
             checkOut: item.checkOutDate,
