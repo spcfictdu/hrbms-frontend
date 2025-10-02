@@ -1,7 +1,11 @@
 <template>
   <div>
-    <div class="d-flex flex-wrap px-2">
-      <div v-for="(value, name) in mappedDetails" :key="name">
+    <div class="d-flex flex-wrap flex-lg-nowrap px-2">
+      <div
+        v-for="(value, name, index) in mappedDetails"
+        :key="name"
+        :class="{ 'flex-shrink-0': index !== 0 }"
+      >
         <v-card-text>
           <div class="grey--text font-weight-bold">{{ name }}</div>
           <div class="text-subtitle-1 font-weight-bold">{{ value }}</div>
@@ -33,7 +37,7 @@ export default {
       return {
         "Guest Name": this.headerDetails?.guestName,
         "Reference Number": this.headerDetails?.referenceNumber,
-        "Total Purchase": this.headerDetails?.totalPurchase,
+        "Total Purchase": this.headerDetails?.totalPurchase.toFixed(2),
         Date: this.headerDetails?.date,
       };
     },

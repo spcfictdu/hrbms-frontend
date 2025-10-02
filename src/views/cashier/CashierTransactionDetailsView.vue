@@ -15,14 +15,14 @@
 
     <RouteLoader :target="hasData" class="mt-10">
       <v-row>
-        <v-col cols="12" md="8" lg="auto">
+        <v-col cols="12" md="8" lg="9">
           <CashierTransactionDetailsTable
             :transactionDetails="transaction"
             @menuSelect="handleMenuSelect"
           />
         </v-col>
 
-        <v-col cols="12" md="4" lg="auto">
+        <v-col cols="12" md="4" lg="3">
           <CashierTransactionPaymentsTable
             :transactionDetails="transaction"
             :payments="transaction?.paymentSummary"
