@@ -82,6 +82,7 @@ export default {
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapMutations("transaction", ["SET_TRANSACTION"]),
     ...mapMutations("cashier", ["SET_DIALOG"]),
+    ...mapActions("roomEnum", ["fetchRoom"]),
 
     handleMenuSelect(payload) {
       this.initializeUpdateData(payload);
@@ -108,6 +109,35 @@ export default {
 
     async fetch() {
       await this.fetchTransaction(this.transactionReferenceNumber);
+
+      const room = {
+        roomType: this.transaction.room.name,
+        roomNumber: this.transaction.room.number,
+        roomPaymentStatus: this.transaction.transaction.paymentStatus,
+        dateRange: [
+          this.transaction.transaction.checkInDate,
+          this.transaction.transaction.checkOutDate,
+        ],
+        extraPersonCount: this.transaction.transaction.extraPerson,
+        discount: this.transaction.priceSummary.discountName,
+      };
+
+      if (this.transaction.priceSummary.fullAddons.length) {
+        room.addons = this.transaction.priceSummary.fullAddons.map(
+          ({ name, quantity }) => `${name}-${quantity}`
+        );
+      }
+
+      if (!this.transaction.priceSummary.discountName) {
+        this.$delete(room, "discount");
+        this.$delete(room, "voucherCode");
+      }
+
+      if (this.transaction.priceSummary.discountName === "VOUCHER") {
+        room.voucherCode = this.transaction.priceSummary.voucherCode;
+      }
+
+      this.fetchRoom(room);
     },
 
     async handleTransactionUpdate(payload) {
@@ -134,8 +164,8 @@ export default {
       return !!this.transaction ?? false;
     },
   },
-  created() {
-    this.fetch();
+  async created() {
+    await this.fetch();
   },
   beforeDestroy() {
     this.SET_TRANSACTION(null);

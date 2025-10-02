@@ -25,6 +25,7 @@
 <script>
 import DefaultTable from "../tables/DefaultTable.vue";
 import CashierTransactionPaymentsTableHeader from "./CashierTransactionPaymentsTableHeader.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "CashierTransactionPaymentsTable",
@@ -55,6 +56,8 @@ export default {
     },
   },
   computed: {
+    ...mapState("roomEnum", ["room"]),
+
     headerDetails() {
       const totalPayment = this.transactionDetails?.paymentSummary.reduce(
         (total, prev) => total + Number(prev.amountReceived),
@@ -63,8 +66,12 @@ export default {
 
       const totalPurchase =
         this.transactionDetails?.priceSummary.finalRoomTotal +
+        this.room[0]?.extraPersonTotal +
         this.transactionDetails?.priceSummary.fullAddons.reduce(
-          (total, addon) => total + addon.total,
+          (total, addon) => {
+            if (addon.paymentStatus === "VOIDED") return total;
+            return total + addon.total;
+          },
           0
         );
 

@@ -95,7 +95,7 @@
 import DefaultTable from "../tables/DefaultTable.vue";
 import CashierTransactionDetailsTableHeader from "./CashierTransactionDetailsTableHeader.vue";
 import { format, parseISO } from "date-fns";
-import { mapMutations } from "vuex";
+import { mapMutations, mapState } from "vuex";
 
 export default {
   name: "CashierTransactionDetalisTable",
@@ -237,6 +237,21 @@ export default {
   },
 
   computed: {
+    ...mapState("roomEnum", ["room"]),
+
+    extraPersonTotal() {
+      const extraPersonTotal = this.isRefundedOrVoided(
+        this.transaction?.transaction.paymentStatus
+      )
+        ? 0
+        : this.room[0]?.roomRatesArray.reduce(
+            (total, room) => total + room.extraPersonRate,
+            0
+          );
+
+      return extraPersonTotal;
+    },
+
     headerDetails() {
       const totalValidAddons =
         this.transactionDetails?.priceSummary.fullAddons.reduce(
@@ -247,9 +262,11 @@ export default {
           0
         );
 
-      const totalPurchase = (
-        this.transactionDetails?.priceSummary.finalRoomTotal + totalValidAddons
-      ).toFixed(2);
+      const totalWithoutAddons =
+        this.transactionDetails?.priceSummary.finalRoomTotal +
+        this.room[0]?.extraPersonTotal;
+
+      const totalPurchase = totalWithoutAddons + totalValidAddons;
 
       return {
         guestName: this.transactionDetails?.guestName,
@@ -274,9 +291,12 @@ export default {
           product: room.name,
           price: priceSummary.roomTotal,
           quantity: transaction.extraPerson + 1,
-          totalPrice: priceSummary.finalRoomTotal.toFixed(2),
+          totalPrice: (
+            Number(priceSummary.roomTotal) + this.extraPersonTotal
+          ).toFixed(2),
           discount: (
-            Number(priceSummary.roomTotal) - priceSummary.finalRoomTotal
+            (Number(priceSummary.roomTotal) + this.extraPersonTotal) *
+            (this.room[0]?.discount.split("%")[0] * 0.01)
           ).toFixed(2),
           time: format(parseISO(transaction.createdAt), "H:mm:ss"),
           type: "room",
