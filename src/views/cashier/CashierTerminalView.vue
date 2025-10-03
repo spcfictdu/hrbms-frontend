@@ -20,7 +20,10 @@
 
     <CashierDialog
       :opened="dialog.cashier"
-      :onClose="() => handleClose('cashier')"
+      :onClose="
+        () =>
+          isFrontDeskUser ? handleClose('cashierAuth') : handleClose('cashier')
+      "
       :meta="cashierDialogMeta"
       :loading="loading.dialog"
       :balanceData="balanceData"
@@ -56,6 +59,7 @@ export default {
       "SET_CURRENT_CASHIER",
     ]),
     ...mapActions("alerts", ["requireAlertFn"]),
+    ...mapActions("authentication", ["logout"]),
 
     handleClose(dialog) {
       this.SET_DIALOG({ key: dialog, value: false });
@@ -64,7 +68,10 @@ export default {
 
     handleProceed() {
       this.SET_DIALOG({ key: "confirmation", value: false });
-      this.SET_DIALOG({ key: "cashier", value: true });
+      this.SET_DIALOG({
+        key: this.isFrontDeskUser ? "cashierAuth" : "cashier",
+        value: true,
+      });
     },
 
     async handleAction(adjustment) {
@@ -80,15 +87,31 @@ export default {
         await this.startSession({ userId, payload });
         this.$router.push({ name: "Cashier", params: { id: String(userId) } });
       } else {
-        await this.closeSession({
-          userId,
-          payload,
-        });
+        try {
+          const response = await this.closeSession({
+            userId,
+            payload,
+          });
+
+          if (response.error)
+            throw new Error(`Error message: ${response.message}`);
+
+          if (this.isFrontDeskUser) {
+            await this.logout(this.$auth.user().role);
+            console.log("logged out");
+          }
+        } catch (err) {
+          console.error(err);
+        }
       }
+      this.SET_DIALOG({
+        key: this.isFrontDeskUser ? "cashierAuth" : "cashier",
+        value: false,
+      });
+
       await this.fetchSessions();
       this.SET_FILTERED_SESSIONS();
 
-      this.SET_DIALOG({ key: "cashier", value: false });
       this.SET_CURRENT_CASHIER();
     },
   },
@@ -104,6 +127,10 @@ export default {
       "getCashierAction",
       "isCurrentCashierSessionless",
     ]),
+
+    isFrontDeskUser() {
+      return this.$auth.user()?.role === "FRONT DESK";
+    },
 
     hasData() {
       return !!this.sessions.length;

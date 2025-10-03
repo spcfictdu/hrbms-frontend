@@ -46,6 +46,7 @@
             type="number"
             hide-spin-buttons
             :rules="adjustmentRules"
+            :autofocus="meta.action === 'Open'"
             @input="() => SET_ADJUSTMENT(adjustment)"
           />
         </FormField>
