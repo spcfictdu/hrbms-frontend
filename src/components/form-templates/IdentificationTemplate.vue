@@ -28,6 +28,7 @@
             @input="payload.id.number = payload.id.number.toLocaleUpperCase()"
             v-mask="idNumberMask(payload.id.type)"
             :readonly="readonly"
+            :placeholder="idNumberPlaceholder(payload.id.type)"
           ></v-text-field>
         </FormField>
       </v-col>
@@ -60,20 +61,76 @@ export default {
         number: null,
       },
     },
-    IdEnums: ["National ID", "Driver's License", "Passport"],
+    IdEnums: [
+      "Driver's License",
+      "GSIS",
+      "National ID",
+      "Passport",
+      "PRC",
+      "SSS",
+      "Voter's ID",
+    ],
   }),
   methods: {
-    emitTransaction: function () {
+    emitTransaction() {
       this.$emit("emit-transaction", this.payload);
     },
 
     idNumberMask(idType) {
-      const mask = {
+      const masks = {
         "National ID": "####-####-####-####",
         "Driver's License": "X##-##-######",
         Passport: "AX######X",
+        SSS: "##-########",
+        GSIS: "###########",
+        PRC: "#######",
+        "Voter's ID": "XX##-####A-A####AAA#####-#",
       };
-      return mask[idType] ?? "";
+      return masks[idType] ?? "";
+    },
+
+    idNumberPlaceholder(idType) {
+      const placeholders = {
+        "National ID": "1111-2222-3333-4444",
+        "Driver's License": "D01-02-123456",
+        Passport: "P1234567A",
+        SSS: "12-34567890",
+        GSIS: "12345678901",
+        PRC: "1234567",
+        "Voter's ID": "7501-0068B-C1451BCD",
+      };
+      return placeholders[idType] ?? "";
+    },
+
+    idInputLengthRules(idType) {
+      let placeholderLength = this.idNumberPlaceholder(idType)?.length;
+      let minCharacterCount = placeholderLength;
+
+      switch (idType) {
+        case "National ID":
+          minCharacterCount = 16;
+          break;
+        case "Driver's License":
+          minCharacterCount = 11;
+          break;
+        case "Passport":
+          placeholderLength = 7;
+          minCharacterCount = 7;
+          break;
+        case "SSS":
+          minCharacterCount = 10;
+          break;
+        case "Voter's ID":
+          minCharacterCount = 16;
+          break;
+      }
+
+      const rule = {
+        requiredLength: placeholderLength,
+        errorMessage: `Min ${minCharacterCount} characters`,
+      };
+
+      return rule;
     },
 
     handleTypeChange() {
@@ -89,6 +146,16 @@ export default {
       const errors = {};
       errors.type = [(v) => !!v || "Id type is required"];
       errors.IdNumber = [(v) => !!v || "Id number is required"];
+
+      if (this.payload.id.type) {
+        const { requiredLength, errorMessage } = this.idInputLengthRules(
+          this.payload.id.type
+        );
+        errors.IdNumber.push(
+          (v) => v?.length >= requiredLength || errorMessage
+        );
+      }
+
       return errors;
     },
   },
