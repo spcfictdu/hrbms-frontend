@@ -4,7 +4,8 @@
       <confirmation-form
         ref="confirmationForm"
         @cancel="handleCancel"
-        @submit="handleClickEvent"
+        @submit="handleConfirmReservation"
+        @print="handlePrint"
         :cashierUserId="cashierUserId"
         :value="transaction"
       />
@@ -85,12 +86,15 @@ export default {
           this.setLoading({ key: "cancel", value: false });
         });
     },
-    handleClickEvent: function () {
+
+    handlePrint() {
       const fn = this.$route.meta.formBtn.title.toUpperCase();
       if (fn === "PRINT") {
         return this.$refs.confirmationForm.handlePrinting();
       }
+    },
 
+    handleConfirmReservation() {
       if (!this.cashierUserId) {
         this.$router.push({ name: "Cashier Terminal" });
       } else {

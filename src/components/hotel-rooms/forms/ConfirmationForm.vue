@@ -110,6 +110,11 @@ export default {
     },
 
     handleTransactionUpdate: function () {
+      if (this.$auth.user()?.role === "GUEST") {
+        this.$emit("print");
+        return;
+      }
+
       // Assign Variables
       const { referenceNumber, status } = this.value.transaction;
       const { payment } = this.payload;
@@ -125,7 +130,7 @@ export default {
           this.dialog.confirmation = true;
           return;
         }
-        this.$emit("submit", payload);
+        this.$emit("confirmReservation", payload);
       }
     },
     handleCancelButton: function () {
