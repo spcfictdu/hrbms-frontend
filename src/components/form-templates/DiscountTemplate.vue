@@ -2,12 +2,12 @@
   <FormSection title="Discount">
     <v-row>
       <v-col cols="12">
-        <FormField>
+        <FormField label="Discount Type">
           <v-select
             dense
             outlined
             hide-details="auto"
-            placeholder="Select Discount"
+            placeholder="Select a discount type"
             clearable
             :items="discounts"
             item-text="text"
@@ -19,13 +19,16 @@
         </FormField>
       </v-col>
       <v-col cols="12" v-show="!!payload.discount">
-        <FormField>
+        <FormField
+          :label="payload.discount === 'VOUCHER' ? 'Voucher Code' : 'ID Number'"
+        >
           <v-text-field
             ref="idNumberInput"
             dense
             outlined
             hide-details="auto"
-            :placeholder="`Enter your ${placeholders[payload.discount]}`"
+            :rules="rules"
+            :placeholder="idNumberPlaceholder(payload.discount)"
             v-model="payload.idNumber"
             @input="payload.idNumber = payload.idNumber.toLocaleUpperCase()"
             @blur="validateVoucher"
@@ -101,15 +104,60 @@ export default {
     },
 
     idNumberMask(idType) {
-      const mask = {
-        SNR: "######",
+      const masks = {
+        SNR: "################",
         PWD: "##-####-###-#######",
       };
-      return mask[idType] ?? "XXXXXXXXXXXXXXXX";
+      return masks[idType] ?? "XXXXXXXXXXXXXXXX";
+    },
+
+    idNumberPlaceholder(idType) {
+      const placeholoders = {
+        SNR: "001234",
+        PWD: "13-5416-000-0000001",
+        VOUCHER: "Voucher Code",
+      };
+      return placeholoders[idType] ?? "";
+    },
+
+    idInputLengthRules(idType) {
+      let placeholderLength = this.idNumberPlaceholder(idType)?.length;
+      let minCharacterCount = placeholderLength;
+
+      switch (idType) {
+        case "SNR":
+          placeholderLength = 3;
+          minCharacterCount = 3;
+          break;
+        case "PWD":
+          minCharacterCount = 16;
+          break;
+      }
+
+      const rule = {
+        requiredLength: placeholderLength,
+        errorMessage: `Min ${minCharacterCount} characters`,
+      };
+
+      return rule;
     },
   },
   computed: {
     ...mapGetters("vouchers", ["getVoucher"]),
+
+    rules() {
+      if (!this.payload.discount || this.payload.discount === "VOUCHER")
+        return [];
+
+      const { requiredLength, errorMessage } = this.idInputLengthRules(
+        this.payload.discount
+      );
+      return [
+        (v) =>
+          (!!this.payload.discount && (v?.length >= requiredLength || !v)) ||
+          errorMessage,
+      ];
+    },
   },
   watch: {
     fill(val) {
