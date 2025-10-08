@@ -5,7 +5,7 @@
       'px-sm-2 py-md-8': $vuetify.breakpoint.lgAndDown,
     }"
   >
-    <PageHeader backButton headerText="Transactions" :dividerMarginTop="18">
+    <PageHeader backButton :headerText="headerText" :dividerMarginTop="18">
       <template #subtitle>
         <div class="grey--text text--darken-2 mb-1">
           Cashier Drawer {{ drawerNumber }} | First Floor Lobby
@@ -159,6 +159,13 @@ export default {
   computed: {
     ...mapState("transaction", ["transaction", "loading"]),
     ...mapState("cashier", ["dialog"]),
+
+    headerText() {
+      const mode = this.$route.query.mode;
+      const isEditMode = mode === "edit";
+
+      return `${isEditMode ? "Transaction" : "Payment"} Details`;
+    },
 
     hasData() {
       return !!this.transaction ?? false;

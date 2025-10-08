@@ -102,41 +102,6 @@ export default {
   components: { DefaultTable, CashierTransactionDetailsTableHeader },
   props: { transactionDetails: Object },
   data: () => ({
-    headers: [
-      {
-        text: "Status",
-        value: "status",
-      },
-      {
-        text: "Product",
-        value: "product",
-      },
-      {
-        text: "Price",
-        value: "price",
-      },
-      {
-        text: "Quantity",
-        value: "quantity",
-      },
-      {
-        text: "Total Price",
-        value: "totalPrice",
-      },
-      {
-        text: "Discount",
-        value: "discount",
-      },
-      {
-        text: "Time",
-        value: "time",
-      },
-      {
-        text: "",
-        value: "menu",
-        sortable: false,
-      },
-    ],
     mopColors: {
       CASH: "cash",
       CREDIT_CARD: "creditCard",
@@ -148,7 +113,6 @@ export default {
     },
     refundedOrVoidedMopColor: "#CACACA",
   }),
-  created() {},
   methods: {
     ...mapMutations("cashier", ["SET_DIALOG"]),
 
@@ -238,6 +202,51 @@ export default {
 
   computed: {
     ...mapState("roomEnum", ["room"]),
+
+    headers() {
+      const baseHeaders = [
+        {
+          text: "Status",
+          value: "status",
+        },
+        {
+          text: "Product",
+          value: "product",
+        },
+        {
+          text: "Price",
+          value: "price",
+        },
+        {
+          text: "Quantity",
+          value: "quantity",
+        },
+        {
+          text: "Total Price",
+          value: "totalPrice",
+        },
+        {
+          text: "Discount",
+          value: "discount",
+        },
+        {
+          text: "Time",
+          value: "time",
+        },
+      ];
+
+      const mode = this.$route.query.mode;
+
+      if (mode === "edit") {
+        baseHeaders.push({
+          text: "",
+          value: "menu",
+          sortable: false,
+        });
+      }
+
+      return baseHeaders;
+    },
 
     extraPersonTotal() {
       const extraPersonTotal = this.isRefundedOrVoided(

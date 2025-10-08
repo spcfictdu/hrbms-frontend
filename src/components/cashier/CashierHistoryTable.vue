@@ -122,7 +122,7 @@ export default {
       deep: true,
       handler: function (v) {
         if (this.fetchingTab.title === "Adjustment") return;
-        this.$emit("query", v);
+        this.$emit("paymentsQuery", v);
       },
     },
   },

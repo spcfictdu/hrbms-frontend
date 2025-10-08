@@ -30,11 +30,11 @@ export default [
   },
   {
     path: "/cashier-transactions/:drawerNumber/:id",
-    name: "Cashier Transaction List",
+    name: "Cashier History",
     component: () => import("@/views/cashier/CashierTransactionListView.vue"),
     props: true,
     meta: {
-      name: "Cashier Transaction List",
+      name: "Cashier History",
       selectedMainNav: "Cashier Terminal",
       // onlyAdmin: true,
     },

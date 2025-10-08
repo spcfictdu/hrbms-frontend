@@ -4,7 +4,10 @@
       <v-btn
         v-if="backButton"
         class="mr-3 mr-sm-10"
-        icon
+        fab
+        small
+        depressed
+        color="#DDE2FE"
         @click="$router.go(-1)"
       >
         <v-icon>mdi-arrow-left</v-icon>

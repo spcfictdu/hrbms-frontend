@@ -64,7 +64,7 @@ export default {
           text: "View Cashier History",
           action: () =>
             this.$router.push({
-              name: "Cashier Transaction List",
+              name: "Cashier History",
               params: {
                 id: String(this.sessionData.userId),
                 drawerNumber: String(this.drawerNumber),
