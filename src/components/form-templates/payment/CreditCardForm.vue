@@ -23,7 +23,7 @@
             dense
             hide-details="auto"
             outlined
-            v-model="payload.cardNumber"
+            v-model="formattedCardNumber"
             :rules="[
               (v) => !!v || 'Card Number is required',
               (v) => v?.length === 19 || 'Card Number must be 16 digits',
@@ -111,6 +111,7 @@ export default {
   components: { FormField },
   directives: { mask },
   data: () => ({
+    formattedCardNumber: "",
     payload: {
       cardNumber: null,
       cardHolderName: null,
@@ -124,8 +125,12 @@ export default {
     },
   }),
   computed: {
+    unmaskedCardNumber() {
+      return this.formattedCardNumber?.replace(/\D/g, "");
+    },
+
     cardType() {
-      const cardNumber = this.payload.cardNumber?.replace(/\D/g, "");
+      const cardNumber = this.unmaskedCardNumber;
 
       if (/^4/.test(cardNumber)) {
         return "visa";
@@ -139,7 +144,11 @@ export default {
     payload: {
       deep: true,
       handler: function (v) {
-        this.$emit("assignPayload", v);
+        const newPayload = {
+          ...v,
+          cardNumber: this.unmaskedCardNumber,
+        };
+        this.$emit("assignPayload", newPayload);
       },
     },
   },
