@@ -4,7 +4,7 @@
       <confirmation-form
         ref="confirmationForm"
         @cancel="handleCancel"
-        @submit="handleConfirmReservation"
+        @confirmReservation="handleConfirmReservation"
         @print="handlePrint"
         :cashierUserId="cashierUserId"
         :value="transaction"

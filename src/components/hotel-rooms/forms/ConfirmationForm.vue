@@ -48,7 +48,7 @@
       :opened="dialog.confirmation"
       :onClose="() => (dialog.confirmation = false)"
       :meta="confirmationMeta"
-      @onProceed="$emit('submit')"
+      @onProceed="$emit('confirmReservation')"
     />
   </div>
 </template>
