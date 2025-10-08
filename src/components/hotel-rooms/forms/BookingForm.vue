@@ -141,6 +141,7 @@
       @onProceed="handleOnConfirmed"
     />
     <WarningDialog
+      :loading="loading.dialog"
       :opened="dialog.warning"
       :onClose="() => resetDialog('warning')"
       @onDecision="handleWarning"
@@ -163,7 +164,7 @@ import AddOnsTemplate from "@/components/form-templates/AddOnsTemplate.vue";
 import DiscountTemplate from "@/components/form-templates/DiscountTemplate.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import WarningDialog from "@/components/dialogs/WarningDialog.vue";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 
 export default {
   name: "BookingForm",
@@ -209,12 +210,6 @@ export default {
 
     // Enums
     extraRoomCapacity: [],
-
-    // Dialogs
-    dialog: {
-      confirmation: false,
-      warning: false,
-    },
   }),
   created() {
     if (!this.formDetails) return;
@@ -238,19 +233,16 @@ export default {
     };
   },
   methods: {
-    ...mapActions("transaction", [
-      "updateTransaction",
-      "setLoading",
-      "fetchTransaction",
-    ]),
+    ...mapActions("transaction", ["updateTransaction", "fetchTransaction"]),
+    ...mapMutations("transaction", ["SET_DIALOG"]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("cashier", ["fetchSessions"]),
 
-    triggerDialog: function (type) {
-      this.dialog[type] = true;
+    triggerDialog(type) {
+      this.SET_DIALOG({ key: type, value: true });
     },
-    resetDialog: function (type) {
-      this.dialog[type] = false;
+    resetDialog(type) {
+      this.SET_DIALOG({ key: type, value: false });
     },
     assignPayload: function (payload) {
       for (const key in payload) {
@@ -308,12 +300,10 @@ export default {
       };
 
       this.$emit("onSubmit", payload);
-      this.resetDialog("warning");
     },
 
     async handleEdit() {
       this.requireAlertFn(2);
-      this.setLoading({ key: "form", value: true });
 
       try {
         const updatedTransaction = {
@@ -343,8 +333,6 @@ export default {
         });
       } catch (err) {
         console.error(err);
-      } finally {
-        this.setLoading({ key: "form", value: false });
       }
     },
 
@@ -355,9 +343,6 @@ export default {
         this.$emit("onSubmit", this.payload);
       }
 
-      if (this.$auth.user()) {
-        this.resetDialog("confirmation");
-      }
       sessionStorage.removeItem("guestDetailsMeta");
     },
     assignAutoFill: function (newVal) {
@@ -437,7 +422,7 @@ export default {
     },
   },
   computed: {
-    ...mapState("transaction", ["loading"]),
+    ...mapState("transaction", ["loading", "dialog"]),
     ...mapState("vouchers", ["activeVoucher"]),
     ...mapState("cashier", ["sessions"]),
 

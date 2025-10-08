@@ -12,7 +12,7 @@
 
 <script>
 import BookingForm from "../../../components/hotel-rooms/forms/BookingForm.vue";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 export default {
   name: "BookingView",
   components: {
@@ -59,8 +59,8 @@ export default {
     ...mapActions("transaction", [
       "createTransaction",
       "fetchPreviousFormTransactions",
-      "setLoading",
     ]),
+    ...mapMutations("transaction", ["SET_DIALOG"]),
     ...mapActions("publicRooms", ["storeTemporaryData", "clearTempData"]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("cashier", ["fetchSessions"]),
@@ -95,21 +95,18 @@ export default {
         return;
       }
 
-      this.setLoading({ key: "dialog", value: true });
       // Check if a user will register or proceed without registering.
       // Storing temporary data for rebooking after registration.
       if (!this.user && payload?.action === "REGISTER") {
         formattedPayload.query = this.$route.query;
-        return this.storeTemporaryData(formattedPayload)
-          .then(() =>
-            this.$router.replace({
-              name: "Guest Sign In",
-              query: {
-                method: "register",
-              },
-            })
-          )
-          .finally(() => this.setLoading({ key: "dialog", value: false }));
+        return this.storeTemporaryData(formattedPayload).then(() =>
+          this.$router.replace({
+            name: "Guest Sign In",
+            query: {
+              method: "register",
+            },
+          })
+        );
       }
 
       // Create transaction
@@ -130,8 +127,14 @@ export default {
         })
         .catch((err) => {})
         .finally(() => {
-          this.setLoading({ key: "dialog", value: false });
+          if (this.$auth.user()) {
+            this.SET_DIALOG({ key: "confirmation", value: false });
+            return;
+          }
+
+          this.SET_DIALOG({ key: "warning", value: false });
         });
+
       sessionStorage.removeItem("formDetails");
     },
     assignObject: function (payload) {
@@ -256,6 +259,10 @@ export default {
       }
       return fill;
     },
+  },
+  beforeDestroy() {
+    this.SET_DIALOG({ key: "confirmation", value: false });
+    this.SET_DIALOG({ key: "warning", value: false });
   },
 };
 </script>

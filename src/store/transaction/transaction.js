@@ -17,11 +17,16 @@ export const transaction = {
       cancel: false,
       header: false,
     },
+    dialog: {
+      confirmation: false,
+      warning: false,
+    },
   }),
   getters: {},
   mutations: {
     SET_TRANSACTIONS: (state, data) => (state.transactions = data),
     SET_TRANSACTION: (state, data) => (state.transaction = data),
+    SET_DIALOG: (state, { key, value }) => (state.dialog[key] = value),
     SET_PREVIOUS_TRANSACTIONS: (state, data) =>
       (state.previousTransactions = data),
     SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
@@ -63,23 +68,27 @@ export const transaction = {
           console.error("Error fetching transaction: ", error);
         });
     },
-    createTransaction: async function ({ dispatch }, payload) {
+    createTransaction: async function ({ commit, dispatch }, payload) {
       const url = `transaction/create`;
 
-      return this.$axios
-        .post(url, payload)
-        .then((response) => {
-          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
-          return response;
-        })
-        .catch((error) => {
-          console.error("Error creating transaction: ", error);
-          this.$store.dispatch(
-            "alerts/triggerError",
-            error.response.data.message
-          );
-          throw error;
+      commit("SET_LOADING", { key: "dialog", value: true });
+      commit("SET_LOADING", { key: "form", value: true });
+      try {
+        const response = await this.$axios.post(url, payload);
+        dispatch("alerts/triggerSuccess", response.data.message, {
+          root: true,
         });
+        return response;
+      } catch (err) {
+        console.error("Error creating transaction: ", err);
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+        return err.response.data;
+      } finally {
+        commit("SET_LOADING", { key: "dialog", value: false });
+        commit("SET_LOADING", { key: "form", value: false });
+      }
     },
     deleteReservation: function (_, { status, transactionRefNum }) {
       const url = `transaction/reservation/delete/${status}/${transactionRefNum}`;
@@ -103,7 +112,7 @@ export const transaction = {
       const url = `transaction/update`;
 
       commit("SET_LOADING", { key: "dialog", value: true });
-
+      commit("SET_LOADING", { key: "form", value: true });
       return this.$axios
         .put(url, payload)
         .then((response) => {
@@ -118,7 +127,10 @@ export const transaction = {
           );
           throw error;
         })
-        .finally(() => commit("SET_LOADING", { key: "dialog", value: false }));
+        .finally(() => {
+          commit("SET_LOADING", { key: "dialog", value: false });
+          commit("SET_LOADING", { key: "form", value: false });
+        });
     },
     fetchPreviousFormTransactions: function ({ commit }, referenceNumber) {
       const url = `transaction/form/${referenceNumber}`;

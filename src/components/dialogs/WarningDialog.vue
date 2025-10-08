@@ -13,7 +13,12 @@
     <v-card-actions class="pa-0 mt-4">
       <v-row dense justify="center" justify-sm="end">
         <v-col cols="12" sm="auto" order="last" order-sm="first"
-          ><v-btn block outlined color="primary" @click="handleMaybeLater"
+          ><v-btn
+            block
+            outlined
+            color="primary"
+            :loading="loading"
+            @click="handleMaybeLater"
             >Maybe Later</v-btn
           ></v-col
         >
@@ -35,6 +40,7 @@ export default {
     DialogTemplate,
   },
   props: {
+    loading: Boolean,
     opened: Boolean,
     onClose: Function,
   },
