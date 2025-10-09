@@ -25,10 +25,8 @@
 
         <v-col
           cols="12"
-          sm="8"
           md="6"
           xl="4"
-          offset-sm="2"
           offset-md="0"
           class="d-md-flex align-center justify-center"
         >
@@ -71,7 +69,9 @@
                 </v-icon>
               </v-btn>
 
-              <p class="text-caption mb-0 mt-2 white--text text-center">
+              <p
+                class="text-caption mb-0 mt-2 white--text text-center d-none d-sm-block"
+              >
                 {{ route.name }}
               </p>
             </div>
