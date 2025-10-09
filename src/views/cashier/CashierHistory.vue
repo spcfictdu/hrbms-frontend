@@ -68,7 +68,7 @@ export default {
     CashierHistoryTable,
     TransactionsTable,
   },
-  name: "CashierTransactionListView",
+  name: "CashierHistory",
   props: { id: String, drawerNumber: String },
   data() {
     return {
@@ -125,7 +125,7 @@ export default {
 
       if (this.activeTab === tabQuery) return;
 
-      this.$router.push({
+      this.$router.replace({
         query: { ...this.$route.query, tab: tabQuery },
       });
     },

@@ -29,9 +29,9 @@ export default [
     },
   },
   {
-    path: "/cashier-transactions/:drawerNumber/:id",
+    path: "/cashier-history/:drawerNumber/:id",
     name: "Cashier History",
-    component: () => import("@/views/cashier/CashierTransactionListView.vue"),
+    component: () => import("@/views/cashier/CashierHistory.vue"),
     props: true,
     meta: {
       name: "Cashier History",
