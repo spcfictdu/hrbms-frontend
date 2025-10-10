@@ -14,6 +14,7 @@
   >
     <template #activator="{ attrs, on }">
       <v-text-field
+        :background-color="backgroundColor"
         v-on="on"
         v-bind="attrs"
         outlined
@@ -42,6 +43,7 @@ export default {
   name: "TimeField",
   mixins: [formatTime],
   props: {
+    backgroundColor: String,
     rules: Array,
     model: String,
     value: String,

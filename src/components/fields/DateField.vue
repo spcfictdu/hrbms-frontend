@@ -10,12 +10,14 @@
   >
     <template #activator="{ on, attrs }">
       <v-text-field
+        :prepend-inner-icon="prependInnerIcon"
+        :background-color="backgroundColor"
         v-on="on"
         v-bind="attrs"
         outlined
         dense
         readonly
-        hide-details="auto"
+        :hide-details="hideDetails"
         :value="withFormat ? formatDate(date) : date"
         :rules="rules"
       ></v-text-field>
@@ -36,6 +38,11 @@ import { format, parseISO } from "date-fns";
 export default {
   name: "DateField",
   props: {
+    prependInnerIcon: {
+      type: String,
+      default: "",
+    },
+    backgroundColor: String,
     minDate: String,
     rules: Array,
     model: String,
@@ -44,6 +51,10 @@ export default {
     withFormat: {
       type: Boolean,
       default: false,
+    },
+    hideDetails: {
+      type: Boolean | String,
+      default: "auto",
     },
   },
   data: () => ({
