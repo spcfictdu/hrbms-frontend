@@ -12,6 +12,7 @@
           <!-- Checked-in/out -->
           <v-divider />
           <check-in-out-details :cardTimeInformation="cardTimeInformation" />
+          <FlightDetails />
         </v-col>
         <v-col cols="12" md="6">
           <!-- Booking Summary -->
@@ -32,6 +33,7 @@
 import HeaderBookingSlot from "@/components/slots/HeaderBookingSlot.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import CheckInOutDetails from "@/components/form-templates/CheckInOutDetails.vue";
+import FlightDetails from "@/components/form-templates/FlightDetails.vue";
 import PrintingFunction from "@/mixins/PrintingFunction";
 import { mapState } from "vuex";
 import { format, parseISO } from "date-fns";
@@ -42,6 +44,7 @@ export default {
     HeaderBookingSlot,
     BookingSummary,
     CheckInOutDetails,
+    FlightDetails,
   },
   props: {
     value: Object,

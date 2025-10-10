@@ -27,10 +27,14 @@ export default {
       "fetchTransaction",
       "updateTransaction",
       "setLoading",
+      "fetchFlights",
     ]),
     ...mapActions("alerts", ["requireAlertFn"]),
-    fetch: async function () {
-      this.fetchTransaction(this.referenceNumber);
+    fetch() {
+      Promise.all([
+        this.fetchTransaction(this.referenceNumber),
+        this.fetchFlights(this.referenceNumber),
+      ]);
     },
     handleUpdate: function (payload) {
       // Prefetch the alert function: success, error
