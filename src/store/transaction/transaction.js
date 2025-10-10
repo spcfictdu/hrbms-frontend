@@ -21,6 +21,7 @@ export const transaction = {
       confirmation: false,
       warning: false,
     },
+    flights: [],
   }),
   getters: {},
   mutations: {
@@ -32,10 +33,99 @@ export const transaction = {
     SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
     ADD_TRANSACTION: (state, transaction) =>
       state.transactions.data.push(transaction),
+    SET_FLIGHTS: (state, flights) => (state.flights = flights),
   },
   actions: {
     setLoading: function ({ commit }, { key, value }) {
       commit("SET_LOADING", { key, value });
+    },
+    async fetchFlights({ commit }, transactionReferenceNumber) {
+      const url = `transaction/${transactionReferenceNumber}/flight`;
+
+      try {
+        const response = await this.$axios.get(url);
+        commit("SET_FLIGHTS", response.data.results);
+        return response;
+      } catch (err) {
+        console.error(err);
+        return err.response.data;
+      }
+    },
+    async createFlight(
+      { commit, dispatch },
+      { transactionReferenceNumber, payload }
+    ) {
+      const url = `transaction/${transactionReferenceNumber}/flight`;
+
+      dispatch("alerts/requireAlertFn", 2, {
+        root: true,
+      });
+      commit("SET_LOADING", { key: "form", value: true });
+      try {
+        const response = await this.$axios.post(url, payload);
+        dispatch("alerts/triggerSuccess", response.data.message, {
+          root: true,
+        });
+        return response;
+      } catch (err) {
+        console.error("Error creating flight: ", err);
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+        return err.response.data;
+      } finally {
+        commit("SET_LOADING", { key: "form", value: false });
+      }
+    },
+    async updateFlight({ commit, dispatch }, payload) {
+      const url = "transaction/flight/update";
+
+      dispatch("alerts/requireAlertFn", 2, {
+        root: true,
+      });
+      commit("SET_LOADING", { key: "form", value: true });
+
+      try {
+        const response = await this.$axios.put(url, payload);
+        dispatch("alerts/triggerSuccess", response.data.message, {
+          root: true,
+        });
+        return response;
+      } catch (err) {
+        console.error("Error updating flight: ", err);
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+        return err.response.data;
+      } finally {
+        commit("SET_LOADING", { key: "form", value: false });
+      }
+    },
+    async deleteFlight({ commit, dispatch }, payload) {
+      const url = "transaction/flight/delete";
+
+      dispatch("alerts/requireAlertFn", 2, {
+        root: true,
+      });
+      commit("SET_LOADING", { key: "form", value: true });
+      commit("SET_LOADING", { key: "dialog", value: true });
+      try {
+        const response = await this.$axios.delete(url, { data: payload });
+        dispatch("alerts/triggerSuccess", response.data.message, {
+          root: true,
+        });
+        return response;
+      } catch (err) {
+        console.error("Error deleting flight: ", err);
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+        return err.response.data;
+      } finally {
+        commit("SET_LOADING", { key: "form", value: true });
+        commit("SET_LOADING", { key: "dialog", value: true });
+        commit("SET_DIALOG", { key: "confirmation", value: false });
+      }
     },
     fetchTransactions: function ({ commit }, queryParams = {}) {
       const url = `transaction`;
