@@ -1,6 +1,11 @@
 <template>
   <div :class="paddingBottom">
-    <TitleSlot>{{ title }}</TitleSlot>
+    <div class="d-flex align-center justify-space-between mb-4">
+      <slot name="title" />
+      <TitleSlot>{{ title }}</TitleSlot>
+
+      <slot name="actions" />
+    </div>
 
     <slot />
   </div>
