@@ -232,6 +232,7 @@ export default {
     handleSubmit() {
       if (this.$refs.form.validate()) {
         const payload = {
+          flightGroup: this.flightDetails.flightGroup,
           firstName: this.form.firstName,
           lastName: this.form.lastName,
         };

@@ -140,8 +140,7 @@ export default {
         departureFlightNumber: departure.flight_number || "",
         departureDate: departure.departure_date || "",
         departureTime: departure.departure_time || "",
-        flightGroup:
-          this.flightGroup?.flight_group || this.flightGroup?.id || "",
+        flightGroup: this.flightGroup?.flightGroup || "",
       };
     },
     sections() {

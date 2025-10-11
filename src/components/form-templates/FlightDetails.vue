@@ -15,7 +15,7 @@
         >
           <FlightDetailsCard
             @edit="setEditingGroupId"
-            @delete="handleDeleteFlight"
+            @delete="prepareFlightDeletion"
             :flightGroup="group"
             :edit="editingGroupId === group.flightGroup"
             @submit="handleEditFlight"
@@ -24,7 +24,7 @@
         <v-col cols="12" v-for="temp in tempFlights" :key="temp.flightGroup">
           <FlightDetailsCard
             @edit="setEditingGroupId"
-            @delete="handleDeleteFlight"
+            @delete="prepareFlightDeletion"
             :flightGroup="tempToGroup(temp)"
             :edit="editingGroupId === temp.flightGroup"
             @submit="handleCreateFlight($event, temp.flightGroup)"
@@ -33,7 +33,17 @@
       </v-row>
     </FormSection>
 
-    <!-- <ConfirmationDialog :opened="dialog.confirmation" /> -->
+    <ConfirmationDialog
+      :opened="dialog"
+      :loading="loading.dialog"
+      :onClose="
+        () => {
+          dialog = false;
+        }
+      "
+      :meta="confirmationMeta"
+      @onProceed="handleDeleteFlight"
+    />
   </div>
 </template>
 
@@ -50,6 +60,12 @@ export default {
     return {
       editingGroupId: null,
       tempFlights: [],
+      dialog: false,
+      flightGroupToBeDeleted: null,
+      confirmationMeta: {
+        action: "Delete",
+        actionType: "flight?",
+      },
     };
   },
   methods: {
@@ -59,11 +75,18 @@ export default {
       "deleteFlight",
       "fetchFlights",
     ]),
+    prepareFlightDeletion(flightGroup) {
+      this.dialog = true;
+      this.flightGroupToBeDeleted = flightGroup;
+    },
+    getFlightGroup(flightGroup) {
+      return this.groupedFlights.find((g) => g.flightGroup === flightGroup);
+    },
     getTempFlightIndex(flightGroup) {
       return this.tempFlights.findIndex((t) => t.flightGroup === flightGroup);
     },
     removeTempFlight(index) {
-      return this.tempFlights.splice(index, 1);
+      this.tempFlights.splice(index, 1);
     },
     handleAddFlight() {
       const maxGroup = Math.max(
@@ -85,16 +108,22 @@ export default {
       this.editingGroupId = newGroupId;
     },
     async handleCreateFlight(payload, flightGroup) {
+      const adjustedPayload = {
+        ...payload,
+        flightGroup,
+      };
       try {
         await this.createFlight({
           transactionReferenceNumber: this.transactionReferenceNumber,
-          payload,
+          payload: adjustedPayload,
         });
 
         const tempIndex = this.getTempFlightIndex(flightGroup);
-        this.removeTempFlight(tempIndex);
+        if (tempIndex > -1) {
+          this.removeTempFlight(tempIndex);
+        }
 
-        this.fetchFlights(this.transactionReferenceNumber);
+        await this.fetchFlights(this.transactionReferenceNumber);
       } catch (err) {
         console.error(err);
       } finally {
@@ -102,12 +131,49 @@ export default {
       }
     },
     async handleEditFlight(payload) {
+      const group = this.getFlightGroup(payload.flightGroup);
       try {
-        await this.createFlight({
-          transactionReferenceNumber: this.transactionReferenceNumber,
-          payload,
-        });
+        const promises = [];
 
+        if (payload.arrivalFlightNumber) {
+          const flight = {
+            flightId: group.arrival?.id,
+            flightNumber: payload.arrivalFlightNumber,
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            arrivalDate: payload.arrivalDate,
+            arrivalTime: payload.arrivalTime,
+          };
+          if (!flight.flightId) {
+            delete flight.flightId;
+            delete flight.flightNumber;
+            flight.arrivalFlightNumber = payload.arrivalFlightNumber;
+            this.handleCreateFlight(flight, payload.flightGroup, true);
+          } else {
+            promises.push(this.updateFlight(flight));
+          }
+        }
+
+        if (payload.departureFlightNumber) {
+          const flight = {
+            flightId: group.departure?.id,
+            flightNumber: payload.departureFlightNumber,
+            firstName: payload.firstName,
+            lastName: payload.lastName,
+            departureDate: payload.departureDate,
+            departureTime: payload.departureTime,
+          };
+          if (!flight.flightId) {
+            delete flight.flightId;
+            delete flight.flightNumber;
+            flight.departureFlightNumber = payload.departureFlightNumber;
+            this.handleCreateFlight(flight, payload.flightGroup, true);
+          } else {
+            promises.push(this.updateFlight(flight));
+          }
+        }
+
+        await Promise.all(promises);
         this.fetchFlights(this.transactionReferenceNumber);
       } catch (err) {
         console.error(err);
@@ -118,14 +184,12 @@ export default {
     setEditingGroupId(groupId) {
       this.editingGroupId = groupId;
     },
-    async handleDeleteFlight(groupId) {
+    async handleDeleteFlight(groupId = this.flightGroupToBeDeleted) {
       const tempIndex = this.getTempFlightIndex(groupId);
       if (tempIndex > -1) {
         this.removeTempFlight(tempIndex);
       } else {
-        const group = this.groupedFlights.find(
-          (g) => g.flightGroup === groupId
-        );
+        const group = this.getFlightGroup(groupId);
         const promises = [
           ...(group?.arrival
             ? [this.deleteFlight({ flightId: group.arrival.id })]
@@ -141,7 +205,6 @@ export default {
         if (promises.length > 0) {
           try {
             await Promise.all(promises);
-
             this.fetchFlights(this.$route.params.referenceNumber);
           } catch (err) {
             console.error(err);
@@ -149,6 +212,7 @@ export default {
         }
       }
 
+      this.dialog = false;
       if (this.editingGroupId === groupId) {
         this.editingGroupId = null;
       }
@@ -178,7 +242,7 @@ export default {
     },
   },
   computed: {
-    ...mapState("transaction", ["flights", "dialog"]),
+    ...mapState("transaction", ["flights", "loading"]),
     transactionReferenceNumber() {
       return this.$route.params.referenceNumber;
     },

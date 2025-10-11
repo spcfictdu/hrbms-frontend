@@ -107,7 +107,6 @@ export const transaction = {
       dispatch("alerts/requireAlertFn", 2, {
         root: true,
       });
-      commit("SET_LOADING", { key: "form", value: true });
       commit("SET_LOADING", { key: "dialog", value: true });
       try {
         const response = await this.$axios.delete(url, { data: payload });
@@ -122,8 +121,7 @@ export const transaction = {
         });
         return err.response.data;
       } finally {
-        commit("SET_LOADING", { key: "form", value: true });
-        commit("SET_LOADING", { key: "dialog", value: true });
+        commit("SET_LOADING", { key: "dialog", value: false });
         commit("SET_DIALOG", { key: "confirmation", value: false });
       }
     },
