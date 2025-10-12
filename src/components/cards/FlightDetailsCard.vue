@@ -94,7 +94,7 @@
 
 <script>
 import FlightDetailsForm from "@/components/hotel-rooms/forms/FlightDetailsForm.vue";
-import { parse, compareAsc, format } from "date-fns";
+import { parse, compareAsc, format, isValid } from "date-fns";
 
 export default {
   name: "FlightDetailsCard",
@@ -205,25 +205,40 @@ export default {
       if (!arrival && !departure) return null;
 
       const now = new Date();
-      let eta, etd;
+      let eta = null;
+      let etd = null;
 
-      if (arrival) {
+      if (arrival?.arrival_date && arrival.arrival_time) {
         const etaString = `${arrival.arrival_date} ${arrival.arrival_time}`;
-        eta = parse(etaString, "yyyy-MM-dd HH:mm:ss", new Date());
+        const parsedEta = parse(etaString, "yyyy-MM-dd HH:mm:ss", new Date());
+        if (isValid(parsedEta)) {
+          eta = parsedEta;
+        }
       }
 
-      if (departure) {
+      if (departure?.departure_date && departure.departure_time) {
         const etdString = `${departure.departure_date} ${departure.departure_time}`;
-        etd = parse(etdString, "yyyy-MM-dd HH:mm:ss", new Date());
+        const parsedEtd = parse(etdString, "yyyy-MM-dd HH:mm:ss", new Date());
+        if (isValid(parsedEtd)) {
+          etd = parsedEtd;
+        }
       }
 
-      if (eta && compareAsc(now, eta) < 0) {
-        return "ARRIVING";
-      } else if (etd && compareAsc(now, etd) < 0) {
-        return arrival ? "ARRIVED" : "DEPARTING";
-      } else {
-        return "DEPARTED";
+      if (eta && !etd) {
+        return compareAsc(now, eta) < 0 ? "ARRIVING" : "ARRIVED";
+      } else if (!eta && etd) {
+        return compareAsc(now, etd) < 0 ? "DEPARTING" : "DEPARTED";
+      } else if (eta && etd) {
+        if (compareAsc(now, eta) < 0) {
+          return "ARRIVING";
+        } else if (compareAsc(eta, now) <= 0 && compareAsc(now, etd) < 0) {
+          return "ARRIVED";
+        } else {
+          return "DEPARTED";
+        }
       }
+
+      return null;
     },
     flightLabel() {
       if (!this.flightGroup || !this.flightStatus) return null;
