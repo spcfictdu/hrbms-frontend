@@ -132,7 +132,7 @@
 
       <v-col>
         <v-btn
-          :loading="loading.form"
+          :loading="loading.flightForm"
           block
           depressed
           color="primary"

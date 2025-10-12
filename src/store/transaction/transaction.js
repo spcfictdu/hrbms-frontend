@@ -14,6 +14,7 @@ export const transaction = {
     loading: {
       dialog: false,
       form: false,
+      flightForm: false,
       cancel: false,
       header: false,
     },
@@ -60,7 +61,7 @@ export const transaction = {
       dispatch("alerts/requireAlertFn", 2, {
         root: true,
       });
-      commit("SET_LOADING", { key: "form", value: true });
+      commit("SET_LOADING", { key: "flightForm", value: true });
       try {
         const response = await this.$axios.post(url, payload);
         dispatch("alerts/triggerSuccess", response.data.message, {
@@ -75,7 +76,7 @@ export const transaction = {
         });
         return err.response.data;
       } finally {
-        commit("SET_LOADING", { key: "form", value: false });
+        commit("SET_LOADING", { key: "flightForm", value: false });
       }
     },
     async updateFlight(
@@ -87,7 +88,7 @@ export const transaction = {
       dispatch("alerts/requireAlertFn", 2, {
         root: true,
       });
-      commit("SET_LOADING", { key: "form", value: true });
+      commit("SET_LOADING", { key: "flightForm", value: true });
 
       try {
         const response = await this.$axios.put(url, payload);
@@ -103,7 +104,7 @@ export const transaction = {
         });
         return err.response.data;
       } finally {
-        commit("SET_LOADING", { key: "form", value: false });
+        commit("SET_LOADING", { key: "flightForm", value: false });
       }
     },
     async deleteFlight(
