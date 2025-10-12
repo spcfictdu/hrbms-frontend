@@ -66,6 +66,7 @@ export const transaction = {
         dispatch("alerts/triggerSuccess", response.data.message, {
           root: true,
         });
+        dispatch("fetchFlights", transactionReferenceNumber);
         return response;
       } catch (err) {
         console.error("Error creating flight: ", err);
@@ -77,7 +78,10 @@ export const transaction = {
         commit("SET_LOADING", { key: "form", value: false });
       }
     },
-    async updateFlight({ commit, dispatch }, payload) {
+    async updateFlight(
+      { commit, dispatch },
+      { transactionReferenceNumber, payload }
+    ) {
       const url = "transaction/flight/update";
 
       dispatch("alerts/requireAlertFn", 2, {
@@ -90,6 +94,7 @@ export const transaction = {
         dispatch("alerts/triggerSuccess", response.data.message, {
           root: true,
         });
+        dispatch("fetchFlights", transactionReferenceNumber);
         return response;
       } catch (err) {
         console.error("Error updating flight: ", err);
@@ -101,7 +106,10 @@ export const transaction = {
         commit("SET_LOADING", { key: "form", value: false });
       }
     },
-    async deleteFlight({ commit, dispatch }, payload) {
+    async deleteFlight(
+      { commit, dispatch },
+      { transactionReferenceNumber, payload }
+    ) {
       const url = "transaction/flight/delete";
 
       dispatch("alerts/requireAlertFn", 2, {
@@ -113,6 +121,7 @@ export const transaction = {
         dispatch("alerts/triggerSuccess", response.data.message, {
           root: true,
         });
+        dispatch("fetchFlights", transactionReferenceNumber);
         return response;
       } catch (err) {
         console.error("Error deleting flight: ", err);

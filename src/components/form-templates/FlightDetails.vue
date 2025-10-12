@@ -11,7 +11,7 @@
         <v-col
           cols="12"
           v-for="group in groupedFlights"
-          :key="group.flightGroup"
+          :key="`group-${group.flightGroup}`"
         >
           <FlightDetailsCard
             @edit="setEditingGroupId"
@@ -21,7 +21,11 @@
             @submit="handleEditFlight"
           />
         </v-col>
-        <v-col cols="12" v-for="temp in tempFlights" :key="temp.flightGroup">
+        <v-col
+          cols="12"
+          v-for="temp in tempFlights"
+          :key="`temp-${temp.flightGroup}`"
+        >
           <FlightDetailsCard
             @edit="setEditingGroupId"
             @delete="prepareFlightDeletion"
@@ -112,9 +116,10 @@ export default {
         ...payload,
         flightGroup,
       };
+      const transactionReferenceNumber = this.transactionReferenceNumber;
       try {
         await this.createFlight({
-          transactionReferenceNumber: this.transactionReferenceNumber,
+          transactionReferenceNumber,
           payload: adjustedPayload,
         });
 
@@ -122,8 +127,6 @@ export default {
         if (tempIndex > -1) {
           this.removeTempFlight(tempIndex);
         }
-
-        await this.fetchFlights(this.transactionReferenceNumber);
       } catch (err) {
         console.error(err);
       } finally {
@@ -132,6 +135,7 @@ export default {
     },
     async handleEditFlight(payload) {
       const group = this.getFlightGroup(payload.flightGroup);
+      const transactionReferenceNumber = this.transactionReferenceNumber;
       try {
         const promises = [];
 
@@ -148,9 +152,14 @@ export default {
             delete flight.flightId;
             delete flight.flightNumber;
             flight.arrivalFlightNumber = payload.arrivalFlightNumber;
-            this.handleCreateFlight(flight, payload.flightGroup, true);
+            promises.push(this.handleCreateFlight(flight, payload.flightGroup));
           } else {
-            promises.push(this.updateFlight(flight));
+            promises.push(
+              this.updateFlight({
+                transactionReferenceNumber,
+                payload: flight,
+              })
+            );
           }
         }
 
@@ -167,14 +176,20 @@ export default {
             delete flight.flightId;
             delete flight.flightNumber;
             flight.departureFlightNumber = payload.departureFlightNumber;
-            this.handleCreateFlight(flight, payload.flightGroup, true);
+            promises.push(this.handleCreateFlight(flight, payload.flightGroup));
           } else {
-            promises.push(this.updateFlight(flight));
+            promises.push(
+              this.updateFlight({
+                transactionReferenceNumber,
+                payload: flight,
+              })
+            );
           }
         }
 
-        await Promise.all(promises);
-        this.fetchFlights(this.transactionReferenceNumber);
+        if (promises.length > 0) {
+          await Promise.all(promises);
+        }
       } catch (err) {
         console.error(err);
       } finally {
@@ -186,26 +201,32 @@ export default {
     },
     async handleDeleteFlight(groupId = this.flightGroupToBeDeleted) {
       const tempIndex = this.getTempFlightIndex(groupId);
+      const transactionReferenceNumber = this.transactionReferenceNumber;
+
       if (tempIndex > -1) {
         this.removeTempFlight(tempIndex);
       } else {
         const group = this.getFlightGroup(groupId);
-        const promises = [
-          ...(group?.arrival
-            ? [this.deleteFlight({ flightId: group.arrival.id })]
-            : []),
-          ...(group?.departure
-            ? [
-                this.deleteFlight({
-                  flightId: group.departure.id,
-                }),
-              ]
-            : []),
-        ];
+        const promises = [];
+        if (group.arrival?.id) {
+          promises.push(
+            this.deleteFlight({
+              transactionReferenceNumber,
+              payload: { flightId: group.arrival.id },
+            })
+          );
+        }
+        if (group.departure?.id) {
+          promises.push(
+            this.deleteFlight({
+              transactionReferenceNumber,
+              payload: { flightId: group.departure.id },
+            })
+          );
+        }
         if (promises.length > 0) {
           try {
             await Promise.all(promises);
-            this.fetchFlights(this.$route.params.referenceNumber);
           } catch (err) {
             console.error(err);
           }
