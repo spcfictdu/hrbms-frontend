@@ -1,11 +1,11 @@
 <template>
   <div>
-    <header-booking-slot
+    <HeaderBookingSlot
       @button-event="handleCancelButton"
       :headerData="headerData"
       :loading="loading.cancel"
     >
-    </header-booking-slot>
+    </HeaderBookingSlot>
 
     <v-form
       ref="form"
@@ -13,25 +13,12 @@
       @submit.prevent="handleTransactionUpdate"
     >
       <v-row>
-        <v-col cols="12" md="6" v-if="isStaff">
-          <!-- <v-divider />
-          <transaction-template
-            :statuses="statuses"
-            @emit-transaction="assignPayload"
-          />
-
-          <v-divider />
-          <DiscountTemplate @emit-transaction="assignPayload" />
-
-          <v-divider />
-          <payment-template
-            :isGreater="totalPayment"
-            @emit-transaction="assignPayload"
-          /> -->
+        <v-col cols="12" md="6">
+          <v-divider class="mb-2" />
+          <FlightDetails />
         </v-col>
-        <v-col cols="12" :md="isStaff ? 6 : 12">
-          <!-- Booking Summary -->
-          <v-divider />
+        <v-col cols="12" md="6">
+          <v-divider class="mb-2" />
           <BookingSummary
             ref="bookingSummary"
             :loading="loading.form"
@@ -54,23 +41,17 @@
 </template>
 
 <script>
-import TransactionTemplate from "@/components/form-templates/TransactionTemplate.vue";
 import HeaderBookingSlot from "../../slots/HeaderBookingSlot.vue";
-import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
+import FlightDetails from "@/components/form-templates/FlightDetails.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
-import DiscountTemplate from "@/components/form-templates/DiscountTemplate.vue";
-import PrintingFunction from "@/mixins/PrintingFunction";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import { mapState } from "vuex";
 export default {
   name: "ConfirmationForm",
-  mixins: [PrintingFunction],
   components: {
     HeaderBookingSlot,
-    TransactionTemplate,
-    PaymentTemplate,
+    FlightDetails,
     BookingSummary,
-    DiscountTemplate,
     ConfirmationDialog,
   },
   props: {

@@ -10,13 +10,13 @@
       <v-row>
         <v-col cols="12" md="6">
           <!-- Checked-in/out -->
-          <v-divider />
+          <v-divider class="mb-2" />
           <check-in-out-details :cardTimeInformation="cardTimeInformation" />
           <FlightDetails />
         </v-col>
         <v-col cols="12" md="6">
           <!-- Booking Summary -->
-          <v-divider></v-divider>
+          <v-divider class="mb-2" />
           <booking-summary
             ref="bookingSummary"
             :queryParams="receiptQuery"

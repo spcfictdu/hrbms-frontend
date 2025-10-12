@@ -59,11 +59,15 @@ export default {
       "deleteReservation",
       "updateTransaction",
       "setLoading",
+      "fetchFlights",
     ]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("cashier", ["fetchSessions"]),
     fetch: async function () {
-      await this.fetchTransaction(this.referenceNumber);
+      await Promise.all([
+        this.fetchTransaction(this.referenceNumber),
+        this.fetchFlights(this.referenceNumber),
+      ]);
 
       if (this.userRole === "ADMIN" || this.userRole === "FRONT DESK")
         await this.fetchSessions();
