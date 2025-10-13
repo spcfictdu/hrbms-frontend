@@ -10,6 +10,7 @@
     :items-per-page="itemsPerPage"
     :options="options"
     :disable-sort="disableSort"
+    :item-class="itemClass"
     @update:options="$emit('update:options', $event)"
     @click:row="$emit('click:row', $event)"
     elevation="0"
@@ -29,6 +30,7 @@ export default {
     headers: Array,
     items: Array,
     itemKey: String,
+    itemClass: String | Function,
     loading: Boolean,
     footerProps: Object,
     height: String,
