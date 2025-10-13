@@ -18,6 +18,7 @@ import { alerts } from "@/store/alerts/alerts";
 import { dialogs } from "./dialogs/dialogs";
 import { cashier } from "./cashier/cashier";
 import { vouchers } from "./vouchers/vouchers";
+import { reports } from "./reports/reports";
 
 // Enums
 import {
@@ -47,6 +48,7 @@ export default new Vuex.Store({
     account,
     cashier,
     vouchers,
+    reports,
 
     // Enums
     roomTypeEnum,

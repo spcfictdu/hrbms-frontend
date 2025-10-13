@@ -5,7 +5,8 @@
         <v-col
           cols="0"
           sm="0"
-          md="3"
+          md="2"
+          lg="3"
           xl="4"
           class="d-none d-md-flex justify-start"
         >
@@ -25,9 +26,9 @@
 
         <v-col
           cols="12"
-          md="6"
+          md="8"
+          lg="7"
           xl="4"
-          offset-md="0"
           class="d-md-flex align-center justify-center"
         >
           <!-- Text variant -->
@@ -98,7 +99,8 @@
         <v-col
           cols="0"
           sm="0"
-          md="3"
+          md="2"
+          lg="2"
           xl="4"
           class="d-none d-md-flex justify-end"
         >
@@ -183,6 +185,12 @@ export default {
           icon: "mdi-cash-register",
           childRouteNames: [],
         },
+        {
+          name: "Reports",
+          route: "Reports",
+          icon: "mdi-file-document",
+          childRouteNames: ["GuestReports", "FlightReports", "CashierReports"],
+        },
       ];
     },
     isAdmin() {
@@ -207,6 +215,10 @@ export default {
         ).userId;
         route.route.params.id = String(id);
         return this.$router.push(route.route);
+      }
+
+      if (route.childRouteNames.length) {
+        return this.$router.push({ name: route.childRouteNames[0] });
       }
 
       return this.$router.push({ name: route.route });
