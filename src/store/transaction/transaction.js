@@ -10,6 +10,7 @@ export const transaction = {
   state: () => ({
     transactions: null,
     transaction: null,
+    payment: null,
     previousTransactions: null,
     loading: {
       dialog: false,
@@ -26,6 +27,7 @@ export const transaction = {
   }),
   getters: {},
   mutations: {
+    SET_PAYMENT: (state, data) => (state.payment = data),
     SET_TRANSACTIONS: (state, data) => (state.transactions = data),
     SET_TRANSACTION: (state, data) => (state.transaction = data),
     SET_DIALOG: (state, { key, value }) => (state.dialog[key] = value),
@@ -39,6 +41,18 @@ export const transaction = {
   actions: {
     setLoading: function ({ commit }, { key, value }) {
       commit("SET_LOADING", { key, value });
+    },
+    async fetchPayment({ commit }, payload) {
+      const url = "transaction/payment/show";
+
+      try {
+        const response = await this.$axios.get(url, { params: payload });
+        commit("SET_PAYMENT", response.data);
+        return response;
+      } catch (err) {
+        console.error(err);
+        return err.response.data;
+      }
     },
     async fetchFlights({ commit }, transactionReferenceNumber) {
       const url = `transaction/${transactionReferenceNumber}/flight`;

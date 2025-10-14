@@ -33,22 +33,6 @@ export default {
     loaderVal: false,
     loaderTimeout: null,
   }),
-  computed: {
-    mappedDetails() {
-      return [
-        {
-          name: "Total Payment",
-          value: "Test",
-          styles: "light-green--text text--accent-4",
-        },
-        {
-          name: "Total Balance",
-          value: "299",
-          styles: "red--text text--accent-4",
-        },
-      ];
-    },
-  },
   watch: {
     "headerDetails.length": {
       immediate: true,

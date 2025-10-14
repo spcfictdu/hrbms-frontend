@@ -58,14 +58,16 @@ export default {
 
   methods: {
     handleSelectRow(row) {
-      if (this.history?.data)
-        this.$router.push({
-          name: "Cashier Transaction Details",
-          params: {
-            ...this.$route.params,
-            transactionReferenceNumber: String(row.referenceNumber),
-          },
-        });
+      if (!this.history?.data) return;
+
+      this.$router.push({
+        name: "Cashier Payment Details",
+        params: {
+          ...this.$route.params,
+          transactionReferenceNumber: String(row.referenceNumber),
+          paymentId: String(row.paymentId),
+        },
+      });
     },
   },
 

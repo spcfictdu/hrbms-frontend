@@ -51,4 +51,15 @@ export default [
       // onlyAdmin: true,
     },
   },
+  {
+    path: "/cashier-payments/:drawerNumber/:id/:transactionReferenceNumber/:paymentId",
+    name: "Cashier Payment Details",
+    component: () => import("@/views/cashier/CashierPaymentDetailsView.vue"),
+    props: true,
+    meta: {
+      name: "Cashier Payment Details",
+      selectedMainNav: "Cashier Terminal",
+      // onlyAdmin: true,
+    },
+  },
 ];
