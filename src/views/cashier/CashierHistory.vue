@@ -47,7 +47,6 @@
           :fetchingTab="getTab(activeTab)"
           @route-event="redirectRoute"
           @onQuery="getTab('transaction').fetch($event)"
-          keep
         />
       </keep-alive>
     </RouteLoader>

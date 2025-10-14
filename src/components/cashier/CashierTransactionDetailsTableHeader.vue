@@ -34,12 +34,15 @@ export default {
   }),
   computed: {
     mappedDetails() {
-      return {
+      const details = {
         "Guest Name": this.headerDetails?.guestName,
         "Reference Number": this.headerDetails?.referenceNumber,
-        "Total Purchase": this.headerDetails?.totalPurchase.toFixed(2),
         Date: this.headerDetails?.date,
       };
+      if (this.headerDetails.totalPurchase)
+        details["Total Purchase"] = this.headerDetails.totalPurchase.toFixed(2);
+
+      return details;
     },
   },
   watch: {

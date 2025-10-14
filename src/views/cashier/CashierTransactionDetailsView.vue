@@ -24,8 +24,8 @@
 
         <v-col cols="12" md="4" lg="3">
           <CashierTransactionPaymentsTable
-            :transactionDetails="transaction"
-            :payments="transaction?.paymentSummary"
+            :tableHead="tableHead"
+            :mappedItems="mappedItems"
           />
         </v-col>
       </v-row>
@@ -137,7 +137,7 @@ export default {
         room.voucherCode = this.transaction.priceSummary.voucherCode;
       }
 
-      this.fetchRoom(room);
+      await this.fetchRoom(room);
     },
 
     async handleTransactionUpdate(payload) {
@@ -159,6 +159,61 @@ export default {
   computed: {
     ...mapState("transaction", ["transaction", "loading"]),
     ...mapState("cashier", ["dialog"]),
+    ...mapState("roomEnum", ["room"]),
+
+    tableHead() {
+      const totalPayment = this.transaction?.paymentSummary.reduce(
+        (total, prev) => total + Number(prev.amountReceived),
+        0
+      );
+
+      const extraPersonTotal =
+        (this.room && this.room.length > 0 && this.room[0]?.extraPersonTotal) ||
+        0;
+
+      const totalPurchase =
+        this.transaction?.priceSummary.finalRoomTotal +
+        extraPersonTotal +
+        this.transaction?.priceSummary.fullAddons.reduce((total, addon) => {
+          if (addon.paymentStatus === "VOIDED") return total;
+          return total + addon.total;
+        }, 0);
+
+      const totalBalance = totalPayment - totalPurchase;
+
+      return [
+        {
+          headerText: "Total Payment",
+          value: {
+            text: `+${totalPayment?.toFixed(2)}`,
+            styles: "cash--text",
+          },
+        },
+        {
+          headerText: "Total Balance",
+          value: {
+            text:
+              totalBalance > 0
+                ? `+${totalBalance.toFixed(2)}`
+                : totalBalance.toFixed(2),
+            styles: totalBalance >= 0 ? "cash--text" : "red--text",
+          },
+        },
+      ];
+    },
+
+    mappedItems() {
+      if (!this.transaction) return [];
+
+      const withAmount = this.transaction?.paymentSummary.filter(
+        (p) => p.amountReceived !== "0.00"
+      );
+
+      return withAmount.map((p) => ({
+        amount: `+${p.amountReceived}`,
+        paymentMethod: p.paymentType,
+      }));
+    },
 
     headerText() {
       const mode = this.$route.query.mode;
