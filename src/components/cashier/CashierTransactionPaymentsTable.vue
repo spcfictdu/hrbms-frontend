@@ -1,12 +1,12 @@
 <template>
   <v-card flat>
-    <CashierTransactionPaymentsTableHeader :headerDetails="headerDetails" />
+    <CashierTransactionPaymentsTableHeader :headerDetails="tableHead" />
 
     <div class="px-5 pb-5">
       <DefaultTable
         :headers="headers"
-        :items="mappedPayments"
-        :height="mappedPayments.length > 4 ? '264px' : undefined"
+        :items="mappedItems"
+        :height="mappedItems.length > 4 ? '264px' : undefined"
         fixedHeader
         hideDefaultFooter
       >
@@ -25,12 +25,14 @@
 <script>
 import DefaultTable from "../tables/DefaultTable.vue";
 import CashierTransactionPaymentsTableHeader from "./CashierTransactionPaymentsTableHeader.vue";
-import { mapState } from "vuex";
 
 export default {
   name: "CashierTransactionPaymentsTable",
   components: { CashierTransactionPaymentsTableHeader, DefaultTable },
-  props: { payments: Array, transactionDetails: Object },
+  props: {
+    tableHead: Array,
+    mappedItems: Array,
+  },
   data: () => ({
     headers: [
       {
@@ -53,60 +55,6 @@ export default {
       };
 
       return statusColors[paymentMethod];
-    },
-  },
-  computed: {
-    ...mapState("roomEnum", ["room"]),
-
-    headerDetails() {
-      const totalPayment = this.transactionDetails?.paymentSummary.reduce(
-        (total, prev) => total + Number(prev.amountReceived),
-        0
-      );
-
-      const totalPurchase =
-        this.transactionDetails?.priceSummary.finalRoomTotal +
-        this.room[0]?.extraPersonTotal +
-        this.transactionDetails?.priceSummary.fullAddons.reduce(
-          (total, addon) => {
-            if (addon.paymentStatus === "VOIDED") return total;
-            return total + addon.total;
-          },
-          0
-        );
-
-      const totalBalance = totalPayment - totalPurchase;
-
-      return [
-        {
-          headerText: "Total Payment",
-          value: {
-            text: `+${totalPayment.toFixed(2)}`,
-            styles: "cash--text",
-          },
-        },
-        {
-          headerText: "Total Balance",
-          value: {
-            text:
-              totalBalance > 0
-                ? `+${totalBalance.toFixed(2)}`
-                : totalBalance.toFixed(2),
-            styles: totalBalance >= 0 ? "cash--text" : "red--text",
-          },
-        },
-      ];
-    },
-
-    mappedPayments() {
-      const withAmount = this.transactionDetails?.paymentSummary.filter(
-        (p) => p.amountReceived !== "0.00"
-      );
-
-      return withAmount.map((p) => ({
-        amount: `+${p.amountReceived}`,
-        paymentMethod: p.paymentType,
-      }));
     },
   },
 };
