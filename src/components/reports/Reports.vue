@@ -109,7 +109,6 @@
 
 <script>
 import DefaultTable from "../tables/DefaultTable.vue";
-import { mapGetters } from "vuex";
 import { format } from "date-fns";
 
 export default {
@@ -129,12 +128,12 @@ export default {
       selectedDate: "",
     };
   },
-  computed: {
-    ...mapGetters("reports", ["reportDate"]),
-  },
   watch: {
-    reportDate(newVal) {
-      this.selectedDate = newVal;
+    "$route.query.date": {
+      handler(newDate) {
+        this.selectedDate = newDate || format(new Date(), "yyyy-MM-dd");
+      },
+      immediate: true,
     },
   },
   methods: {
@@ -145,9 +144,6 @@ export default {
     rowClass() {
       return "custom-row";
     },
-  },
-  created() {
-    this.selectedDate = this.reportDate || format(new Date(), "yyyy-MM-dd");
   },
 };
 </script>
