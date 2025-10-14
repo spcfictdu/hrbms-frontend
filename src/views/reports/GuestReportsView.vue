@@ -3,12 +3,26 @@
     :buttons="buttons"
     :headers="headers"
     :items="items"
-    :menuItems="menuItems"
     :statusColors="statusColors"
     @statusselect="selectStatus"
     :selectedStatus="selectedStatus"
     @dateselect="selectDate"
-  />
+  >
+    <div v-if="selectedStatus !== 'In-house'" class="mt-4">
+      <v-btn
+        v-for="tab in tabs"
+        :key="tab.text"
+        rounded
+        depressed
+        :color="activeTab === tab.text ? 'primary' : 'lightBg'"
+        :class="{ 'inactive-tab': activeTab !== tab.text }"
+        class="font-weight-bold px-6 mr-2"
+        @click="activeTab = tab.text"
+      >
+        {{ tab.text }}
+      </v-btn>
+    </div>
+  </Reports>
 </template>
 
 <script>
@@ -22,6 +36,7 @@ export default {
   data() {
     return {
       selectedStatus: "",
+      activeTab: "",
       headers: [
         { text: "Time", value: "time", width: 100, align: "center" },
         { text: "Guest Name", value: "guestName", align: "center" },
@@ -30,6 +45,7 @@ export default {
         { text: "Floor", value: "floor", align: "center" },
         { text: "Status", value: "status", align: "center" },
       ],
+      tabs: [{ text: "Expected" }, { text: "Actual" }],
       statusColors: {
         "Checked In": "checkedin",
         "Checked Out": "housekeeping",
@@ -63,11 +79,18 @@ export default {
     },
   },
   watch: {
-    "$route.query.date": {
-      handler(newDate) {
-        const dateToUse = newDate || format(new Date(), "yyyy-MM-dd");
+    "$route.query": {
+      handler(newQuery) {
+        this.selectedStatus = newQuery.status || "";
+        this.activeTab = newQuery.tab || "";
+        const dateToUse = newQuery.date || format(new Date(), "yyyy-MM-dd");
         if (dateToUse !== this.reportDate) {
           this.fetchGuestReports({ date: dateToUse });
+        }
+        if (this.selectedStatus === "In-house") {
+          this.activeTab = "";
+        } else if (!newQuery.tab) {
+          this.activeTab = "Expected";
         }
       },
       immediate: true,
@@ -78,6 +101,23 @@ export default {
         const targetStatus = newVal || undefined;
         if (currentStatus !== targetStatus) {
           const newQuery = { ...this.$route.query, status: targetStatus };
+          try {
+            await this.$router.replace({ query: newQuery });
+          } catch (err) {
+            if (err.name !== "NavigationDuplicated") {
+              throw err;
+            }
+          }
+        }
+      },
+      immediate: false,
+    },
+    activeTab: {
+      handler: async function (newVal) {
+        const currentTab = this.$route.query.tab;
+        const targetTab = newVal || undefined;
+        if (currentTab !== targetTab) {
+          const newQuery = { ...this.$route.query, tab: targetTab };
           try {
             await this.$router.replace({ query: newQuery });
           } catch (err) {
@@ -121,18 +161,34 @@ export default {
       });
     },
     reports() {
-      const checkIns = (status = "Checked In") => [
-        ...this.mapWithStatus(this.allCheckIns.expected, status),
-        ...this.mapWithStatus(this.allCheckIns.actual, status),
-      ];
-      const checkOuts = (status = "Checked Out") => [
-        ...this.mapWithStatus(this.allCheckOuts.expected, status),
-        ...this.mapWithStatus(this.allCheckOuts.actual, status),
-      ];
-      const inHouse = (status = "In-house") =>
-        this.mapWithStatus(this.inHouse, status);
+      const getGuestData = (expected, actual, tab, status) => {
+        let data;
+        if (tab === "Expected") {
+          data = expected;
+        } else if (tab === "Actual") {
+          data = actual;
+        } else {
+          data = [...expected, ...actual];
+        }
+        return this.mapWithStatus(data, status);
+      };
+      const checkIns = () =>
+        getGuestData(
+          this.allCheckIns.expected,
+          this.allCheckIns.actual,
+          this.activeTab,
+          "Checked In"
+        );
+      const checkOuts = () =>
+        getGuestData(
+          this.allCheckOuts.expected,
+          this.allCheckOuts.actual,
+          this.activeTab,
+          "Checked Out"
+        );
+      const inHouseGuests = () => this.mapWithStatus(this.inHouse, "In-house");
       if (!this.selectedStatus) {
-        return [...checkIns(), ...checkOuts(), ...inHouse()];
+        return [...checkIns(), ...checkOuts(), ...inHouseGuests()];
       }
 
       switch (this.selectedStatus) {
@@ -141,21 +197,28 @@ export default {
         case "Check Outs":
           return checkOuts();
         case "In-house":
-          return inHouse();
+          return inHouseGuests();
         default:
           return [];
       }
     },
     buttons() {
+      const getCount = (expected, actual) => {
+        if (this.activeTab === "Expected") {
+          return expected.length;
+        }
+        if (this.activeTab === "Actual") {
+          return actual.length;
+        }
+        return expected.length + actual.length;
+      };
       return [
         {
-          count:
-            this.allCheckIns.expected.length + this.allCheckIns.actual.length,
+          count: getCount(this.allCheckIns.expected, this.allCheckIns.actual),
           status: "Check Ins",
         },
         {
-          count:
-            this.allCheckOuts.expected.length + this.allCheckOuts.actual.length,
+          count: getCount(this.allCheckOuts.expected, this.allCheckOuts.actual),
           status: "Check Outs",
         },
         {
@@ -164,9 +227,6 @@ export default {
         },
       ];
     },
-  },
-  created() {
-    this.selectedStatus = this.$route.query.status || "";
   },
 };
 </script>

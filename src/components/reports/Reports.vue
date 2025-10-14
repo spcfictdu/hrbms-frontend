@@ -26,7 +26,7 @@
       </v-btn>
     </div>
 
-    <v-row class="d-none d-sm-flex">
+    <v-row>
       <v-col v-for="(item, index) in buttons" :key="index">
         <v-btn
           height="90"
@@ -61,6 +61,8 @@
         </v-btn>
       </v-col>
     </v-row>
+
+    <slot />
 
     <DefaultTable
       class="my-6"
@@ -117,7 +119,7 @@ export default {
     headers: Array,
     buttons: Array,
     items: Array,
-    menuItems: Array,
+    // menuItems: Array,
     statusColors: Object,
     selectedStatus: String,
   },
