@@ -23,17 +23,12 @@ export default {
     return {
       selectedStatus: "",
       headers: [
-        { text: "Time", value: "time", width: 100 },
-        { text: "Guest Name", value: "guestName" },
-        { text: "Date", value: "date" },
-        { text: "Room", value: "room" },
-        { text: "Floor", value: "floor" },
-        { text: "Status", value: "status" },
-        { text: "", value: "menu", sortable: false },
-      ],
-      menuItems: [
-        { text: "", action: () => {} },
-        { text: "", action: () => {} },
+        { text: "Time", value: "time", width: 100, align: "center" },
+        { text: "Guest Name", value: "guestName", align: "center" },
+        { text: "Date", value: "date", align: "center" },
+        { text: "Room", value: "room", align: "center" },
+        { text: "Floor", value: "floor", align: "center" },
+        { text: "Status", value: "status", align: "center" },
       ],
       statusColors: {
         "Checked In": "checkedin",

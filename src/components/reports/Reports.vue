@@ -1,36 +1,35 @@
 <template>
   <div>
-    <v-menu
-      v-model="dateMenu"
-      :close-on-content-click="false"
-      transition="scale-transition"
-      offset-y
-      min-width="auto"
-    >
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          outlined
-          icon
-          color="primary"
-          class="my-5"
-          v-bind="attrs"
-          v-on="on"
-        >
-          <v-icon>mdi-filter-variant</v-icon>
-        </v-btn>
-      </template>
-      <v-date-picker
-        v-model="selectedDate"
-        no-title
-        scrollable
-        @input="selectDate"
-      ></v-date-picker>
-    </v-menu>
+    <div class="d-flex my-5">
+      <v-menu
+        v-model="dateMenu"
+        :close-on-content-click="false"
+        transition="scale-transition"
+        offset-y
+        min-width="auto"
+      >
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn outlined icon color="primary" v-bind="attrs" v-on="on">
+            <v-icon>mdi-filter-variant</v-icon>
+          </v-btn>
+        </template>
+        <v-date-picker
+          v-model="selectedDate"
+          no-title
+          scrollable
+          @input="selectDate"
+        ></v-date-picker>
+      </v-menu>
+
+      <v-btn class="ml-3" icon outlined color="primary">
+        <v-icon>mdi-printer</v-icon>
+      </v-btn>
+    </div>
 
     <v-row class="d-none d-sm-flex">
       <v-col v-for="(item, index) in buttons" :key="index">
         <v-btn
-          height="75"
+          height="90"
           x-large
           block
           depressed
@@ -64,6 +63,7 @@
     </v-row>
 
     <DefaultTable
+      class="my-6"
       :headers="headers"
       :items="items"
       :itemClass="rowClass"
@@ -79,7 +79,7 @@
           {{ item.status }}
         </v-chip>
       </template>
-      <template v-slot:[`item.menu`]="{ item }">
+      <!-- <template v-slot:[`item.menu`]="{ item }">
         <v-menu offset-x left>
           <template v-slot:activator="{ on, attrs }">
             <v-btn icon v-bind="attrs" v-on="on">
@@ -100,7 +100,7 @@
             </v-list-item>
           </v-list>
         </v-menu>
-      </template>
+      </template> -->
     </DefaultTable>
   </div>
 </template>
@@ -151,11 +151,16 @@ export default {
 </script>
 
 <style scoped>
-.v-data-table >>> tr.custom-row td {
-  height: 75px !important;
+.v-data-table {
+  background-color: transparent !important;
 }
 
-.menu-border {
+.v-data-table >>> tr.custom-row td {
+  height: 75px !important;
   border-bottom: 1px solid #e6e2e2;
 }
+
+/* .menu-border {
+  border-bottom: 1px solid #e6e2e2;
+} */
 </style>
