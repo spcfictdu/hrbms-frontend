@@ -12,7 +12,7 @@
 
 <script>
 import Reports from "@/components/reports/Reports.vue";
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapMutations } from "vuex";
 import { format, parse } from "date-fns";
 
 export default {
@@ -44,6 +44,7 @@ export default {
   },
   methods: {
     ...mapActions("reports", ["fetchFlightReports"]),
+    ...mapMutations("reports", ["RESET_FLIGHT_REPORTS"]),
     mapWithStatus(items, status) {
       return items.map((item) => ({ ...item, status }));
     },
@@ -163,6 +164,10 @@ export default {
         },
       ];
     },
+  },
+  beforeRouteLeave(_to, _from, next) {
+    this.RESET_FLIGHT_REPORTS();
+    next();
   },
 };
 </script>

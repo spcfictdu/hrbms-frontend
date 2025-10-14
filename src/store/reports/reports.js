@@ -44,6 +44,10 @@ export const reports = {
       state.flightReports.arrivals = arrivals;
       state.flightReports.departures = departures;
     },
+    RESET_FLIGHT_REPORTS: (state) => {
+      state.flightReports.arrivals.length = 0;
+      state.flightReports.departures.length = 0;
+    },
   },
   actions: {
     async fetchGuestReports({ commit }, queryParams = {}) {
