@@ -69,7 +69,8 @@
       :headers="headers"
       :items="items"
       :itemClass="rowClass"
-      hide-default-footer
+      :itemsPerPage="-1"
+      hideDefaultFooter
     >
       <template v-slot:[`item.status`]="{ item }">
         <v-chip
