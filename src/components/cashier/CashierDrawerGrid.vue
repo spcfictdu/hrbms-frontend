@@ -9,7 +9,7 @@
         lg="4"
       >
         <CashierDrawer
-          :drawerNumber="i + 1"
+          :drawerNumber="session.cashierId"
           :isFirstRow="isFirstRow(i)"
           :sessionData="session"
         />
