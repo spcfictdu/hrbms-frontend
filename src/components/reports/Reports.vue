@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="d-flex my-5">
+    <div class="d-flex my-5" :style="{ gap: '12px' }">
       <v-menu
         v-model="dateMenu"
         :close-on-content-click="false"
@@ -21,9 +21,11 @@
         ></v-date-picker>
       </v-menu>
 
-      <v-btn class="ml-3" icon outlined color="primary">
+      <v-btn icon outlined color="primary">
         <v-icon>mdi-printer</v-icon>
       </v-btn>
+
+      <slot name="icon" />
     </div>
 
     <v-row>
@@ -71,6 +73,7 @@
       :itemClass="rowClass"
       :itemsPerPage="-1"
       hideDefaultFooter
+      @click:row="$emit('click:row', $event)"
     >
       <template v-slot:[`item.status`]="{ item }">
         <v-chip

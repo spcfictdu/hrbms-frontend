@@ -52,7 +52,18 @@ export default [
           selectedMainNav: "Reports",
         },
       },
-      ,
     ],
+  },
+  {
+    path: "/cashier-reports/:cashierSessionId/:date",
+    name: "CashierReport",
+    component: () =>
+      import(
+        /* webpackChunkName: "cashierReport" */ "@/views/reports/CashierReportView.vue"
+      ),
+    meta: {
+      selectedMainNav: "Reports",
+    },
+    props: true,
   },
 ];

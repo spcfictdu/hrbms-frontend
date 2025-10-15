@@ -30,6 +30,7 @@ const mappedRoutes = {
       ...guestList.map(({ name }) => name),
       ...transaction.map(({ name }) => name),
       ...cashier.map(({ name }) => name),
+      ...reports.map(({ name }) => name),
       ...reports[0].children.map(({ name }) => name),
     ],
     "FRONT DESK": [
@@ -38,6 +39,7 @@ const mappedRoutes = {
       ...guestList.map(({ name }) => name),
       ...transaction.map(({ name }) => name),
       ...cashier.map(({ name }) => name),
+      ...reports.map(({ name }) => name),
       ...reports[0].children.map(({ name }) => name),
     ],
   },

@@ -13,6 +13,7 @@ export const reports = {
       arrivals: [],
       departures: [],
     },
+    cashierReports: [],
   }),
   getters: {
     expectedCheckIns: (state) => state.guestReports?.expectedCheckIns || [],
@@ -48,8 +49,23 @@ export const reports = {
       state.flightReports.arrivals.length = 0;
       state.flightReports.departures.length = 0;
     },
+    SET_CASHIER_REPORTS: (state, data) => (state.cashierReports = data),
   },
   actions: {
+    async fetchCashierReports({ commit }, queryParams) {
+      const url = "report/daily-cashier";
+
+      try {
+        const { data } = await this.$axios.get(url, { params: queryParams });
+        const cashierReports = data.data.slice(1);
+        commit("SET_CASHIER_REPORTS", cashierReports);
+        return cashierReports;
+      } catch (err) {
+        commit("SET_CASHIER_REPORTS", []);
+        console.error(`Error fetching cashier reports: ${err}`);
+        return err.response.data;
+      }
+    },
     async fetchGuestReports({ commit }, queryParams = {}) {
       const url = `report/daily-reservations`;
       const queryUrl = functions.query(url, queryParams);
