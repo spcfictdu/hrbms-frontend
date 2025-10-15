@@ -131,7 +131,8 @@ export default {
     ...mapActions("reports", ["fetchCashierReports"]),
     ...mapMutations("reports", ["SET_CASHIER_REPORTS"]),
 
-    redirect({ cashierSessionId }) {
+    redirect(row) {
+      const cashierSessionId = String(row.cashierSessionId);
       this.$router.push({
         name: "CashierReport",
         params: { cashierSessionId, date: this.queryDate },

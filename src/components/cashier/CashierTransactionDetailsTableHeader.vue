@@ -2,7 +2,7 @@
   <div>
     <div class="d-flex flex-wrap flex-lg-nowrap px-2">
       <div
-        v-for="(value, name, index) in mappedDetails"
+        v-for="(value, name, index) in tableHead"
         :key="name"
         :class="{ 'flex-shrink-0': index !== 0 }"
       >
@@ -27,6 +27,7 @@ export default {
   name: "CashierTransactionDetailsTableHeader",
   props: {
     headerDetails: Object,
+    tableHead: Object,
   },
   data: () => ({
     loaderVal: false,

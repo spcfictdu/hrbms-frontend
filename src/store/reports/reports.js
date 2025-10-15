@@ -38,6 +38,11 @@ export const reports = {
 
     arrivals: (state) => state.flightReports.arrivals,
     departures: (state) => state.flightReports.departures,
+
+    getCashierReport: (state) => (id) =>
+      state.cashierReports.find(
+        ({ cashierSessionId }) => cashierSessionId === Number(id)
+      ),
   },
   mutations: {
     SET_GUEST_REPORTS: (state, data) => (state.guestReports = data),
