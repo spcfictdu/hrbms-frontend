@@ -65,8 +65,13 @@
     </v-row>
 
     <slot />
-
+    <v-skeleton-loader
+      v-if="loading"
+      type="table-thead, table-tbody"
+      class="my-6"
+    />
     <DefaultTable
+      v-else
       class="my-6"
       :headers="headers"
       :items="items"
@@ -122,6 +127,10 @@ export default {
     headers: Array,
     buttons: Array,
     items: Array,
+    loading: {
+      type: Boolean,
+      default: false,
+    },
     // menuItems: Array,
     statusColors: Object,
     selectedStatus: String,
@@ -160,6 +169,19 @@ export default {
 .v-data-table >>> tr.custom-row td {
   height: 75px !important;
   border-bottom: 1px solid #e6e2e2;
+}
+
+.v-skeleton-loader >>> .v-skeleton-loader__table-thead {
+  height: 48px;
+  background-color: transparent !important;
+}
+.v-skeleton-loader >>> .v-skeleton-loader__table-tbody {
+  padding-block: 0;
+  background-color: transparent !important;
+}
+.v-skeleton-loader >>> .v-skeleton-loader__table-row {
+  height: 75px !important;
+  align-items: center;
 }
 
 /* .menu-border {

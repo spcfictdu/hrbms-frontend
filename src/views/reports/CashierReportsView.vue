@@ -4,6 +4,7 @@
     :items="mappedCashierReports"
     @dateselect="handleDateSelect"
     @click:row="redirect"
+    :loading="isCashierLoading"
   >
     <template #icon>
       <div>
@@ -36,7 +37,7 @@
 <script>
 import Reports from "@/components/reports/Reports.vue";
 import formatPrice from "@/utils/format-price";
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import { format, parseISO } from "date-fns";
 
 export default {
@@ -61,6 +62,7 @@ export default {
   },
   computed: {
     ...mapState("reports", ["cashierReports"]),
+    ...mapGetters("reports", ["isCashierLoading"]),
 
     cashierName() {
       return this.cashierReports.find(

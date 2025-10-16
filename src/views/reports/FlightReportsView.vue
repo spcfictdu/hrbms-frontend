@@ -7,6 +7,7 @@
     @statusselect="selectStatus"
     :selectedStatus="selectedStatus"
     @dateselect="selectDate"
+    :loading="isFlightLoading"
   />
 </template>
 
@@ -105,7 +106,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("reports", ["arrivals", "departures"]),
+    ...mapGetters("reports", ["arrivals", "departures", "isFlightLoading"]),
     items() {
       return this.flights.map((r) => {
         let time = "";

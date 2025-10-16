@@ -14,6 +14,11 @@ export const reports = {
       departures: [],
     },
     cashierReports: [],
+    loading: {
+      guestReports: false,
+      flightReports: false,
+      cashierReports: false,
+    },
   }),
   getters: {
     expectedCheckIns: (state) => state.guestReports?.expectedCheckIns || [],
@@ -43,6 +48,10 @@ export const reports = {
       state.cashierReports.find(
         ({ cashierSessionId }) => cashierSessionId === Number(id)
       ),
+
+    isGuestLoading: (state) => state.loading.guestReports,
+    isCashierLoading: (state) => state.loading.cashierReports,
+    isFlightLoading: (state) => state.loading.flightReports,
   },
   mutations: {
     SET_GUEST_REPORTS: (state, data) => (state.guestReports = data),
@@ -55,10 +64,15 @@ export const reports = {
       state.flightReports.departures.length = 0;
     },
     SET_CASHIER_REPORTS: (state, data) => (state.cashierReports = data),
+    SET_LOADING(state, { key, value }) {
+      state.loading[key] = value;
+    },
   },
+
   actions: {
     async fetchCashierReports({ commit }, queryParams) {
       const url = "report/daily-cashier";
+      commit("SET_LOADING", { key: "cashierReports", value: true });
 
       try {
         const { data } = await this.$axios.get(url, { params: queryParams });
@@ -68,12 +82,16 @@ export const reports = {
       } catch (err) {
         commit("SET_CASHIER_REPORTS", []);
         console.error(`Error fetching cashier reports: ${err}`);
-        return err.response.data;
+        return err.response?.data;
+      } finally {
+        commit("SET_LOADING", { key: "cashierReports", value: false });
       }
     },
+
     async fetchGuestReports({ commit }, queryParams = {}) {
       const url = `report/daily-reservations`;
       const queryUrl = functions.query(url, queryParams);
+      commit("SET_LOADING", { key: "guestReports", value: true });
 
       try {
         const response = await this.$axios.get(queryUrl);
@@ -82,12 +100,16 @@ export const reports = {
       } catch (err) {
         commit("SET_GUEST_REPORTS", null);
         console.error(`Error fetching guest reports: ${err}`);
-        return err.response.data;
+        return err.response?.data;
+      } finally {
+        commit("SET_LOADING", { key: "guestReports", value: false });
       }
     },
+
     async fetchFlightReports({ commit }, queryParams = {}) {
       const url = `report/flights-report`;
       const queryUrl = functions.query(url, queryParams);
+      commit("SET_LOADING", { key: "flightReports", value: true });
 
       try {
         const response = await this.$axios.get(queryUrl);
@@ -97,7 +119,9 @@ export const reports = {
       } catch (err) {
         commit("SET_FLIGHT_REPORTS", { arrivals: [], departures: [] });
         console.error(`Error fetching flight reports: ${err}`);
-        return err.response.data;
+        return err.response?.data;
+      } finally {
+        commit("SET_LOADING", { key: "flightReports", value: false });
       }
     },
   },

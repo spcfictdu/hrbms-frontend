@@ -7,6 +7,7 @@
     @statusselect="selectStatus"
     :selectedStatus="selectedStatus"
     @dateselect="selectDate"
+    :loading="isGuestLoading"
   >
     <div v-if="selectedStatus !== 'In-house'" class="mt-4">
       <v-btn
@@ -137,6 +138,7 @@ export default {
       "allCheckOuts",
       "inHouse",
       "reportDate",
+      "isGuestLoading",
     ]),
     items() {
       const reportDateStr = this.reportDate || format(new Date(), "yyyy-MM-dd");
