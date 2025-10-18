@@ -18,6 +18,21 @@
       </v-col>
 
       <v-col cols="12">
+        <FormField isBold label="Bank">
+          <v-select
+            outlined
+            dense
+            hide-details="auto"
+            :items="banks"
+            item-text="name"
+            item-value="id"
+            v-model="payload.bankId"
+            :rules="[(v) => !!v || 'Bank is required']"
+          />
+        </FormField>
+      </v-col>
+
+      <v-col cols="12">
         <FormField isBold label="Card Number">
           <v-text-field
             dense
@@ -105,6 +120,7 @@
 <script>
 import FormField from "@/components/fields/FormField.vue";
 import { mask } from "vue-the-mask";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "CreditCardForm",
@@ -115,7 +131,8 @@ export default {
     payload: {
       cardNumber: null,
       cardHolderName: null,
-      expiration_date: null,
+      expirationDate: null,
+      bankId: null,
       cvc: null,
     },
     pattern: /^(?:0[1-9]|1[0-2])\/\d{2}$/,
@@ -125,6 +142,7 @@ export default {
     },
   }),
   computed: {
+    ...mapState("banks", ["banks"]),
     unmaskedCardNumber() {
       return this.formattedCardNumber?.replace(/\D/g, "");
     },
@@ -151,6 +169,12 @@ export default {
         this.$emit("assignPayload", newPayload);
       },
     },
+  },
+  methods: {
+    ...mapActions("banks", ["fetchBanks"]),
+  },
+  created() {
+    this.fetchBanks();
   },
 };
 </script>
