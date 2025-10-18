@@ -51,6 +51,8 @@ export default {
         "Checked In": "checkedin",
         "Checked Out": "housekeeping",
         "In-house": "primary",
+        "To Check-In": "#009688",
+        "To Check-Out": "#9C27B0",
       },
     };
   },
@@ -163,18 +165,29 @@ export default {
         };
       });
     },
+
     reports() {
-      const getGuestData = (expected, actual, tab, status) => {
+      const getGuestData = (expected, actual, tab, baseStatus) => {
         let data;
+        let statusLabel;
+
         if (tab === "Expected") {
           data = expected;
+          statusLabel =
+            baseStatus === "Checked In" ? "To Check-In" : "To Check-Out";
         } else if (tab === "Actual") {
           data = actual;
+          statusLabel =
+            baseStatus === "Checked In" ? "Checked In" : "Checked Out";
         } else {
+          // When no tab is selected, combine both
           data = [...expected, ...actual];
+          statusLabel = baseStatus;
         }
-        return this.mapWithStatus(data, status);
+
+        return this.mapWithStatus(data, statusLabel);
       };
+
       const checkIns = () =>
         getGuestData(
           this.allCheckIns.expected,
@@ -182,6 +195,7 @@ export default {
           this.activeTab,
           "Checked In"
         );
+
       const checkOuts = () =>
         getGuestData(
           this.allCheckOuts.expected,
@@ -189,7 +203,9 @@ export default {
           this.activeTab,
           "Checked Out"
         );
+
       const inHouseGuests = () => this.mapWithStatus(this.inHouse, "In-house");
+
       if (!this.selectedStatus) {
         return [...checkIns(), ...checkOuts(), ...inHouseGuests()];
       }
@@ -205,6 +221,7 @@ export default {
           return [];
       }
     },
+
     buttons() {
       const getCount = (expected, actual) => {
         if (this.activeTab === "Expected") {
