@@ -9,6 +9,8 @@
       backButton
       :headerText="`Cashier ${cashierSessionId}`"
       :dividerMarginTop="36"
+      printable
+      @print="handlePrint"
     >
       <template #subtitle>
         <div class="grey--text text--darken-2 mb-1">{{ subtitleDate }}</div>
@@ -16,6 +18,7 @@
     </PageHeader>
 
     <CashierReportTable
+      ref="reportTable"
       :headers="headers"
       :items="items"
       :tableHead="tableHead"
@@ -28,7 +31,7 @@
           :color="getPaymentMethodColor(item.modeOfPayment)"
           class="font-weight-medium"
         >
-          {{ item.modeOfPayment }}
+          {{ item.modeOfPayment.replaceAll("_", " ") }}
         </v-chip>
       </template>
 
@@ -58,11 +61,13 @@ import CashierReportTable from "./CashierReportTable.vue";
 import formatPrice from "@/utils/format-price";
 import { parseISO, format } from "date-fns";
 import { mapActions, mapGetters } from "vuex";
+import PrintReport from "@/mixins/PrintReport";
 
 export default {
   name: "CashierReportView",
   props: { cashierSessionId: String, date: String },
   components: { PageHeader, CashierReportTable },
+  mixins: [PrintReport],
   data() {
     return {
       headers: [
@@ -80,6 +85,7 @@ export default {
   },
   computed: {
     ...mapGetters("reports", ["getCashierReport"]),
+    ...mapGetters("authentication", ["getCurrentUser"]),
 
     subtitleDate() {
       return format(parseISO(this.date), "EEEE, MMMM dd yyyy");
@@ -155,6 +161,16 @@ export default {
   },
   methods: {
     ...mapActions("reports", ["fetchCashierReports"]),
+
+    handlePrint() {
+      const options = {
+        reportTitle: `Cashier ${this.cashierSessionId} Report`,
+        // headerText: this.subtitleDate,
+        user: this.getCurrentUser,
+        queryDate: this.date,
+      };
+      this.printReport(this.$refs.reportTable.$el, options);
+    },
 
     getStatusColor(status) {
       const statusColors = {

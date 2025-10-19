@@ -3,7 +3,7 @@
     <div class="w-full d-flex flex-sm-row align-center">
       <v-btn
         v-if="backButton"
-        class="mr-3 mr-sm-10"
+        class="mr-3 mr-sm-10 no-print"
         fab
         small
         depressed
@@ -24,6 +24,9 @@
       </div>
 
       <slot />
+      <v-btn v-if="printable" class="ml-4" icon @click="$emit('print')">
+        <v-icon>mdi-printer</v-icon>
+      </v-btn>
     </div>
 
     <v-divider :style="{ marginTop: `${dividerMarginTop}px` }" />
@@ -38,6 +41,7 @@ export default {
     isUpperCase: Boolean,
     dividerMarginTop: Number,
     backButton: Boolean,
+    printable: Boolean,
   },
   data: () => ({}),
 };

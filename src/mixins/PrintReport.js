@@ -3,7 +3,8 @@ import { format, parseISO } from "date-fns";
 export default {
   methods: {
     printReport(tableElement, options = {}) {
-      const { headerText, user, reportTitle, queryDate } = options;
+      const { headerText, user, reportTitle, queryDate, skipTableLogic } =
+        options;
 
       const fileDate = queryDate || format(new Date(), "yyyy-MM-dd");
 
@@ -70,22 +71,58 @@ export default {
             left: 20mm;
             right: 20mm;
           }
-        } 
+          .no-print {
+            display: none !important;
+          }
+          .printable-flex-header {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+          }
+        }
       `;
       printDocument.head.appendChild(customStyle);
 
       if (reportTitle) {
-        const titleEl = printDocument.createElement("div");
+        const titleEl = document.createElement("div");
         titleEl.className = "report-title";
         titleEl.textContent = reportTitle;
         printDocument.body.appendChild(titleEl);
       }
 
       const tableWrapperClone = tableElement.cloneNode(true);
-      const table = tableWrapperClone.querySelector("table");
-      if (table && headerText) {
-        const caption = table.createCaption();
-        caption.textContent = headerText;
+      if (!skipTableLogic) {
+        const table = tableWrapperClone.querySelector("table");
+        if (table) {
+          const originalTable = tableElement.querySelector("table");
+          if (originalTable) {
+            const tableWidth = originalTable.offsetWidth;
+            const originalHeaderCells =
+              tableElement.querySelectorAll("thead th");
+            const columnWidths = Array.from(originalHeaderCells).map(
+              (th) => (th.offsetWidth / tableWidth) * 100 + "%"
+            );
+
+            const clonedHeaderCells = table.querySelectorAll("thead th");
+            clonedHeaderCells.forEach((th, index) => {
+              th.style.width = columnWidths[index];
+            });
+
+            const bodyRows = table.querySelectorAll("tbody tr");
+            bodyRows.forEach((row) => {
+              const cells = row.querySelectorAll("td");
+              cells.forEach((cell, index) => {
+                if (columnWidths[index]) {
+                  cell.style.width = columnWidths[index];
+                }
+              });
+            });
+          }
+
+          if (headerText) {
+            const caption = table.createCaption();
+            caption.textContent = headerText;
+          }
+        }
       }
 
       const originalChips = tableElement.querySelectorAll(".v-chip");
