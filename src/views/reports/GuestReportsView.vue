@@ -8,6 +8,7 @@
     :selectedStatus="selectedStatus"
     @dateselect="selectDate"
     :loading="isGuestLoading"
+    @print="handlePrint"
   >
     <div v-if="selectedStatus !== 'In-house'" class="mt-4">
       <v-btn
@@ -30,10 +31,12 @@
 import Reports from "@/components/reports/Reports.vue";
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import { format, parse } from "date-fns";
+import PrintReport from "@/mixins/PrintReport";
 
 export default {
   name: "GuestReportsView",
   components: { Reports },
+  mixins: [PrintReport],
   data() {
     return {
       selectedStatus: "",
@@ -59,6 +62,19 @@ export default {
   methods: {
     ...mapActions("reports", ["fetchGuestReports"]),
     ...mapMutations("reports", ["SET_GUEST_REPORTS"]),
+    handlePrint(table) {
+      let headerText = "";
+      if (this.selectedStatus !== "In-house" && this.activeTab) {
+        headerText += this.activeTab;
+      }
+      headerText += ` ${this.selectedStatus || "Guests"}`;
+      const options = {
+        reportTitle: "Guests Report",
+        headerText: headerText,
+        user: this.getCurrentUser,
+      };
+      this.printReport(table, options);
+    },
     mapWithStatus(items, status) {
       return items.map((item) => ({ ...item, status }));
     },
@@ -142,6 +158,7 @@ export default {
       "reportDate",
       "isGuestLoading",
     ]),
+    ...mapGetters("authentication", ["getCurrentUser"]),
     items() {
       const reportDateStr = this.reportDate || format(new Date(), "yyyy-MM-dd");
       const date = parse(reportDateStr, "yyyy-MM-dd", new Date());

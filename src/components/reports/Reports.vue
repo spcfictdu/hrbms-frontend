@@ -21,7 +21,7 @@
         ></v-date-picker>
       </v-menu>
 
-      <v-btn icon outlined color="primary">
+      <v-btn icon outlined color="primary" @click="$emit('print', $refs.printableTable.$el)">
         <v-icon>mdi-printer</v-icon>
       </v-btn>
 
@@ -71,6 +71,7 @@
       class="my-6"
     />
     <DefaultTable
+      ref="printableTable"
       v-else
       class="my-6"
       :headers="headers"
