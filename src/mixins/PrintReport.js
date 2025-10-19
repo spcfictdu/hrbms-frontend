@@ -1,19 +1,16 @@
+import { format, parseISO } from "date-fns";
+
 export default {
   methods: {
     printReport(tableElement, options = {}) {
-      const { headerText, user, reportTitle } = options;
+      const { headerText, user, reportTitle, queryDate } = options;
 
-      const printDate = new Date();
-      const formattedDate = `${printDate.getFullYear()}-${(
-        printDate.getMonth() + 1
-      )
-        .toString()
-        .padStart(2, "0")}-${printDate.getDate().toString().padStart(2, "0")}`;
+      const fileDate = queryDate || format(new Date(), "yyyy-MM-dd");
 
       let titleParts = [];
       if (reportTitle) titleParts.push(reportTitle);
       if (headerText) titleParts.push(headerText);
-      titleParts.push(formattedDate);
+      titleParts.push(fileDate);
 
       const documentTitle = titleParts.join(" - ");
 
@@ -110,7 +107,11 @@ export default {
         ? `Printed by: ${user.firstName} ${user.lastName} (ID: ${user.userId})`
         : "";
       const printDateStr = `Print Date: ${new Date().toLocaleString()}`;
-      footerEl.innerHTML = `<span>${printedBy}</span><span>${printDateStr}</span>`;
+      const reportDateStr = queryDate
+        ? `Report Date: ${format(parseISO(queryDate), "MMMM d, yyyy")}`
+        : "";
+
+      footerEl.innerHTML = `<span>${reportDateStr}</span><span>${printedBy}</span><span>${printDateStr}</span>`;
       printDocument.body.appendChild(footerEl);
 
       printDocument.close();

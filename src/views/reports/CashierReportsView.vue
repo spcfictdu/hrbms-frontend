@@ -141,9 +141,10 @@ export default {
       const options = {
         reportTitle: "Cashiers Report",
         headerText: this.cashierName
-          ? `Cashier ${this.cashierSessionId}: ${this.cashierName} - Date: ${this.formattedQueryDate}`
+          ? `Cashier ${this.cashierSessionId}: ${this.cashierName}`
           : "All Cashiers",
         user: this.getCurrentUser,
+        queryDate: this.queryDate,
       };
       this.printReport(table, options);
     },
@@ -157,6 +158,7 @@ export default {
     },
 
     handleDateSelect(date) {
+      this.cashierSessionId = null;
       this.fetch(date);
       this.setRouteQuery(date);
     },

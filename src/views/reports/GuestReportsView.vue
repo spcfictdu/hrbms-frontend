@@ -72,6 +72,7 @@ export default {
         reportTitle: "Guests Report",
         headerText: headerText,
         user: this.getCurrentUser,
+        queryDate: this.reportDate,
       };
       this.printReport(table, options);
     },

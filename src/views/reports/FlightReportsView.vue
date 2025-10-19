@@ -54,6 +54,7 @@ export default {
         reportTitle: "Flights Report",
         headerText: this.selectedStatus || "All Flights",
         user: this.getCurrentUser,
+        queryDate: this.currentDate,
       };
       this.printReport(table, options);
     },
