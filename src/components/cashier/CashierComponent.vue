@@ -134,7 +134,7 @@ export default {
       }
     },
 
-    handleTransactionUpdate() {
+    async handleTransactionUpdate() {
       const { referenceNumber, status } = this.transaction.transaction;
       const {
         payment,
@@ -151,6 +151,7 @@ export default {
         status,
         addons,
         ...payment,
+        room: this.transaction.room,
       };
 
       if (
@@ -173,9 +174,13 @@ export default {
         idNumber,
         payment,
         status,
+        referenceNumber,
       };
 
       const payload = status === "BOOKED" ? bookingPayload : reservationPayload;
+      if (this.formDetails?.room?.folio) {
+        payload.room.folio = this.formDetails.room.folio;
+      }
       if (this.$auth.user().role === "ADMIN")
         payload.cashierId = this.session.userId;
 

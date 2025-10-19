@@ -100,6 +100,12 @@
             :readonly="readonlyInputs"
           />
 
+          <v-divider />
+          <ChargeDistribution
+            @change="handleFolioChange"
+            :guestName="guestName"
+          />
+
           <!-- Add-Ons -->
           <div v-if="payload.status === 'RESERVED'">
             <v-divider />
@@ -162,6 +168,7 @@ import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import AddOnsTemplate from "@/components/form-templates/AddOnsTemplate.vue";
 import DiscountTemplate from "@/components/form-templates/DiscountTemplate.vue";
+import ChargeDistribution from "@/components/form-templates/ChargeDistribution.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import WarningDialog from "@/components/dialogs/WarningDialog.vue";
 import { mapActions, mapMutations, mapState } from "vuex";
@@ -183,6 +190,7 @@ export default {
     WarningDialog,
     AddOnsTemplate,
     DiscountTemplate,
+    ChargeDistribution,
   },
   props: {
     query: Object,
@@ -237,6 +245,14 @@ export default {
     ...mapMutations("transaction", ["SET_DIALOG"]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("cashier", ["fetchSessions"]),
+
+    handleFolioChange(folioPayload) {
+      if (!this.payload.room) {
+        this.$set(this.payload, "room", {});
+      }
+      this.$set(this.payload.room, "folio", folioPayload);
+      sessionStorage.setItem("formDetails", JSON.stringify(this.payload));
+    },
 
     triggerDialog(type) {
       this.SET_DIALOG({ key: type, value: true });
@@ -436,6 +452,16 @@ export default {
 
     userRole: function () {
       return this.$auth.user()?.role;
+    },
+
+    guestName() {
+      const { firstName, middleName, lastName } = this.payload;
+      if (lastName && firstName) {
+        return middleName
+          ? `${lastName}, ${firstName} ${middleName}`
+          : `${lastName}, ${firstName}`;
+      }
+      return "";
     },
 
     // Payment Computed State
