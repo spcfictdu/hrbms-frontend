@@ -86,7 +86,7 @@
                 dense
                 hide-details="auto"
                 outlined
-                v-model="payload.expiration_date"
+                v-model="payload.expirationDate"
                 placeholder="MM/YY"
                 v-mask="'##/##'"
                 :rules="[
