@@ -33,51 +33,51 @@ export default {
 
       const customStyle = printDocument.createElement("style");
       customStyle.textContent = `
-        @media print {
-          @page {
-            size: landscape;
-            margin: 20mm;
-          }
-          body {
-            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-          }
-          .report-title {
-            font-size: 20px;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 10px;
-          }
-          caption {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: left;
-            caption-side: top;
-          }
-          tr {
-            page-break-inside: avoid !important;
-          }
-          .v-chip {
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-          }
-          .print-footer {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            margin-top: 20px;
-            position: fixed;
-            bottom: 0;
-            left: 20mm;
-            right: 20mm;
-          }
-          .no-print {
-            display: none !important;
-          }
-          .printable-flex-header {
-            display: flex !important;
-            flex-wrap: nowrap !important;
-          }
+        @page {
+          size: landscape;
+          margin: 20mm;
+        }
+        body {
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+        .report-title {
+          font-size: 20px;
+          font-weight: bold;
+          text-align: center;
+          margin-bottom: 10px;
+        }
+        caption {
+          font-size: 16px;
+          font-weight: bold;
+          margin-bottom: 10px;
+          text-align: left;
+          caption-side: top;
+        }
+        tr {
+          page-break-inside: avoid !important;
+        }
+        .v-chip {
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
+          text-transform: uppercase;
+          font-weight: bold;
+        }
+        .print-footer {
+          display: flex;
+          justify-content: space-between;
+          font-size: 12px;
+          margin-top: 20px;
+          position: fixed;
+          bottom: 0;
+          left: 20mm;
+          right: 20mm;
+        }
+        .no-print {
+          display: none !important;
+        }
+        .printable-flex-header {
+          display: flex !important;
+          flex-wrap: nowrap !important;
         }
       `;
       printDocument.head.appendChild(customStyle);
