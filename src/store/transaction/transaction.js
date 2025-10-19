@@ -255,5 +255,26 @@ export const transaction = {
           console.error("Error fetching form transactions", error);
         });
     },
+    async updateFolio({ dispatch }, payload) {
+      const url = "transaction/folio/update";
+
+      dispatch("alerts/requireAlertFn", 2, {
+        root: true,
+      });
+      try {
+        const { data } = await this.$axios.put(url, payload);
+        dispatch("alerts/triggerSuccess", data.message, {
+          root: true,
+        });
+        console.log(data);
+        return data;
+      } catch (err) {
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+        console.error(err);
+        throw err;
+      }
+    },
   },
 };
