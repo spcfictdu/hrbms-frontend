@@ -4,7 +4,9 @@ export default {
       const { headerText, user, reportTitle } = options;
 
       const printDate = new Date();
-      const formattedDate = `${printDate.getFullYear()}-${(printDate.getMonth() + 1)
+      const formattedDate = `${printDate.getFullYear()}-${(
+        printDate.getMonth() + 1
+      )
         .toString()
         .padStart(2, "0")}-${printDate.getDate().toString().padStart(2, "0")}`;
 
@@ -39,7 +41,7 @@ export default {
             margin: 20mm;
           }
           body {
-            font-family: Arial, Helvetica, sans-serif;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
           }
           .report-title {
             font-size: 20px;
@@ -53,9 +55,6 @@ export default {
             margin-bottom: 10px;
             text-align: left;
             caption-side: top;
-          }
-          .v-data-table {
-            background-color: transparent !important;
           }
           tr {
             page-break-inside: avoid !important;
@@ -74,7 +73,7 @@ export default {
             left: 20mm;
             right: 20mm;
           }
-        }
+        } 
       `;
       printDocument.head.appendChild(customStyle);
 

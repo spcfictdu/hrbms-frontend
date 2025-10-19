@@ -8,6 +8,7 @@
     :selectedStatus="selectedStatus"
     @dateselect="selectDate"
     :loading="isFlightLoading"
+    @print="handlePrint"
   />
 </template>
 
@@ -15,10 +16,12 @@
 import Reports from "@/components/reports/Reports.vue";
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import { format, parse } from "date-fns";
+import PrintReport from "@/mixins/PrintReport";
 
 export default {
   name: "FlightReportsView",
   components: { Reports },
+  mixins: [PrintReport],
   data() {
     return {
       selectedStatus: "",
@@ -46,6 +49,14 @@ export default {
   methods: {
     ...mapActions("reports", ["fetchFlightReports"]),
     ...mapMutations("reports", ["RESET_FLIGHT_REPORTS"]),
+    handlePrint(table) {
+      const options = {
+        reportTitle: "Flights Report",
+        headerText: this.selectedStatus || "All Flights",
+        user: this.getCurrentUser,
+      };
+      this.printReport(table, options);
+    },
     mapWithStatus(items, status) {
       return items.map((item) => ({ ...item, status }));
     },
@@ -107,6 +118,7 @@ export default {
   },
   computed: {
     ...mapGetters("reports", ["arrivals", "departures", "isFlightLoading"]),
+    ...mapGetters("authentication", ["getCurrentUser"]),
     items() {
       return this.flights.map((r) => {
         let time = "";

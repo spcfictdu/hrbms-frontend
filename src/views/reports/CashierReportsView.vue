@@ -5,6 +5,7 @@
     @dateselect="handleDateSelect"
     @click:row="redirect"
     :loading="isCashierLoading"
+    @print="handlePrint"
   >
     <template #icon>
       <div>
@@ -39,10 +40,12 @@ import Reports from "@/components/reports/Reports.vue";
 import formatPrice from "@/utils/format-price";
 import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import { format, parseISO } from "date-fns";
+import PrintReport from "@/mixins/PrintReport";
 
 export default {
   name: "CashierReportsView",
   components: { Reports },
+  mixins: [PrintReport],
   data() {
     return {
       cashierSessionId: null,
@@ -63,6 +66,7 @@ export default {
   computed: {
     ...mapState("reports", ["cashierReports"]),
     ...mapGetters("reports", ["isCashierLoading"]),
+    ...mapGetters("authentication", ["getCurrentUser"]),
 
     cashierName() {
       return this.cashierReports.find(
@@ -132,6 +136,17 @@ export default {
   methods: {
     ...mapActions("reports", ["fetchCashierReports"]),
     ...mapMutations("reports", ["SET_CASHIER_REPORTS"]),
+
+    handlePrint(table) {
+      const options = {
+        reportTitle: "Cashiers Report",
+        headerText: this.cashierName
+          ? `Cashier ${this.cashierSessionId}: ${this.cashierName} - Date: ${this.formattedQueryDate}`
+          : "All Cashiers",
+        user: this.getCurrentUser,
+      };
+      this.printReport(table, options);
+    },
 
     redirect(row) {
       const cashierSessionId = String(row.cashierSessionId);

@@ -21,7 +21,12 @@
         ></v-date-picker>
       </v-menu>
 
-      <v-btn icon outlined color="primary" @click="$emit('print', $refs.printableTable.$el)">
+      <v-btn
+        icon
+        outlined
+        color="primary"
+        @click="$emit('print', $refs.printableTable.$el)"
+      >
         <v-icon>mdi-printer</v-icon>
       </v-btn>
 
@@ -170,6 +175,7 @@ export default {
 .v-data-table >>> tr.custom-row td {
   height: 75px !important;
   border-bottom: 1px solid #e6e2e2;
+  text-align: center;
 }
 
 .v-skeleton-loader >>> .v-skeleton-loader__table-thead {
