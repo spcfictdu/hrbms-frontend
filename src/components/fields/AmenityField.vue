@@ -28,8 +28,37 @@
           :decrementFn="() => decrementQuantity(index)"
           :readonly="readonly"
         />
+
+        <v-menu>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon v-bind="attrs" v-on="on">
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list dense>
+            <v-list-item
+              v-for="(item, i) in menuItems"
+              :key="i"
+              @click="
+                chargeDistributionDialog = true;
+                selectedAddonForChargeDistribution = addon;
+              "
+            >
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </div>
     </div>
+
+    <ChargeDistributionDialog
+      v-if="selectedAddonForChargeDistribution"
+      v-model="chargeDistributionDialog"
+      :addon="selectedAddonForChargeDistribution"
+      :guestName="guestName"
+      @save="handleChargeDistributionSave"
+    />
 
     <v-btn
       depressed
@@ -48,10 +77,11 @@
 <script>
 import FormField from "./FormField.vue";
 import CounterButtons from "../buttons/CounterButtons.vue";
+import ChargeDistributionDialog from "@/components/dialogs/ChargeDistributionDialog.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "AmenityField",
-  components: { FormField, CounterButtons },
+  components: { FormField, CounterButtons, ChargeDistributionDialog },
   props: {
     fetchAction: {
       type: String,
@@ -62,6 +92,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    guestName: {
+      type: String,
+      default: "",
+    },
   },
   data: () => ({
     addons: [
@@ -70,6 +104,9 @@ export default {
         quantity: 1,
       },
     ],
+    menuItems: [{ title: "Charge Distribution" }],
+    chargeDistributionDialog: false,
+    selectedAddonForChargeDistribution: null,
   }),
   created() {
     this.fetch();
@@ -107,6 +144,16 @@ export default {
       } else if (addons.length > 1) {
         addons.splice(index, 1);
       }
+    },
+    handleChargeDistributionSave(updatedAddon) {
+      const index = this.addons.findIndex(
+        (addon) => addon === this.selectedAddonForChargeDistribution
+      );
+      if (index !== -1) {
+        this.$set(this.addons, index, updatedAddon);
+      }
+      this.selectedAddonForChargeDistribution = null;
+      this.chargeDistributionDialog = false;
     },
   },
   computed: {

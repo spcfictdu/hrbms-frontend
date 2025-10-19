@@ -32,10 +32,11 @@ export default {
     },
   }),
   methods: {
-    handleAmenityChange: function (v) {
-      this.payload.addons = v.map(({ name, quantity }) => ({
-        name,
-        quantity: String(quantity),
+    handleAmenityChange(v) {
+      this.payload.addons = v.map((addon) => ({
+        name: addon.name,
+        quantity: String(addon.quantity),
+        ...(addon.folio && { folio: addon.folio }),
       }));
       this.$emit("emit-transaction", this.payload);
     },
