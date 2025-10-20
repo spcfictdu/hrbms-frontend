@@ -8,7 +8,7 @@
     <PageHeader backButton :headerText="headerText" :dividerMarginTop="18">
       <template #subtitle>
         <div class="grey--text text--darken-2 mb-1">
-          Cashier Drawer {{ drawerNumber }} | First Floor Lobby
+          Cashier Drawer {{ drawerNumber }} | {{ cashierLocation }}
         </div>
       </template>
     </PageHeader>
@@ -36,6 +36,7 @@ import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierPaymentDetailsTable from "@/components/cashier/CashierPaymentDetailsTable.vue";
 import CashierTransactionPaymentsTable from "@/components/cashier/CashierTransactionPaymentsTable.vue";
 import { mapActions, mapMutations, mapState } from "vuex";
+import { generateCashierLocation } from "@/utils/cashierLocationGenerator";
 
 export default {
   components: {
@@ -77,6 +78,18 @@ export default {
   },
   computed: {
     ...mapState("transaction", ["payment", "loading"]),
+
+    cashierLocation() {
+      const drawerNum = parseInt(this.drawerNumber, 10);
+      if (isNaN(drawerNum) || drawerNum < 1) return "First Floor Lobby";
+
+      const generator = generateCashierLocation();
+      let location = "";
+      for (let i = 0; i < drawerNum; i++) {
+        location = generator.next().value;
+      }
+      return location;
+    },
 
     tableHead() {
       if (!this.payment) return [];
