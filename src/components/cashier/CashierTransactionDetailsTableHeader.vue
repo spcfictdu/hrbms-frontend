@@ -26,7 +26,6 @@
 export default {
   name: "CashierTransactionDetailsTableHeader",
   props: {
-    headerDetails: Object,
     tableHead: Object,
   },
   data: () => ({
