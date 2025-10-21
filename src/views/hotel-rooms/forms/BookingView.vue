@@ -178,9 +178,10 @@ export default {
       }
 
       if (payload.addons) {
-        value.addons = payload.addons.map(({ name, quantity }) => ({
+        value.addons = payload.addons.map(({ name, quantity, folio }) => ({
           name,
           quantity: String(quantity),
+          folio,
         }));
       }
       return value;

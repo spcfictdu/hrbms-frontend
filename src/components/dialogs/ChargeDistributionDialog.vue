@@ -6,7 +6,7 @@
           <ChargeDistribution
             :guestName="guestName"
             @change="updateFolio"
-            :addonAmount="addonAmount"
+            :itemAmount="itemAmount"
           >
             <v-card-actions>
               <v-btn block color="primary" type="submit">Save</v-btn>
@@ -36,6 +36,7 @@ export default {
       type: Object,
       required: true,
     },
+    guestName: String,
   },
   data() {
     return {
@@ -45,14 +46,12 @@ export default {
   computed: {
     ...mapState("transaction", ["transaction"]),
     ...mapState("addonsEnum", ["addons"]),
-    addonAmount() {
-      return (
-        Number(
-          this.addons.find(
-            (a) => a.referenceNumber === this.addon.referenceNumber
-          ).price
-        ) * this.addon.quantity
+    itemAmount() {
+      const addon = this.addons.find(
+        (a) => a.referenceNumber === this.addon.referenceNumber
       );
+      const addonPrice = addon?.price ?? 0;
+      return Number(addonPrice) * this.addon.quantity;
     },
     dialog: {
       get() {
@@ -62,9 +61,9 @@ export default {
         this.$emit("input", val);
       },
     },
-    guestName() {
-      return this.transaction?.guestName || "";
-    },
+    // guestName() {
+    //   return this.transaction?.guestName || "";
+    // },
   },
   methods: {
     updateFolio(folio) {

@@ -4,6 +4,7 @@
       :value="fill?.addons"
       @onInput="(v) => handleAmenityChange(v)"
       :readonly="readonly"
+      :guestName="guestName"
     />
   </FormSection>
 </template>
@@ -15,6 +16,7 @@ import AmenityField from "../fields/AmenityField.vue";
 export default {
   name: "AddOnsTemplate",
   props: {
+    guestName: String,
     fill: Object,
     readonly: {
       type: Boolean,
@@ -36,6 +38,7 @@ export default {
       this.payload.addons = v.map((addon) => ({
         name: addon.name,
         quantity: String(addon.quantity),
+        referenceNumber: addon.referenceNumber,
         ...(addon.folio && { folio: addon.folio }),
       }));
       this.$emit("emit-transaction", this.payload);

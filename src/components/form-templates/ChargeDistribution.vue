@@ -148,13 +148,13 @@
       <v-alert
         v-if="
           chargeDistributionType === 'FIXED_AMOUNT' &&
-          totalSponsoredAmount > addonAmount
+          totalSponsoredAmount > itemAmount
         "
         type="error"
         dense
         class="mt-2"
       >
-        Total sponsored amounts exceed the addon amount. Please adjust the
+        Total sponsored amounts exceed the total amount. Please adjust the
         values.
       </v-alert>
     </div>
@@ -172,7 +172,7 @@ export default {
   components: { FormSection, FormField },
   props: {
     guestName: String,
-    addonAmount: {
+    itemAmount: {
       type: Number,
       default: 0,
     },
@@ -220,7 +220,7 @@ export default {
     },
     remainingAmount() {
       if (this.chargeDistributionType !== "FIXED_AMOUNT") return 0;
-      const remaining = this.addonAmount - this.totalSponsoredAmount;
+      const remaining = this.itemAmount - this.totalSponsoredAmount;
       return remaining < 0
         ? remaining.toFixed(2)
         : Math.max(0, remaining).toFixed(2);
@@ -238,8 +238,8 @@ export default {
       return [
         (v) => (!isNaN(v) && v >= 0) || "Minimum amount is 0",
         (v) =>
-          (!isNaN(v) && v <= this.addonAmount) ||
-          `Total sponsored amounts must not exceed ${this.addonAmount}`,
+          (!isNaN(v) && v <= this.itemAmount) ||
+          `Total sponsored amounts must not exceed ${this.itemAmount}`,
       ];
     },
     folioPayload() {

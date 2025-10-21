@@ -104,6 +104,7 @@
           <ChargeDistribution
             @change="handleFolioChange"
             :guestName="guestName"
+            :itemAmount="chargeDistributionItemAmount"
           />
 
           <!-- Add-Ons -->
@@ -113,6 +114,7 @@
               :fill="fill"
               @emit-transaction="assignPayload"
               :readonly="readonlyInputs"
+              :guestName="guestName"
             />
           </div>
 
@@ -441,6 +443,15 @@ export default {
     ...mapState("transaction", ["loading", "dialog"]),
     ...mapState("vouchers", ["activeVoucher"]),
     ...mapState("cashier", ["sessions"]),
+    ...mapState("roomEnum", ["room"]),
+
+    chargeDistributionItemAmount() {
+      const room = this.room ? this.room[0] : null;
+
+      if (!room) return;
+
+      return room.roomTotalWithExtraPerson - room.addonsTotal;
+    },
 
     formDetails() {
       return JSON.parse(sessionStorage.getItem("formDetails"));

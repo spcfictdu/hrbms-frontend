@@ -41,10 +41,7 @@
             <v-list-item
               v-for="(item, i) in menuItems"
               :key="i"
-              @click="
-                chargeDistributionDialog = true;
-                selectedAddonForChargeDistribution = addon;
-              "
+              @click="item.action(addon)"
             >
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
@@ -98,18 +95,28 @@ export default {
       default: "",
     },
   },
-  data: () => ({
-    addons: [
-      {
-        name: null,
-        referenceNumber: null,
-        quantity: 1,
-      },
-    ],
-    menuItems: [{ title: "Charge Distribution" }],
-    chargeDistributionDialog: false,
-    selectedAddonForChargeDistribution: null,
-  }),
+  data() {
+    return {
+      addons: [
+        {
+          name: null,
+          referenceNumber: null,
+          quantity: 1,
+        },
+      ],
+      menuItems: [
+        {
+          title: "Charge Distribution",
+          action: (addon) => {
+            this.selectedAddonForChargeDistribution = addon;
+            this.chargeDistributionDialog = true;
+          },
+        },
+      ],
+      chargeDistributionDialog: false,
+      selectedAddonForChargeDistribution: null,
+    };
+  },
   created() {
     this.fetch();
   },

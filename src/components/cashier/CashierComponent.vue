@@ -50,7 +50,11 @@
 
           <div v-if="selectedTransaction">
             <v-divider></v-divider>
-            <AddOnsTemplate :fill="fill" @emit-transaction="assignPayload" />
+            <AddOnsTemplate
+              :fill="fill"
+              @emit-transaction="assignPayload"
+              :guestName="guestName"
+            />
 
             <v-divider></v-divider>
             <DiscountTemplate :fill="fill" @emit-transaction="assignPayload" />
