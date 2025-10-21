@@ -1,54 +1,68 @@
 <template>
-  <FormField label="Amenities">
-    <div class="d-flex flex-column" style="gap: 8px">
-      <div
-        class="d-flex align-start flex-nowrap"
-        style="gap: 16px"
-        v-for="(addon, index) in addons"
-        :key="index"
-      >
-        <v-autocomplete
-          dense
-          hide-details="auto"
-          outlined
-          :items="enums"
-          item-text="name"
-          v-model="addon.name"
-          @change="handleAddonSelect(index, $event)"
-          :item-disabled="(item) => isItemDisabled(item, index)"
-          :clearable="!readonly"
-          :rules="[
-            (v) => (addons.length > 1 ? !!v || 'Add-on is required' : true),
-          ]"
-          :readonly="readonly"
-        />
+  <div>
+    <FormField label="Amenities">
+      <div class="d-flex flex-column" style="gap: 8px">
+        <div
+          class="d-flex align-start flex-nowrap"
+          style="gap: 16px"
+          v-for="(addon, index) in addons"
+          :key="index"
+        >
+          <v-autocomplete
+            dense
+            hide-details="auto"
+            outlined
+            :items="enums"
+            item-text="name"
+            v-model="addon.name"
+            @change="handleAddonSelect(index, $event)"
+            :item-disabled="(item) => isItemDisabled(item, index)"
+            :clearable="!readonly"
+            :rules="[
+              (v) => (addons.length > 1 ? !!v || 'Add-on is required' : true),
+            ]"
+            :readonly="readonly"
+          />
 
-        <CounterButtons
-          :quantity="Number(addon.quantity)"
-          :incrementFn="() => addon.quantity++"
-          :decrementFn="() => decrementQuantity(index)"
-          :readonly="readonly"
-        />
+          <CounterButtons
+            :quantity="Number(addon.quantity)"
+            :incrementFn="() => addon.quantity++"
+            :decrementFn="() => decrementQuantity(index)"
+            :readonly="readonly"
+          />
 
-        <v-menu>
-          <template v-slot:activator="{ on, attrs }">
-            <v-btn icon v-bind="attrs" v-on="on">
-              <v-icon>mdi-dots-vertical</v-icon>
-            </v-btn>
-          </template>
+          <v-menu>
+            <template v-slot:activator="{ on, attrs }">
+              <v-btn icon v-bind="attrs" v-on="on">
+                <v-icon>mdi-dots-vertical</v-icon>
+              </v-btn>
+            </template>
 
-          <v-list dense>
-            <v-list-item
-              v-for="(item, i) in menuItems"
-              :key="i"
-              @click="item.action(addon)"
-            >
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+            <v-list dense>
+              <v-list-item
+                v-for="(item, i) in menuItems"
+                :key="i"
+                @click="item.action(addon)"
+              >
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </div>
       </div>
-    </div>
+
+      <v-btn
+        depressed
+        :ripple="false"
+        color="primary"
+        class="mt-4"
+        small
+        @click="handleAddItem"
+        :disabled="readonly"
+      >
+        Add More
+      </v-btn>
+    </FormField>
 
     <ChargeDistributionDialog
       v-model="chargeDistributionDialog"
@@ -56,19 +70,7 @@
       :guestName="guestName"
       @save="handleChargeDistributionSave"
     />
-
-    <v-btn
-      depressed
-      :ripple="false"
-      color="primary"
-      class="mt-4"
-      small
-      @click="handleAddItem"
-      :disabled="readonly"
-    >
-      Add More
-    </v-btn>
-  </FormField>
+  </div>
 </template>
 
 <script>

@@ -266,7 +266,6 @@ export const transaction = {
         dispatch("alerts/triggerSuccess", data.message, {
           root: true,
         });
-        console.log(data);
         return data;
       } catch (err) {
         dispatch("alerts/triggerError", err.response.data.message, {

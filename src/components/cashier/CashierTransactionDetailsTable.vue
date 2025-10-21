@@ -1,120 +1,194 @@
 <template>
-  <v-card flat>
-    <CashierTransactionDetailsTableHeader :tableHead="headerDetails" />
+  <div>
+    <v-card flat>
+      <CashierTransactionDetailsTableHeader :tableHead="headerDetails" />
 
-    <div class="px-5 pb-5">
-      <DefaultTable
-        :headers="headers"
-        :items="mappedTransactionDetails"
-        :footerProps="footerProps"
-        hideDefaultFooter
-      >
-        <template v-slot:[`item.status`]="{ item }">
-          <span
-            :class="getStatusColor(item.status)"
-            class="font-weight-medium"
-            >{{ item.status }}</span
-          >
-        </template>
+      <div class="px-5 pb-5">
+        <DefaultTable
+          :headers="headers"
+          :items="mappedTransactionDetails"
+          :footerProps="footerProps"
+          hideDefaultFooter
+          :itemsPerPage="-1"
+        >
+          <template v-slot:[`item.status`]="{ item }">
+            <span
+              :class="getStatusColor(item.status)"
+              class="font-weight-medium"
+              >{{ item.status }}</span
+            >
+          </template>
 
-        <template v-slot:[`item.product`]="{ item }">
-          <span
-            :class="
-              isRefundedOrVoided(item.status) && 'text-decoration-line-through'
-            "
-            >{{ item.product }}</span
-          >
-        </template>
+          <template v-slot:[`item.product`]="{ item }">
+            <span
+              :class="
+                isRefundedOrVoided(item.status) &&
+                'text-decoration-line-through'
+              "
+              >{{ item.product }}</span
+            >
+          </template>
 
-        <template v-slot:[`item.quantity`]="{ item }">
-          <span
-            :class="
-              isRefundedOrVoided(item.status) && 'text-decoration-line-through'
-            "
-            >{{ item.quantity }}</span
-          >
-        </template>
+          <template v-slot:[`item.quantity`]="{ item }">
+            <span
+              :class="
+                isRefundedOrVoided(item.status) &&
+                'text-decoration-line-through'
+              "
+              >{{ item.quantity }}</span
+            >
+          </template>
 
-        <template v-slot:[`item.totalPrice`]="{ item }">
-          <span
-            :class="
-              isRefundedOrVoided(item.status) && 'text-decoration-line-through'
-            "
-            >{{ item.totalPrice }}</span
-          >
-        </template>
+          <template v-slot:[`item.totalPrice`]="{ item }">
+            <span
+              :class="
+                isRefundedOrVoided(item.status) &&
+                'text-decoration-line-through'
+              "
+              >{{ item.totalPrice }}</span
+            >
+          </template>
 
-        <template v-slot:[`item.paymentMethod`]="{ item }">
-          <v-chip
-            v-if="item.paymentMethod"
-            :color="
-              isRefundedOrVoided(item.status)
-                ? refundedOrVoidedMopColor
-                : mopColors[item.paymentMethod]
-            "
-            dark
-            small
-            class="text-overline"
-            >{{ item.paymentMethod.replaceAll("_", " ") }}</v-chip
-          >
-        </template>
+          <template v-slot:[`item.paymentMethod`]="{ item }">
+            <v-chip
+              v-if="item.paymentMethod"
+              :color="
+                isRefundedOrVoided(item.status)
+                  ? refundedOrVoidedMopColor
+                  : mopColors[item.paymentMethod]
+              "
+              dark
+              small
+              class="text-overline"
+              >{{ item.paymentMethod.replaceAll("_", " ") }}</v-chip
+            >
+          </template>
 
-        <template v-slot:[`item.menu`]="{ item }">
-          <v-menu offset-x left :disabled="isRefundedOrVoided(item.status)">
-            <template v-slot:activator="{ on, attrs }">
-              <v-btn
-                icon
-                v-bind="attrs"
-                v-on="on"
-                :disabled="isRefundedOrVoided(item.status)"
-              >
-                <v-icon>mdi-dots-vertical</v-icon>
-              </v-btn>
-            </template>
+          <template v-slot:[`item.menu`]="{ item }">
+            <v-menu
+              offset-x
+              bottom
+              right
+              :disabled="isRefundedOrVoided(item.status)"
+            >
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  icon
+                  v-bind="attrs"
+                  v-on="on"
+                  :disabled="isRefundedOrVoided(item.status)"
+                >
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+              </template>
 
-            <v-list dense class="py-0">
-              <v-list-item
-                class="menu-border"
-                v-for="(menuItem, i) in menuItems(item)"
-                :key="i"
-                @click="() => menuItem.action(item)"
-              >
-                <v-list-item-title class="text-body-2 font-weight-regular">{{
-                  menuItem.text
-                }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </template>
-      </DefaultTable>
-    </div>
-  </v-card>
+              <v-list dense class="py-0">
+                <v-list-item
+                  class="menu-border"
+                  v-for="(menuItem, i) in menuItems(item)"
+                  :key="i"
+                  @click="() => menuItem.action(item)"
+                >
+                  <v-list-item-title class="text-body-2 font-weight-regular">{{
+                    menuItem.text
+                  }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </template>
+        </DefaultTable>
+      </div>
+    </v-card>
+
+    <ChargeDistributionDialog
+      ref="chargeDistributionDialog"
+      v-model="chargeDistributionDialog"
+      :itemAmount="itemAmount"
+      :guestName="transactionDetails?.guestName"
+      @save="handleChargeDistributionSave"
+      :loading="loading"
+    />
+  </div>
 </template>
 
 <script>
-import DefaultTable from "../tables/DefaultTable.vue";
+import DefaultTable from "@/components/tables/DefaultTable.vue";
 import CashierTransactionDetailsTableHeader from "./CashierTransactionDetailsTableHeader.vue";
+import ChargeDistributionDialog from "@/components/dialogs/ChargeDistributionDialog.vue";
 import { format, parseISO } from "date-fns";
-import { mapMutations, mapState } from "vuex";
+import { mapActions, mapMutations, mapState } from "vuex";
 
 export default {
   name: "CashierTransactionDetalisTable",
-  components: { DefaultTable, CashierTransactionDetailsTableHeader },
+  components: {
+    DefaultTable,
+    CashierTransactionDetailsTableHeader,
+    ChargeDistributionDialog,
+  },
   props: { transactionDetails: Object },
-  data: () => ({
-    mopColors: {
-      CASH: "cash",
-      CREDIT_CARD: "creditCard",
-      GCASH: "gCash",
-      CHEQUE: "cheque",
-    },
-    footerProps: {
-      itemsPerPageOptions: [5, 10, 15],
-    },
-    refundedOrVoidedMopColor: "#CACACA",
-  }),
+  data() {
+    return {
+      mopColors: {
+        CASH: "cash",
+        CREDIT_CARD: "creditCard",
+        GCASH: "gCash",
+        CHEQUE: "cheque",
+      },
+      footerProps: {
+        itemsPerPageOptions: [5, 10, 15],
+      },
+      refundedOrVoidedMopColor: "#CACACA",
+      chargedItem: null,
+      itemAmount: 0,
+      chargeDistributionDialog: false,
+      loading: false,
+    };
+  },
   methods: {
     ...mapMutations("cashier", ["SET_DIALOG"]),
+    ...mapActions("transaction", ["updateFolio"]),
+
+    async handleChargeDistributionSave(savedPayload) {
+      function enhanceFolioAttributes(folio) {
+        if ("type" in folio && !("folioType" in folio)) {
+          folio.folioType = folio.type;
+          delete folio.type;
+        }
+
+        ["folioA", "folioB", "folioC", "folioD"].forEach((key) => {
+          const obj = folio[key];
+          if (obj) {
+            if ("charge" in obj && !("amount" in obj)) obj.amount = 0;
+            if ("amount" in obj && !("charge" in obj)) obj.charge = 0;
+            // Set/add name attribute to null if not present
+            if (!("name" in obj)) {
+              obj.name = null;
+            }
+          }
+        });
+
+        return folio;
+      }
+
+      const payload = enhanceFolioAttributes(savedPayload.folio);
+      switch (this.chargedItem.type) {
+        case "room": {
+          payload.referenceNumber =
+            this.transactionDetails?.transaction?.referenceNumber;
+          break;
+        }
+        case "addon": {
+          payload.bookingAddonId = this.chargedItem.addonId;
+        }
+      }
+
+      this.loading = true;
+      await this.updateFolio(payload);
+      this.chargedItem = null;
+      this.chargeDistributionDialog = false;
+      this.loading = false;
+      this.$refs.chargeDistributionDialog.resetForm();
+    },
 
     isRefundedOrVoided(status) {
       return status === "REFUNDED" || status === "VOIDED";
@@ -150,7 +224,7 @@ export default {
     menuItems({ status, type }) {
       const isFrontDeskUser = this.$auth.user()?.role === "FRONT DESK";
 
-      const showDialog = (type) => {
+      const showDialog = () => {
         if (isFrontDeskUser) {
           this.SET_DIALOG({ key: "adminPasscode", value: true });
         } else {
@@ -158,45 +232,53 @@ export default {
         }
       };
 
+      const menuItems = [
+        {
+          text: "Charge Distribution",
+          action: (item) => {
+            this.chargedItem = item;
+            this.itemAmount = Number(item.price);
+            this.chargeDistributionDialog = true;
+          },
+        },
+      ];
+
       if (
         status === "PARTIAL" ||
         status === "PAID" ||
         (type === "room" && Number(this.headerDetails.totalPayment) > 0)
       ) {
-        return [
-          {
-            text: "Refund Payment",
-            action: (item) => {
-              showDialog();
+        menuItems.push({
+          text: "Refund Payment",
+          action: (item) => {
+            showDialog();
 
-              this.$emit("menuSelect", {
-                payload: this.getMenuItemPayload(item, "REFUNDED"),
-                confirmationDialogMeta: {
-                  action: "Refund",
-                  actionType: "Payment?",
-                },
-              });
-            },
+            this.$emit("menuSelect", {
+              payload: this.getMenuItemPayload(item, "REFUNDED"),
+              confirmationDialogMeta: {
+                action: "Refund",
+                actionType: "Payment?",
+              },
+            });
           },
-        ];
+        });
       } else if (status === "PENDING") {
-        return [
-          {
-            text: "Void Transaction",
-            action: (item) => {
-              showDialog();
+        menuItems.push({
+          text: "Void Transaction",
+          action: (item) => {
+            showDialog();
 
-              this.$emit("menuSelect", {
-                payload: this.getMenuItemPayload(item, "VOIDED"),
-                confirmationDialogMeta: {
-                  action: "Void",
-                  actionType: "Transaction?",
-                },
-              });
-            },
+            this.$emit("menuSelect", {
+              payload: this.getMenuItemPayload(item, "VOIDED"),
+              confirmationDialogMeta: {
+                action: "Void",
+                actionType: "Transaction?",
+              },
+            });
           },
-        ];
+        });
       }
+      return menuItems;
     },
   },
 
@@ -250,12 +332,12 @@ export default {
 
     extraPersonTotal() {
       const extraPersonTotal = this.isRefundedOrVoided(
-        this.transaction?.transaction.paymentStatus,
+        this.transaction?.transaction.paymentStatus
       )
         ? 0
         : this.room[0]?.roomRatesArray.reduce(
             (total, room) => total + room.extraPersonRate,
-            0,
+            0
           );
 
       return extraPersonTotal;
@@ -268,7 +350,7 @@ export default {
             if (addon.paymentStatus === "VOIDED") return total;
             return total + addon.total;
           },
-          0,
+          0
         );
 
       const totalWithoutAddons =
@@ -281,12 +363,12 @@ export default {
         "Guest Name": this.transactionDetails?.guestName,
         "Reference Number":
           this.transactionDetails?.transaction.referenceNumber,
-        "Total Purchase": totalPurchase,
+        "Total Purchase": totalPurchase.toFixed(2),
         Date:
           this.transactionDetails &&
           format(
             parseISO(this.transactionDetails.transaction.createdAt),
-            "MMMM dd, yyyy",
+            "MMMM dd, yyyy"
           ),
       };
     },

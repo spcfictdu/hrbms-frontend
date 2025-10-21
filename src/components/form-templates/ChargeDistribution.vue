@@ -200,6 +200,19 @@ export default {
       ],
     };
   },
+  methods: {
+    reset() {
+      // Restore initial state
+      this.folioType = "INDIVIDUAL";
+      this.chargeDistributionType = "PERCENT";
+      this.folios = [
+        { name: "", charge: null },
+        { name: "", charge: null },
+        { name: "", charge: null },
+        { name: "", charge: null },
+      ];
+    },
+  },
   computed: {
     totalSponsoredPercent() {
       if (this.chargeDistributionType !== "PERCENT") return 0;

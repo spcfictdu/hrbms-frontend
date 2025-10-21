@@ -1,15 +1,18 @@
 <template>
   <v-dialog v-model="dialog" max-width="600px">
     <v-card class="py-2">
-      <v-card-text class="pt-5">
+      <v-card-text class="pt-2 pb-0">
         <v-form ref="form" @submit.prevent="save">
           <ChargeDistribution
+            ref="chargeDistribution"
             :guestName="guestName"
             @change="updateFolio"
-            :itemAmount="itemAmount"
+            :itemAmount="calculatedItemAmount"
           >
-            <v-card-actions class="pa-0">
-              <v-btn block color="primary" type="submit">Save</v-btn>
+            <v-card-actions class="px-0">
+              <v-btn :loading="loading" block color="primary" type="submit"
+                >Save</v-btn
+              >
             </v-card-actions>
           </ChargeDistribution>
         </v-form>
@@ -32,22 +35,26 @@ export default {
       type: Boolean,
       default: false,
     },
-    addon: {
-      type: Object | null,
-      required: true,
+    addon: Object | null,
+    itemAmount: {
+      type: Number,
+      default: 0,
     },
     guestName: String,
+    loading: Boolean,
   },
   data() {
     return {
-      folio: null,
+      folio: {
+        type: "INDIVIDUAL",
+      },
     };
   },
   computed: {
     ...mapState("transaction", ["transaction"]),
     ...mapState("addonsEnum", ["addons"]),
-    itemAmount() {
-      if (!this.addon) return 0;
+    calculatedItemAmount() {
+      if (!this.addon) return this.itemAmount;
 
       const addon = this.addons.find(
         (a) => a.referenceNumber === this.addon.referenceNumber
@@ -63,25 +70,28 @@ export default {
         this.$emit("input", val);
       },
     },
-    // guestName() {
-    //   return this.transaction?.guestName || "";
-    // },
   },
   methods: {
     updateFolio(folio) {
       this.folio = folio;
     },
-    close() {
-      this.dialog = false;
-    },
     save() {
       if (!this.$refs.form.validate()) return;
       const payload = {
-        ...this.addon,
         folio: { ...this.folio },
       };
+      if (this.addon) {
+        payload = { ...payload, ...this.addon };
+      }
       this.$emit("save", payload);
-      this.close();
+    },
+    resetForm() {
+      if (this.$refs.chargeDistribution) {
+        this.$refs.chargeDistribution.reset();
+      }
+      this.folio = {
+        type: "INDIVIDUAL",
+      };
     },
   },
 };
