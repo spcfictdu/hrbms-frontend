@@ -108,7 +108,7 @@ export default {
         { label: "Folio D" },
       ],
 
-      folioType: null,
+      folioType: "INDIVIDUAL",
       folios: [
         { name: "", charge: null },
         { name: "", charge: null },
@@ -138,38 +138,44 @@ export default {
       ];
     },
     folioPayload() {
-      if (this.folioType !== "SPONSORED") {
-        return null;
+      if (this.folioType === "INDIVIDUAL") {
+        return { type: "INDIVIDUAL" };
       }
 
-      if (this.totalSponsoredPercent > 100) {
-        // Optionally, don't emit invalid payload, or emit with warning
-        console.warn("Invalid folio distribution: total exceeds 100%");
-        return null; // or return payload anyway
-      }
-
-      const payload = {
-        folioType: "SPONSORED",
-      };
-
-      // Folio A
-      const folioA = (payload.folioA = { charge: this.remainingPercent / 100 });
-      if (this.guestName && this.guestName.trim()) {
-        folioA.name = this.guestName.trim();
-      }
-
-      // Folios B, C, D
-      this.folios.slice(1).forEach((folio, index) => {
-        const folioIndex = index + 1;
-        const charge = Number(folio.charge) || 0;
-        const folioKey = `folio${String.fromCharCode(65 + folioIndex)}`;
-        payload[folioKey] = { charge: charge / 100 };
-        if (folio.name && folio.name.trim()) {
-          payload[folioKey].name = folio.name.trim();
+      if (this.folioType === "SPONSORED") {
+        if (this.totalSponsoredPercent > 100) {
+          // Optionally, don't emit invalid payload, or emit with warning
+          console.warn("Invalid folio distribution: total exceeds 100%");
+          return null; // or return payload anyway
         }
-      });
 
-      return payload;
+        const payload = {
+          type: "SPONSORED",
+        };
+
+        // Folio A
+        const folioA = (payload.folioA = {
+          charge: this.remainingPercent / 100,
+        });
+        if (this.guestName && this.guestName.trim()) {
+          folioA.name = this.guestName.trim();
+        }
+
+        // Folios B, C, D
+        this.folios.slice(1).forEach((folio, index) => {
+          const folioIndex = index + 1;
+          const charge = Number(folio.charge) || 0;
+          const folioKey = `folio${String.fromCharCode(65 + folioIndex)}`;
+          payload[folioKey] = { charge: charge / 100 };
+          if (folio.name && folio.name.trim()) {
+            payload[folioKey].name = folio.name.trim();
+          }
+        });
+
+        return payload;
+      }
+
+      return null;
     },
   },
   watch: {

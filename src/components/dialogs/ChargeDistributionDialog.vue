@@ -61,12 +61,11 @@ export default {
       this.dialog = false;
     },
     save() {
-      const processedFolio = { ...this.folio };
-      if (processedFolio.folioType !== undefined) {
-        processedFolio.type = processedFolio.folioType;
-        delete processedFolio.folioType;
-      }
-      this.$emit("save", { ...this.addon, folio: processedFolio });
+      const payload = {
+        ...this.addon,
+        folio: { ...this.folio },
+      };
+      this.$emit("save", payload);
       this.close();
     },
   },
