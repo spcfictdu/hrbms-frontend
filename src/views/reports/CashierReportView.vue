@@ -103,8 +103,10 @@ export default {
     },
 
     items() {
-      const date = format(parseISO(this.date), "MMMM d yyyy");
-      const accountName = this.cashierReport?.user;
+      const date = format(parseISO(this.date), "MMMM d, yyyy");
+      const accountName = `${this.cashierReport?.user}${
+        this.isAdmin(this.cashierReport.userId) ? " (ADMIN)" : ""
+      }`;
       return this.sortedCashierReport.map(
         ({
           transactionReferenceNumber: referenceNumber,
@@ -161,6 +163,10 @@ export default {
   },
   methods: {
     ...mapActions("reports", ["fetchCashierReports"]),
+
+    isAdmin(userId) {
+      return userId === 66;
+    },
 
     handlePrint() {
       const options = {

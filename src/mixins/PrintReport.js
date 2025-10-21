@@ -23,7 +23,7 @@ export default {
 
       const printDocument = printWindow.document;
       printDocument.write(
-        `<html><head><title>${documentTitle}</title></head><body></body></html>`,
+        `<html><head><title>${documentTitle}</title></head><body></body></html>`
       );
 
       const styles = document.querySelectorAll('link[rel="stylesheet"], style');
@@ -85,6 +85,9 @@ export default {
         .font-weight-bold {
           font-weight: bold;
         }
+        tr {
+          background-color: transparent !important;
+        }
       `;
       printDocument.head.appendChild(customStyle);
 
@@ -105,7 +108,7 @@ export default {
             const originalHeaderCells =
               tableElement.querySelectorAll("thead th");
             const columnWidths = Array.from(originalHeaderCells).map(
-              (th) => (th.offsetWidth / tableWidth) * 100 + "%",
+              (th) => (th.offsetWidth / tableWidth) * 100 + "%"
             );
 
             const clonedHeaderCells = table.querySelectorAll("thead th");

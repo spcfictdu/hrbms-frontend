@@ -79,7 +79,9 @@ export default {
         for (const session of this.history.data) {
           transactions.push(
             ...session.payments.map((item) => ({
-              employee: `${session.firstName} - S${session.userId}`,
+              employee: `${session.firstName} - S${session.userId}${
+                session.userId === 66 ? " (ADMIN)" : ""
+              }`,
               MOP: item.paymentType,
               totalPayment: item.totalReceived,
               guestName: item.guestName,
@@ -97,7 +99,9 @@ export default {
       } else if (Array.isArray(this.history)) {
         return (
           this.history.map((item) => ({
-            employee: `${item.userFullName.split(" ")[0]} - S${item.userId}`,
+            employee: `${item.userFullName.split(" ")[0]} - S${item.userId}${
+              item.userId === 66 ? " (ADMIN)" : ""
+            }`,
             openingAdjustment: item.openingBalance ?? "0.00",
             beginningBalance: item.beginningBalance ?? "0.00",
             openingBalance: item.openingBalance ?? "0.00",

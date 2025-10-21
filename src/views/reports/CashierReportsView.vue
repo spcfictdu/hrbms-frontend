@@ -26,7 +26,9 @@
 
     <template>
       <div v-if="cashierSessionId">
-        <div class="font-weight-bold text-h6">{{ cashierName }}</div>
+        <div class="font-weight-bold text-h6">
+          {{ cashier?.user }}{{ adminLabel(cashier?.userId) }}
+        </div>
         <div class="longText--text">
           <span class="font-weight-bold">DATE:</span> {{ formattedQueryDate }}
         </div>
@@ -51,7 +53,7 @@ export default {
       cashierSessionId: null,
       headers: [
         { text: "Date", value: "date", align: "center" },
-        { text: "Session Code", value: "sessionCode", align: "center" },
+        { text: "Cashier", value: "cashier", align: "center" },
         {
           text: "Beggining Balance",
           value: "begginingBalance",
@@ -68,10 +70,10 @@ export default {
     ...mapGetters("reports", ["isCashierLoading"]),
     ...mapGetters("authentication", ["getCurrentUser"]),
 
-    cashierName() {
+    cashier() {
       return this.cashierReports.find(
         ({ cashierSessionId }) => cashierSessionId === this.cashierSessionId
-      )?.user;
+      );
     },
 
     mappedCashiers() {
@@ -95,14 +97,18 @@ export default {
 
       return cashierReports.map(
         ({
+          user,
+          userId,
           cashierSessionId,
           openingBalance,
           transactions,
           totalRefunded,
           closingBalance,
         }) => {
-          const date = format(parseISO(this.queryDate), "EEEE, MMMM dd yyyy");
-          const sessionCode = `Session ${cashierSessionId}`;
+          const date = format(parseISO(this.queryDate), "EEEE, MMMM dd, yyyy");
+          const cashier = `Cashier ${cashierSessionId} - ${user}${this.adminLabel(
+            userId
+          )}`;
           const begginingBalance = formatPrice(openingBalance);
           const payments = transactions.filter((t) => t.type === "PAYMENT");
           const totalPayment = payments.reduce(
@@ -114,7 +120,7 @@ export default {
 
           return {
             date,
-            sessionCode,
+            cashier,
             begginingBalance,
             totalCollected,
             refunds,
@@ -137,11 +143,21 @@ export default {
     ...mapActions("reports", ["fetchCashierReports"]),
     ...mapMutations("reports", ["SET_CASHIER_REPORTS"]),
 
+    adminLabel(userId) {
+      return this.isAdmin(userId) ? " (ADMIN)" : "";
+    },
+
+    isAdmin(userId) {
+      return userId === 66;
+    },
+
     handlePrint(table) {
       const options = {
         reportTitle: "Cashiers Report",
-        headerText: this.cashierName
-          ? `Cashier ${this.cashierSessionId}: ${this.cashierName}`
+        headerText: this.cashier
+          ? `Cashier ${this.cashierSessionId}: ${
+              this.cashier?.user
+            }${this.adminLabel(this.cashier?.userId)}`
           : "All Cashiers",
         user: this.getCurrentUser,
         queryDate: this.queryDate,
