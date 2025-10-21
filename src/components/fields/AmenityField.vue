@@ -51,7 +51,6 @@
     </div>
 
     <ChargeDistributionDialog
-      v-if="selectedAddonForChargeDistribution"
       v-model="chargeDistributionDialog"
       :addon="selectedAddonForChargeDistribution"
       :guestName="guestName"

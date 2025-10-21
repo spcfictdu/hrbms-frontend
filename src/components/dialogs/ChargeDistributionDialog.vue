@@ -1,14 +1,14 @@
 <template>
   <v-dialog v-model="dialog" max-width="600px">
     <v-card class="py-2">
-      <v-card-text class="pt-2 pb-0">
+      <v-card-text class="pt-5">
         <v-form ref="form" @submit.prevent="save">
           <ChargeDistribution
             :guestName="guestName"
             @change="updateFolio"
             :itemAmount="itemAmount"
           >
-            <v-card-actions>
+            <v-card-actions class="pa-0">
               <v-btn block color="primary" type="submit">Save</v-btn>
             </v-card-actions>
           </ChargeDistribution>
@@ -19,8 +19,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
 import ChargeDistribution from "@/components/form-templates/ChargeDistribution.vue";
+import { mapState } from "vuex";
 
 export default {
   name: "ChargeDistributionDialog",
@@ -33,7 +33,7 @@ export default {
       default: false,
     },
     addon: {
-      type: Object,
+      type: Object | null,
       required: true,
     },
     guestName: String,
@@ -47,6 +47,8 @@ export default {
     ...mapState("transaction", ["transaction"]),
     ...mapState("addonsEnum", ["addons"]),
     itemAmount() {
+      if (!this.addon) return 0;
+
       const addon = this.addons.find(
         (a) => a.referenceNumber === this.addon.referenceNumber
       );
