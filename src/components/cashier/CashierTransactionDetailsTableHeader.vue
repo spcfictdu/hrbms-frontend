@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="d-flex flex-wrap flex-lg-nowrap px-2">
+    <div class="d-flex flex-wrap flex-lg-nowrap px-2 printable-flex-header">
       <div
         v-for="(value, name, index) in tableHead"
         :key="name"
@@ -14,7 +14,7 @@
     </div>
 
     <v-progress-linear
-      class="d-block"
+      class="d-block no-print"
       color="amber"
       :indeterminate="loaderVal"
       :value="100"
@@ -26,7 +26,6 @@
 export default {
   name: "CashierTransactionDetailsTableHeader",
   props: {
-    headerDetails: Object,
     tableHead: Object,
   },
   data: () => ({

@@ -5,6 +5,7 @@
     @dateselect="handleDateSelect"
     @click:row="redirect"
     :loading="isCashierLoading"
+    @print="handlePrint"
   >
     <template #icon>
       <div>
@@ -25,7 +26,9 @@
 
     <template>
       <div v-if="cashierSessionId">
-        <div class="font-weight-bold text-h6">{{ cashierName }}</div>
+        <div class="font-weight-bold text-h6">
+          {{ cashier?.user }}{{ adminLabel(cashier?.userId) }}
+        </div>
         <div class="longText--text">
           <span class="font-weight-bold">DATE:</span> {{ formattedQueryDate }}
         </div>
@@ -39,16 +42,18 @@ import Reports from "@/components/reports/Reports.vue";
 import formatPrice from "@/utils/format-price";
 import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import { format, parseISO } from "date-fns";
+import PrintReport from "@/mixins/PrintReport";
 
 export default {
   name: "CashierReportsView",
   components: { Reports },
+  mixins: [PrintReport],
   data() {
     return {
       cashierSessionId: null,
       headers: [
         { text: "Date", value: "date", align: "center" },
-        { text: "Session Code", value: "sessionCode", align: "center" },
+        { text: "Cashier", value: "cashier", align: "center" },
         {
           text: "Beggining Balance",
           value: "begginingBalance",
@@ -63,11 +68,12 @@ export default {
   computed: {
     ...mapState("reports", ["cashierReports"]),
     ...mapGetters("reports", ["isCashierLoading"]),
+    ...mapGetters("authentication", ["getCurrentUser"]),
 
-    cashierName() {
+    cashier() {
       return this.cashierReports.find(
         ({ cashierSessionId }) => cashierSessionId === this.cashierSessionId
-      )?.user;
+      );
     },
 
     mappedCashiers() {
@@ -91,14 +97,18 @@ export default {
 
       return cashierReports.map(
         ({
+          user,
+          userId,
           cashierSessionId,
           openingBalance,
           transactions,
           totalRefunded,
           closingBalance,
         }) => {
-          const date = format(parseISO(this.queryDate), "EEEE, MMMM dd yyyy");
-          const sessionCode = `Session ${cashierSessionId}`;
+          const date = format(parseISO(this.queryDate), "EEEE, MMMM dd, yyyy");
+          const cashier = `Cashier ${cashierSessionId} - ${user}${this.adminLabel(
+            userId
+          )}`;
           const begginingBalance = formatPrice(openingBalance);
           const payments = transactions.filter((t) => t.type === "PAYMENT");
           const totalPayment = payments.reduce(
@@ -110,7 +120,7 @@ export default {
 
           return {
             date,
-            sessionCode,
+            cashier,
             begginingBalance,
             totalCollected,
             refunds,
@@ -133,6 +143,28 @@ export default {
     ...mapActions("reports", ["fetchCashierReports"]),
     ...mapMutations("reports", ["SET_CASHIER_REPORTS"]),
 
+    adminLabel(userId) {
+      return this.isAdmin(userId) ? " (ADMIN)" : "";
+    },
+
+    isAdmin(userId) {
+      return userId === 66;
+    },
+
+    handlePrint(table) {
+      const options = {
+        reportTitle: "Cashiers Report",
+        headerText: this.cashier
+          ? `Cashier ${this.cashierSessionId}: ${
+              this.cashier?.user
+            }${this.adminLabel(this.cashier?.userId)}`
+          : "All Cashiers",
+        user: this.getCurrentUser,
+        queryDate: this.queryDate,
+      };
+      this.printReport(table, options);
+    },
+
     redirect(row) {
       const cashierSessionId = String(row.cashierSessionId);
       this.$router.push({
@@ -142,6 +174,7 @@ export default {
     },
 
     handleDateSelect(date) {
+      this.cashierSessionId = null;
       this.fetch(date);
       this.setRouteQuery(date);
     },

@@ -1,6 +1,6 @@
 <template>
   <v-card flat>
-    <CashierTransactionDetailsTableHeader :headerDetails="headerDetails" />
+    <CashierTransactionDetailsTableHeader :tableHead="headerDetails" />
 
     <div class="px-5 pb-5">
       <DefaultTable
@@ -250,12 +250,12 @@ export default {
 
     extraPersonTotal() {
       const extraPersonTotal = this.isRefundedOrVoided(
-        this.transaction?.transaction.paymentStatus
+        this.transaction?.transaction.paymentStatus,
       )
         ? 0
         : this.room[0]?.roomRatesArray.reduce(
             (total, room) => total + room.extraPersonRate,
-            0
+            0,
           );
 
       return extraPersonTotal;
@@ -268,7 +268,7 @@ export default {
             if (addon.paymentStatus === "VOIDED") return total;
             return total + addon.total;
           },
-          0
+          0,
         );
 
       const totalWithoutAddons =
@@ -278,14 +278,15 @@ export default {
       const totalPurchase = totalWithoutAddons + totalValidAddons;
 
       return {
-        guestName: this.transactionDetails?.guestName,
-        referenceNumber: this.transactionDetails?.transaction.referenceNumber,
-        totalPurchase,
-        date:
+        "Guest Name": this.transactionDetails?.guestName,
+        "Reference Number":
+          this.transactionDetails?.transaction.referenceNumber,
+        "Total Purchase": totalPurchase,
+        Date:
           this.transactionDetails &&
           format(
             parseISO(this.transactionDetails.transaction.createdAt),
-            "MMMM dd, yyyy"
+            "MMMM dd, yyyy",
           ),
       };
     },

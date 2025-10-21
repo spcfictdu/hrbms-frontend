@@ -1,6 +1,6 @@
 <template>
   <v-card flat>
-    <CashierTransactionDetailsTableHeader :headerDetails="headerDetails" />
+    <CashierTransactionDetailsTableHeader :tableHead="headerDetails" />
 
     <div class="px-5 pb-5">
       <DefaultTable
@@ -139,9 +139,9 @@ export default {
       const date = timestamp ? format(parseISO(timestamp), "MMMM d, yyyy") : "";
 
       return {
-        guestName,
-        referenceNumber,
-        date,
+        "Guest Name": guestName,
+        "Reference Number": referenceNumber,
+        Date: date,
       };
     },
 
@@ -179,7 +179,7 @@ export default {
             totalPrice: a.totalPrice,
             discount: a.discount,
             timestamp: a.timestamp,
-          }))
+          })),
         );
       }
 
