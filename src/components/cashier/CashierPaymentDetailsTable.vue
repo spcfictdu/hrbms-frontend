@@ -8,6 +8,7 @@
         :items="mappedPayment"
         :footerProps="footerProps"
         hideDefaultFooter
+        :itemsPerPage="-1"
       >
         <template v-slot:[`item.status`]="{ item }">
           <span :class="getStatusColor(item.status)" class="font-weight-medium">
@@ -179,7 +180,7 @@ export default {
             totalPrice: a.totalPrice,
             discount: a.discount,
             timestamp: a.timestamp,
-          })),
+          }))
         );
       }
 

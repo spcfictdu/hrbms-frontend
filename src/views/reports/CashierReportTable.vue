@@ -3,7 +3,12 @@
     <CashierTransactionDetailsTableHeader :tableHead="tableHead" />
 
     <div class="px-5 pb-5">
-      <DefaultTable :headers="headers" :items="items" hideDefaultFooter>
+      <DefaultTable
+        :headers="headers"
+        :items="items"
+        hideDefaultFooter
+        :itemsPerPage="-1"
+      >
         <template v-for="(_, slot) in $scopedSlots" v-slot:[slot]="scope">
           <slot :name="slot" v-bind="scope" />
         </template>
