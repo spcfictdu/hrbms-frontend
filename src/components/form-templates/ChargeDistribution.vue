@@ -1,7 +1,13 @@
 <template>
   <div>
     <FormSection title="Charge Distribution">
-      <v-radio-group hide-details="auto" row v-model="folioType" mandatory>
+      <v-radio-group
+        hide-details="auto"
+        row
+        v-model="folioType"
+        :rules="[(v) => !!v || 'Selection is required']"
+        mandatory
+      >
         <v-row>
           <v-col
             v-for="distribution in distributions"
@@ -97,7 +103,11 @@
               :min="0"
               :max="chargeDistributionType === 'PERCENT' ? 100 : undefined"
               :rules="
-                chargeDistributionType === 'PERCENT' ? chargeRules : amountRules
+                index !== 0 && folioType === 'SPONSORED'
+                  ? chargeDistributionType === 'PERCENT'
+                    ? chargeRules
+                    : amountRules
+                  : []
               "
             />
             <v-text-field
@@ -106,7 +116,7 @@
               :value="
                 chargeDistributionType === 'PERCENT'
                   ? remainingPercent
-                  : undefined
+                  : remainingAmount
               "
               :label="
                 chargeDistributionType === 'PERCENT'
@@ -118,7 +128,7 @@
               :hint="
                 chargeDistributionType === 'PERCENT'
                   ? 'Remaining percentage'
-                  : 'Remaining amount (not applicable for fixed)'
+                  : 'Remaining amount'
               "
               persistent-hint
             />
@@ -148,6 +158,8 @@
         values.
       </v-alert>
     </div>
+
+    <slot />
   </div>
 </template>
 
@@ -209,49 +221,40 @@ export default {
     remainingAmount() {
       if (this.chargeDistributionType !== "FIXED_AMOUNT") return 0;
       const remaining = this.addonAmount - this.totalSponsoredAmount;
-      return remaining < 0 ? remaining : Math.max(0, remaining);
+      return remaining < 0
+        ? remaining.toFixed(2)
+        : Math.max(0, remaining).toFixed(2);
     },
     chargeRules() {
       // for PERCENT
-      const totalCheck = () =>
-        this.totalSponsoredPercent <= 100 ||
-        "Total sponsored charges must not exceed 100%";
       return [
         (v) => (!isNaN(v) && v >= 0) || "Minimum charge is 0",
         (v) => (!isNaN(v) && v <= 100) || "Maximum charge is 100",
-        totalCheck,
       ];
     },
     amountRules() {
       // for FIXED_AMOUNT
-      const totalCheck = () =>
-        this.totalSponsoredAmount <= this.addonAmount ||
-        `Total sponsored amounts must not exceed ${this.addonAmount}`;
+
       return [
         (v) => (!isNaN(v) && v >= 0) || "Minimum amount is 0",
-        totalCheck,
+        (v) =>
+          (!isNaN(v) && v <= this.addonAmount) ||
+          `Total sponsored amounts must not exceed ${this.addonAmount}`,
       ];
     },
     folioPayload() {
       if (this.folioType === "INDIVIDUAL") {
         return {
           type: "INDIVIDUAL",
-          chargeDistributionType: this.chargeDistributionType,
         };
       }
 
       if (this.folioType === "SPONSORED") {
         const payload = {
           type: "SPONSORED",
-          chargeDistributionType: this.chargeDistributionType,
         };
 
         if (this.chargeDistributionType === "PERCENT") {
-          if (this.totalSponsoredPercent > 100) {
-            console.warn("Invalid folio distribution: total exceeds 100%");
-            return null;
-          }
-
           // Folio A
           const folioA = (payload.folioA = {
             charge: this.remainingPercent / 100,
@@ -271,13 +274,6 @@ export default {
             }
           });
         } else if (this.chargeDistributionType === "FIXED_AMOUNT") {
-          if (this.totalSponsoredAmount > this.addonAmount) {
-            console.warn(
-              "Invalid folio distribution: total exceeds addon amount"
-            );
-            return null;
-          }
-
           // Folio A
           const folioA = (payload.folioA = {
             amount: this.remainingAmount,

@@ -2,15 +2,18 @@
   <v-dialog v-model="dialog" max-width="600px">
     <v-card class="py-2">
       <v-card-text class="pt-2 pb-0">
-        <ChargeDistribution
-          ref="chargeDistributionForm"
-          :guestName="guestName"
-          @change="updateFolio"
-        />
+        <v-form ref="form" @submit.prevent="save">
+          <ChargeDistribution
+            :guestName="guestName"
+            @change="updateFolio"
+            :addonAmount="addonAmount"
+          >
+            <v-card-actions>
+              <v-btn block color="primary" type="submit">Save</v-btn>
+            </v-card-actions>
+          </ChargeDistribution>
+        </v-form>
       </v-card-text>
-      <v-card-actions>
-        <v-btn block color="primary" @click="save">Save</v-btn>
-      </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
@@ -41,6 +44,16 @@ export default {
   },
   computed: {
     ...mapState("transaction", ["transaction"]),
+    ...mapState("addonsEnum", ["addons"]),
+    addonAmount() {
+      return (
+        Number(
+          this.addons.find(
+            (a) => a.referenceNumber === this.addon.referenceNumber
+          ).price
+        ) * this.addon.quantity
+      );
+    },
     dialog: {
       get() {
         return this.value;
@@ -61,6 +74,7 @@ export default {
       this.dialog = false;
     },
     save() {
+      if (!this.$refs.form.validate()) return;
       const payload = {
         ...this.addon,
         folio: { ...this.folio },

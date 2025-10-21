@@ -14,6 +14,7 @@
           :items="enums"
           item-text="name"
           v-model="addon.name"
+          @change="handleAddonSelect(index, $event)"
           :item-disabled="(item) => isItemDisabled(item, index)"
           :clearable="!readonly"
           :rules="[
@@ -101,6 +102,7 @@ export default {
     addons: [
       {
         name: null,
+        referenceNumber: null,
         quantity: 1,
       },
     ],
@@ -126,8 +128,22 @@ export default {
     handleAddItem() {
       this.addons.push({
         name: null,
+        referenceNumber: null,
         quantity: 1,
       });
+    },
+    handleAddonSelect(index, selectedName) {
+      const addon = this.addons[index];
+      if (selectedName) {
+        const selectedItem = this.enums.find(
+          (item) => item.name === selectedName
+        );
+        if (selectedItem && selectedItem.referenceNumber) {
+          this.$set(addon, "referenceNumber", selectedItem.referenceNumber);
+        }
+      } else {
+        this.$set(addon, "referenceNumber", null);
+      }
     },
     // Disable an amenity if it's already selected in another addon entry
     isItemDisabled(item, currentIndex) {
