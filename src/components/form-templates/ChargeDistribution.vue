@@ -18,6 +18,36 @@
           </v-col>
         </v-row>
       </v-radio-group>
+
+      <v-radio-group
+        v-if="folioType === 'SPONSORED'"
+        hide-details="auto"
+        row
+        v-model="chargeDistributionType"
+        mandatory
+        class="mt-4"
+      >
+        <v-row>
+          <v-col>
+            <v-card outlined>
+              <v-radio
+                class="pa-3 mr-0"
+                label="Percentage"
+                value="PERCENT"
+              ></v-radio>
+            </v-card>
+          </v-col>
+          <v-col>
+            <v-card outlined>
+              <v-radio
+                class="pa-3 mr-0"
+                label="Fixed Amount"
+                value="FIXED_AMOUNT"
+              ></v-radio>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-radio-group>
     </FormSection>
 
     <div v-if="folioType === 'SPONSORED'">
@@ -50,36 +80,72 @@
               hide-spin-buttons
               type="number"
               v-model.number="folios[index].charge"
-              label="Charge (%)"
+              :label="
+                chargeDistributionType === 'PERCENT'
+                  ? 'Charge (%)'
+                  : 'Charge (Amount)'
+              "
               dense
               outlined
-              hint="Percentage (50 = 50%)"
+              :hint="
+                chargeDistributionType === 'PERCENT'
+                  ? 'Percentage (50 = 50%)'
+                  : 'Fixed amount'
+              "
               persistent-hint
               step="1"
               :min="0"
-              :max="100"
-              :rules="chargeRules"
+              :max="chargeDistributionType === 'PERCENT' ? 100 : undefined"
+              :rules="
+                chargeDistributionType === 'PERCENT' ? chargeRules : amountRules
+              "
             />
             <v-text-field
               v-else
               readonly
-              :value="remainingPercent"
-              label="Charge (%)"
+              :value="
+                chargeDistributionType === 'PERCENT'
+                  ? remainingPercent
+                  : undefined
+              "
+              :label="
+                chargeDistributionType === 'PERCENT'
+                  ? 'Charge (%)'
+                  : 'Charge (Amount)'
+              "
               dense
               outlined
-              hint="Remaining percentage"
+              :hint="
+                chargeDistributionType === 'PERCENT'
+                  ? 'Remaining percentage'
+                  : 'Remaining amount (not applicable for fixed)'
+              "
               persistent-hint
             />
           </v-col>
         </v-row>
       </FormField>
       <v-alert
-        v-if="totalSponsoredPercent > 100"
+        v-if="
+          chargeDistributionType === 'PERCENT' && totalSponsoredPercent > 100
+        "
         type="error"
         dense
         class="mt-2"
       >
         Total sponsored charges exceed 100%. Please adjust the values.
+      </v-alert>
+      <v-alert
+        v-if="
+          chargeDistributionType === 'FIXED_AMOUNT' &&
+          totalSponsoredAmount > addonAmount
+        "
+        type="error"
+        dense
+        class="mt-2"
+      >
+        Total sponsored amounts exceed the addon amount. Please adjust the
+        values.
       </v-alert>
     </div>
   </div>
@@ -94,6 +160,10 @@ export default {
   components: { FormSection, FormField },
   props: {
     guestName: String,
+    addonAmount: {
+      type: Number,
+      default: 0,
+    },
   },
   data() {
     return {
@@ -109,6 +179,7 @@ export default {
       ],
 
       folioType: "INDIVIDUAL",
+      chargeDistributionType: "PERCENT",
       folios: [
         { name: "", charge: null },
         { name: "", charge: null },
@@ -119,15 +190,29 @@ export default {
   },
   computed: {
     totalSponsoredPercent() {
+      if (this.chargeDistributionType !== "PERCENT") return 0;
       return this.folios
         .slice(1)
         .reduce((sum, folio) => sum + (Number(folio.charge) || 0), 0);
     },
     remainingPercent() {
+      if (this.chargeDistributionType !== "PERCENT") return 0;
       const remaining = 100 - this.totalSponsoredPercent;
       return remaining < 0 ? remaining : Math.max(0, remaining);
     },
+    totalSponsoredAmount() {
+      if (this.chargeDistributionType !== "FIXED_AMOUNT") return 0;
+      return this.folios
+        .slice(1)
+        .reduce((sum, folio) => sum + (Number(folio.charge) || 0), 0);
+    },
+    remainingAmount() {
+      if (this.chargeDistributionType !== "FIXED_AMOUNT") return 0;
+      const remaining = this.addonAmount - this.totalSponsoredAmount;
+      return remaining < 0 ? remaining : Math.max(0, remaining);
+    },
     chargeRules() {
+      // for PERCENT
       const totalCheck = () =>
         this.totalSponsoredPercent <= 100 ||
         "Total sponsored charges must not exceed 100%";
@@ -137,40 +222,81 @@ export default {
         totalCheck,
       ];
     },
+    amountRules() {
+      // for FIXED_AMOUNT
+      const totalCheck = () =>
+        this.totalSponsoredAmount <= this.addonAmount ||
+        `Total sponsored amounts must not exceed ${this.addonAmount}`;
+      return [
+        (v) => (!isNaN(v) && v >= 0) || "Minimum amount is 0",
+        totalCheck,
+      ];
+    },
     folioPayload() {
       if (this.folioType === "INDIVIDUAL") {
-        return { type: "INDIVIDUAL" };
+        return {
+          type: "INDIVIDUAL",
+          chargeDistributionType: this.chargeDistributionType,
+        };
       }
 
       if (this.folioType === "SPONSORED") {
-        if (this.totalSponsoredPercent > 100) {
-          // Optionally, don't emit invalid payload, or emit with warning
-          console.warn("Invalid folio distribution: total exceeds 100%");
-          return null; // or return payload anyway
-        }
-
         const payload = {
           type: "SPONSORED",
+          chargeDistributionType: this.chargeDistributionType,
         };
 
-        // Folio A
-        const folioA = (payload.folioA = {
-          charge: this.remainingPercent / 100,
-        });
-        if (this.guestName && this.guestName.trim()) {
-          folioA.name = this.guestName.trim();
-        }
-
-        // Folios B, C, D
-        this.folios.slice(1).forEach((folio, index) => {
-          const folioIndex = index + 1;
-          const charge = Number(folio.charge) || 0;
-          const folioKey = `folio${String.fromCharCode(65 + folioIndex)}`;
-          payload[folioKey] = { charge: charge / 100 };
-          if (folio.name && folio.name.trim()) {
-            payload[folioKey].name = folio.name.trim();
+        if (this.chargeDistributionType === "PERCENT") {
+          if (this.totalSponsoredPercent > 100) {
+            console.warn("Invalid folio distribution: total exceeds 100%");
+            return null;
           }
-        });
+
+          // Folio A
+          const folioA = (payload.folioA = {
+            charge: this.remainingPercent / 100,
+          });
+          if (this.guestName && this.guestName.trim()) {
+            folioA.name = this.guestName.trim();
+          }
+
+          // Folios B, C, D
+          this.folios.slice(1).forEach((folio, index) => {
+            const folioIndex = index + 1;
+            const charge = Number(folio.charge) || 0;
+            const folioKey = `folio${String.fromCharCode(65 + folioIndex)}`;
+            payload[folioKey] = { charge: charge / 100 };
+            if (folio.name && folio.name.trim()) {
+              payload[folioKey].name = folio.name.trim();
+            }
+          });
+        } else if (this.chargeDistributionType === "FIXED_AMOUNT") {
+          if (this.totalSponsoredAmount > this.addonAmount) {
+            console.warn(
+              "Invalid folio distribution: total exceeds addon amount"
+            );
+            return null;
+          }
+
+          // Folio A
+          const folioA = (payload.folioA = {
+            amount: this.remainingAmount,
+          });
+          if (this.guestName && this.guestName.trim()) {
+            folioA.name = this.guestName.trim();
+          }
+
+          // Folios B, C, D
+          this.folios.slice(1).forEach((folio, index) => {
+            const folioIndex = index + 1;
+            const amount = Number(folio.charge) || 0; // still using folio.charge for v-model
+            const folioKey = `folio${String.fromCharCode(65 + folioIndex)}`;
+            payload[folioKey] = { amount: amount };
+            if (folio.name && folio.name.trim()) {
+              payload[folioKey].name = folio.name.trim();
+            }
+          });
+        }
 
         return payload;
       }
@@ -187,12 +313,17 @@ export default {
     },
     folioType(newVal) {
       if (newVal !== "SPONSORED") {
-        // Reset folios when switching away from sponsored
         this.folios.forEach((f) => {
           f.name = "";
           f.charge = null;
         });
       }
+    },
+    chargeDistributionType(newVal) {
+      // Reset charges when switching type
+      this.folios.forEach((f) => {
+        f.charge = null;
+      });
     },
   },
   mounted() {
