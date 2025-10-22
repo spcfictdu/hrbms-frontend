@@ -78,6 +78,15 @@ export default {
         this.$emit("input", val);
       },
     },
+    payload() {
+      if (this.addon) {
+        return {
+          ...this.addon,
+          folio: this.folio,
+        };
+      }
+      return { folio: this.folio };
+    },
   },
   methods: {
     updateFolio(folio) {
@@ -85,13 +94,7 @@ export default {
     },
     save() {
       if (!this.$refs.form.validate()) return;
-      const payload = {
-        folio: { ...this.folio },
-      };
-      if (this.addon) {
-        payload = { ...payload, ...this.addon };
-      }
-      this.$emit("save", payload);
+      this.$emit("save", this.payload);
     },
     resetForm() {
       if (this.$refs.chargeDistribution) {

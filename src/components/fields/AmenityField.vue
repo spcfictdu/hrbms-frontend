@@ -65,10 +65,12 @@
     </FormField>
 
     <ChargeDistributionDialog
+      v-if="chargeDistributionDialog"
       v-model="chargeDistributionDialog"
       :addon="selectedAddonForChargeDistribution"
       :guestName="guestName"
       @save="handleChargeDistributionSave"
+      :existingCharges="existingCharges"
     />
   </div>
 </template>
@@ -187,12 +189,36 @@ export default {
     ...mapState("amenities", {
       enum_amenities: "amenities",
     }),
-    enums: function () {
+    enums() {
       const returnVals = {
         addons: this.enum_addons,
         amenities: this.enum_amenities,
       };
       return returnVals[this.fetchAction] || [];
+    },
+    existingCharges() {
+      if (!this.selectedAddonForChargeDistribution?.folio) return null;
+
+      const chargeDistributionType =
+        this.selectedAddonForChargeDistribution?.folio?.chargeDistributionType;
+
+      if (!chargeDistributionType) return null;
+
+      const folioCopy = this.selectedAddonForChargeDistribution?.folio;
+      delete folioCopy.type;
+      delete folioCopy.chargeDistributionType;
+      const folios = Object.values(folioCopy).map((f) => {
+        return {
+          name: f?.name || "",
+          charge: f?.charge ? f.charge * 100 : null,
+          amount: f?.amount ?? null,
+        };
+      });
+
+      return {
+        chargeDistributionType,
+        folios,
+      };
     },
   },
   watch: {

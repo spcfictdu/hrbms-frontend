@@ -90,10 +90,10 @@ export default {
 
       const totalWithoutAddons = roomTotal + extraPersonTotal;
 
-      const existingAddons = this.queryParams
+      const existingAddons = this.queryParams?.addons
         ? this.queryParams.addons.filter((a) => a.addonId)
         : [];
-      const newAddons = this.queryParams
+      const newAddons = this.queryParams?.addons
         ? this.queryParams.addons.filter((a) => !a.addonId)
         : [];
       const mockedNewAddons = newAddons.reduce((addons, prev) => {
@@ -222,6 +222,7 @@ export default {
 
         await this.fetchRoom(data);
 
+        if (!this.room) return;
         // Needed by the Parent Component
         this.$emit("capacity", this.room[0].extraPersonCapacity || [0]);
         this.$emit("totalPayment", this.room[0].roomTotalWithExtraPerson);

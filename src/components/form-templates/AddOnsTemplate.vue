@@ -30,16 +30,14 @@ export default {
   },
   data: () => ({
     payload: {
-      addons: null,
+      addons: [],
     },
   }),
   methods: {
     handleAmenityChange(v) {
       this.payload.addons = v.map((addon) => ({
-        name: addon.name,
+        ...addon,
         quantity: String(addon.quantity),
-        referenceNumber: addon.referenceNumber,
-        ...(addon.folio && { folio: addon.folio }),
       }));
       this.$emit("emit-transaction", this.payload);
     },

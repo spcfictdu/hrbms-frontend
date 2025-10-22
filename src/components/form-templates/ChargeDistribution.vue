@@ -275,6 +275,7 @@ export default {
       if (this.folioType === "SPONSORED") {
         const payload = {
           type: "SPONSORED",
+          chargeDistributionType: this.chargeDistributionType,
         };
 
         if (this.chargeDistributionType === "PERCENT") {
@@ -334,9 +335,13 @@ export default {
   mounted() {
     if (this.existingCharges) {
       const { chargeDistributionType, folios } = this.existingCharges;
-      this.chargeDistributionType = chargeDistributionType;
-      this.folioType = "SPONSORED";
-      this.folios = folios;
+      if (folios) {
+        this.chargeDistributionType = chargeDistributionType;
+        this.folioType = "SPONSORED";
+        this.folios = folios;
+      } else {
+        this.folioType = "INDIVIDUAl";
+      }
     }
 
     // Initial emit if needed
