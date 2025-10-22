@@ -149,7 +149,7 @@ export default {
   },
   methods: {
     ...mapMutations("cashier", ["SET_DIALOG"]),
-    ...mapActions("transaction", ["updateFolio"]),
+    ...mapActions("transaction", ["updateFolio", "fetchTransaction"]),
 
     async handleChargeDistributionSave(savedPayload) {
       function enhanceFolioAttributes(folio) {
@@ -186,12 +186,20 @@ export default {
       }
 
       this.loading = true;
-      await this.updateFolio(payload);
-      this.chargedItem = null;
-      this.existingCharges = null;
-      this.chargeDistributionDialog = false;
-      this.loading = false;
-      this.$refs.chargeDistributionDialog.resetForm();
+      try {
+        await this.updateFolio(payload);
+        this.fetchTransaction(
+          this.transactionDetails?.transaction.referenceNumber
+        );
+        this.chargedItem = null;
+        this.existingCharges = null;
+        this.chargeDistributionDialog = false;
+        this.$refs.chargeDistributionDialog.resetForm();
+      } catch (err) {
+        console.error(err);
+      } finally {
+        this.loading = false;
+      }
     },
 
     isRefundedOrVoided(status) {
