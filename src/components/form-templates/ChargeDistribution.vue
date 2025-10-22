@@ -30,11 +30,6 @@
         hide-details="auto"
         row
         v-model="chargeDistributionType"
-        @change="
-          folios.forEach((f) => {
-            f.charge = null;
-          })
-        "
         mandatory
         class="mt-4"
       >
@@ -87,32 +82,38 @@
           </v-col>
           <v-col cols="12" sm="5">
             <v-text-field
-              v-if="index !== 0"
+              v-if="index !== 0 && chargeDistributionType === 'PERCENT'"
               hide-spin-buttons
               type="number"
               v-model.number="folios[index].charge"
-              :label="
-                chargeDistributionType === 'PERCENT'
-                  ? 'Charge (%)'
-                  : 'Charge (Amount)'
-              "
+              label="Charge (%)"
               dense
               outlined
-              :hint="
-                chargeDistributionType === 'PERCENT'
-                  ? 'Percentage (50 = 50%)'
-                  : 'Fixed amount'
-              "
+              hint="Percentage (50 = 50%)"
               persistent-hint
               step="1"
               :min="0"
-              :max="chargeDistributionType === 'PERCENT' ? 100 : undefined"
+              :max="100"
               :rules="
-                index !== 0 && folioType === 'SPONSORED'
-                  ? chargeDistributionType === 'PERCENT'
-                    ? chargeRules
-                    : amountRules
-                  : []
+                index !== 0 && folioType === 'SPONSORED' ? chargeRules : []
+              "
+            />
+            <v-text-field
+              v-else-if="
+                index !== 0 && chargeDistributionType === 'FIXED_AMOUNT'
+              "
+              hide-spin-buttons
+              type="number"
+              v-model.number="folios[index].amount"
+              label="Charge (Amount)"
+              dense
+              outlined
+              hint="Fixed amount"
+              persistent-hint
+              step="1"
+              :min="0"
+              :rules="
+                index !== 0 && folioType === 'SPONSORED' ? amountRules : []
               "
             />
             <v-text-field
@@ -202,10 +203,10 @@ export default {
       folioType: "INDIVIDUAL",
       chargeDistributionType: "PERCENT",
       folios: [
-        { name: "", charge: null },
-        { name: "", charge: null },
-        { name: "", charge: null },
-        { name: "", charge: null },
+        { name: "", charge: null, amount: null },
+        { name: "", charge: null, amount: null },
+        { name: "", charge: null, amount: null },
+        { name: "", charge: null, amount: null },
       ],
     };
   },
@@ -215,10 +216,10 @@ export default {
       this.folioType = "INDIVIDUAL";
       this.chargeDistributionType = "PERCENT";
       this.folios = [
-        { name: "", charge: null },
-        { name: "", charge: null },
-        { name: "", charge: null },
-        { name: "", charge: null },
+        { name: "", charge: null, amount: null },
+        { name: "", charge: null, amount: null },
+        { name: "", charge: null, amount: null },
+        { name: "", charge: null, amount: null },
       ];
     },
   },
@@ -238,7 +239,7 @@ export default {
       if (this.chargeDistributionType !== "FIXED_AMOUNT") return 0;
       return this.folios
         .slice(1)
-        .reduce((sum, folio) => sum + (Number(folio.charge) || 0), 0);
+        .reduce((sum, folio) => sum + (Number(folio.amount) || 0), 0);
     },
     remainingAmount() {
       if (this.chargeDistributionType !== "FIXED_AMOUNT") return 0;
@@ -298,7 +299,7 @@ export default {
         } else if (this.chargeDistributionType === "FIXED_AMOUNT") {
           // Folio A
           const folioA = (payload.folioA = {
-            amount: this.remainingAmount,
+            amount: parseFloat(this.remainingAmount),
           });
           if (this.guestName && this.guestName.trim()) {
             folioA.name = this.guestName.trim();
@@ -307,7 +308,7 @@ export default {
           // Folios B, C, D
           this.folios.slice(1).forEach((folio, index) => {
             const folioIndex = index + 1;
-            const amount = Number(folio.charge) || 0; // still using folio.charge for v-model
+            const amount = Number(folio.amount) || 0;
             const folioKey = `folio${String.fromCharCode(65 + folioIndex)}`;
             payload[folioKey] = { amount: amount };
             if (folio.name && folio.name.trim()) {
@@ -329,20 +330,6 @@ export default {
       },
       deep: true,
     },
-    folioType(newVal) {
-      if (newVal !== "SPONSORED") {
-        this.folios.forEach((f) => {
-          f.name = "";
-          f.charge = null;
-        });
-      }
-    },
-    // chargeDistributionType(newVal) {
-    //   // Reset charges when switching type
-    //   this.folios.forEach((f) => {
-    //     f.charge = null;
-    //   });
-    // },
   },
   mounted() {
     if (this.existingCharges) {

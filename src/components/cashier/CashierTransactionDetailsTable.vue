@@ -242,14 +242,15 @@ export default {
         const amountVal = parseFloat(existingCharge[amountKey]) || 0;
 
         let charge = null;
+        let amount = null;
         if (amountVal !== 0) {
-          charge = amountVal;
+          amount = amountVal;
           chargeDistributionType = "FIXED_AMOUNT";
         } else if (chargeVal !== 0) {
           charge = chargeVal;
         }
 
-        folios.push({ name, charge });
+        folios.push({ name, charge, amount });
       });
 
       return { folios, chargeDistributionType };
