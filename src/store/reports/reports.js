@@ -14,10 +14,12 @@ export const reports = {
       departures: [],
     },
     cashierReports: [],
+    guestBillingReport: null,
     loading: {
       guestReports: false,
       flightReports: false,
       cashierReports: false,
+      guestBillingReport: false,
     },
   }),
   getters: {
@@ -67,9 +69,28 @@ export const reports = {
     SET_LOADING(state, { key, value }) {
       state.loading[key] = value;
     },
+    SET_GUEST_BILLING_REPORT: (state, data) =>
+      (state.guestBillingReport = data),
   },
 
   actions: {
+    async fetchGuestBillingReport({ commit }, transactionRefNum) {
+      const url = `report/guest-billing/${transactionRefNum}`;
+      commit("SET_LOADING", { key: "guestBillingReport", value: true });
+
+      try {
+        const { data } = await this.$axios.get(url);
+        commit("SET_GUEST_BILLING_REPORT", data);
+        return data;
+      } catch (err) {
+        commit("SET_GUEST_BILLING_REPORT", null);
+        console.error(`Error fetching guest billing report: ${err}`);
+        return err.response?.data;
+      } finally {
+        commit("SET_LOADING", { key: "guestBillingReport", value: false });
+      }
+    },
+
     async fetchCashierReports({ commit }, queryParams) {
       const url = "report/daily-cashier";
       commit("SET_LOADING", { key: "cashierReports", value: true });

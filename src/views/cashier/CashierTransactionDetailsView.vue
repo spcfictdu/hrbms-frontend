@@ -11,6 +11,22 @@
           Cashier Drawer {{ drawerNumber }} | {{ cashierLocation }}
         </div>
       </template>
+      <template>
+        <v-btn
+          depressed
+          class="mr-4"
+          color="primary"
+          @click="
+            $router.push({
+              name: 'Billing Report',
+              params: {
+                transactionRefNum: $route.params.transactionReferenceNumber,
+              },
+            })
+          "
+          >Billing</v-btn
+        >
+      </template>
     </PageHeader>
 
     <RouteLoader :target="hasData" class="mt-10">

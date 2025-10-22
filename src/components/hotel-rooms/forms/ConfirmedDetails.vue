@@ -1,10 +1,27 @@
 <template>
   <div>
-    <header-booking-slot
+    <HeaderBookingSlot
       @button-event="handleStatusUpdate"
       :headerData="headerData"
       :loading="loading.header"
-    />
+    >
+      <template #extraButton>
+        <v-btn
+          depressed
+          class="mr-4"
+          color="primary"
+          @click="
+            $router.push({
+              name: 'Billing Report',
+              params: {
+                transactionRefNum: $route.params.referenceNumber,
+              },
+            })
+          "
+          >Billing</v-btn
+        >
+      </template>
+    </HeaderBookingSlot>
 
     <v-form @submit.prevent="handlePrinting">
       <v-row>

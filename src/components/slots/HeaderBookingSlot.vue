@@ -29,19 +29,23 @@
         </div>
       </div>
     </div>
-    <slot name="button">
-      <v-btn
-        v-if="isStaff && showButton(status.type)"
-        class="mt-2 mt-sm-0"
-        :block="$vuetify.breakpoint.xs ? true : false"
-        @click="$emit('button-event')"
-        :outlined="button.style.outlined"
-        :color="button.style.color"
-        :disabled="button.disabled"
-        :loading="loading"
-        >{{ button.title }}</v-btn
-      >
-    </slot>
+
+    <div>
+      <slot name="extraButton" />
+      <slot name="button">
+        <v-btn
+          v-if="isStaff && showButton(status.type)"
+          class="mt-2 mt-sm-0"
+          :block="$vuetify.breakpoint.xs ? true : false"
+          @click="$emit('button-event')"
+          :outlined="button.style.outlined"
+          :color="button.style.color"
+          :disabled="button.disabled"
+          :loading="loading"
+          >{{ button.title }}</v-btn
+        >
+      </slot>
+    </div>
   </div>
 </template>
 

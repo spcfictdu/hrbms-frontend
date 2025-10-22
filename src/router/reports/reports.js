@@ -66,4 +66,16 @@ export default [
     },
     props: true,
   },
+  {
+    path: "/billing-report/:transactionRefNum",
+    name: "Billing Report",
+    component: () =>
+      import(
+        /* webpackChunkName: "billingReport" */ "@/views/reports/BillingReportView.vue"
+      ),
+    props: true,
+    meta: {
+      name: "Billing Report",
+    },
+  },
 ];
