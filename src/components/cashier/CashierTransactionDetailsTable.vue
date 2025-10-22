@@ -101,10 +101,12 @@
     </v-card>
 
     <ChargeDistributionDialog
+      v-if="chargeDistributionDialog"
       ref="chargeDistributionDialog"
       v-model="chargeDistributionDialog"
       :itemAmount="itemAmount"
       :guestName="transactionDetails?.guestName"
+      :existing-charges="existingCharges"
       @save="handleChargeDistributionSave"
       :loading="loading"
     />
@@ -140,6 +142,7 @@ export default {
       refundedOrVoidedMopColor: "#CACACA",
       chargedItem: null,
       itemAmount: 0,
+      existingCharges: null,
       chargeDistributionDialog: false,
       loading: false,
     };
@@ -185,6 +188,7 @@ export default {
       this.loading = true;
       await this.updateFolio(payload);
       this.chargedItem = null;
+      this.existingCharges = null;
       this.chargeDistributionDialog = false;
       this.loading = false;
       this.$refs.chargeDistributionDialog.resetForm();
@@ -221,6 +225,36 @@ export default {
       return payload;
     },
 
+    formatExistingCharges(existingCharge) {
+      if (existingCharge.type === "INDIVIDUAL") return null;
+
+      const letters = ["b", "c", "d"];
+      const folios = [{}];
+      let chargeDistributionType = "PERCENT";
+
+      letters.forEach((letter) => {
+        const nameKey = `folio_${letter}_name`;
+        const chargeKey = `folio_${letter}_charge`;
+        const amountKey = `folio_${letter}_amount`;
+
+        const name = existingCharge[nameKey] || "";
+        const chargeVal = parseFloat(existingCharge[chargeKey] * 100) || 0;
+        const amountVal = parseFloat(existingCharge[amountKey]) || 0;
+
+        let charge = null;
+        if (amountVal !== 0) {
+          charge = amountVal;
+          chargeDistributionType = "FIXED_AMOUNT";
+        } else if (chargeVal !== 0) {
+          charge = chargeVal;
+        }
+
+        folios.push({ name, charge });
+      });
+
+      return { folios, chargeDistributionType };
+    },
+
     menuItems({ status, type }) {
       const isFrontDeskUser = this.$auth.user()?.role === "FRONT DESK";
 
@@ -237,7 +271,18 @@ export default {
           text: "Charge Distribution",
           action: (item) => {
             this.chargedItem = item;
-            this.itemAmount = Number(item.price);
+            this.itemAmount = Number(item.totalPrice);
+            if (item.type === "room") {
+              this.existingCharges = this.formatExistingCharges(
+                this.transactionDetails?.transaction?.roomCharges
+              );
+            } else if (item.type === "addon") {
+              const addon =
+                this.transactionDetails?.priceSummary?.fullAddons?.find(
+                  (a) => a.addonId === item.addonId
+                );
+              this.existingCharges = this.formatExistingCharges(addon?.charges);
+            }
             this.chargeDistributionDialog = true;
           },
         },

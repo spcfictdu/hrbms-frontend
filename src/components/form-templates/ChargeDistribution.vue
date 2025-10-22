@@ -30,6 +30,11 @@
         hide-details="auto"
         row
         v-model="chargeDistributionType"
+        @change="
+          folios.forEach((f) => {
+            f.charge = null;
+          })
+        "
         mandatory
         class="mt-4"
       >
@@ -175,6 +180,10 @@ export default {
     itemAmount: {
       type: Number,
       default: 0,
+    },
+    existingCharges: {
+      type: Object,
+      default: null,
     },
   },
   data() {
@@ -328,14 +337,21 @@ export default {
         });
       }
     },
-    chargeDistributionType(newVal) {
-      // Reset charges when switching type
-      this.folios.forEach((f) => {
-        f.charge = null;
-      });
-    },
+    // chargeDistributionType(newVal) {
+    //   // Reset charges when switching type
+    //   this.folios.forEach((f) => {
+    //     f.charge = null;
+    //   });
+    // },
   },
   mounted() {
+    if (this.existingCharges) {
+      const { chargeDistributionType, folios } = this.existingCharges;
+      this.chargeDistributionType = chargeDistributionType;
+      this.folioType = "SPONSORED";
+      this.folios = folios;
+    }
+
     // Initial emit if needed
     this.$emit("change", this.folioPayload);
   },

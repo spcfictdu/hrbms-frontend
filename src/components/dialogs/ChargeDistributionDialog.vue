@@ -8,6 +8,7 @@
             :guestName="guestName"
             @change="updateFolio"
             :itemAmount="calculatedItemAmount"
+            :existing-charges="existingCharges"
           >
             <v-card-actions class="px-0">
               <v-btn :loading="loading" block color="primary" type="submit"
@@ -35,13 +36,20 @@ export default {
       type: Boolean,
       default: false,
     },
-    addon: Object | null,
+    addon: {
+      type: Object,
+      default: null,
+    },
     itemAmount: {
       type: Number,
       default: 0,
     },
     guestName: String,
     loading: Boolean,
+    existingCharges: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
