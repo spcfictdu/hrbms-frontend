@@ -35,14 +35,14 @@
         </v-chip>
       </template>
 
-      <template v-slot:[`item.status`]="{ item }">
+      <template v-slot:[`item.type`]="{ item }">
         <v-chip
           dark
           small
-          :color="getStatusColor(item.status)"
+          :color="getTransactionTypeColor(item.type)"
           class="font-weight-medium"
         >
-          {{ item.status }}
+          {{ item.type }}
         </v-chip>
       </template>
     </CashierReportTable>
@@ -79,7 +79,7 @@ export default {
         },
         { text: "MOP", value: "modeOfPayment" },
         { text: "Amount", value: "amount" },
-        { text: "Status", value: "status" },
+        { text: "Type", value: "type" },
       ],
     };
   },
@@ -88,7 +88,7 @@ export default {
     ...mapGetters("authentication", ["getCurrentUser"]),
 
     subtitleDate() {
-      return format(parseISO(this.date), "EEEE, MMMM dd yyyy");
+      return format(parseISO(this.date), "EEEE, MMMM dd, yyyy");
     },
 
     cashierReport() {
@@ -119,14 +119,13 @@ export default {
             VOID: "VOIDED",
             REFUND: "REFUNDED",
           };
-          const status = statusMap[type] ?? type;
           return {
             date,
             referenceNumber,
             accountName,
             modeOfPayment,
             amount: formatPrice(amount),
-            status,
+            type: statusMap[type] ?? type,
           };
         }
       );
@@ -178,7 +177,7 @@ export default {
       this.printReport(this.$refs.reportTable.$el, options);
     },
 
-    getStatusColor(status) {
+    getTransactionTypeColor(status) {
       const statusColors = {
         PAYMENT: "cash",
         REFUNDED: "warning",
