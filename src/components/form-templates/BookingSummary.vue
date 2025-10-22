@@ -1,10 +1,6 @@
 <template>
   <FormSection title="Booking Summary" class="pb-8">
-    <TotalBillCard
-      v-if="room && addons"
-      :value="bookingSummary"
-      :loading="loading"
-    />
+    <TotalBillCard v-if="room" :value="bookingSummary" :loading="loading" />
     <v-card
       flat
       min-height="575"
