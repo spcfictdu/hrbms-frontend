@@ -5,20 +5,31 @@
       :headerData="headerData"
       :loading="loading.header"
     >
-      <template #extraButton>
-        <v-btn
-          class="mr-4"
-          color="primary"
-          @click="
-            $router.push({
-              name: 'Billing Report',
-              params: {
-                transactionRefNum: $route.params.referenceNumber,
-              },
-            })
-          "
-          >Billing</v-btn
-        >
+      <template #menu>
+        <v-menu bottom left>
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn icon v-bind="attrs" v-on="on">
+              <v-icon>mdi-dots-vertical</v-icon>
+            </v-btn>
+          </template>
+
+          <v-list class="py-0">
+            <v-list-item
+              class="menu-border"
+              dense
+              @click="item.action"
+              v-for="(item, i) in items"
+              :key="i"
+            >
+              <v-list-item-icon class="mr-3" v-if="item.icon">
+                <v-icon>{{ item.icon }}</v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </template>
     </HeaderBookingSlot>
 
@@ -42,6 +53,13 @@
         </v-col>
       </v-row>
     </v-form>
+    <div style="display: none">
+      <confirmation-letter
+        v-if="transactionForLetter"
+        ref="confirmationLetter"
+        v-bind="transactionForLetter"
+      />
+    </div>
   </div>
 </template>
 
@@ -51,6 +69,7 @@ import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import CheckInOutDetails from "@/components/form-templates/CheckInOutDetails.vue";
 import FlightDetails from "@/components/form-templates/FlightDetails.vue";
 import PrintingFunction from "@/mixins/PrintingFunction";
+import ConfirmationLetter from "@/components/letters/ConfirmationLetter.vue";
 import { mapState } from "vuex";
 import { format, parseISO } from "date-fns";
 export default {
@@ -61,17 +80,78 @@ export default {
     BookingSummary,
     CheckInOutDetails,
     FlightDetails,
+    ConfirmationLetter,
   },
   props: {
     value: Object,
   },
-  data: () => ({
-    payload: {
-      status: null,
-    },
-    activeButtonTitle: "Save Check-In Time",
-  }),
+  data() {
+    return {
+      payload: {
+        status: null,
+      },
+      activeButtonTitle: "Save Check-In Time",
+      items: [
+        {
+          title: "Guest Billing",
+          icon: "mdi-file-document",
+          action: () =>
+            this.$router.push({
+              name: "Billing Report",
+              params: {
+                transactionRefNum: this.$route.params.referenceNumber,
+              },
+            }),
+        },
+        {
+          title: "Confirmation Letter",
+          icon: "mdi-printer",
+          action: () => this.printLetter(),
+        },
+      ],
+    };
+  },
   methods: {
+    printLetter() {
+      const letterContent = this.$refs.confirmationLetter.$el;
+      if (!letterContent) return;
+
+      const parent = letterContent.parentElement;
+      const originalParentDisplay = parent.style.display;
+      parent.style.display = "block";
+
+      const printWindow = window.open("", "_blank");
+      const printDocument = printWindow.document;
+
+      const clonedContent = letterContent.cloneNode(true);
+      printDocument.body.appendChild(clonedContent);
+
+      const style = printDocument.createElement("style");
+      style.innerHTML = `
+        @media print {
+            @page {
+                size: A4;
+                margin: 15mm;
+            }
+            body {
+                -webkit-print-color-adjust: exact;
+                color-adjust: exact;
+            }
+            table, tr, td, div, p, h2, h3, h4, small, a {
+                page-break-inside: avoid;
+            }
+        }
+    `;
+      printDocument.head.appendChild(style);
+
+      parent.style.display = originalParentDisplay;
+
+      setTimeout(() => {
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+      }, 1000);
+    },
     assignPayload: function (payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
@@ -111,7 +191,57 @@ export default {
     },
   },
   computed: {
+    transactionForLetter() {
+      if (!this.value || !this.room || !this.room.length) return null;
+      const { transaction, priceSummary, paymentSummary, guestName, guest } =
+        this.value;
+      const roomData = this.room[0];
+
+      const roomRate = roomData.roomRatesArray[0].rate;
+      const extraGuestCharge =
+        roomData.roomRatesArray[0].extraPersonRate *
+        parseInt(roomData.extraPersonCount);
+
+      const addonsTotal = priceSummary.fullAddons.reduce(
+        (sum, addon) => sum + addon.total,
+        0
+      );
+      const paymentReceived = paymentSummary.reduce(
+        (sum, p) => sum + parseFloat(p.amountReceived),
+        0
+      );
+
+      const discountableTotal = roomRate + extraGuestCharge;
+      const discountValue = priceSummary.discount
+        ? parseFloat(priceSummary.discount) / 100
+        : 0;
+      const discountAmount = discountableTotal * discountValue;
+
+      const grandTotal =
+        roomRate + extraGuestCharge - discountAmount + addonsTotal;
+      const balance = grandTotal - paymentReceived;
+
+      return {
+        transaction: {
+          ...transaction,
+          guestName: guestName,
+          checkIn: `${transaction.checkInDate}T${transaction.checkInTime}`,
+          checkOut: `${transaction.checkOutDate}T${transaction.checkOutTime}`,
+        },
+        guest: guest,
+        days: priceSummary.days,
+        addons: priceSummary.fullAddons,
+        totalRoomRate: roomRate,
+        extraGuestTotal: extraGuestCharge,
+        discountAmount: discountAmount,
+        addonsTotal: addonsTotal,
+        grandTotal: grandTotal,
+        paymentReceived: paymentReceived,
+        balance: balance,
+      };
+    },
     ...mapState("transaction", ["loading"]),
+    ...mapState("roomEnum", ["room"]),
     headerData: function () {
       const { transaction, guestName, priceSummary } = this.value;
       const {
@@ -226,4 +356,8 @@ export default {
 };
 </script>
 
-<style scoped></style>
+<style scoped>
+.menu-border {
+  border-bottom: 1px solid #e6e2e2;
+}
+</style>

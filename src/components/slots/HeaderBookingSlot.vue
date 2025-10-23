@@ -30,7 +30,7 @@
       </div>
     </div>
 
-    <div>
+    <div class="d-flex flex-row" style="gap: 1rem">
       <slot name="extraButton" />
       <slot name="button">
         <v-btn
@@ -45,6 +45,7 @@
           >{{ button.title }}</v-btn
         >
       </slot>
+      <slot name="menu" />
     </div>
   </div>
 </template>
