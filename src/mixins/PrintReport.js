@@ -83,10 +83,18 @@ export default {
           color: lightgray;
         }
         .font-weight-bold {
-          font-weight: bold;
+          font-weight: bold !important;
         }
         tr {
           background-color: transparent !important;
+        }
+        .text-overline {
+          font-size: 0.75rem !important;
+          font-weight: 500;
+          line-height: 2rem;
+          letter-spacing: 0.1666666667em !important;
+          font-family: "Roboto", sans-serif !important;
+          text-transform: uppercase !important;
         }
       `;
       printDocument.head.appendChild(customStyle);
@@ -100,38 +108,40 @@ export default {
 
       const tableWrapperClone = tableElement.cloneNode(true);
       if (!skipTableLogic) {
-        const table = tableWrapperClone.querySelector("table");
-        if (table) {
-          const originalTable = tableElement.querySelector("table");
+        const originalTables = tableElement.querySelectorAll("table");
+        const clonedTables = tableWrapperClone.querySelectorAll("table");
+
+        clonedTables.forEach((table, index) => {
+          const originalTable = originalTables[index];
           if (originalTable) {
             const tableWidth = originalTable.offsetWidth;
             const originalHeaderCells =
-              tableElement.querySelectorAll("thead th");
+              originalTable.querySelectorAll("thead th");
             const columnWidths = Array.from(originalHeaderCells).map(
               (th) => (th.offsetWidth / tableWidth) * 100 + "%"
             );
 
             const clonedHeaderCells = table.querySelectorAll("thead th");
-            clonedHeaderCells.forEach((th, index) => {
-              th.style.width = columnWidths[index];
+            clonedHeaderCells.forEach((th, i) => {
+              th.style.width = columnWidths[i];
             });
 
             const bodyRows = table.querySelectorAll("tbody tr");
             bodyRows.forEach((row) => {
               const cells = row.querySelectorAll("td");
-              cells.forEach((cell, index) => {
-                if (columnWidths[index]) {
-                  cell.style.width = columnWidths[index];
+              cells.forEach((cell, i) => {
+                if (columnWidths[i]) {
+                  cell.style.width = columnWidths[i];
                 }
               });
             });
           }
 
-          if (headerText) {
+          if (headerText && index === 0) {
             const caption = table.createCaption();
             caption.textContent = headerText;
           }
-        }
+        });
       }
 
       const originalChips = tableElement.querySelectorAll(".v-chip");

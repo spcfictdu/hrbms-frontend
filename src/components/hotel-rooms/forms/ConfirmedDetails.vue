@@ -7,7 +7,6 @@
     >
       <template #extraButton>
         <v-btn
-          depressed
           class="mr-4"
           color="primary"
           @click="
