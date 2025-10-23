@@ -258,10 +258,11 @@ export default {
       const now = new Date();
 
       // Determine disabled state: false if confirmed and check-in has started, or checked-in and check-out has passed
-      const isNotWithinDate = !(
-        (status === "CONFIRMED" && new Date(checkInDateTime) <= now) ||
-        (status === "CHECKED-IN" && new Date(checkOutDateTime) <= now)
-      );
+      // const isNotWithinDate = !(
+      //   (status === "CONFIRMED" && new Date(checkInDateTime) <= now) ||
+      //   (status === "CHECKED-IN" && new Date(checkOutDateTime) <= now)
+      // );
+      const disabled = status === "CHECKED-OUT";
       // const hasOutstanding =
       //   paymentStatus === "PENDING" ||
       //   paymentStatus === "PARTIAL" ||
@@ -279,7 +280,7 @@ export default {
         button: {
           title: this.headerBtnText,
           style: { color: "primary", outlined: false },
-          disabled: isNotWithinDate,
+          disabled,
         },
       };
     },
