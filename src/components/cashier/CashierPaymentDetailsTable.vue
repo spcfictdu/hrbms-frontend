@@ -1,5 +1,7 @@
 <template>
-  <v-card flat>
+  <v-skeleton-loader type="table" v-if="loading" />
+
+  <v-card v-else flat>
     <CashierTransactionDetailsTableHeader :tableHead="headerDetails" />
 
     <div class="px-5 pb-5">
@@ -74,7 +76,7 @@ import { format, parseISO } from "date-fns";
 export default {
   name: "CashierPaymentDetailsTable",
   components: { DefaultTable, CashierTransactionDetailsTableHeader },
-  props: { data: Object, menuItems: Array },
+  props: { data: Object, menuItems: Array, loading: Boolean },
   data: () => ({
     footerProps: {
       itemsPerPageOptions: [5, 10, 15],

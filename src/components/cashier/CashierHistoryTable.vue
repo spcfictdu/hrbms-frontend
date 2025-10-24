@@ -73,7 +73,6 @@ export default {
 
   computed: {
     mappedHistory() {
-      console.log(this.history);
       if (this.history?.data) {
         const transactions = [];
         for (const session of this.history.data) {

@@ -29,12 +29,13 @@
       </template>
     </PageHeader>
 
-    <RouteLoader :target="hasData" class="mt-10">
+    <div class="mt-10">
       <v-row>
         <v-col cols="12" md="8" lg="9">
           <CashierTransactionDetailsTable
             :transactionDetails="transaction"
             @menuSelect="handleMenuSelect"
+            :loading="loading"
           />
         </v-col>
 
@@ -42,10 +43,11 @@
           <CashierTransactionPaymentsTable
             :tableHead="tableHead"
             :mappedItems="mappedItems"
+            :loading="loading"
           />
         </v-col>
       </v-row>
-    </RouteLoader>
+    </div>
 
     <AdminPasscodeDialog
       :opened="dialog.adminPasscode"
@@ -58,7 +60,7 @@
       :opened="dialog.confirmation"
       :onClose="() => handleClose('confirmation')"
       :meta="confirmationDialogMeta"
-      :loading="loading.dialog"
+      :loading="getLoading('dialog')"
       @onProceed="handleProceed"
     />
   </div>
@@ -66,17 +68,15 @@
 
 <script>
 import PageHeader from "@/components/headers/PageHeader.vue";
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierTransactionDetailsTable from "@/components/cashier/CashierTransactionDetailsTable.vue";
 import CashierTransactionPaymentsTable from "@/components/cashier/CashierTransactionPaymentsTable.vue";
 import AdminPasscodeDialog from "@/components/dialogs/AdminPasscodeDialog.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
-import { mapMutations, mapActions, mapState } from "vuex";
+import { mapMutations, mapActions, mapState, mapGetters } from "vuex";
 import { generateCashierLocation } from "@/utils/cashierLocationGenerator";
 
 export default {
   components: {
-    RouteLoader,
     PageHeader,
     CashierTransactionDetailsTable,
     CashierTransactionPaymentsTable,
@@ -127,6 +127,8 @@ export default {
     async fetch() {
       await this.fetchTransaction(this.transactionReferenceNumber);
 
+      if (!this.transaction) return;
+
       const room = {
         roomType: this.transaction.room.name,
         roomNumber: this.transaction.room.number,
@@ -174,9 +176,14 @@ export default {
     },
   },
   computed: {
-    ...mapState("transaction", ["transaction", "loading"]),
+    ...mapState("transaction", ["transaction"]),
+    ...mapGetters("transaction", ["getLoading"]),
     ...mapState("cashier", ["dialog"]),
     ...mapState("roomEnum", ["room"]),
+
+    loading() {
+      return this.getLoading("transaction") || !this.room;
+    },
 
     cashierLocation() {
       const drawerNum = parseInt(this.drawerNumber, 10);

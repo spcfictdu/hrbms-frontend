@@ -13,6 +13,9 @@ export const transaction = {
     payment: null,
     previousTransactions: null,
     loading: {
+      transactions: false,
+      transaction: false,
+      payment: false,
       dialog: false,
       form: false,
       flightForm: false,
@@ -25,7 +28,9 @@ export const transaction = {
     },
     flights: [],
   }),
-  getters: {},
+  getters: {
+    getLoading: (state) => (name) => state.loading[name],
+  },
   mutations: {
     SET_PAYMENT: (state, data) => (state.payment = data),
     SET_TRANSACTIONS: (state, data) => (state.transactions = data),
@@ -45,13 +50,17 @@ export const transaction = {
     async fetchPayment({ commit }, payload) {
       const url = "transaction/payment/show";
 
+      commit("SET_LOADING", { key: "payment", value: true });
       try {
-        const response = await this.$axios.get(url, { params: payload });
-        commit("SET_PAYMENT", response.data);
-        return response;
+        const { data } = await this.$axios.get(url, { params: payload });
+        commit("SET_PAYMENT", data);
+        return data;
       } catch (err) {
-        console.error(err);
+        commit("SET_PAYMENT", null);
+        console.error("Error fetching payment: ", err);
         return err.response.data;
+      } finally {
+        commit("SET_LOADING", { key: "payment", value: false });
       }
     },
     async fetchFlights({ commit }, transactionReferenceNumber) {
@@ -149,36 +158,41 @@ export const transaction = {
         commit("SET_DIALOG", { key: "confirmation", value: false });
       }
     },
-    fetchTransactions: function ({ commit }, queryParams = {}) {
+    async fetchTransactions({ commit }, queryParams = {}) {
       const url = `transaction`;
       const queryUrl = functions.query(url, queryParams);
-      return this.$axios
-        .get(queryUrl)
-        .then((response) => {
-          commit("SET_TRANSACTIONS", response.data.results);
-        })
-        .catch((error) => {
-          console.error("Error fetching transactions: ", error);
-          // commit("SET_ALERT_PROPERTIES", {
-          //   message: error.response.data.message,
-          //   status: "error",
-          // });
-        });
+
+      commit("SET_LOADING", { key: "transactions", value: true });
+      try {
+        const { data } = await this.$axios.get(queryUrl);
+        commit("SET_TRANSACTIONS", data.results);
+        return data;
+      } catch (err) {
+        commit("SET_TRANSACTIONS", null);
+        console.error("Error fetching transactions: ", err);
+      } finally {
+        commit("SET_LOADING", { key: "transactions", value: false });
+      }
     },
-    fetchTransaction: function ({ commit, state }, referenceNumber) {
+    async fetchTransaction({ commit }, referenceNumber) {
       // Reset to null state every fetch transaction
-      state.transaction = null;
+      commit("SET_TRANSACTION", null);
 
       // Get the transaction
       const url = `transaction/show/${referenceNumber}`;
-      return this.$axios
-        .get(url)
-        .then((response) => {
-          commit("SET_TRANSACTION", response.data.results.bookingHistory);
-        })
-        .catch((error) => {
-          console.error("Error fetching transaction: ", error);
-        });
+
+      commit("SET_LOADING", { key: "transaction", value: true });
+      try {
+        const { data } = await this.$axios.get(url);
+        const transaction = data.results.bookingHistory;
+        commit("SET_TRANSACTION", transaction);
+        return transaction;
+      } catch (err) {
+        commit("SET_TRANSACTION", null);
+        console.error("Error fetching transaction: ", err);
+      } finally {
+        commit("SET_LOADING", { key: "transaction", value: false });
+      }
     },
     createTransaction: async function ({ commit, dispatch }, payload) {
       const url = `transaction/create`;

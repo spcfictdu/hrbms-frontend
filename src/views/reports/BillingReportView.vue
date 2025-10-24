@@ -12,14 +12,33 @@
       @print="handlePrint"
     >
       <template #subtitle>
-        <div v-if="guestBillingReport" class="grey--text text--darken-2 mb-1">
+        <v-skeleton-loader
+          class="pt-1 mb-1"
+          v-if="loading"
+          type="text"
+          height="24"
+          max-width="300"
+        />
+        <div
+          v-else-if="guestBillingReport"
+          class="grey--text text--darken-2 mb-1"
+        >
           Guest: {{ guestBillingReport?.guestName }}
         </div>
       </template>
     </PageHeader>
 
     <div ref="billingReport">
-      <div v-if="guestBillingReport" class="py-4">
+      <div v-if="loading" class="py-4">
+        <v-skeleton-loader
+          v-for="n in 4"
+          :key="n"
+          type="text"
+          min-height="24"
+          max-width="200"
+        />
+      </div>
+      <div v-else-if="guestBillingReport" class="py-4">
         <div v-for="({ text, value }, index) in reportDetails" :key="index">
           <span>{{ text }}: </span>
           <span class="font-weight-bold">{{ value }}</span>
@@ -27,7 +46,13 @@
       </div>
 
       <div class="d-flex flex-column" :style="{ gap: '2rem' }">
+        <v-skeleton-loader
+          type="table"
+          :types="{ 'table-tbody': 'table-row-divider@3' }"
+          v-if="loading"
+        />
         <DefaultTable
+          v-else
           :itemsPerPage="-1"
           :headers="headers"
           :items="items"
@@ -59,7 +84,13 @@
           <div class="text-overline font-weight-bold">
             Folio Charge Breakdown
           </div>
+          <v-skeleton-loader
+            type="table"
+            :types="{ 'table-tbody': 'table-row-divider@3' }"
+            v-if="loading"
+          />
           <DefaultTable
+            v-else
             :itemsPerPage="-1"
             :headers="folioHeaders"
             :items="folioItems"
@@ -77,7 +108,7 @@ import PageHeader from "@/components/headers/PageHeader.vue";
 import DefaultTable from "@/components/tables/DefaultTable.vue";
 import formatPrice from "@/utils/format-price";
 import PrintReport from "@/mixins/PrintReport";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import { format } from "date-fns";
 
 export default {
@@ -192,6 +223,11 @@ export default {
   },
   computed: {
     ...mapState("reports", ["guestBillingReport"]),
+    ...mapGetters("reports", ["getLoading"]),
+
+    loading() {
+      return this.getLoading("guestBillingReport");
+    },
 
     reportDetails() {
       if (!this.guestBillingReport) return [];

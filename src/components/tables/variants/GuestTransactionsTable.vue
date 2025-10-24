@@ -1,5 +1,6 @@
 <template>
-  <v-card flat>
+  <v-skeleton-loader type="table" v-if="loading" />
+  <v-card flat v-else>
     <GuestTableHeader :guest="guest" @onQuery="assignParams($event)" />
 
     <div class="pa-5">
@@ -31,6 +32,8 @@ import GuestTableHeader from "@/components/table-headers/GuestTableHeader.vue";
 import DefaultTable from "@/components/tables/DefaultTable.vue";
 import { assignParams } from "@/mixins/FormattingFunctions";
 import { format, parseISO } from "date-fns";
+import { mapGetters } from "vuex";
+
 export default {
   name: "GuestTransactionsTable",
   mixins: [assignParams],
@@ -82,6 +85,10 @@ export default {
     },
   },
   computed: {
+    ...mapGetters("guest", ["getLoading"]),
+    loading() {
+      return this.getLoading("guest");
+    },
     tableData: function () {
       return Array.isArray(this.guest.transactions)
         ? this.guest.transactions.map((content) => ({

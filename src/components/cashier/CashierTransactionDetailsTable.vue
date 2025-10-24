@@ -1,6 +1,8 @@
 <template>
   <div>
-    <v-card flat>
+    <v-skeleton-loader type="table" v-if="loading" />
+
+    <v-card v-else flat>
       <CashierTransactionDetailsTableHeader :tableHead="headerDetails" />
 
       <div class="px-5 pb-5">
@@ -108,7 +110,7 @@
       :guestName="transactionDetails?.guestName"
       :existing-charges="existingCharges"
       @save="handleChargeDistributionSave"
-      :loading="loading"
+      :loading="chargeDistributionLoading"
     />
   </div>
 </template>
@@ -127,7 +129,7 @@ export default {
     CashierTransactionDetailsTableHeader,
     ChargeDistributionDialog,
   },
-  props: { transactionDetails: Object },
+  props: { transactionDetails: Object, loading: Boolean },
   data() {
     return {
       mopColors: {
@@ -144,7 +146,7 @@ export default {
       itemAmount: 0,
       existingCharges: null,
       chargeDistributionDialog: false,
-      loading: false,
+      chargeDistributionLoading: false,
     };
   },
   methods: {
@@ -185,7 +187,7 @@ export default {
         }
       }
 
-      this.loading = true;
+      this.chargeDistributionLoading = true;
       try {
         await this.updateFolio(payload);
         this.fetchTransaction(
@@ -198,7 +200,7 @@ export default {
       } catch (err) {
         console.error(err);
       } finally {
-        this.loading = false;
+        this.chargeDistributionLoading = false;
       }
     },
 
@@ -389,12 +391,12 @@ export default {
         this.transaction?.transaction.paymentStatus
       )
         ? 0
-        : this.room[0]?.roomRatesArray.reduce(
+        : this.room?.[0]?.roomRatesArray?.reduce(
             (total, room) => total + room.extraPersonRate,
             0
           );
 
-      return extraPersonTotal;
+      return extraPersonTotal || 0;
     },
 
     headerDetails() {
@@ -409,7 +411,7 @@ export default {
 
       const totalWithoutAddons =
         this.transactionDetails?.priceSummary.finalRoomTotal +
-        this.room[0]?.extraPersonTotal;
+        (this.room?.[0]?.extraPersonTotal || 0);
 
       const totalPurchase = totalWithoutAddons + totalValidAddons;
 
@@ -431,6 +433,8 @@ export default {
       if (!this.transactionDetails) return;
 
       const { transaction, room, priceSummary } = this.transactionDetails;
+      const discountPercentage =
+        (this.room?.[0]?.discount?.split("%")[0] || 0) * 0.01;
       return [
         {
           status: transaction.paymentStatus,
@@ -442,7 +446,7 @@ export default {
           ).toFixed(2),
           discount: (
             (Number(priceSummary.roomTotal) + this.extraPersonTotal) *
-            (this.room[0]?.discount.split("%")[0] * 0.01)
+            discountPercentage
           ).toFixed(2),
           time: format(parseISO(transaction.createdAt), "H:mm:ss"),
           type: "room",

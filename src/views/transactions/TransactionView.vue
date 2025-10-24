@@ -6,24 +6,24 @@
     }"
   >
     <PageHeader />
-    <RouteLoader :target="hasData" class="mt-10">
-      <TransactionsTable
-        :transactions="transactions"
-        @route-event="redirectRoute"
-        @onQuery="fetch"
-      />
-    </RouteLoader>
+
+    <TransactionsTable
+      class="mt-10"
+      :transactions="transactions"
+      @route-event="redirectRoute"
+      @onQuery="fetch"
+      :loading="getLoading('transactions')"
+    />
   </div>
 </template>
 
 <script>
 import TransactionsTable from "@/components/transactions/TransactionsTable.vue";
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import PageHeader from "@/components/headers/PageHeader.vue";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 export default {
   name: "TransactionView",
-  components: { TransactionsTable, RouteLoader, PageHeader },
+  components: { TransactionsTable, PageHeader },
   data: () => ({
     routeNames: {
       RESERVED: "Confirmation",
@@ -51,10 +51,7 @@ export default {
   },
   computed: {
     ...mapState("transaction", ["transactions"]),
-    ...mapState("transaction", ["transactions"]),
-    hasData: function () {
-      return !!this.transactions ?? false;
-    },
+    ...mapGetters("transaction", ["getLoading"]),
   },
 };
 </script>

@@ -54,6 +54,7 @@ export const reports = {
     isGuestLoading: (state) => state.loading.guestReports,
     isCashierLoading: (state) => state.loading.cashierReports,
     isFlightLoading: (state) => state.loading.flightReports,
+    getLoading: (state) => (name) => state.loading[name],
   },
   mutations: {
     SET_GUEST_REPORTS: (state, data) => (state.guestReports = data),

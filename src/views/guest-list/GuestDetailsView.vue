@@ -6,20 +6,18 @@
     }"
   >
     <PageHeader />
-    <RouteLoader :target="hasData" class="mt-10">
-      <GuestDetails :guest="guest" @onQuery="fetch" />
-    </RouteLoader>
+
+    <GuestDetails class="mt-10" :guest="guest" @onQuery="fetch" />
   </div>
 </template>
 
 <script>
 import GuestDetails from "@/components/guests/GuestDetails.vue";
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import PageHeader from "@/components/headers/PageHeader.vue";
 import { mapActions, mapState } from "vuex";
 export default {
   name: "GuestDetailsView",
-  components: { GuestDetails, RouteLoader, PageHeader },
+  components: { GuestDetails, PageHeader },
   props: { id: String },
   data: () => ({}),
   created() {
@@ -36,9 +34,6 @@ export default {
   },
   computed: {
     ...mapState("guest", ["guest"]),
-    hasData: function () {
-      return !!this.guest ?? false;
-    },
   },
 };
 </script>

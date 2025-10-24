@@ -23,17 +23,15 @@
     </div>
     <v-divider />
     <RouterView />
-    <!-- <RouteLoader :target="true" class="mt-10"></RouteLoader> -->
   </div>
 </template>
 
 <script>
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import PageHeader from "@/components/headers/PageHeader.vue";
 
 export default {
   name: "ReportsView",
-  components: { PageHeader, RouteLoader },
+  components: { PageHeader },
   data() {
     return {
       buttons: [

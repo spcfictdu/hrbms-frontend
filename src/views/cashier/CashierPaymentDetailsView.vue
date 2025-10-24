@@ -13,34 +13,31 @@
       </template>
     </PageHeader>
 
-    <RouteLoader :target="hasData" class="mt-10">
-      <v-row>
-        <v-col cols="12" md="8" lg="9">
-          <CashierPaymentDetailsTable :data="payment" />
-        </v-col>
+    <v-row class="mt-10">
+      <v-col cols="12" md="8" lg="9">
+        <CashierPaymentDetailsTable :data="payment" :loading="loading" />
+      </v-col>
 
-        <v-col cols="12" md="4" lg="3">
-          <CashierTransactionPaymentsTable
-            :tableHead="tableHead"
-            :mappedItems="mappedItems"
-          />
-        </v-col>
-      </v-row>
-    </RouteLoader>
+      <v-col cols="12" md="4" lg="3">
+        <CashierTransactionPaymentsTable
+          :tableHead="tableHead"
+          :mappedItems="mappedItems"
+          :loading="loading"
+        />
+      </v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
 import PageHeader from "@/components/headers/PageHeader.vue";
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierPaymentDetailsTable from "@/components/cashier/CashierPaymentDetailsTable.vue";
 import CashierTransactionPaymentsTable from "@/components/cashier/CashierTransactionPaymentsTable.vue";
-import { mapActions, mapMutations, mapState } from "vuex";
+import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
 import { generateCashierLocation } from "@/utils/cashierLocationGenerator";
 
 export default {
   components: {
-    RouteLoader,
     PageHeader,
     CashierPaymentDetailsTable,
     CashierTransactionPaymentsTable,
@@ -77,7 +74,12 @@ export default {
     },
   },
   computed: {
-    ...mapState("transaction", ["payment", "loading"]),
+    ...mapState("transaction", ["payment"]),
+    ...mapGetters("transaction", ["getLoading"]),
+
+    loading() {
+      return this.getLoading("payment");
+    },
 
     cashierLocation() {
       const drawerNum = parseInt(this.drawerNumber, 10);

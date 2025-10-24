@@ -1,5 +1,24 @@
 <template>
-  <v-card flat>
+  <v-card flat v-if="loading">
+    <div v-for="n in 2" :key="n" class="d-flex pa-4 align-center">
+      <v-skeleton-loader class="flex-grow-1" type="heading" />
+      <v-skeleton-loader
+        class="flex-grow-1"
+        :type="n === 1 ? 'text' : 'heading'"
+      />
+    </div>
+    <div class="py-4">
+      <div v-for="n in 2" class="px-4" :key="`tbody-${n}`">
+        <div class="d-flex">
+          <v-skeleton-loader class="flex-grow-1" type="table-cell" />
+          <v-skeleton-loader class="flex-grow-1" type="table-cell" />
+        </div>
+        <v-skeleton-loader type="divider" />
+      </div>
+    </div>
+  </v-card>
+
+  <v-card flat v-else>
     <CashierTransactionPaymentsTableHeader :headerDetails="tableHead" />
 
     <div class="px-5 pb-5">
@@ -32,6 +51,7 @@ export default {
   props: {
     tableHead: Array,
     mappedItems: Array,
+    loading: Boolean,
   },
   data: () => ({
     headers: [
@@ -61,7 +81,11 @@ export default {
 </script>
 
 <styles scoped>
-  .v-data-table__wrapper {
-    max-height: 264px;
-  }
+.v-data-table__wrapper {
+  max-height: 264px;
+}
+
+.v-skeleton-loader >>> .v-skeleton-loader__table-thead {
+  max-width: 33% !important;
+}
 </styles>

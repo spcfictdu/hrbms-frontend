@@ -19,6 +19,7 @@ export const cashier = {
       adminPasscode: false,
     },
     loading: {
+      currUserHistory: false,
       dialog: false,
     },
     currentCashier: { session: null, drawerNumber: null },
@@ -66,7 +67,6 @@ export const cashier = {
   actions: {
     fetchSessions({ commit }, queryParams = {}) {
       const url = `cashier-session/show-cashiers`;
-      // const url = `cashier-session`;
       const queryUrl = functions.query(url, queryParams);
       return this.$axios
         .get(queryUrl)
@@ -79,7 +79,6 @@ export const cashier = {
     },
 
     fetchAdjustments({ commit }, queryParams = {}) {
-      // const url = `cashier-session/show-cashiers`;
       const url = `cashier-session`;
       const queryUrl = functions.query(url, queryParams);
       return this.$axios
@@ -92,18 +91,20 @@ export const cashier = {
         });
     },
 
-    fetchHistory({ commit }, { userId, queryParams = {} }) {
+    async fetchHistory({ commit }, { userId, queryParams = {} }) {
       const url = `cashier-session/${userId}/show-history`;
       const queryUrl = functions.query(url, queryParams);
 
-      return this.$axios
-        .get(queryUrl)
-        .then((response) => {
-          commit("SET_CURR_USER_HISTORY", response.data.results);
-        })
-        .catch((error) => {
-          console.error("Error fetching cashier history: ", error);
-        });
+      commit("SET_LOADING", { key: "currUserHistory", value: true });
+      try {
+        const { data } = await this.$axios.get(queryUrl);
+        commit("SET_CURR_USER_HISTORY", data.results);
+        return data.results;
+      } catch (err) {
+        console.error("Error fetching cashier history: ", err);
+      } finally {
+        commit("SET_LOADING", { key: "currUserHistory", value: false });
+      }
     },
 
     async startSession({ commit, dispatch }, { userId, payload }) {

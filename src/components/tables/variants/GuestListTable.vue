@@ -1,20 +1,24 @@
 <template>
-  <v-card flat>
-    <GuestListCardHeader :guests="guests" @onQuery="assignParams($event)" />
-    <!-- Guest List -->
-    <div class="pa-5">
-      <PaginatedTable
-        :headers="headers"
-        :items="guests.guests"
-        :footerProps="footerProps"
-        :serverItemsLength="guests.pagination.total"
-        disabledSort
-        itemKey="id"
-        @onQuery="assignParams($event)"
-        @click:row="handleSelectRow"
-      />
-    </div>
-  </v-card>
+  <div>
+    <v-skeleton-loader type="table" v-if="loading" />
+
+    <v-card flat v-else>
+      <GuestListCardHeader :guests="guests" @onQuery="assignParams($event)" />
+      <!-- Guest List -->
+      <div class="pa-5">
+        <PaginatedTable
+          :headers="headers"
+          :items="guests.guests"
+          :footerProps="footerProps"
+          :serverItemsLength="guests.pagination.total"
+          disabledSort
+          itemKey="id"
+          @onQuery="assignParams($event)"
+          @click:row="handleSelectRow"
+        />
+      </div>
+    </v-card>
+  </div>
 </template>
 
 <script>
@@ -26,6 +30,7 @@ export default {
   components: { GuestListCardHeader, PaginatedTable },
   mixins: [assignParams],
   props: {
+    loading: Boolean,
     guests: Object,
   },
   data: () => ({
@@ -54,7 +59,7 @@ export default {
   methods: {
     handleSelectRow: function (row) {
       this.$router.push({
-        name: "guest",
+        name: "Guest",
         params: { id: row.id },
       });
     },

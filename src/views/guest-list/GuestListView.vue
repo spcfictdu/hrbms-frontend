@@ -6,20 +6,23 @@
     }"
   >
     <PageHeader />
-    <RouteLoader :target="hasData" class="mt-10">
-      <GuestListTable :guests="guests" @onQuery="fetch($event)" />
-    </RouteLoader>
+
+    <GuestListTable
+      :loading="getLoading('guests')"
+      class="mt-10"
+      :guests="guests"
+      @onQuery="fetch($event)"
+    />
   </div>
 </template>
 
 <script>
 import GuestListTable from "@/components/tables/variants/GuestListTable.vue";
 import PageHeader from "@/components/headers/PageHeader.vue";
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   name: "GuestListView",
-  components: { GuestListTable, PageHeader, RouteLoader },
+  components: { GuestListTable, PageHeader },
   data: () => ({}),
   created() {
     this.fetch();
@@ -32,9 +35,7 @@ export default {
   },
   computed: {
     ...mapState("guest", ["guests"]),
-    hasData: function () {
-      return !!this.guests ?? false;
-    },
+    ...mapGetters("guest", ["getLoading"]),
   },
 };
 </script>

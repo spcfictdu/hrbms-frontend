@@ -36,33 +36,31 @@
       </template>
     </PageHeader>
 
-    <RouteLoader :target="hasData" class="mt-10">
-      <keep-alive>
-        <component
-          :is="currentTabComponent"
-          :transactions="transactions"
-          :history="history"
-          :tableHeaders="tableHeaders"
-          @paymentsQuery="getTab('payment').fetch($event)"
-          :fetchingTab="getTab(activeTab)"
-          @route-event="redirectRoute"
-          @onQuery="getTab('transaction').fetch($event)"
-        />
-      </keep-alive>
-    </RouteLoader>
+    <keep-alive>
+      <v-skeleton-loader type="table" v-if="!hasData" />
+      <component
+        v-else
+        :is="currentTabComponent"
+        :transactions="transactions"
+        :history="history"
+        :tableHeaders="tableHeaders"
+        @paymentsQuery="getTab('payment').fetch($event)"
+        :fetchingTab="getTab(activeTab)"
+        @route-event="redirectRoute"
+        @onQuery="getTab('transaction').fetch($event)"
+      />
+    </keep-alive>
   </div>
 </template>
 
 <script>
 import PageHeader from "@/components/headers/PageHeader.vue";
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import TransactionsTable from "@/components/transactions/TransactionsTable.vue";
 import CashierHistoryTable from "@/components/cashier/CashierHistoryTable.vue";
 import { mapActions, mapMutations, mapState } from "vuex";
 
 export default {
   components: {
-    RouteLoader,
     PageHeader,
     CashierHistoryTable,
     TransactionsTable,

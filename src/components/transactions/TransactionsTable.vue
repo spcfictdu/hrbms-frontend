@@ -1,45 +1,49 @@
 <template>
-  <v-card flat>
-    <TransactionsCardHeader
-      :transactionsData="transactions"
-      @onQuery="assignParams($event)"
-    />
-    <div class="pa-5">
-      <PaginatedTable
-        :headers="headers"
-        :items="mappedTransactions"
-        itemKey="reference"
-        groupBy="date"
+  <div>
+    <v-skeleton-loader type="table" v-if="loading" />
+
+    <v-card flat v-else>
+      <TransactionsCardHeader
+        :transactionsData="transactions"
         @onQuery="assignParams($event)"
-        @click:row="requestRouteEvent($event)"
-        :footerProps="footerProps"
-        :serverItemsLength="transactions.pagination.total"
-        disableSort
-      >
-        <template v-slot:[`item.status`]="{ item }">
-          <v-chip
-            :color="statusColors[item.status.toLowerCase()]"
-            dark
-            small
-            class="text-overline"
-            >{{ item.status }}</v-chip
-          >
-        </template>
-        <template v-slot:[`group.header`]="{ group }">
-          <td :colspan="headers.length" class="pl-8">
-            {{ group }}
-          </td>
-        </template>
-      </PaginatedTable>
-    </div>
-  </v-card>
+      />
+      <div class="pa-5">
+        <PaginatedTable
+          :headers="headers"
+          :items="mappedTransactions"
+          itemKey="reference"
+          groupBy="date"
+          @onQuery="assignParams($event)"
+          @click:row="requestRouteEvent($event)"
+          :footerProps="footerProps"
+          :serverItemsLength="transactions.pagination.total"
+          disableSort
+        >
+          <template v-slot:[`item.status`]="{ item }">
+            <v-chip
+              :color="statusColors[item.status.toLowerCase()]"
+              dark
+              small
+              class="text-overline"
+              >{{ item.status }}</v-chip
+            >
+          </template>
+          <template v-slot:[`group.header`]="{ group }">
+            <td :colspan="headers.length" class="pl-8">
+              {{ group }}
+            </td>
+          </template>
+        </PaginatedTable>
+      </div>
+    </v-card>
+  </div>
 </template>
 
 <script>
 import TransactionsCardHeader from "./TransactionsCardHeader.vue";
+import PaginatedTable from "../tables/PaginatedTable.vue";
 import { format, parseISO } from "date-fns";
 import { assignParams } from "@/mixins/FormattingFunctions";
-import PaginatedTable from "../tables/PaginatedTable.vue";
 
 export default {
   name: "TransactionsTable",
@@ -47,6 +51,7 @@ export default {
   components: { TransactionsCardHeader, PaginatedTable },
   props: {
     transactions: Object,
+    loading: Boolean,
   },
   data: () => ({
     headers: [
