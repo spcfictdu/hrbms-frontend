@@ -10,6 +10,7 @@
     <FormField :label="`${this.message} Name`" class="mb-4">
       <v-text-field
         v-model="payload.name"
+        @input="payload.name = payload.name.toUpperCase()"
         outlined
         dense
         :rules="rules.inputName"

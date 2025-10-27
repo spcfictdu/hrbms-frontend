@@ -1,24 +1,24 @@
 <template>
   <div>
-    <RouteLoader :target="hasData" class="mt-10">
-      <component
-        :is="activeTab"
-        :data="componentData"
-        @onSelect="selectedOption"
-      />
-    </RouteLoader>
+    <component
+      class="mt-10"
+      :is="activeTab"
+      :data="componentData"
+      @onSelect="selectedOption"
+    />
+
     <AddDialog
       :opened="amenity_dialog"
       :onClose="() => handleClose('amenity_dialog')"
       :meta="meta"
-      :loading="loading.dialog"
+      :loading="amenityLoading.dialog"
       :message="dialog_message"
       @onSubmit="requestAction"
     />
     <DeleteDialog
       :opened="amenity_delete"
       :onClose="() => handleClose('amenity_delete')"
-      :loading="loading.dialog"
+      :loading="amenityLoading.dialog"
       :message="dialog_message"
       @onDelete="requestAction"
     />
@@ -65,10 +65,8 @@ export default {
       "createAmenity",
       "updateAmenity",
       "deleteAmenity",
-      "setLoading",
       "setSelectedAmenity",
     ]),
-    ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("dialogs", ["setDialogFn"]),
     ...mapActions("addOns", [
       "fetchAddOns",
@@ -77,15 +75,11 @@ export default {
       "deleteAddOn",
     ]),
 
-    fetch: async function () {
-      await this.fetchAmenities();
-      await this.fetchAddOns();
+    fetch() {
+      // this.fetchAmenities();
+      this.fetchAddOns();
     },
-    handleRequest: async function ({ name, price, refNum, action }) {
-      // Prefetch the alerts: success, error
-      this.requireAlertFn(2);
-      this.setLoading({ key: "dialog", value: true });
-
+    async handleRequest({ name, price, refNum, action }) {
       // Designate Requests
       const amenityRequests = {
         add: () => this.createAmenity({ name, price }),
@@ -114,8 +108,7 @@ export default {
         await requests[action]();
       }
 
-      // Close the dialog and finish loading
-      this.setLoading({ key: "dialog", value: false });
+      // Close the dialog
       this.handleClose(this.dialogKeys[action]);
     },
 
@@ -138,13 +131,12 @@ export default {
       };
     },
 
-    selectedOption(option, refNum, name, price) {
+    selectedOption(option, refNum, name) {
       const options = {
         edit: () => {
           this.meta = {
             action: "edit",
             name,
-            price,
             refNum,
           };
         },
@@ -173,8 +165,18 @@ export default {
       "amenity_delete",
       "dialog_message",
     ]),
-    ...mapState("amenities", ["amenities", "activeAmenitiesTab", "loading"]),
+    ...mapState("amenities", ["amenities", "activeAmenitiesTab"]),
+    ...mapState("amenities", {
+      amenityLoading: "loading",
+    }),
     ...mapState("addOns", ["addOns"]),
+
+    isLoading() {
+      return this.activeAmenitiesTab === "Amenities"
+        ? this.amenityLoading.amenities
+        : true;
+    },
+
     activeTab() {
       return this.activeAmenitiesTab === "Amenities"
         ? "AmenitiesComponent"
