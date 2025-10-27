@@ -130,8 +130,8 @@ export default {
           value: "item",
         },
         {
-          text: "Ref No.",
-          value: "refNum",
+          text: "Gross Amount",
+          value: "grossAmount",
         },
         {
           text: "Payment",
@@ -232,8 +232,14 @@ export default {
     reportDetails() {
       if (!this.guestBillingReport) return [];
 
-      const { roomNumber, roomType, totalGuests, checkIn, checkOut } =
-        this.guestBillingReport;
+      const {
+        roomNumber,
+        roomType,
+        totalGuests,
+        checkIn,
+        checkOut,
+        discountedAmount,
+      } = this.guestBillingReport;
 
       const reportDetails = [
         {
@@ -247,6 +253,10 @@ export default {
         {
           text: "Total Guests",
           value: totalGuests,
+        },
+        {
+          text: "Discount",
+          value: formatPrice(discountedAmount),
         },
       ];
 
@@ -278,34 +288,17 @@ export default {
             : `${trans.item}${
                 trans.quantity > 1 ? ` (x${trans.quantity})` : ""
               }`;
-        const refNum = trans.paymentId;
-        let paymentAmount = 0;
-        if (trans.folio) {
-          const charges = [
-            trans.folio.folioA,
-            trans.folio.folioB,
-            trans.folio.folioC,
-            trans.folio.folioD,
-          ];
-          paymentAmount = charges.reduce(
-            (sum, folio) => sum + (folio.charge || 0),
-            0
-          );
-        } else if (trans.item === "PAYMENT") {
-          paymentAmount = -parseFloat(trans.paymentAmount) || 0;
-        }
-        if (trans.item === "PAYMENT" && paymentAmount === 0) {
-          return;
-        }
+        const grossAmount = formatPrice(trans.price);
+        const payment = formatPrice(trans.paymentAmount);
         const paymentType = trans.paymentType;
         const balance = formatPrice(parseFloat(trans.balance));
-        const status = trans.paymentStatus || "";
+        const status = trans.paymentStatus ?? "";
         const user = trans.user;
         items.push({
           date,
           item,
-          refNum,
-          payment: formatPrice(paymentAmount),
+          grossAmount,
+          payment,
           paymentType,
           balance,
           status,
