@@ -55,7 +55,7 @@ export default [
     ],
   },
   {
-    path: "/cashier-reports/:cashierSessionId/:date",
+    path: "/cashier-reports/:cashierId/:date",
     name: "CashierReport",
     component: () =>
       import(

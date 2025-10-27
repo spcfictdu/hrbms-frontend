@@ -7,7 +7,7 @@
   >
     <PageHeader
       backButton
-      :headerText="`Cashier ${cashierSessionId}`"
+      :headerText="`Cashier ${cashierId}`"
       :dividerMarginTop="36"
       printable
       @print="handlePrint"
@@ -22,7 +22,7 @@
       :headers="headers"
       :items="items"
       :tableHead="tableHead"
-      v-if="cashierReport?.cashierSessionId"
+      v-if="cashierReport?.cashierId"
     >
       <template v-slot:[`item.modeOfPayment`]="{ item }">
         <v-chip
@@ -65,7 +65,7 @@ import PrintReport from "@/mixins/PrintReport";
 
 export default {
   name: "CashierReportView",
-  props: { cashierSessionId: String, date: String },
+  props: { cashierId: String, date: String },
   components: { PageHeader, CashierReportTable },
   mixins: [PrintReport],
   data() {
@@ -74,8 +74,8 @@ export default {
         { text: "Date", value: "date" },
         { text: "Reference #", value: "referenceNumber" },
         {
-          text: "Account Name",
-          value: "accountName",
+          text: "Username",
+          value: "username",
         },
         { text: "MOP", value: "modeOfPayment" },
         { text: "Amount", value: "amount" },
@@ -92,7 +92,7 @@ export default {
     },
 
     cashierReport() {
-      return this.getCashierReport(this.cashierSessionId);
+      return this.getCashierReport(this.cashierId);
     },
 
     sortedCashierReport() {
@@ -104,12 +104,13 @@ export default {
 
     items() {
       const date = format(parseISO(this.date), "MMMM d, yyyy");
-      const accountName = `${this.cashierReport?.user}${
-        this.isAdmin(this.cashierReport.userId) ? " (ADMIN)" : ""
-      }`;
+      // const username = `${this.cashierReport?.user}${
+      //   this.isAdmin(this.cashierReport.userId) ? " (ADMIN)" : ""
+      // }`;
       return this.sortedCashierReport.map(
         ({
           transactionReferenceNumber: referenceNumber,
+          username,
           method,
           amount,
           type,
@@ -122,7 +123,7 @@ export default {
           return {
             date,
             referenceNumber,
-            accountName,
+            username,
             modeOfPayment,
             amount: formatPrice(amount),
             type: statusMap[type] ?? type,
@@ -146,7 +147,7 @@ export default {
     tableHead() {
       return {
         Name: this.cashierReport?.user,
-        "Beginning Balance": formatPrice(this.cashierReport?.openingBalance),
+        "Opening Balance": formatPrice(this.cashierReport?.openingBalance),
         "Opening Adjustment": formatPrice(
           this.cashierReport?.openingAdjustment
         ),
@@ -156,7 +157,7 @@ export default {
         "Closing Adjustment": formatPrice(
           this.cashierReport?.closingAdjustment
         ),
-        "Ending Balance": formatPrice(this.cashierReport?.closingBalance),
+        "Closing Balance": formatPrice(this.cashierReport?.closingBalance),
       };
     },
   },
@@ -169,7 +170,7 @@ export default {
 
     handlePrint() {
       const options = {
-        reportTitle: `Cashier ${this.cashierSessionId} Report`,
+        reportTitle: `Cashier ${this.cashierId} Report`,
         // headerText: this.subtitleDate,
         user: this.getCurrentUser,
         queryDate: this.date,

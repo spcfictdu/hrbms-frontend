@@ -47,9 +47,7 @@ export const reports = {
     departures: (state) => state.flightReports.departures,
 
     getCashierReport: (state) => (id) =>
-      state.cashierReports.find(
-        ({ cashierSessionId }) => cashierSessionId === Number(id)
-      ),
+      state.cashierReports.find(({ cashierId }) => cashierId === Number(id)),
 
     isGuestLoading: (state) => state.loading.guestReports,
     isCashierLoading: (state) => state.loading.cashierReports,

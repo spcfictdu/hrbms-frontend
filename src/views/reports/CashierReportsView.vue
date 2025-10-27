@@ -14,7 +14,7 @@
           placeholder="CASHIER"
           item-text="name"
           item-value="id"
-          v-model="cashierSessionId"
+          v-model="cashierId"
           dense
           filled
           rounded
@@ -25,7 +25,7 @@
     </template>
 
     <template>
-      <div v-if="cashierSessionId">
+      <div v-if="cashierId">
         <div class="font-weight-bold text-h6">
           {{ cashier?.user }}{{ adminLabel(cashier?.userId) }}
         </div>
@@ -50,13 +50,13 @@ export default {
   mixins: [PrintReport],
   data() {
     return {
-      cashierSessionId: null,
+      cashierId: null,
       headers: [
         { text: "Date", value: "date", align: "center" },
         { text: "Cashier", value: "cashier", align: "center" },
         {
-          text: "Beggining Balance",
-          value: "begginingBalance",
+          text: "Opening Balance",
+          value: "openingBalance",
           align: "center",
         },
         { text: "Total Collected", value: "totalCollected", align: "center" },
@@ -72,16 +72,16 @@ export default {
 
     cashier() {
       return this.cashierReports.find(
-        ({ cashierSessionId }) => cashierSessionId === this.cashierSessionId
+        ({ cashierId }) => cashierId === this.cashierId
       );
     },
 
     mappedCashiers() {
       if (!this.cashierReports.length) return [];
 
-      return this.cashierReports.map(({ cashierSessionId }) => ({
-        name: `CASHIER ${cashierSessionId}`,
-        id: cashierSessionId,
+      return this.cashierReports.map(({ cashierId }) => ({
+        name: `CASHIER ${cashierId}`,
+        id: cashierId,
       }));
     },
 
@@ -89,9 +89,9 @@ export default {
       if (!this.cashierReports.length) return [];
 
       let cashierReports = this.cashierReports;
-      if (this.cashierSessionId) {
+      if (this.cashierId) {
         cashierReports = cashierReports.filter(
-          ({ cashierSessionId }) => cashierSessionId === this.cashierSessionId
+          ({ cashierId }) => cashierId === this.cashierId
         );
       }
 
@@ -99,17 +99,16 @@ export default {
         ({
           user,
           userId,
-          cashierSessionId,
+          cashierId,
           openingBalance,
           transactions,
           totalRefunded,
           closingBalance,
         }) => {
           const date = format(parseISO(this.queryDate), "EEEE, MMMM dd, yyyy");
-          const cashier = `Cashier ${cashierSessionId} - ${user}${this.adminLabel(
+          const cashier = `Cashier ${cashierId} - ${user}${this.adminLabel(
             userId
           )}`;
-          const begginingBalance = formatPrice(openingBalance);
           const payments = transactions.filter((t) => t.type === "PAYMENT");
           const totalPayment = payments.reduce(
             (total, p) => total + Number(p.amount),
@@ -121,11 +120,11 @@ export default {
           return {
             date,
             cashier,
-            begginingBalance,
+            openingBalance: formatPrice(openingBalance),
             totalCollected,
             refunds,
             closingBalance: formatPrice(closingBalance),
-            cashierSessionId,
+            cashierId,
           };
         }
       );
@@ -155,9 +154,9 @@ export default {
       const options = {
         reportTitle: "Cashiers Report",
         headerText: this.cashier
-          ? `Cashier ${this.cashierSessionId}: ${
-              this.cashier?.user
-            }${this.adminLabel(this.cashier?.userId)}`
+          ? `Cashier ${this.cashierId}: ${this.cashier?.user}${this.adminLabel(
+              this.cashier?.userId
+            )}`
           : "All Cashiers",
         user: this.getCurrentUser,
         queryDate: this.queryDate,
@@ -166,15 +165,15 @@ export default {
     },
 
     redirect(row) {
-      const cashierSessionId = String(row.cashierSessionId);
+      const cashierId = String(row.cashierId);
       this.$router.push({
         name: "CashierReport",
-        params: { cashierSessionId, date: this.queryDate },
+        params: { cashierId, date: this.queryDate },
       });
     },
 
     handleDateSelect(date) {
-      this.cashierSessionId = null;
+      this.cashierId = null;
       this.fetch(date);
       this.setRouteQuery(date);
     },
