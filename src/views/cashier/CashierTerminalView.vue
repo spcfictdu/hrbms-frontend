@@ -7,9 +7,7 @@
   >
     <CashierHeader :dividerMarginTop="48" />
 
-    <RouteLoader :target="hasData" :loaderStyles="['mt-10']">
-      <CashierDrawerGrid />
-    </RouteLoader>
+    <CashierDrawerGrid :loading="loading" />
 
     <ConfirmationDialog
       :opened="dialog.confirmation"
@@ -126,7 +124,12 @@ export default {
     ...mapGetters("cashier", [
       "getCashierAction",
       "isCurrentCashierSessionless",
+      "getLoading",
     ]),
+
+    loading() {
+      return this.getLoading("sessions") && !this.sessions?.length;
+    },
 
     isFrontDeskUser() {
       return this.$auth.user()?.role === "FRONT DESK";

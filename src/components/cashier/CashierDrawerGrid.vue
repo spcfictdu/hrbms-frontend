@@ -1,9 +1,15 @@
 <template>
   <v-container>
-    <v-row>
+    <v-row v-if="loading">
+      <v-col v-for="(n, i) in 6" :key="n" cols="12" sm="6" lg="4">
+        <CashierDrawerSkeleton :isFirstRow="isFirstRow(i)" />
+      </v-col>
+    </v-row>
+
+    <v-row v-else>
       <v-col
         v-for="(session, i) in filteredSessions"
-        :key="session.userId"
+        :key="session.cashierId"
         cols="12"
         sm="6"
         lg="4"
@@ -19,12 +25,16 @@
 </template>
 
 <script>
+import CashierDrawerSkeleton from "@/components/skeleton-loaders/CashierDrawerSkeleton.vue";
 import CashierDrawer from "./CashierDrawer.vue";
 import { mapState } from "vuex";
 
 export default {
   name: "CashierDrawerGrid",
-  components: { CashierDrawer },
+  components: { CashierDrawerSkeleton, CashierDrawer },
+  props: {
+    loading: Boolean,
+  },
   methods: {
     isFirstRow(index) {
       const breakpoint = this.$vuetify.breakpoint.name;

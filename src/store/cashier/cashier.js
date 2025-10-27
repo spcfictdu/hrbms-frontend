@@ -19,6 +19,7 @@ export const cashier = {
       adminPasscode: false,
     },
     loading: {
+      sessions: false,
       currUserHistory: false,
       dialog: false,
     },
@@ -38,6 +39,7 @@ export const cashier = {
         currentCashier?.session?.message === "User has no cashier sessions";
       return isSessionUndefined || isSessionLess;
     },
+    getLoading: (state) => (name) => state.loading[name],
   },
   mutations: {
     SET_SESSIONS: (state, data) => (state.sessions = data),
@@ -65,17 +67,21 @@ export const cashier = {
     SET_ADJUSTMENT: (state, adjustment) => (state.adjustment = adjustment),
   },
   actions: {
-    fetchSessions({ commit }, queryParams = {}) {
+    async fetchSessions({ commit }, queryParams = {}) {
       const url = `cashier-session/show-cashiers`;
       const queryUrl = functions.query(url, queryParams);
-      return this.$axios
-        .get(queryUrl)
-        .then((response) => {
-          commit("SET_SESSIONS", response.data.results);
-        })
-        .catch((error) => {
-          console.error("Error fetching sessions: ", error);
-        });
+
+      commit("SET_LOADING", { key: "sessions", value: true });
+      try {
+        const { data } = await this.$axios.get(queryUrl);
+        commit("SET_SESSIONS", data.results);
+        return data.results;
+      } catch (err) {
+        commit("SET_SESSIONS", []);
+        console.error("Error fetching sessions: ", err.response.data.message);
+      } finally {
+        commit("SET_LOADING", { key: "sessions", value: false });
+      }
     },
 
     fetchAdjustments({ commit }, queryParams = {}) {
