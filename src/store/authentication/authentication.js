@@ -82,45 +82,69 @@ export const authentication = {
         await this.$router.push({ name: whichlogoutRoute[role] });
       }
     },
-    register: async function ({ commit }, data) {
+    register: async function ({ dispatch, commit }, data) {
       const url = "user/register";
       const loginUrl = "user/guest/login";
 
       try {
-        let payload = {
-          password: data.password,
-          firstName: data.firstName,
-          middleName: data.middleName,
-          lastName: data.lastName,
-          email: data.email,
-          role: data.role,
-          mobileNumber: data.mobileNumber,
-        };
+        let payload;
+
+        if (data.role === "FRONT DESK") {
+          payload = {
+            username: data.username,
+            firstName: data.firstName,
+            lastName: data.lastName,
+            email: data.email,
+            password: data.password,
+            role: data.role,
+          };
+        } else {
+          payload = {
+            password: data.password,
+            firstName: data.firstName,
+            middleName: data.middleName,
+            lastName: data.lastName,
+            email: data.email,
+            role: data.role,
+            mobileNumber: data.mobileNumber,
+          };
+        }
 
         let response = await this.$axios.post(url, payload);
 
         if (response.data.code === 201) {
-          const loginPayload = {
-            email: payload.email,
-            password: payload.password,
-          };
+          if (data.role === "GUEST") {
+            const loginPayload = {
+              email: payload.email,
+              password: payload.password,
+            };
 
-          let response = await this.$axios.post(loginUrl, loginPayload);
+            let response = await this.$axios.post(loginUrl, loginPayload);
 
-          if (response.data.code === 200) {
-            store.dispatch("account/fetchAccountInfo");
-            commit("SET_CURRENT_USER", response.data.results);
+            if (response.data.code === 200) {
+              store.dispatch("account/fetchAccountInfo");
+              commit("SET_CURRENT_USER", response.data.results);
 
-            if (store.state.publicRooms.temporaryData) {
-              this.$router.push({
-                name: "Guest Booking",
-                query: store.state.publicRooms.temporaryData.query,
-              });
-            } else {
-              this.$router.push({ name: "Guest Dashboard" });
+              if (store.state.publicRooms.temporaryData) {
+                this.$router.push({
+                  name: "Guest Booking",
+                  query: store.state.publicRooms.temporaryData.query,
+                });
+              } else {
+                this.$router.push({ name: "Guest Dashboard" });
+              }
             }
+          } else {
+            await dispatch("login", {
+              user: {
+                username: data.username,
+                password: data.password,
+              },
+              loginRole: "ADMIN",
+            });
           }
         }
+        return response;
       } catch (error) {
         this.$store.dispatch(
           "alerts/triggerError",

@@ -79,6 +79,15 @@
             >{{ accountStatusText.anchorText }}
           </span>
         </p>
+        <p class="mt-2 mb-0 text-caption text-center">
+          Are you part of our team?
+          <span
+            style="cursor: pointer"
+            @click="$router.push({ name: 'Sign In' })"
+            class="primary--text font-weight-bold"
+            >Staff Login
+          </span>
+        </p>
       </v-form>
     </v-card>
   </div>
