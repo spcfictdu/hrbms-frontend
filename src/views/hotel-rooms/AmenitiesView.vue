@@ -11,14 +11,14 @@
       :opened="amenity_dialog"
       :onClose="() => handleClose('amenity_dialog')"
       :meta="meta"
-      :loading="amenityLoading.dialog"
+      :loading="loadingDialog"
       :message="dialog_message"
       @onSubmit="requestAction"
     />
     <DeleteDialog
       :opened="amenity_delete"
       :onClose="() => handleClose('amenity_delete')"
-      :loading="amenityLoading.dialog"
+      :loading="loadingDialog"
       :message="dialog_message"
       @onDelete="requestAction"
     />
@@ -61,23 +61,17 @@ export default {
   },
   methods: {
     ...mapActions("amenities", [
-      "fetchAmenities",
       "createAmenity",
       "updateAmenity",
       "deleteAmenity",
       "setSelectedAmenity",
     ]),
     ...mapActions("dialogs", ["setDialogFn"]),
-    ...mapActions("addOns", [
-      "fetchAddOns",
-      "createAddOn",
-      "updateAddOn",
-      "deleteAddOn",
-    ]),
+    ...mapActions("addOns", ["createAddOn", "updateAddOn", "deleteAddOn"]),
 
     fetch() {
       // this.fetchAmenities();
-      this.fetchAddOns();
+      // this.fetchAddOns();
     },
     async handleRequest({ name, price, refNum, action }) {
       // Designate Requests
@@ -131,13 +125,14 @@ export default {
       };
     },
 
-    selectedOption(option, refNum, name) {
+    selectedOption(option, refNum, name, price) {
       const options = {
         edit: () => {
           this.meta = {
             action: "edit",
             name,
             refNum,
+            price,
           };
         },
         delete: () => {
@@ -170,11 +165,20 @@ export default {
       amenityLoading: "loading",
     }),
     ...mapState("addOns", ["addOns"]),
+    ...mapState("addOns", {
+      addonLoading: "loading",
+    }),
+
+    loadingDialog() {
+      return this.activeAmenitiesTab === "Amenities"
+        ? this.amenityLoading.dialog
+        : this.addonLoading.dialog;
+    },
 
     isLoading() {
       return this.activeAmenitiesTab === "Amenities"
         ? this.amenityLoading.amenities
-        : true;
+        : this.addonLoading.addons;
     },
 
     activeTab() {

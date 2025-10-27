@@ -154,6 +154,6 @@ export default {
 }
 
 .v-skeleton-loader >>> .v-skeleton-loader__button {
-  width: 100% !important;
+  width: 100%;
 }
 </style>

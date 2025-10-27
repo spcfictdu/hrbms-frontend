@@ -24,12 +24,13 @@
       class="mb-4"
     >
       <v-text-field
-        v-model="payload.price"
+        hide-spin-buttons
+        v-model.number="payload.price"
         outlined
         dense
         :rules="rules.addOnPrice"
         hide-details="auto"
-        @keydown="validatePriceInput"
+        type="number"
       ></v-text-field>
     </FormField>
 
@@ -85,14 +86,14 @@ export default {
     handleSubmit: function () {
       this.$emit("onSubmit", this.payload);
     },
-    validatePriceInput(e) {
-      const isShortcut = e.metaKey || e.ctrlKey;
-      const input = `${this.payload.price}${e.key}`;
+    // validatePriceInput(e) {
+    //   const isShortcut = e.metaKey || e.ctrlKey;
+    //   const input = `${this.payload.price}${e.key}`;
 
-      if (/^[0-9]*\.?[0-9]*$/.test(input) || e.key.length !== 1 || isShortcut)
-        return;
-      e.preventDefault();
-    },
+    //   if (/^[0-9]*\.?[0-9]*$/.test(input) || e.key.length !== 1 || isShortcut)
+    //     return;
+    //   e.preventDefault();
+    // },
   },
   watch: {
     opened: {
