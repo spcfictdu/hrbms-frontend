@@ -28,7 +28,6 @@
 <script>
 import AmenitiesComponent from "@/components/hotel-rooms/amenities/AmenitiesComponent.vue";
 import AddOnsComponent from "@/components/hotel-rooms/amenities/AddOnsComponent.vue";
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import AddDialog from "@/components/dialogs/AddDialog.vue";
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
 import { mapActions, mapState } from "vuex";
@@ -37,7 +36,6 @@ export default {
   components: {
     AmenitiesComponent,
     AddOnsComponent,
-    RouteLoader,
     AddDialog,
     DeleteDialog,
   },

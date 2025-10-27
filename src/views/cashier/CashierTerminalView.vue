@@ -32,7 +32,6 @@
 
 <script>
 import CashierHeader from "@/components/headers/CashierHeader.vue";
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierDrawerGrid from "@/components/cashier/CashierDrawerGrid.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import CashierDialog from "@/components/dialogs/CashierDialog.vue";
@@ -42,7 +41,6 @@ export default {
   name: "CashierTerminalView",
   components: {
     CashierHeader,
-    RouteLoader,
     CashierDrawerGrid,
     ConfirmationDialog,
     CashierDialog,
