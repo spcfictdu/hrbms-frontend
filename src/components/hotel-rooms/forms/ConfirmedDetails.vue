@@ -54,7 +54,7 @@
       </v-row>
     </v-form>
     <div style="display: none">
-      <confirmation-letter
+      <ConfirmationLetter
         v-if="transactionForLetter"
         ref="confirmationLetter"
         v-bind="transactionForLetter"
@@ -150,7 +150,7 @@ export default {
         printWindow.focus();
         printWindow.print();
         printWindow.close();
-      }, 1000);
+      }, 500);
     },
     assignPayload: function (payload) {
       for (const key in payload) {
@@ -198,9 +198,7 @@ export default {
       const roomData = this.room[0];
 
       const roomRate = roomData.roomRatesArray[0].rate;
-      const extraGuestCharge =
-        roomData.roomRatesArray[0].extraPersonRate *
-        parseInt(roomData.extraPersonCount);
+      const extraGuestCharge = roomData.extraPersonTotal;
 
       const addonsTotal = priceSummary.fullAddons.reduce(
         (sum, addon) => sum + addon.total,
