@@ -20,7 +20,7 @@
         {{ alertMeta.message }}
       </v-alert>
 
-      <v-form ref="form" @submit.prevent="handleAuth">
+      <v-form v-model="valid" ref="form" @submit.prevent="handleAuth">
         <v-text-field
           v-model="user.username"
           :rules="[rules.required('Username')]"
@@ -67,6 +67,7 @@
           color="primary"
           elevation="0"
           :loading="loading"
+          :disabled="!valid"
           type="submit"
         >
           {{ submitBtnText }}
@@ -91,6 +92,7 @@ import { mapState, mapActions } from "vuex";
 export default {
   name: "SignInView",
   data: () => ({
+    valid: true,
     institution: {
       name: "Systems Plus College Foundation",
       acronym: "SPCF",
