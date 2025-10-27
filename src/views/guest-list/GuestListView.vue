@@ -8,7 +8,7 @@
     <PageHeader />
 
     <GuestListTable
-      :loading="getLoading('guests')"
+      :loading="loading"
       class="mt-10"
       :guests="guests"
       @onQuery="fetch($event)"
@@ -36,6 +36,10 @@ export default {
   computed: {
     ...mapState("guest", ["guests"]),
     ...mapGetters("guest", ["getLoading"]),
+
+    loading() {
+      return this.getLoading("guests") && !this.guests?.guests?.length;
+    },
   },
 };
 </script>

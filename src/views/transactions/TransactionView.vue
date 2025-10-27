@@ -12,7 +12,7 @@
       :transactions="transactions"
       @route-event="redirectRoute"
       @onQuery="fetch"
-      :loading="getLoading('transactions')"
+      :loading="loading"
     />
   </div>
 </template>
@@ -52,6 +52,12 @@ export default {
   computed: {
     ...mapState("transaction", ["transactions"]),
     ...mapGetters("transaction", ["getLoading"]),
+
+    loading() {
+      return (
+        this.getLoading("transactions") && !this.transactions?.data?.length
+      );
+    },
   },
 };
 </script>
