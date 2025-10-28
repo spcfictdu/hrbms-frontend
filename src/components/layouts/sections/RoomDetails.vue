@@ -3,33 +3,41 @@
     <v-row>
       <!-- Information -->
       <v-col cols="12" md="8">
-        <room-info
+        <RoomInfoSkeleton v-if="loading" />
+        <RoomInfo
           :room="room"
           @validation-event="$emit('validation-event', $event)"
           @delete-event="$emit('delete-event')"
+          v-else
         />
       </v-col>
       <v-col cols="12" md="4">
-        <room-reservation-form
+        <RoomReservationForm
           @reservation-event="(e) => $emit('reservation-event', e)"
           :roomCategory="room.name"
           :queryFill="queryFill"
         />
       </v-col>
     </v-row>
+    <v-row>
+      <v-col cols="12" md="8"> </v-col>
+      <v-col cols="12" md="4"></v-col>
+    </v-row>
   </div>
 </template>
 
 <script>
+import RoomInfoSkeleton from "@/components/skeleton-loaders/RoomInfoSkeleton.vue";
 import RoomInfo from "@/components/hotel-rooms/categories/RoomInfo.vue";
 import RoomReservationForm from "@/components/hotel-rooms/categories/RoomReservationForm.vue";
 import { mapState } from "vuex";
 export default {
   name: "RoomDetails",
-  components: { RoomInfo, RoomReservationForm },
+  components: { RoomInfoSkeleton, RoomInfo, RoomReservationForm },
   props: {
     category: Object,
     queryFill: Object,
+    loading: Boolean,
   },
   data: () => ({}),
   methods: {},
@@ -37,7 +45,8 @@ export default {
     ...mapState("roomRates", {
       ratesStatus: "ratesStatus",
     }),
-    room: function () {
+    room() {
+      if (!this.category) return {};
       const category = this.category;
       let room = {
         referenceNumber: category.referenceNumber,
@@ -83,5 +92,3 @@ export default {
   },
 };
 </script>
-
-<style scoped></style>

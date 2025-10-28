@@ -1,29 +1,28 @@
 <template>
-  <RouteLoader :target="hasData" class="mt-10">
-    <v-row>
-      <v-col cols="12">
-        <RoomImages :images="roomImages" />
-      </v-col>
-      <v-col cols="12">
-        <RoomDetails
-          :category="roomCategory"
-          @reservation-event="requestReservation"
-          @validation-event="handleRequest($event)"
-          @delete-event="handleDeleteCategory"
-        />
-      </v-col>
-    </v-row>
-  </RouteLoader>
+  <v-row class="mt-10">
+    <v-col cols="12">
+      <RoomImages :images="roomImages" :loading="loading" />
+    </v-col>
+    <v-col cols="12">
+      <RoomDetails
+        :loading="loading"
+        :category="roomCategory"
+        @reservation-event="requestReservation"
+        @validation-event="handleRequest($event)"
+        @delete-event="handleDeleteCategory"
+      />
+    </v-col>
+  </v-row>
 </template>
 
 <script>
 import RoomImages from "@/components/layouts/images/RoomImages.vue";
 import RoomDetails from "@/components/layouts/sections/RoomDetails.vue";
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
+
 export default {
   name: "RoomDetailsView",
-  components: { RoomImages, RoomDetails, RouteLoader },
+  components: { RoomImages, RoomDetails },
   props: {
     roomCategoryReferenceNumber: String,
   },
@@ -112,10 +111,14 @@ export default {
   },
   computed: {
     ...mapState("roomCategories", ["roomCategory", "meta"]),
-    roomImages: function () {
-      return this.roomCategory ? this.roomCategory.images : [];
+    ...mapGetters("roomCategories", ["getLoading"]),
+    loading() {
+      return this.getLoading("roomCategory");
     },
-    hasData: function () {
+    roomImages() {
+      return this.roomCategory?.images ?? [];
+    },
+    hasData() {
       return !!this.roomCategory ?? false;
     },
   },

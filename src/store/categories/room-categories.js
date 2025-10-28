@@ -21,6 +21,7 @@ export const roomCategories = {
     roomCategory: null,
     loading: {
       roomCategories: false,
+      roomCategory: false,
       delete: false,
       form: false,
     },
@@ -53,16 +54,23 @@ export const roomCategories = {
         commit("SET_LOADING", { key: "roomCategories", value: false });
       }
     },
-    fetchRoomCategory: function ({ commit }, roomTypeReferenceNumber) {
+    async fetchRoomCategory({ commit }, roomTypeReferenceNumber) {
       const url = `room-type/${roomTypeReferenceNumber}`;
-      return this.$axios
-        .get(url)
-        .then((response) => {
-          commit("SET_ROOM_CATEGORY", response.data.results);
-        })
-        .catch((error) => {
-          console.error("Error fetching room category: ", error);
-        });
+
+      commit("SET_LOADING", { key: "roomCategory", value: true });
+      try {
+        const { data } = await this.$axios.get(url);
+        commit("SET_ROOM_CATEGORY", data.results);
+        return data.results;
+      } catch (err) {
+        commit("SET_ROOM_CATEGORY", null);
+        console.error(
+          "Error fetching room categories: ",
+          err.response.data.message
+        );
+      } finally {
+        commit("SET_LOADING", { key: "roomCategory", value: false });
+      }
     },
     createRoomCategory: function (_, payload) {
       const url = `room-type/create`;
