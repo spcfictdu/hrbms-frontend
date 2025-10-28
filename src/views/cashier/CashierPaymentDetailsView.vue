@@ -8,7 +8,8 @@
     <PageHeader backButton :headerText="headerText" :dividerMarginTop="18">
       <template #subtitle>
         <div class="grey--text text--darken-2 mb-1">
-          Cashier Drawer {{ drawerNumber }} | {{ cashierLocation }}
+          Cashier Drawer {{ drawerNumber }} |
+          {{ cashierLocation() }}
         </div>
       </template>
     </PageHeader>
@@ -33,26 +34,27 @@
 import PageHeader from "@/components/headers/PageHeader.vue";
 import CashierPaymentDetailsTable from "@/components/cashier/CashierPaymentDetailsTable.vue";
 import CashierTransactionPaymentsTable from "@/components/cashier/CashierTransactionPaymentsTable.vue";
+import cashierLocation from "@/mixins/cashier-location";
 import { mapActions, mapGetters, mapMutations, mapState } from "vuex";
-import { generateCashierLocation } from "@/utils/cashierLocationGenerator";
 
 export default {
+  name: "CashierPaymentDetailsView",
   components: {
     PageHeader,
     CashierPaymentDetailsTable,
     CashierTransactionPaymentsTable,
   },
-  name: "CashierPaymentDetailsView",
-  data: () => ({
-    itemPayload: null,
-    confirmationDialogMeta: {},
-  }),
   props: {
     id: String,
     drawerNumber: String,
     transactionReferenceNumber: String,
     paymentId: String,
   },
+  mixins: [cashierLocation],
+  data: () => ({
+    itemPayload: null,
+    confirmationDialogMeta: {},
+  }),
   methods: {
     ...mapActions("transaction", ["fetchPayment"]),
     ...mapMutations("transaction", ["SET_PAYMENT"]),
@@ -79,18 +81,6 @@ export default {
 
     loading() {
       return this.getLoading("payment");
-    },
-
-    cashierLocation() {
-      const drawerNum = parseInt(this.drawerNumber, 10);
-      if (isNaN(drawerNum) || drawerNum < 1) return "First Floor Lobby";
-
-      const generator = generateCashierLocation();
-      let location = "";
-      for (let i = 0; i < drawerNum; i++) {
-        location = generator.next().value;
-      }
-      return location;
     },
 
     tableHead() {

@@ -8,7 +8,8 @@
     <PageHeader backButton :headerText="headerText" :dividerMarginTop="18">
       <template #subtitle>
         <div class="grey--text text--darken-2 mb-1">
-          Cashier Drawer {{ drawerNumber }} | {{ cashierLocation }}
+          Cashier Drawer {{ drawerNumber }} |
+          {{ cashierLocation() }}
         </div>
       </template>
       <template>
@@ -72,10 +73,11 @@ import CashierTransactionDetailsTable from "@/components/cashier/CashierTransact
 import CashierTransactionPaymentsTable from "@/components/cashier/CashierTransactionPaymentsTable.vue";
 import AdminPasscodeDialog from "@/components/dialogs/AdminPasscodeDialog.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
+import cashierLocation from "@/mixins/cashier-location";
 import { mapMutations, mapActions, mapState, mapGetters } from "vuex";
-import { generateCashierLocation } from "@/utils/cashierLocationGenerator";
 
 export default {
+  name: "CashierTransactionDetailsView",
   components: {
     PageHeader,
     CashierTransactionDetailsTable,
@@ -83,16 +85,16 @@ export default {
     AdminPasscodeDialog,
     ConfirmationDialog,
   },
-  name: "CashierTransactionDetailsView",
-  data: () => ({
-    itemPayload: null,
-    confirmationDialogMeta: {},
-  }),
   props: {
     id: String,
     drawerNumber: String,
     transactionReferenceNumber: String,
   },
+  mixins: [cashierLocation],
+  data: () => ({
+    itemPayload: null,
+    confirmationDialogMeta: {},
+  }),
   methods: {
     ...mapActions("cashier", ["fetchHistory"]),
     ...mapActions("transaction", ["fetchTransaction", "updateTransaction"]),
@@ -183,18 +185,6 @@ export default {
 
     loading() {
       return this.getLoading("transaction") || !this.room;
-    },
-
-    cashierLocation() {
-      const drawerNum = parseInt(this.drawerNumber, 10);
-      if (isNaN(drawerNum) || drawerNum < 1) return "First Floor Lobby";
-
-      const generator = generateCashierLocation();
-      let location = "";
-      for (let i = 0; i < drawerNum; i++) {
-        location = generator.next().value;
-      }
-      return location;
     },
 
     tableHead() {
