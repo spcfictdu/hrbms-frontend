@@ -1,5 +1,5 @@
 <template>
-  <div v-if="roomStatuses">
+  <div>
     <v-row class="d-none d-sm-flex">
       <v-col v-for="(item, index) in buttonDisplay" :key="index">
         <v-btn
@@ -102,7 +102,7 @@
     </div>
 
     <!-- Room Lists -->
-    <v-row class="mt-4" dense v-if="roomStatuses.rooms.length > 0">
+    <v-row class="mt-4" dense v-if="roomStatuses?.rooms?.length > 0">
       <v-col cols="12" v-for="(room, index) in mappedRoomStatuses" :key="index">
         <RoomListCard
           :room="room"
@@ -118,6 +118,11 @@
         />
       </v-col>
     </v-row>
+    <v-row class="mt-4" dense v-else-if="loading">
+      <v-col cols="12" v-for="n in 4" :key="n">
+        <RoomListCardSkeleton />
+      </v-col>
+    </v-row>
     <v-col v-else>
       <NoDataFoundCard :meta="noDataCardMeta" />
     </v-col>
@@ -128,27 +133,26 @@
       v-model="queryParams.page"
       :length="paginationLength"
     ></v-pagination>
-
     <!-- Dialogs -->
     <RoomDialog
       :opened="room_dialog"
       :onClose="() => setDialogFn({ key: 'room_dialog', value: false })"
       :meta="meta"
-      :loading="loading.dialog"
+      :loading="getLoading('room')"
       @onSubmit="handleRequest"
     />
     <ConfirmationDialog
       :opened="room_confirm"
       :onClose="() => setDialogFn({ key: 'room_confirm', value: false })"
       :meta="meta_confirm"
-      :loading="loading.confirm"
+      :loading="getLoading('roomStatus')"
       @onProceed="handleRequest"
     />
     <DeleteDialog
       :opened="room_delete"
       :onClose="() => setDialogFn({ key: 'room_delete', value: false })"
       :message="meta_delete.message"
-      :loading="loading.delete"
+      :loading="getLoading('room')"
       @onDelete="handleRequest"
     />
   </div>
@@ -160,7 +164,8 @@ import RoomDialog from "@/components/dialogs/RoomDialog.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
 import RoomListCard from "./RoomListCard.vue";
-import { mapActions, mapState } from "vuex";
+import RoomListCardSkeleton from "@/components/skeleton-loaders/RoomListCardSkeleton.vue";
+import { mapActions, mapState, mapGetters } from "vuex";
 export default {
   name: "OccupiedRoomsComponent",
   components: {
@@ -169,9 +174,11 @@ export default {
     NoDataFoundCard,
     ConfirmationDialog,
     DeleteDialog,
+    RoomListCardSkeleton,
   },
   props: {
     roomStatuses: Object,
+    loading: Boolean,
   },
   data: () => ({
     selectedStatus: "AVAILABLE",
@@ -258,9 +265,30 @@ export default {
   },
   computed: {
     ...mapState("roomTypeEnum", ["roomTypeEnum"]),
-    ...mapState("occupied", ["loading", "roomSearchQuery"]),
+    ...mapState("occupied", ["roomSearchQuery"]),
+    ...mapGetters("occupied", ["getLoading"]),
     ...mapState("dialogs", ["room_dialog", "room_confirm", "room_delete"]),
     buttonDisplay() {
+      if (!this.roomStatuses?.roomStatusCount) {
+        return [
+          {
+            status: "AVAILABLE",
+            count: 0,
+          },
+          {
+            status: "OCCUPIED",
+            count: 0,
+          },
+          {
+            status: "UNCLEAN",
+            count: 0,
+          },
+          {
+            status: "UNALLOCATED",
+            count: 0,
+          },
+        ];
+      }
       const countData = this.roomStatuses.roomStatusCount;
       return Object.keys(countData).map((key) => ({
         count: countData[key],
@@ -293,7 +321,7 @@ export default {
     noDataCardMeta: function () {
       return {
         title: "rooms",
-        loading: this.loading.fetch,
+        loading: this.loading,
       };
     },
   },
@@ -336,5 +364,3 @@ export default {
   },
 };
 </script>
-
-<style scoped></style>

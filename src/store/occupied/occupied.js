@@ -9,14 +9,15 @@ export const occupied = {
   state: () => ({
     roomStatuses: null,
     loading: {
-      fetch: false,
-      dialog: false,
-      delete: false,
-      confirm: false,
+      roomStatuses: false,
+      roomStatus: false,
+      room: false,
     },
     roomSearchQuery: "",
   }),
-  getters: {},
+  getters: {
+    getLoading: (state) => (name) => state.loading[name],
+  },
   mutations: {
     SET_ROOM_STATUS: (state, data) => (state.roomStatuses = data),
     SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
@@ -24,87 +25,126 @@ export const occupied = {
       (state.roomSearchQuery = roomNumber),
   },
   actions: {
-    setLoading: function ({ commit }, { key, value }) {
-      commit("SET_LOADING", { key, value });
-    },
-    fetchRoomStatus: function ({ dispatch, commit }, queryParams = {}) {
+    async fetchRoomStatus({ commit }, queryParams = {}) {
       const url = `room-status`;
-      dispatch("setLoading", { key: "fetch", value: true });
-
       const queryUrl = functions.query(url, queryParams);
-      return this.$axios
-        .get(queryUrl)
-        .then((response) => {
-          commit("SET_ROOM_STATUS", response.data.results);
-        })
-        .catch((error) => {
-          console.error("Error fetching room status: ", error);
-        })
-        .finally(() => {
-          dispatch("setLoading", { key: "fetch", value: false });
-        });
+
+      commit("SET_LOADING", { key: "roomStatuses", value: true });
+      try {
+        const { data } = await this.$axios.get(queryUrl);
+        commit("SET_ROOM_STATUS", data.results);
+        return data.results;
+      } catch (err) {
+        commit("SET_ROOM_STATUS", null);
+        console.error(
+          "Error fetching room statuses: ",
+          err.response.data.message
+        );
+      } finally {
+        commit("SET_LOADING", { key: "roomStatuses", value: false });
+      }
     },
-    updateRoomStatus: function (_, { roomRefNum, data }) {
+    async updateRoomStatus({ commit, dispatch }, { roomRefNum, data }) {
       const url = `room-status/update/${roomRefNum}`;
-      return this.$axios
-        .put(url, data)
-        .then((response) => {
-          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
-        })
-        .catch((error) => {
-          console.error(error.response.data.message);
-          this.$store.dispatch(
-            "alerts/triggerError",
-            error.response.data.message
-          );
+
+      dispatch("alerts/requireAlertFn", 2, {
+        root: true,
+      });
+      commit("SET_LOADING", { key: "roomStatus", value: true });
+      try {
+        const { data: roomStatus } = await this.$axios.put(url, data);
+        dispatch("alerts/triggerSuccess", roomStatus.message, {
+          root: true,
         });
+        return roomStatus;
+      } catch (err) {
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+        console.error(
+          "Error updating room status: ",
+          err.response.data.message
+        );
+      } finally {
+        commit("SET_LOADING", { key: "roomStatus", value: false });
+      }
     },
 
     // Rooms Configuration
-    createRoom: function (_, { data }) {
+    async createRoom({ commit, dispatch }, { data }) {
       const url = `room/create`;
-      return this.$axios
-        .post(url, data)
-        .then((response) => {
-          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
-        })
-        .catch((error) => {
-          console.error("Error creating room", error.response.data.message);
-          this.$store.dispatch(
-            "alerts/triggerError",
-            error.response.data.message
-          );
+
+      dispatch("alerts/requireAlertFn", 2, {
+        root: true,
+      });
+      commit("SET_LOADING", { key: "room", value: true });
+      try {
+        const { data: room } = await this.$axios.post(url, data);
+        dispatch("alerts/triggerSuccess", room.message, {
+          root: true,
         });
+        return room;
+      } catch (err) {
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+        console.error(
+          "Error creating room status: ",
+          err.response.data.message
+        );
+      } finally {
+        commit("SET_LOADING", { key: "room", value: false });
+      }
     },
-    deleteRoom: function (_, { refNum }) {
+    async deleteRoom({ commit, dispatch }, { refNum }) {
       const url = `room/delete/${refNum}`;
-      return this.$axios
-        .delete(url)
-        .then((response) => {
-          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
-        })
-        .catch((error) => {
-          console.error(error.response.data.message);
-          this.$store.dispatch(
-            "alerts/triggerError",
-            error.response.data.message
-          );
+
+      dispatch("alerts/requireAlertFn", 2, {
+        root: true,
+      });
+      commit("SET_LOADING", { key: "room", value: true });
+      try {
+        const { data: room } = await this.$axios.delete(url);
+        dispatch("alerts/triggerSuccess", room.message, {
+          root: true,
         });
+        return room;
+      } catch (err) {
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+        console.error(
+          "Error creating room status: ",
+          err.response.data.message
+        );
+      } finally {
+        commit("SET_LOADING", { key: "room", value: false });
+      }
     },
-    updateRoom: function (_, { refNum, data }) {
+    async updateRoom({ commit, dispatch }, { refNum, data }) {
       const url = `room/update/${refNum}`;
-      return this.$axios
-        .put(url, data)
-        .then((response) => {
-          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
-        })
-        .catch((error) => {
-          console.error(error.response.data.message);
-          this.$store.dispatch(
-            "alerts/triggerError",
-            error.response.data.message
-          );
+
+      dispatch("alerts/requireAlertFn", 2, {
+        root: true,
+      });
+      commit("SET_LOADING", { key: "room", value: true });
+      try {
+        const { data: room } = await this.$axios.put(url, data);
+        dispatch("alerts/triggerSuccess", room.message, {
+          root: true,
         });
+        return room;
+      } catch (err) {
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+        console.error(
+          "Error creating room status: ",
+          err.response.data.message
+        );
+      } finally {
+        commit("SET_LOADING", { key: "room", value: false });
+      }
     },
   },
 };

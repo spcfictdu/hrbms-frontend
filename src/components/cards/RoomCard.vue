@@ -1,68 +1,61 @@
 <template>
-  <div>
-    <v-hover v-slot="{ hover }">
-      <v-card
-        flat
-        class="card"
-        :elevation="hover ? 12 : 0"
-        :class="{ 'on-hover': hover }"
+  <v-hover v-slot="{ hover }">
+    <v-card
+      flat
+      class="card"
+      :elevation="hover ? 12 : 0"
+      :class="{ 'on-hover': hover }"
+    >
+      <div
+        class="d-flex flex-column flex-sm-row w-full align-center mx-4 my-0 my-sm-4"
       >
-        <div
-          class="d-flex flex-column flex-sm-row w-full align-center mx-4 my-0 my-sm-4"
-        >
-          <v-img
-            :src="appendImagePath(room.image)"
-            class="room-image-smAndUp d-none d-sm-flex mr-2"
-          />
-          <v-img
-            :src="appendImagePath(room.image)"
-            class="room-image-mobile d-flex d-sm-none"
-          />
-          <div class="width-stretch d-flex flex-column justify-center">
-            <v-card-title class="pb-1 pt-0 font-weight-bold">{{
-              room.name.toUpperCase()
-            }}</v-card-title>
-            <v-card-subtitle class="pb-4 pt-2">
-              <PriceSlot
-                :price="room.price"
-                :maxOccupancy="room.maxOccupancy"
-              />
-            </v-card-subtitle>
-            <v-card-text>
-              <p class="text-body-2 room-description longText--text mb-0">
-                {{ room.description }}
-              </p>
-            </v-card-text>
+        <v-img
+          :src="appendImagePath(room.image)"
+          class="room-image-smAndUp d-none d-sm-flex mr-2"
+        />
+        <v-img
+          :src="appendImagePath(room.image)"
+          class="room-image-mobile d-flex d-sm-none"
+        />
+        <div class="width-stretch d-flex flex-column justify-center">
+          <v-card-title class="pb-1 pt-0 font-weight-bold">{{
+            room.name.toUpperCase()
+          }}</v-card-title>
+          <v-card-subtitle class="pb-4 pt-2">
+            <PriceSlot :price="room.price" :maxOccupancy="room.maxOccupancy" />
+          </v-card-subtitle>
+          <v-card-text>
+            <p class="text-body-2 room-description longText--text mb-0">
+              {{ room.description }}
+            </p>
+          </v-card-text>
 
-            <v-divider />
+          <v-divider />
 
-            <v-card-actions>
-              <!-- <p class="text-overline accentOne--text ml-2 font-weight-bold">
+          <v-card-actions>
+            <!-- <p class="text-overline accentOne--text ml-2 font-weight-bold">
                 DreamStay Discount
               </p> -->
-              <v-chip
-                outlined
-                color="primary"
-                class="text-overline font-weight-bold"
-                >{{ room.totalRooms }} Rooms in Total</v-chip
-              >
-              <v-spacer />
-              <v-btn
-                @click="redirect(room.referenceNumber)"
-                small
-                color="primary"
-                >View Details</v-btn
-              >
-            </v-card-actions>
-          </div>
+            <v-chip
+              outlined
+              color="primary"
+              class="text-overline font-weight-bold"
+              >{{ room.totalRooms }} Rooms in Total</v-chip
+            >
+            <v-spacer />
+            <v-btn @click="redirect(room.referenceNumber)" small color="primary"
+              >View Details</v-btn
+            >
+          </v-card-actions>
         </div>
-      </v-card>
-    </v-hover>
-  </div>
+      </div>
+    </v-card>
+  </v-hover>
 </template>
 
 <script>
 import PriceSlot from "../slots/PriceSlot.vue";
+
 export default {
   name: "RoomCard",
   props: { room: Object },

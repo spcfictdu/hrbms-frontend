@@ -1,25 +1,21 @@
 <template>
-  <RouteLoader
-    :target="hasData"
+  <OccupiedRoomsComponent
+    :loading="loading"
     :class="`${this.$vuetify.breakpoint.xs ? 'mt-2' : 'mt-5'}`"
-  >
-    <OccupiedRoomsComponent
-      :roomStatuses="roomStatuses"
-      @request-event="requestEvent"
-      @onQuery="assignQuery"
-    />
-  </RouteLoader>
+    :roomStatuses="roomStatuses"
+    @request-event="requestEvent"
+    @onQuery="assignQuery"
+  />
 </template>
 
 <script>
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import OccupiedRoomsComponent from "@/components/hotel-rooms/occupied/OccupiedRoomsComponent.vue";
-import { mapState, mapActions } from "vuex";
+import { mapState, mapActions, mapGetters } from "vuex";
 import { assignParams } from "@/mixins/FormattingFunctions";
 
 export default {
   name: "OccupiedRoomsView",
-  components: { OccupiedRoomsComponent, RouteLoader },
+  components: { OccupiedRoomsComponent },
   mixins: [assignParams],
   data: () => ({
     // Default Params
@@ -30,7 +26,7 @@ export default {
       page: 1,
     },
   }),
-  created: function () {
+  created() {
     this.fetch(this.queryParams);
   },
   methods: {
@@ -40,20 +36,17 @@ export default {
       "createRoom",
       "deleteRoom",
       "updateRoom",
-      "setLoading",
     ]),
     ...mapActions("dialogs", ["setDialogFn"]),
-    ...mapActions("alerts", ["requireAlertFn"]),
-    fetch: async function (queryParams = {}) {
-      await this.fetchRoomStatus(queryParams);
+    fetch(queryParams = {}) {
+      this.fetchRoomStatus(queryParams);
     },
-    assignQuery: function (query_params) {
+    assignQuery(query_params) {
       this.assignParams(query_params);
     },
-    requestEvent: function (payload) {
+    async requestEvent(payload) {
       const requests = {
         status: {
-          loadingKey: "confirm",
           action: () =>
             this.updateRoomStatus({
               roomRefNum: payload.refNum,
@@ -62,7 +55,6 @@ export default {
           dialogKey: "room_confirm",
         },
         delete: {
-          loadingKey: "delete",
           action: () =>
             this.deleteRoom({
               refNum: payload.refNum,
@@ -70,7 +62,6 @@ export default {
           dialogKey: "room_delete",
         },
         edit: {
-          loadingKey: "dialog",
           action: () =>
             this.updateRoom({
               refNum: payload.refNum,
@@ -79,7 +70,6 @@ export default {
           dialogKey: "room_dialog",
         },
         add: {
-          loadingKey: "dialog",
           action: () =>
             this.createRoom({
               data: payload.data,
@@ -90,26 +80,19 @@ export default {
 
       const request = requests[payload.requestType];
 
-      if (request) {
-        // Prefetch alerts: success, error
-        this.requireAlertFn(2);
-        this.setLoading({ key: request.loadingKey, value: true });
-        return request
-          .action()
-          .then(() => {
-            this.setDialogFn({ key: request.dialogKey, value: false });
-          })
-          .finally(() => {
-            this.setLoading({ key: request.loadingKey, value: false });
-            this.fetch(this.queryParams);
-          });
-      }
+      if (!request) return;
+
+      await request.action();
+      this.setDialogFn({ key: request.dialogKey, value: false });
+      this.fetch(this.queryParams);
     },
   },
   computed: {
     ...mapState("occupied", ["roomStatuses"]),
-    hasData: function () {
-      return !!this.roomStatuses ?? false;
+    ...mapGetters("occupied", ["getLoading"]),
+
+    loading() {
+      return this.getLoading("roomStatuses");
     },
   },
   watch: {
@@ -122,5 +105,3 @@ export default {
   },
 };
 </script>
-
-<style scoped></style>

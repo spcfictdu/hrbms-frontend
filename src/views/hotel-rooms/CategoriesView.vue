@@ -1,30 +1,25 @@
 <template>
-  <RouteLoader :target="hasData" class="mt-10">
-    <div>
-      <room-type-buttons
-        :withAllRooms="withAllRooms"
-        @input-event="attachType"
-      />
-      <RoomsList
-        @redirect-event="redirect"
-        @onQuery="attachQuery"
-        :roomCategories="roomCategories"
-        :loading="loading.fetch"
-      />
-    </div>
-  </RouteLoader>
+  <div class="mt-10">
+    <RoomTypeButtons :withAllRooms="withAllRooms" @input-event="attachType" />
+    <RoomsList
+      @redirect-event="redirect"
+      @onQuery="attachQuery"
+      :roomCategories="roomCategories"
+      :loading="loading"
+    />
+  </div>
 </template>
 
 <script>
 import RoomsList from "../../components/hotel-rooms/categories/RoomsList.vue";
 import RoomTypeButtons from "@/components/buttons/RoomTypeButtons.vue";
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 import { assignParams } from "@/mixins/FormattingFunctions";
+
 export default {
   name: "CategoriesView",
   mixins: [assignParams],
-  components: { RoomsList, RoomTypeButtons, RouteLoader },
+  components: { RoomsList, RoomTypeButtons },
   data: () => ({
     withAllRooms: true,
     queryParams: {
@@ -57,9 +52,11 @@ export default {
     },
   },
   computed: {
-    ...mapState("roomCategories", ["roomCategories", "loading"]),
-    hasData: function () {
-      return !!this.roomCategories ?? false;
+    ...mapState("roomCategories", ["roomCategories"]),
+    ...mapGetters("roomCategories", ["getLoading"]),
+
+    loading() {
+      return this.getLoading("roomCategories") && !this.roomCategories;
     },
   },
   watch: {

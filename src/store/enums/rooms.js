@@ -8,22 +8,36 @@ import { functions } from "@/utils/functions";
 export const roomTypeEnum = {
   namespaced: true,
   state: () => ({
-    roomTypeEnum: null,
+    roomTypeEnum: [],
+    loading: {
+      roomTypeEnum: false,
+    },
   }),
-  getters: {},
+  getters: {
+    getLoading: (state) => (name) => state.loading[name],
+  },
   mutations: {
+    SET_LOADING: (state, { key, value }) => {
+      state.loading[key] = value;
+    },
     SET_ROOM_TYPES: (state, data) => (state.roomTypeEnum = data),
   },
   actions: {
     fetchRoomTypes: function ({ commit }) {
       const url = `enum/room-type`;
+
+      commit("SET_LOADING", { key: "roomTypeEnum", value: true });
       return this.$axios
         .get(url)
-        .then((response) => {
-          commit("SET_ROOM_TYPES", response.data.results);
+        .then(({ data }) => {
+          commit("SET_ROOM_TYPES", data.results);
         })
         .catch((error) => {
+          commit("SET_ROOM_TYPES", []);
           console.error("Error fetching room type: ", error);
+        })
+        .finally(() => {
+          commit("SET_LOADING", { key: "roomTypeEnum", value: false });
         });
     },
   },

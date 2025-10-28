@@ -20,37 +20,38 @@ export const roomCategories = {
     roomCategories: null,
     roomCategory: null,
     loading: {
-      fetch: false,
+      roomCategories: false,
       delete: false,
       form: false,
     },
   }),
-  getters: {},
+  getters: {
+    getLoading: (state) => (name) => state.loading[name],
+  },
   mutations: {
     SET_ROOM_CATEGORIES: (state, data) => (state.roomCategories = data),
     SET_ROOM_CATEGORY: (state, data) => (state.roomCategory = data),
     SET_LOADING: (state, { key, value }) => (state.loading[key] = value),
   },
   actions: {
-    setLoading: function ({ commit }, { key, value }) {
-      commit("SET_LOADING", { key, value });
-    },
-    fetchRoomCategories: function ({ commit, dispatch }, queryParams = {}) {
+    async fetchRoomCategories({ commit }, queryParams = {}) {
       const url = `room-type`;
-      dispatch("setLoading", { key: "fetch", value: true });
-
       const queryUrl = functions.query(url, queryParams);
-      return this.$axios
-        .get(queryUrl)
-        .then((response) => {
-          commit("SET_ROOM_CATEGORIES", response.data.results);
-        })
-        .catch((error) => {
-          console.error("Error fetching room categories", error);
-        })
-        .finally(() => {
-          dispatch("setLoading", { key: "fetch", value: false });
-        });
+
+      commit("SET_LOADING", { key: "roomCategories", value: true });
+      try {
+        const { data } = await this.$axios.get(queryUrl);
+        commit("SET_ROOM_CATEGORIES", data.results);
+        return data.results;
+      } catch (err) {
+        commit("SET_ROOM_CATEGORIES", null);
+        console.error(
+          "Error fetching room categories: ",
+          err.response.data.message
+        );
+      } finally {
+        commit("SET_LOADING", { key: "roomCategories", value: false });
+      }
     },
     fetchRoomCategory: function ({ commit }, roomTypeReferenceNumber) {
       const url = `room-type/${roomTypeReferenceNumber}`;
