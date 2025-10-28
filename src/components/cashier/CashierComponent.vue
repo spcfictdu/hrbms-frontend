@@ -1,8 +1,29 @@
 <template>
-  <div>
+  <div v-if="loading">
+    <v-skeleton-loader type="heading" width="400" height="32" />
+    <v-skeleton-loader type="heading" width="600" />
+
+    <v-row>
+      <v-col cols="12" md="6">
+        <v-divider class="mt-12" />
+        <FormSection title="Guest Name">
+          <v-autocomplete
+            dense
+            hide-details
+            outlined
+            loading
+            disabled
+            class="mr-3"
+          />
+        </FormSection>
+      </v-col>
+    </v-row>
+  </div>
+
+  <div v-else>
     <div>
       <div class="text-uppercase primary--text font-weight-bold text-h6">
-        First Floor Lobby
+        {{ cashierLocation(session.cashierId) }}
       </div>
       <div v-if="session" class="text-uppercase">
         EMPLOYEE:
@@ -67,7 +88,7 @@
 
           <v-divider></v-divider>
           <BookingSummary
-            :loading="loading.form"
+            :loading="transactionLoading.form"
             :queryParams="receiptQuery"
             :clientMeta="clientMeta"
             :btnStyling="btnStyling"
@@ -80,13 +101,14 @@
 </template>
 
 <script>
-import { mapActions, mapState, mapMutations } from "vuex";
 import AddOnsTemplate from "../form-templates/AddOnsTemplate.vue";
 import BookingSummary from "../form-templates/BookingSummary.vue";
 import DiscountTemplate from "../form-templates/DiscountTemplate.vue";
 import PaymentTemplate from "../form-templates/PaymentTemplate.vue";
 import GuestCard from "../guests/GuestCard.vue";
 import FormSection from "../sections/FormSection.vue";
+import cashierLocation from "@/mixins/cashier-location";
+import { mapActions, mapState, mapMutations } from "vuex";
 
 export default {
   name: "CashierComponent",
@@ -98,7 +120,8 @@ export default {
     PaymentTemplate,
     BookingSummary,
   },
-  props: { session: Object },
+  props: { session: Object, loading: Boolean },
+  mixins: [cashierLocation],
   data: () => ({
     payload: {
       payment: {
@@ -277,7 +300,8 @@ export default {
     },
   },
   computed: {
-    ...mapState("transaction", ["transactions", "loading", "transaction"]),
+    ...mapState("transaction", ["transactions", "transaction"]),
+    ...mapState("transaction", { transactionLoading: "loading" }),
     ...mapState("vouchers", ["activeVoucher"]),
     ...mapState("roomEnum", ["room"]),
     formDetails() {

@@ -7,19 +7,22 @@
   >
     <CashierHeader :dividerMarginTop="12" />
 
-    <RouteLoader :target="hasData" :loaderStyles="['mt-10']" class="mt-4">
-      <CashierComponent :session="session" @onSubmit="handleClickEvent" />
-    </RouteLoader>
+    <CashierComponent
+      :loading="loading"
+      class="mt-4"
+      :session="session"
+      @onSubmit="handleClickEvent"
+    />
   </div>
 </template>
 
 <script>
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
 import CashierHeader from "@/components/headers/CashierHeader.vue";
 import CashierComponent from "@/components/cashier/CashierComponent.vue";
 import { mapGetters, mapActions, mapState } from "vuex";
+
 export default {
-  components: { RouteLoader, CashierHeader, CashierComponent },
+  components: { CashierHeader, CashierComponent },
   props: { id: String },
   name: "CashierView",
   data: () => ({
@@ -99,8 +102,13 @@ export default {
     },
   },
   computed: {
-    ...mapGetters("cashier", ["getSession"]),
+    ...mapGetters("cashier", ["getSession", "getLoading"]),
     ...mapState("cashier", ["sessions"]),
+
+    loading() {
+      // return this.getLoading("sessions") && !this.session;
+      return this.getLoading("sessions");
+    },
 
     session() {
       return this.getSession(this.id);
