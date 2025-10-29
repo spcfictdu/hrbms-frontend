@@ -187,7 +187,7 @@ export default {
         },
         {
           name: "Reports",
-          route: "Reports",
+          route: "GuestReports",
           icon: "mdi-file-document",
           childRouteNames: ["GuestReports", "FlightReports", "CashierReports"],
         },
@@ -217,11 +217,11 @@ export default {
         return this.$router.push(route.route);
       }
 
-      if (route.childRouteNames.length) {
-        return this.$router.push({ name: route.childRouteNames[0] });
-      }
-
       return this.$router.push({ name: route.route });
+
+      // if (route.childRouteNames.length) {
+      //   return this.$router.push({ name: route.childRouteNames[0] });
+      // }
     },
 
     isActive: function (route) {
