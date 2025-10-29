@@ -1,20 +1,23 @@
 <template>
   <div class="mt-10">
-    <RouteLoader :target="hasData">
-      <confirmed-details @update-event="handleUpdate" :value="transaction" />
-    </RouteLoader>
+    <TransactionSkeleton transaction v-if="loading" />
+    <ConfirmedDetails
+      v-else
+      @update-event="handleUpdate"
+      :value="transaction"
+    />
   </div>
 </template>
 
 <script>
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
-import ConfirmedDetails from "../../../components/hotel-rooms/forms/ConfirmedDetails.vue";
-import { mapActions, mapState } from "vuex";
+import TransactionSkeleton from "@/components/skeleton-loaders/TransactionSkeleton.vue";
+import ConfirmedDetails from "@/components/hotel-rooms/forms/ConfirmedDetails.vue";
+import { mapActions, mapGetters, mapState } from "vuex";
 export default {
   name: "CheckInAndOut",
   components: {
+    TransactionSkeleton,
     ConfirmedDetails,
-    RouteLoader,
   },
   props: {
     referenceNumber: String,
@@ -53,8 +56,10 @@ export default {
   },
   computed: {
     ...mapState("transaction", ["transaction"]),
-    hasData: function () {
-      return !!this.transaction ?? false;
+    ...mapGetters("transaction", ["getLoading"]),
+
+    loading() {
+      return this.getLoading("transaction");
     },
   },
 };

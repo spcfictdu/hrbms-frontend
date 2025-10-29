@@ -1,26 +1,22 @@
 <template>
   <FormSection title="Booking Summary" class="pb-8">
     <TotalBillCard v-if="room" :value="bookingSummary" :loading="loading" />
-    <v-card
-      flat
-      min-height="575"
-      class="d-flex justify-center align-center"
-      v-else
-    >
-      <v-progress-circular color="primary" indeterminate></v-progress-circular>
-    </v-card>
+    <TotalBillCardSkeleton v-else />
   </FormSection>
 </template>
 
 <script>
 import TotalBillCard from "../hotel-rooms/forms/TotalBillCard.vue";
+import TotalBillCardSkeleton from "../skeleton-loaders/TotalBillCardSkeleton.vue";
 import FormSection from "../sections/FormSection.vue";
 import { mapActions, mapMutations, mapState } from "vuex";
+
 export default {
   name: "BookingSummary",
   components: {
     TotalBillCard,
     FormSection,
+    TotalBillCardSkeleton,
   },
   props: {
     loading: Boolean,

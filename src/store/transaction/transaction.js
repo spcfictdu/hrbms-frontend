@@ -66,12 +66,14 @@ export const transaction = {
     async fetchFlights({ commit }, transactionReferenceNumber) {
       const url = `transaction/${transactionReferenceNumber}/flight`;
 
+      commit("SET_FLIGHTS", []);
       try {
-        const response = await this.$axios.get(url);
-        commit("SET_FLIGHTS", response.data.results);
-        return response;
+        const { data } = await this.$axios.get(url);
+        commit("SET_FLIGHTS", data.results);
+        return data.results;
       } catch (err) {
-        console.error(err);
+        commit("SET_FLIGHTS", []);
+        console.error(err.response.data.message);
         return err.response.data;
       }
     },
@@ -189,7 +191,10 @@ export const transaction = {
         return transaction;
       } catch (err) {
         commit("SET_TRANSACTION", null);
-        console.error("Error fetching transaction: ", err);
+        console.error(
+          "Error fetching transaction: ",
+          err.response.data.message
+        );
       } finally {
         commit("SET_LOADING", { key: "transaction", value: false });
       }
