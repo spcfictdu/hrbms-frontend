@@ -13,6 +13,7 @@
       </v-col>
       <v-col cols="12" md="4">
         <RoomReservationForm
+          v-if="room?.name"
           @reservation-event="(e) => $emit('reservation-event', e)"
           :roomCategory="room.name"
           :queryFill="queryFill"

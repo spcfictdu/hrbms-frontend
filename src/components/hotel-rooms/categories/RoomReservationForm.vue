@@ -141,7 +141,7 @@ export default {
     ...mapActions("roomEnum", ["fetchRoom"]),
     ...mapActions("roomNumberEnum", ["fetchRoomNumbers"]),
     ...mapActions("availableRoomNumbersEnum", ["fetchAvailableRoomNumbers"]),
-    requestReservation: function () {
+    requestReservation() {
       if (this.$refs.form.validate()) {
         let payload = {
           room: this.roomCategory,
@@ -154,7 +154,7 @@ export default {
         this.$emit("reservation-event", payload);
       }
     },
-    requestQuery: function () {
+    requestQuery() {
       let query = {
         roomType: this.roomCategory,
       };
@@ -171,13 +171,13 @@ export default {
         delete query.roomNumber;
       }
     },
-    requestRoomNumbers: function () {
+    requestRoomNumbers() {
       const query = {
         roomType: this.roomCategory.toUpperCase(),
       };
       this.fetchRoomNumbers(query);
     },
-    requestAvailableRoomNumbers: function () {
+    requestAvailableRoomNumbers() {
       const query = {
         roomType: this.roomCategory.toUpperCase(),
       };
@@ -199,12 +199,15 @@ export default {
     ...mapState("availableRoomNumbersEnum", {
       availableRoomNumbersEnum: "availableRoomNumbersEnum",
     }),
-    enumData: function () {
+    isStaff() {
+      return this.role === "ADMIN" || this.role === "FRONT DESK";
+    },
+    enumData() {
       let data = {
         label: "",
         enums: null,
       };
-      if (this.role === "ADMIN") {
+      if (this.isStaff) {
         data.label = "Room Number";
         data.enums = this.roomNumberEnum;
       } else {
@@ -213,19 +216,19 @@ export default {
       }
       return data;
     },
-    rules: function () {
+    rules() {
       let errors = {};
       errors.checkInDate = [(v) => !!v || "Check-in Date is required"];
       errors.checkOutDate = [(v) => !!v || "Check-out Date is required"];
       errors.roomNumber = [(v) => !!v || "Room number is required"];
       return errors;
     },
-    addPlusDay: function () {
+    addPlusDay() {
       const startDate = new Date(this.payload.checkInDate);
       startDate.setDate(startDate.getDate() + 1);
       return startDate.toISOString().slice(0, 10);
     },
-    roomTotalBill: function () {
+    roomTotalBill() {
       const room = this.room ? this.room[0] : null;
       const payload = !!(
         this.payload.checkInDate &&
@@ -243,11 +246,11 @@ export default {
         roomTotalWithExtraPerson: roomTotalWithExtraPerson,
       };
     },
-    durationWord: function () {
+    durationWord() {
       return this.roomTotalBill.duration <= 1 ? "day" : "days";
     },
-    role: function () {
-      return this.$auth.user() ? this.$auth.user().role : null;
+    role() {
+      return this.$auth?.user()?.role ?? null;
     },
   },
   watch: {
@@ -259,7 +262,7 @@ export default {
         }
 
         // For Guest Only
-        if (this.role !== "ADMIN") {
+        if (!this.isStaff) {
           this.requestAvailableRoomNumbers();
         }
       },
@@ -268,7 +271,7 @@ export default {
       immediate: true,
       handler: function (newVal) {
         // For Front Desk Only
-        if (newVal === "ADMIN") {
+        if (this.isStaff) {
           this.requestRoomNumbers();
         }
       },
@@ -285,5 +288,3 @@ export default {
   },
 };
 </script>
-
-<style scoped></style>

@@ -113,7 +113,7 @@ export default {
     ...mapState("roomCategories", ["roomCategory", "meta"]),
     ...mapGetters("roomCategories", ["getLoading"]),
     loading() {
-      return this.getLoading("roomCategory");
+      return this.getLoading("roomCategory") && !this.roomCategory;
     },
     roomImages() {
       return this.roomCategory?.images ?? [];
