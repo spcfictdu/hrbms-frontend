@@ -1,27 +1,28 @@
 <template>
   <div class="mt-10">
-    <RouteLoader :target="hasData">
-      <confirmation-form
-        ref="confirmationForm"
-        @cancel="handleCancel"
-        @confirmReservation="handleConfirmReservation"
-        @print="handlePrint"
-        :cashierUserId="cashierUserId"
-        :value="transaction"
-      />
-    </RouteLoader>
+    <TransactionSkeleton v-if="loading" />
+    <ConfirmationForm
+      v-else
+      ref="confirmationForm"
+      @cancel="handleCancel"
+      @confirmReservation="handleConfirmReservation"
+      @print="handlePrint"
+      :cashierUserId="cashierUserId"
+      :value="transaction"
+    />
   </div>
 </template>
 
 <script>
-import ConfirmationForm from "../../../components/hotel-rooms/forms/ConfirmationForm.vue";
-import RouteLoader from "@/components/loaders/RouteLoader.vue";
-import { mapActions, mapState } from "vuex";
+import TransactionSkeleton from "@/components/skeleton-loaders/TransactionSkeleton.vue";
+import ConfirmationForm from "@/components/hotel-rooms/forms/ConfirmationForm.vue";
+import { mapActions, mapGetters, mapState } from "vuex";
+
 export default {
   name: "ConfirmationView",
   components: {
+    TransactionSkeleton,
     ConfirmationForm,
-    RouteLoader,
   },
   props: {
     referenceNumber: String,
@@ -34,7 +35,7 @@ export default {
       "FRONT DESK": "Transactions",
     },
   }),
-  created: async function () {
+  async created() {
     await this.fetch();
 
     if (
@@ -63,7 +64,7 @@ export default {
     ]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("cashier", ["fetchSessions"]),
-    fetch: async function () {
+    async fetch() {
       await Promise.all([
         this.fetchTransaction(this.referenceNumber),
         this.fetchFlights(this.referenceNumber),
@@ -72,7 +73,7 @@ export default {
       if (this.userRole === "ADMIN" || this.userRole === "FRONT DESK")
         await this.fetchSessions();
     },
-    handleCancel: function (payload) {
+    handleCancel(payload) {
       // Prefetch the alert function: success, warning errors.
       this.requireAlertFn(2);
       this.setLoading({ key: "cancel", value: true });
@@ -134,13 +135,17 @@ export default {
   computed: {
     ...mapState("transaction", ["transaction"]),
     ...mapState("cashier", ["sessions"]),
-    hasData: function () {
-      return !!this.transaction ?? false;
+    ...mapGetters("transaction", ["getLoading"]),
+
+    loading() {
+      return this.getLoading("transaction") && !this.transaction;
     },
-    userRole: function () {
+
+    userRole() {
       return this.$auth.user().role;
     },
-    user: function () {
+
+    user() {
       return this.$auth.user();
     },
   },

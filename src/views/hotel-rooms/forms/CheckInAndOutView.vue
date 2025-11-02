@@ -59,7 +59,7 @@ export default {
     ...mapGetters("transaction", ["getLoading"]),
 
     loading() {
-      return this.getLoading("transaction");
+      return this.getLoading("transaction") && !this.transaction;
     },
   },
 };
