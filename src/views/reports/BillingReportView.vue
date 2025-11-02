@@ -335,7 +335,7 @@ export default {
           ["folioA", "folioB", "folioC", "folioD"].forEach((key) => {
             const folio = trans.folio[key];
             if (folio) {
-              folioSums[key] += folio.charge || 0;
+              folioSums[key] += Number(folio.charge) || 0;
             }
           });
           // Now for display
