@@ -5,7 +5,7 @@
       <v-skeleton-loader type="text" height="22" width="200" />
     </div>
     <div>
-      <v-skeleton-loader type="heading" width="400" height="14" />
+      <v-skeleton-loader type="heading" height="14" />
       <v-divider class="mt-2" />
     </div>
     <div v-for="m in 4" :key="m" class="my-3 font-weight-regular">

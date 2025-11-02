@@ -30,12 +30,12 @@
       </div>
     </div>
 
-    <div class="d-flex flex-row" style="gap: 1rem">
+    <div class="d-flex flex-row align-center" style="gap: 1rem">
       <slot name="extraButton" />
       <slot name="button">
         <v-btn
           v-if="isStaff && showButton(status.type)"
-          class="mt-2 mt-sm-0"
+          class="mt-sm-0"
           :block="$vuetify.breakpoint.xs ? true : false"
           @click="$emit('button-event')"
           :outlined="button.style.outlined"

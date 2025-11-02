@@ -13,7 +13,9 @@
           v-for="group in groupedFlights"
           :key="`group-${group.flightGroup}`"
         >
+          <FlightDetailsCardSkeleton v-if="loading" />
           <FlightDetailsCard
+            v-else
             @edit="setEditingGroupId"
             @delete="prepareFlightDeletion"
             :flightGroup="group"
@@ -39,7 +41,7 @@
 
     <ConfirmationDialog
       :opened="dialog"
-      :loading="loading.dialog"
+      :loading="getLoading('dialog')"
       :onClose="
         () => {
           dialog = false;
@@ -53,13 +55,19 @@
 
 <script>
 import FormSection from "@/components/sections/FormSection.vue";
+import FlightDetailsCardSkeleton from "@/components/skeleton-loaders/FlightDetailsCardSkeleton.vue";
 import FlightDetailsCard from "@/components/cards/FlightDetailsCard.vue";
 import ConfirmationDialog from "../dialogs/ConfirmationDialog.vue";
-import { mapActions, mapState } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
   name: "FlightDetails",
-  components: { FormSection, FlightDetailsCard, ConfirmationDialog },
+  components: {
+    FormSection,
+    FlightDetailsCardSkeleton,
+    FlightDetailsCard,
+    ConfirmationDialog,
+  },
   data() {
     return {
       editingGroupId: null,
@@ -263,7 +271,13 @@ export default {
     },
   },
   computed: {
-    ...mapState("transaction", ["flights", "loading"]),
+    ...mapState("transaction", ["flights"]),
+    ...mapGetters("transaction", ["getLoading"]),
+
+    loading() {
+      return this.getLoading("flights") && !this.flights.length;
+    },
+
     transactionReferenceNumber() {
       return this.$route.params.referenceNumber;
     },

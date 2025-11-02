@@ -105,7 +105,7 @@ export default {
   },
   data() {
     return {
-      showDetails: true,
+      showDetails: false,
       menuOptions: [
         {
           title: "Edit",

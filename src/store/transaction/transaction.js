@@ -13,6 +13,7 @@ export const transaction = {
     payment: null,
     previousTransactions: null,
     loading: {
+      flights: false,
       transactions: false,
       transaction: false,
       payment: false,
@@ -66,6 +67,7 @@ export const transaction = {
     async fetchFlights({ commit }, transactionReferenceNumber) {
       const url = `transaction/${transactionReferenceNumber}/flight`;
 
+      commit("SET_LOADING", { key: "flights", value: true });
       commit("SET_FLIGHTS", []);
       try {
         const { data } = await this.$axios.get(url);
@@ -75,6 +77,8 @@ export const transaction = {
         commit("SET_FLIGHTS", []);
         console.error(err.response.data.message);
         return err.response.data;
+      } finally {
+        commit("SET_LOADING", { key: "flights", value: false });
       }
     },
     async createFlight(
