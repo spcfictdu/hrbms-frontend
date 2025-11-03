@@ -75,6 +75,9 @@ export const authentication = {
         commit("SET_CURRENT_USER", null);
         store.dispatch("account/removeUserInfo");
 
+        // Clear cashier sessions
+        commit("cashier/SET_SESSIONS", [], { root: true });
+
         // Clear session storage
         sessionStorage.clear();
 

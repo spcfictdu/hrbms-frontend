@@ -53,6 +53,7 @@ export default {
       "SET_DIALOG",
       "SET_ADJUSTMENT",
       "SET_CURRENT_CASHIER",
+      "SET_SESSIONS",
     ]),
     ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("authentication", ["logout"]),
@@ -210,6 +211,13 @@ export default {
     },
   },
   async created() {
+    if (
+      this.isFrontDeskUser &&
+      !sessionStorage.getItem("cashierSessionsCleared")
+    ) {
+      this.SET_SESSIONS([]);
+      sessionStorage.setItem("cashierSessionsCleared", "true");
+    }
     await this.fetchSessions();
     this.SET_FILTERED_SESSIONS();
   },
