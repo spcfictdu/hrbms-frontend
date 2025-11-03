@@ -85,7 +85,7 @@
           <v-skeleton-loader type="text" width="150" />
           <v-skeleton-loader type="button" width="105" height="28" />
         </div>
-        <FlightDetailsCardSkeleton />
+        <FlightDetailsCardSkeleton class="mt-4" />
       </v-col>
       <v-col cols="12" md="6">
         <v-divider class="mb-2" />

@@ -1,10 +1,5 @@
 <template>
-  <v-card
-    flat
-    class="mt-4 d-flex justify-space-between"
-    height="86"
-    color="lightBg"
-  >
+  <v-card flat class="d-flex justify-space-between" height="86" color="lightBg">
     <div class="d-flex flex-column flex-grow-1 pa-4" style="gap: 0.75rem">
       <v-skeleton-loader class="mt-2" type="heading" height="20" />
       <v-skeleton-loader type="text" height="14" />
