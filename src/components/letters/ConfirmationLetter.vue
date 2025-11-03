@@ -200,8 +200,27 @@
                         </td>
                       </tr>
                       <tr v-for="addon in addons" :key="addon.id">
-                        <td>&nbsp;&nbsp;{{ addon.name }}</td>
-                        <td style="text-align: end">
+                        <td
+                          :style="{
+                            'text-decoration': isRefundedOrVoided(
+                              addon.paymentStatus
+                            )
+                              ? 'line-through'
+                              : 'none',
+                          }"
+                        >
+                          &nbsp;&nbsp;{{ addon.name }}
+                        </td>
+                        <td
+                          style="text-align: end"
+                          :style="{
+                            'text-decoration': isRefundedOrVoided(
+                              addon.paymentStatus
+                            )
+                              ? 'line-through'
+                              : 'none',
+                          }"
+                        >
                           {{ formatPrice(addon.total) }}
                         </td>
                       </tr>
@@ -277,6 +296,9 @@ export default {
   },
   methods: {
     formatPrice,
+    isRefundedOrVoided(status) {
+      return status === "REFUNDED" || status === "VOIDED";
+    },
   },
   computed: {
     checkInDate() {

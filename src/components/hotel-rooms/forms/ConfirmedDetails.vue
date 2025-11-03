@@ -197,11 +197,18 @@ export default {
         this.value;
       const roomData = this.room[0];
 
-      const roomRate = roomData.roomRatesArray[0].rate;
+      const roomRate = roomData.roomRatesArray.reduce(
+        (total, { rate }) => total + rate,
+        0
+      );
       const extraGuestCharge = roomData.extraPersonTotal;
 
       const addonsTotal = priceSummary.fullAddons.reduce(
-        (sum, addon) => sum + addon.total,
+        (sum, { paymentStatus, total }) => {
+          if (paymentStatus === "VOIDED" || paymentStatus === "REFUNDED")
+            return sum;
+          return sum + total;
+        },
         0
       );
       const paymentReceived = paymentSummary.reduce(
