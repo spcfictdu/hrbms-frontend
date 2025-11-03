@@ -12,7 +12,7 @@
           {{ institution.name }}
         </v-card-title>
         <v-card-subtitle class="text-subtitle-1 mt-2 font-weight-bold">
-          SIGN IN
+          REGISTER
         </v-card-subtitle>
       </div>
 
@@ -52,11 +52,7 @@
           :append-icon="showPassword ? 'mdi-eye' : 'mdi-eye-off'"
           v-model="user.password"
           :type="showPassword ? 'text' : 'password'"
-          :rules="
-            isRegister
-              ? [rules.required('Password'), rules.password]
-              : [rules.required('Password')]
-          "
+          :rules="[rules.required('Password'), rules.password]"
           outlined
           label="Password"
           @click:append="showPassword = !showPassword"
@@ -73,16 +69,6 @@
           {{ submitBtnText }}
         </v-btn>
       </v-form>
-      <!-- <v-card-text class="text-center">
-        {{ footerText.text }}
-        <span
-          @click="isRegister = !isRegister"
-          :style="{ cursor: 'pointer' }"
-          class="primary--text font-weight-bold"
-        >
-          {{ footerText.anchorText }}
-        </span>
-      </v-card-text> -->
     </v-card>
   </div>
 </template>
@@ -90,7 +76,7 @@
 <script>
 import { mapState, mapActions } from "vuex";
 export default {
-  name: "SignInView",
+  name: "RegisterView",
   data: () => ({
     valid: true,
     institution: {
@@ -116,10 +102,9 @@ export default {
         return pattern.test(value) || "Invalid e-mail.";
       },
     },
-    loginRole: "ADMIN",
     showAlert: false,
     loading: false,
-    isRegister: false,
+    isRegister: true,
   }),
 
   computed: {
@@ -127,52 +112,31 @@ export default {
     ...mapState("alerts", ["alertMeta"]),
 
     submitBtnText() {
-      return this.isRegister ? "REGISTER" : "SIGN IN";
-    },
-
-    footerText() {
-      if (this.isRegister)
-        return {
-          text: "Already have an account?",
-          anchorText: "Sign In",
-        };
-
-      return {
-        text: "Don't have an account?",
-        anchorText: "Register",
-      };
+      return "REGISTER";
     },
   },
   methods: {
-    ...mapActions("authentication", ["login", "register"]),
+    ...mapActions("authentication", ["register"]),
     handleAuth: async function () {
       if (!this.$refs.form.validate()) return;
 
       this.loading = true;
 
       try {
-        if (this.isRegister) {
-          const response = await this.register({
-            ...this.user,
-            role: "FRONT DESK",
-          });
+        const response = await this.register({
+          ...this.user,
+          role: "FRONT DESK",
+        });
 
-          if (response && response.data.code === 201) {
-            this.isRegister = false;
-            this.$refs.form.reset();
-            this.user = {
-              username: null,
-              password: null,
-              firstName: null,
-              lastName: null,
-              email: null,
-            };
-          }
-        } else {
-          await this.login({
-            user: this.user,
-            loginRole: this.loginRole,
-          });
+        if (response && response.data.code === 201) {
+          this.$refs.form.reset();
+          this.user = {
+            username: null,
+            password: null,
+            firstName: null,
+            lastName: null,
+            email: null,
+          };
         }
       } finally {
         this.loading = false;

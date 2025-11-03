@@ -1,4 +1,5 @@
 import SignInView from "@/views/authentication/SignInView.vue";
+import RegisterView from "@/views/authentication/RegisterView.vue";
 import GuestSignInView from "../../views/authentication/GuestSignInView.vue";
 
 import Vue from "vue";
@@ -25,6 +26,15 @@ export default [
     component: SignInView,
     meta: {
       name: "Sign In",
+      isLogin: true,
+    },
+  },
+  {
+    path: "/register/admin",
+    name: "Register",
+    component: RegisterView,
+    meta: {
+      name: "Register",
       isLogin: true,
     },
   },
