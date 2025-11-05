@@ -122,6 +122,7 @@ export default {
 
       const printWindow = window.open("", "_blank");
       const printDocument = printWindow.document;
+      printDocument.title = "Guest Confirmation Letter";
 
       const clonedContent = letterContent.cloneNode(true);
       printDocument.body.appendChild(clonedContent);
