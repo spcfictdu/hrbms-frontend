@@ -22,9 +22,7 @@ export default {
       }
 
       const printDocument = printWindow.document;
-      printDocument.write(
-        `<html><head><title>${documentTitle}</title></head><body></body></html>`
-      );
+      printDocument.title = documentTitle;
 
       const styles = document.querySelectorAll('link[rel="stylesheet"], style');
       styles.forEach((style) => {
@@ -169,8 +167,6 @@ export default {
 
       footerEl.innerHTML = `<span>${reportDateStr}</span><span>${printedBy}</span><span>${printDateStr}</span>`;
       printDocument.body.appendChild(footerEl);
-
-      printDocument.close();
 
       setTimeout(() => {
         printWindow.focus();
