@@ -5,7 +5,7 @@
       v-if="userRole === 'ADMIN' || userRole === 'FRONT DESK'"
     >
       <div style="max-width: 300px">
-        <v-select
+        <v-autocomplete
           class="d-block"
           rounded
           dense
@@ -17,7 +17,7 @@
           v-model="autofill"
           :clearable="!readonlyInputs"
           :readonly="readonlyInputs"
-        ></v-select>
+        ></v-autocomplete>
       </div>
     </div>
 
