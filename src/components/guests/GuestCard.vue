@@ -162,26 +162,25 @@ export default {
         },
       ];
 
+      if (this.transaction.status !== "CHECKED-IN") {
+        options.push({
+          title: "Edit",
+          action: () => {
+            this.redirectToForm("Edit");
+          },
+        });
+      }
+
       if (this.transaction.status === "RESERVED") {
-        options.push(
-          ...[
-            {
-              title: "Edit",
-              action: () => {
-                this.redirectToForm("Edit");
-              },
-            },
-            {
-              title: "Cancel Reservation",
-              class: "red--text",
-              action: () =>
-                this.$emit("onCancelReservation", {
-                  status: this.transaction.status,
-                  transactionRefNum: this.transaction.transactionRefNum,
-                }),
-            },
-          ]
-        );
+        options.push({
+          title: "Cancel Reservation",
+          class: "red--text",
+          action: () =>
+            this.$emit("onCancelReservation", {
+              status: this.transaction.status,
+              transactionRefNum: this.transaction.transactionRefNum,
+            }),
+        });
       }
 
       return options;
