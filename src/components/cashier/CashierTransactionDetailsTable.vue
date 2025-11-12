@@ -283,7 +283,10 @@ export default {
           text: "Charge Distribution",
           action: (item) => {
             this.chargedItem = item;
-            this.itemAmount = Number(item.totalPrice);
+            // this.itemAmount =
+            //   parseFloat(item.totalPrice.replace(/,/g, "")) -
+            //   parseFloat(item.discount.replace(/,/g, ""));
+            this.itemAmount = parseFloat(item.totalPrice.replace(/,/g, ""));
             if (item.type === "room") {
               this.existingCharges = this.formatExistingCharges(
                 this.transactionDetails?.transaction?.roomCharges
