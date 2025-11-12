@@ -80,7 +80,7 @@ export default {
       if (!this.cashierReports.length) return [];
 
       return this.cashierReports.map(({ cashierId }) => ({
-        name: `CASHIER ${cashierId}`,
+        name: `CASHIER ${cashierId.toString().toUpperCase()}`,
         id: cashierId,
       }));
     },
@@ -98,7 +98,6 @@ export default {
       return cashierReports.map(
         ({
           user,
-          userId,
           cashierId,
           openingBalance,
           transactions,
@@ -106,9 +105,12 @@ export default {
           closingBalance,
         }) => {
           const date = format(parseISO(this.queryDate), "EEEE, MMMM dd, yyyy");
-          const cashier = `Cashier ${cashierId} - ${user}${this.adminLabel(
-            userId
-          )}`;
+          const parts = user.split(",");
+          const lastName = parts[0].trim();
+          const firstName = parts[1].trim().toUpperCase();
+          const cashier = `Cashier ${cashierId
+            .toString()
+            .toUpperCase()} - ${firstName} ${lastName}`;
           const payments = transactions.filter((t) => t.type === "PAYMENT");
           const totalPayment = payments.reduce(
             (total, p) => total + Number(p.amount),
@@ -147,7 +149,7 @@ export default {
     },
 
     isAdmin(userId) {
-      return userId === 66;
+      return userId >= 1 && userId <= 4;
     },
 
     handlePrint(table) {
@@ -165,7 +167,7 @@ export default {
     },
 
     redirect(row) {
-      const cashierId = String(row.cashierId);
+      const cashierId = String(row.cashierId).toLowerCase();
       this.$router.push({
         name: "CashierReport",
         params: { cashierId, date: this.queryDate },

@@ -79,7 +79,7 @@ export default {
           transactions.push(
             ...session.payments.map((item) => ({
               employee: `${session.firstName} - S${session.userId}${
-                session.userId === 66 ? " (ADMIN)" : ""
+                session.userId >= 1 && session.userId <= 4 ? " (ADMIN)" : ""
               }`,
               MOP: item.paymentType,
               totalPayment: item.totalReceived,
@@ -99,7 +99,7 @@ export default {
         return (
           this.history.map((item) => ({
             employee: `${item.userFullName.split(" ")[0]} - S${item.userId}${
-              item.userId === 66 ? " (ADMIN)" : ""
+              item.userId >= 1 && item.userId <= 4 ? " (ADMIN)" : ""
             }`,
             openingAdjustment: item.openingBalance ?? "0.00",
             beginningBalance: item.beginningBalance ?? "0.00",

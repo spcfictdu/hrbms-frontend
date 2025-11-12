@@ -7,7 +7,7 @@
   >
     <PageHeader
       backButton
-      :headerText="`Cashier ${cashierId}`"
+      :headerText="`Cashier ${cashierId.toString().toUpperCase()}`"
       :dividerMarginTop="36"
       printable
       @print="handlePrint"
@@ -165,7 +165,7 @@ export default {
     ...mapActions("reports", ["fetchCashierReports"]),
 
     isAdmin(userId) {
-      return userId === 66;
+      return userId >= 1 && userId <= 4;
     },
 
     handlePrint() {
