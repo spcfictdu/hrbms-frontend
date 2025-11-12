@@ -79,7 +79,7 @@
             >{{ accountStatusText.anchorText }}
           </span>
         </p>
-        <p class="mt-2 mb-0 text-caption text-center">
+        <!-- <p class="mt-2 mb-0 text-caption text-center">
           Are you part of our team?
           <span
             style="cursor: pointer"
@@ -87,7 +87,7 @@
             class="primary--text font-weight-bold"
             >Staff Login
           </span>
-        </p>
+        </p> -->
       </v-form>
     </v-card>
   </div>
