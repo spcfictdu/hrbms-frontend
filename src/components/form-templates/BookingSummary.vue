@@ -34,6 +34,7 @@ export default {
     ...mapState("addonsEnum", ["addons"]),
     ...mapState("roomEnum", ["room"]),
     ...mapState("vouchers", ["activeVoucher"]),
+
     bookingSummary: function () {
       const room = this.room ? this.room[0] : null;
 
@@ -133,9 +134,7 @@ export default {
       // Total Received
       const totalReceived = this.clientMeta.amountReceived;
 
-      const discountedValue = roundToTwoDecimal(
-        totalWithoutAddons * (room.discount.split("%")[0] * 0.01)
-      );
+      const discountedValue = roundToTwoDecimal(room.discountedAmount);
 
       // Total Outstanding Bill
       const calculatedOutstanding = roundToTwoDecimal(

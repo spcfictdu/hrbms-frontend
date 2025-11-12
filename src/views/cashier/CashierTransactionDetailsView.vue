@@ -12,7 +12,7 @@
           {{ cashierLocation() }}
         </div>
       </template>
-      <template>
+      <template v-if="transaction?.transaction.status !== 'RESERVED'">
         <v-btn
           depressed
           class="mr-4"
@@ -74,6 +74,7 @@ import CashierTransactionPaymentsTable from "@/components/cashier/CashierTransac
 import AdminPasscodeDialog from "@/components/dialogs/AdminPasscodeDialog.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import cashierLocation from "@/mixins/cashier-location";
+import formatPrice from "@/utils/format-price";
 import { mapMutations, mapActions, mapState, mapGetters } from "vuex";
 
 export default {
@@ -193,25 +194,14 @@ export default {
         0
       );
 
-      const extraPersonTotal =
-        (this.room && this.room.length > 0 && this.room[0]?.extraPersonTotal) ||
-        0;
-
-      const totalPurchase =
-        this.transaction?.priceSummary.finalRoomTotal +
-        extraPersonTotal +
-        this.transaction?.priceSummary.fullAddons.reduce((total, addon) => {
-          if (addon.paymentStatus === "VOIDED") return total;
-          return total + addon.total;
-        }, 0);
-
-      const totalBalance = totalPayment - totalPurchase;
+      const totalBalance =
+        this.transaction?.priceSummary.finalRoomTotal - totalPayment;
 
       return [
         {
           headerText: "Total Payment",
           value: {
-            text: `+${totalPayment?.toFixed(2)}`,
+            text: `+${formatPrice(totalPayment)}`,
             styles: "cash--text",
           },
         },
@@ -220,9 +210,9 @@ export default {
           value: {
             text:
               totalBalance > 0
-                ? `+${totalBalance.toFixed(2)}`
-                : totalBalance.toFixed(2),
-            styles: totalBalance >= 0 ? "cash--text" : "red--text",
+                ? formatPrice(totalBalance)
+                : `+${formatPrice(totalBalance)}`,
+            styles: totalBalance >= 0 ? "red--text" : "cash--text",
           },
         },
       ];
@@ -236,7 +226,7 @@ export default {
       );
 
       return withAmount.map((p) => ({
-        amount: `+${p.amountReceived}`,
+        amount: `+${formatPrice(p.amountReceived)}`,
         paymentMethod: p.paymentType,
       }));
     },

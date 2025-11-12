@@ -121,6 +121,7 @@ import CashierTransactionDetailsTableHeader from "./CashierTransactionDetailsTab
 import ChargeDistributionDialog from "@/components/dialogs/ChargeDistributionDialog.vue";
 import { format, parseISO } from "date-fns";
 import { mapActions, mapMutations, mapState } from "vuex";
+import formatPrice from "@/utils/format-price";
 
 export default {
   name: "CashierTransactionDetalisTable",
@@ -400,26 +401,14 @@ export default {
     },
 
     headerDetails() {
-      const totalValidAddons =
-        this.transactionDetails?.priceSummary.fullAddons.reduce(
-          (total, addon) => {
-            if (addon.paymentStatus === "VOIDED") return total;
-            return total + addon.total;
-          },
-          0
-        );
-
-      const totalWithoutAddons =
-        this.transactionDetails?.priceSummary.finalRoomTotal +
-        (this.room?.[0]?.extraPersonTotal || 0);
-
-      const totalPurchase = totalWithoutAddons + totalValidAddons;
-
       return {
         "Guest Name": this.transactionDetails?.guestName,
         "Reference Number":
           this.transactionDetails?.transaction.referenceNumber,
-        "Total Purchase": totalPurchase.toFixed(2),
+        "Total Purchase": formatPrice(
+          this.transactionDetails?.priceSummary.finalRoomTotal
+        ),
+        "Extra Guests": this.transactionDetails?.transaction.extraPerson,
         Date:
           this.transactionDetails &&
           format(
@@ -435,19 +424,15 @@ export default {
       const { transaction, room, priceSummary } = this.transactionDetails;
       const discountPercentage =
         (this.room?.[0]?.discount?.split("%")[0] || 0) * 0.01;
+      const { addonsTotal, roomTotalWithExtraPerson } = this.room?.[0];
       return [
         {
           status: transaction.paymentStatus,
           product: room.name,
-          price: priceSummary.roomTotal,
-          quantity: transaction.extraPerson + 1,
-          totalPrice: (
-            Number(priceSummary.roomTotal) + this.extraPersonTotal
-          ).toFixed(2),
-          discount: (
-            (Number(priceSummary.roomTotal) + this.extraPersonTotal) *
-            discountPercentage
-          ).toFixed(2),
+          price: formatPrice(priceSummary.baseRate),
+          quantity: 1,
+          totalPrice: formatPrice(roomTotalWithExtraPerson + addonsTotal),
+          discount: formatPrice(roomTotalWithExtraPerson * discountPercentage),
           time: format(parseISO(transaction.createdAt), "H:mm:ss"),
           type: "room",
         },
@@ -455,10 +440,10 @@ export default {
           ? priceSummary.fullAddons.map((addon) => ({
               status: addon.paymentStatus,
               product: addon.name,
-              price: addon.unitPrice,
+              price: formatPrice(addon.unitPrice),
               quantity: addon.quantity,
-              totalPrice: addon.total,
-              discount: "0.00",
+              totalPrice: formatPrice(addon.total),
+              discount: formatPrice(addon.total * discountPercentage),
               time: format(parseISO(addon.createdAt), "H:mm:ss"),
               addonId: addon.addonId,
               type: "addon",

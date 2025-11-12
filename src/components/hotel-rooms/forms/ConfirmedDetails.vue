@@ -202,7 +202,10 @@ export default {
         (total, { rate }) => total + rate,
         0
       );
-      const extraGuestCharge = roomData.extraPersonTotal;
+      const extraGuestCharge = roomData.roomRatesArray.reduce(
+        (total, { extraPersonRate }) => total + extraPersonRate,
+        0
+      );
 
       const addonsTotal = priceSummary.fullAddons.reduce(
         (sum, { paymentStatus, total }) => {
@@ -217,11 +220,7 @@ export default {
         0
       );
 
-      const discountableTotal = roomRate + extraGuestCharge;
-      const discountValue = priceSummary.discount
-        ? parseFloat(priceSummary.discount) / 100
-        : 0;
-      const discountAmount = discountableTotal * discountValue;
+      const discountAmount = this.value?.priceSummary.discounted;
 
       const grandTotal =
         roomRate + extraGuestCharge - discountAmount + addonsTotal;
