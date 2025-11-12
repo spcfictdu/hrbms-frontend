@@ -281,6 +281,9 @@ export default {
       if (!this.guestBillingReport?.transactions) return [];
       const items = [];
       this.guestBillingReport.transactions.forEach((trans) => {
+        if (Number(trans.paymentAmount) === 0 && trans.item === "PAYMENT")
+          return;
+
         const date = format(new Date(trans.datetime), "MM/dd/yy");
         const item =
           trans.item === "PAYMENT"
