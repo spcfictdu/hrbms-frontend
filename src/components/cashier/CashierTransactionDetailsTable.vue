@@ -434,7 +434,7 @@ export default {
           product: room.name,
           price: formatPrice(priceSummary.baseRate),
           quantity: 1,
-          totalPrice: formatPrice(roomTotalWithExtraPerson + addonsTotal),
+          totalPrice: formatPrice(roomTotalWithExtraPerson),
           discount: formatPrice(roomTotalWithExtraPerson * discountPercentage),
           time: format(parseISO(transaction.createdAt), "H:mm:ss"),
           type: "room",
