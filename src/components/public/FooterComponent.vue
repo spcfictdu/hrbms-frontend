@@ -11,7 +11,7 @@
           <div class="divider-breakpoint d-flex d-sm-none"></div>
           <div class="flex-items mt-0 mt-sm-4">
             <i class="fi fi-brands-facebook"></i>
-            <div>First City Providential College</div>
+            <div>Systems Plus College Foundation</div>
           </div>
         </v-col>
 
@@ -27,12 +27,12 @@
         <v-col cols="12" sm="auto" class="py-0 py-sm-3">
           <div class="flex-items">
             <i class="fi fi-sr-envelope"></i>
-            <div>FirstCityProvidentialCollege@spcf.edu.ph</div>
+            <div>spcf.ictdu@spcf.edu.ph</div>
           </div>
           <div class="divider-breakpoint d-flex d-sm-none"></div>
           <div class="flex-items mt-0 mt-sm-4">
             <i class="fi fi-sr-phone-flip rotate-icon"></i>
-            <div>+639123456789</div>
+            <div>+639763872654</div>
           </div>
         </v-col>
       </v-row>
@@ -42,8 +42,8 @@
 
 <script>
 export default {
-  name: "FooterComponent",
-  data: () => ({}),
+	name: "FooterComponent",
+	data: () => ({}),
 };
 </script>
 

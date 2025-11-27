@@ -10,7 +10,7 @@
             class="ml-4 ml-md-0 d-flex flex-row flex-sm-column justify-sm-center align-center"
           >
             <v-avatar size="40">
-              <img :src="institution.logo" alt="FCPC Logo" />
+              <img :src="institution.logo" alt="SPCF Logo" />
             </v-avatar>
             <div class="ml-4 ml-sm-0 mt-sm-2 d-flex flex-column white--text">
               <p
@@ -33,14 +33,14 @@
 
 <script>
 export default {
-  name: "PublicNavigation",
-  data: () => ({
-    institution: {
-      name: "Systems Plus College Foundation",
-      acronym: "SPCF",
-      logo: require("@/assets/logos/SPCFLogo.png"),
-    },
-  }),
+	name: "PublicNavigation",
+	data: () => ({
+		institution: {
+			name: "Systems Plus College Foundation",
+			acronym: "SPCF",
+			logo: require("@/assets/logos/SPCFLogo.png"),
+		},
+	}),
 };
 </script>
 

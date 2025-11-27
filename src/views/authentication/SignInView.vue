@@ -2,7 +2,7 @@
   <div>
     <v-card flat max-width="400" rounded="lg" class="pa-6 ma-auto">
       <div class="d-flex flex-column align-center">
-        <v-avatar size="128" class="mt-n16 fcpc-logo">
+        <v-avatar size="128" class="mt-n16 logo">
           <v-img :src="institution.logo" />
         </v-avatar>
         <v-card-title
@@ -88,115 +88,115 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
+import { mapActions, mapState } from "vuex";
 export default {
-  name: "SignInView",
-  data: () => ({
-    valid: true,
-    institution: {
-      name: "Systems Plus College Foundation",
-      acronym: "SPCF",
-      logo: require("@/assets/logos/SPCFLogo.png"),
-    },
-    showPassword: false,
-    user: {
-      username: null,
-      password: null,
-      firstName: null,
-      lastName: null,
-      email: null,
-    },
-    rules: {
-      required: (fieldName) => (value) =>
-        !!value || `${fieldName} is required.`,
-      password: (value) =>
-        (value || "").length >= 8 || "Password must be at least 8 characters.",
-      email: (value) => {
-        const pattern = /.+@.+\..+/;
-        return pattern.test(value) || "Invalid e-mail.";
-      },
-    },
-    loginRole: "ADMIN",
-    showAlert: false,
-    loading: false,
-    isRegister: false,
-  }),
+	name: "SignInView",
+	data: () => ({
+		valid: true,
+		institution: {
+			name: "Systems Plus College Foundation",
+			acronym: "SPCF",
+			logo: require("@/assets/logos/SPCFLogo.png"),
+		},
+		showPassword: false,
+		user: {
+			username: null,
+			password: null,
+			firstName: null,
+			lastName: null,
+			email: null,
+		},
+		rules: {
+			required: (fieldName) => (value) =>
+				!!value || `${fieldName} is required.`,
+			password: (value) =>
+				(value || "").length >= 8 || "Password must be at least 8 characters.",
+			email: (value) => {
+				const pattern = /.+@.+\..+/;
+				return pattern.test(value) || "Invalid e-mail.";
+			},
+		},
+		loginRole: "ADMIN",
+		showAlert: false,
+		loading: false,
+		isRegister: false,
+	}),
 
-  computed: {
-    ...mapState("authentication", ["currentUser"]),
-    ...mapState("alerts", ["alertMeta"]),
+	computed: {
+		...mapState("authentication", ["currentUser"]),
+		...mapState("alerts", ["alertMeta"]),
 
-    submitBtnText() {
-      return this.isRegister ? "REGISTER" : "SIGN IN";
-    },
+		submitBtnText() {
+			return this.isRegister ? "REGISTER" : "SIGN IN";
+		},
 
-    footerText() {
-      if (this.isRegister)
-        return {
-          text: "Already have an account?",
-          anchorText: "Sign In",
-        };
+		footerText() {
+			if (this.isRegister)
+				return {
+					text: "Already have an account?",
+					anchorText: "Sign In",
+				};
 
-      return {
-        text: "Don't have an account?",
-        anchorText: "Register",
-      };
-    },
-  },
-  methods: {
-    ...mapActions("authentication", ["login", "register"]),
-    handleAuth: async function () {
-      if (!this.$refs.form.validate()) return;
+			return {
+				text: "Don't have an account?",
+				anchorText: "Register",
+			};
+		},
+	},
+	methods: {
+		...mapActions("authentication", ["login", "register"]),
+		handleAuth: async function () {
+			if (!this.$refs.form.validate()) return;
 
-      this.loading = true;
+			this.loading = true;
 
-      try {
-        if (this.isRegister) {
-          const response = await this.register({
-            ...this.user,
-            role: "FRONT DESK",
-          });
+			try {
+				if (this.isRegister) {
+					const response = await this.register({
+						...this.user,
+						role: "FRONT DESK",
+					});
 
-          if (response && response.data.code === 201) {
-            this.isRegister = false;
-            this.$refs.form.reset();
-            this.user = {
-              username: null,
-              password: null,
-              firstName: null,
-              lastName: null,
-              email: null,
-            };
-          }
-        } else {
-          await this.login({
-            user: this.user,
-            loginRole: this.loginRole,
-          });
-        }
-      } finally {
-        this.loading = false;
-      }
-    },
-  },
+					if (response && response.data.code === 201) {
+						this.isRegister = false;
+						this.$refs.form.reset();
+						this.user = {
+							username: null,
+							password: null,
+							firstName: null,
+							lastName: null,
+							email: null,
+						};
+					}
+				} else {
+					await this.login({
+						user: this.user,
+						loginRole: this.loginRole,
+					});
+				}
+			} finally {
+				this.loading = false;
+			}
+		},
+	},
 
-  watch: {
-    alertMeta: {
-      deep: true,
-      handler: function (v) {
-        if (v.status === "error") {
-          this.showAlert = true;
-        } else {
-          this.showAlert = false;
-        }
-      },
-    },
-  },
+	watch: {
+		alertMeta: {
+			deep: true,
+			handler: function (v) {
+				if (v.status === "error") {
+					this.showAlert = true;
+				} else {
+					this.showAlert = false;
+				}
+			},
+		},
+	},
 };
 </script>
 
 <style scoped>
-/* .fcpc-logo {
+/* .logo {
   border: 5px solid white;
 } */
 </style>

@@ -2,7 +2,7 @@
   <div class="route-container">
     <v-card flat class="sign-in-card ma-auto">
       <div class="sign-in-container">
-        <v-avatar size="128" class="mt-n16 fcpc-logo">
+        <v-avatar size="128" class="mt-n16 logo">
           <v-img :src="institution.logo" />
         </v-avatar>
         <v-card-title class="sign-in-title">{{
@@ -94,113 +94,113 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex";
-import RegisterForm from "@/components/form-templates/login/RegisterForm.vue";
+import { mapActions, mapState } from "vuex";
 import FormField from "@/components/fields/FormField.vue";
+import RegisterForm from "@/components/form-templates/login/RegisterForm.vue";
 
 export default {
-  name: "GuestSignInView",
-  components: { RegisterForm, FormField },
-  props: {
-    method: String,
-  },
-  data: () => ({
-    institution: {
-      name: "Systems Plus College Foundation",
-      acronym: "SPCF",
-      logo: require("@/assets/logos/SPCFLogo.png"),
-    },
+	name: "GuestSignInView",
+	components: { RegisterForm, FormField },
+	props: {
+		method: String,
+	},
+	data: () => ({
+		institution: {
+			name: "Systems Plus College Foundation",
+			acronym: "SPCF",
+			logo: require("@/assets/logos/SPCFLogo.png"),
+		},
 
-    // Meta
-    showPassword: false,
-    isRegister: false,
+		// Meta
+		showPassword: false,
+		isRegister: false,
 
-    // User credentials
-    user: {
-      username: null,
-      password: null,
-    },
-    payload: {
-      role: "GUEST",
-    },
-    loginRole: "GUEST",
+		// User credentials
+		user: {
+			username: null,
+			password: null,
+		},
+		payload: {
+			role: "GUEST",
+		},
+		loginRole: "GUEST",
 
-    // Buttons and Alerts
-    showAlert: false,
-    loading: false,
-  }),
-  methods: {
-    ...mapActions("authentication", ["login", "register"]),
-    assignPayload: function (payload) {
-      for (const key in payload) {
-        if (Object.hasOwnProperty.call(payload, key)) {
-          this.$set(this.payload, key, payload[key]);
-        }
-      }
-    },
-    handleAuth: async function () {
-      if (!this.$refs.form.validate()) return;
+		// Buttons and Alerts
+		showAlert: false,
+		loading: false,
+	}),
+	methods: {
+		...mapActions("authentication", ["login", "register"]),
+		assignPayload: function (payload) {
+			for (const key in payload) {
+				if (Object.hasOwn(payload, key)) {
+					this.$set(this.payload, key, payload[key]);
+				}
+			}
+		},
+		handleAuth: async function () {
+			if (!this.$refs.form.validate()) return;
 
-      this.loading = true;
+			this.loading = true;
 
-      try {
-        if (this.isRegister) {
-          await this.register(this.payload);
-        } else {
-          await this.login({
-            user: this.user,
-            loginRole: this.loginRole,
-          });
-        }
-      } finally {
-        this.loading = false;
-      }
-    },
-    showRegister() {
-      this.isRegister = !this.isRegister;
-    },
-  },
-  computed: {
-    ...mapState("authentication", ["currentUser"]),
-    ...mapState("alerts", ["alertMeta"]),
-    accountStatusText: function () {
-      return this.isRegister
-        ? {
-            text: "Already have an account",
-            buttonText: "Register",
-            anchorText: "Sign In",
-          }
-        : {
-            text: "Don't have an account",
-            buttonText: "Log In",
-            anchorText: "Register",
-          };
-    },
-    rules: function () {
-      let errors = {};
-      errors.username = [(v) => !!v || "Username is required"];
-      errors.password = [(v) => !!v || "Password is required"];
-      return errors;
-    },
-  },
-  watch: {
-    alertMeta: {
-      deep: true,
-      handler: function (v) {
-        if (v.status === "error") {
-          this.showAlert = true;
-        } else {
-          this.showAlert = false;
-        }
-      },
-    },
-    method: {
-      immediate: true,
-      handler: function (v) {
-        if (v === "register") this.isRegister = true;
-      },
-    },
-  },
+			try {
+				if (this.isRegister) {
+					await this.register(this.payload);
+				} else {
+					await this.login({
+						user: this.user,
+						loginRole: this.loginRole,
+					});
+				}
+			} finally {
+				this.loading = false;
+			}
+		},
+		showRegister() {
+			this.isRegister = !this.isRegister;
+		},
+	},
+	computed: {
+		...mapState("authentication", ["currentUser"]),
+		...mapState("alerts", ["alertMeta"]),
+		accountStatusText: function () {
+			return this.isRegister
+				? {
+						text: "Already have an account",
+						buttonText: "Register",
+						anchorText: "Sign In",
+					}
+				: {
+						text: "Don't have an account",
+						buttonText: "Log In",
+						anchorText: "Register",
+					};
+		},
+		rules: () => {
+			const errors = {};
+			errors.username = [(v) => !!v || "Username is required"];
+			errors.password = [(v) => !!v || "Password is required"];
+			return errors;
+		},
+	},
+	watch: {
+		alertMeta: {
+			deep: true,
+			handler: function (v) {
+				if (v.status === "error") {
+					this.showAlert = true;
+				} else {
+					this.showAlert = false;
+				}
+			},
+		},
+		method: {
+			immediate: true,
+			handler: function (v) {
+				if (v === "register") this.isRegister = true;
+			},
+		},
+	},
 };
 </script>
 
@@ -249,7 +249,7 @@ export default {
   letter-spacing: 0.7px;
 }
 
-.fcpc-logo {
+.logo {
   border: 5px solid white;
 }
 
