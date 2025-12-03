@@ -30,7 +30,6 @@
             :rules="rules"
             :placeholder="idNumberPlaceholder(payload.discount)"
             v-model="payload.idNumber"
-            @input="payload.idNumber = payload.idNumber.toLocaleUpperCase()"
             @blur="validateVoucher"
             v-mask="idNumberMask(payload.discount)"
             :disabled="disabled"
@@ -42,10 +41,10 @@
 </template>
 
 <script>
-import FormSection from "../sections/FormSection.vue";
-import FormField from "../fields/FormField.vue";
-import { mask } from "vue-the-mask";
-import { mapGetters, mapMutations } from "vuex";
+import FormSection from "../sections/FormSection.vue"
+import FormField from "../fields/FormField.vue"
+import { mask } from "vue-the-mask"
+import { mapGetters, mapMutations } from "vuex"
 
 export default {
   name: "DiscountTemplate",
@@ -82,33 +81,33 @@ export default {
     ...mapMutations("vouchers", ["SET_ACTIVE_VOUCHER"]),
 
     handleInput() {
-      payload.idNumber = payload.idNumber.toLocaleUpperCase();
-      this.validateVoucher();
+      payload.idNumber = payload.idNumber.toLocaleUpperCase()
+      this.validateVoucher()
     },
 
     handleDiscountChange() {
-      this.SET_ACTIVE_VOUCHER(null);
-      this.$refs.idNumberInput.$refs.input.value = "";
-      this.payload.idNumber = null;
+      this.SET_ACTIVE_VOUCHER(null)
+      this.$refs.idNumberInput.$refs.input.value = ""
+      this.payload.idNumber = null
     },
 
     validateVoucher() {
-      if (this.payload.discount !== "VOUCHER") return;
+      if (this.payload.discount !== "VOUCHER") return
 
-      const voucher = this.getVoucher(this.payload.idNumber);
+      const voucher = this.getVoucher(this.payload.idNumber)
       if (!voucher || voucher.status !== "ACTIVE" || voucher.usage < 1) {
-        this.SET_ACTIVE_VOUCHER(null);
-        return;
+        this.SET_ACTIVE_VOUCHER(null)
+        return
       }
-      this.SET_ACTIVE_VOUCHER(voucher);
+      this.SET_ACTIVE_VOUCHER(voucher)
     },
 
     idNumberMask(idType) {
       const masks = {
         SNR: "################",
         PWD: "##-####-###-#######",
-      };
-      return masks[idType] ?? "XXXXXXXXXXXXXXXX";
+      }
+      return masks[idType] ?? "XXXXXXXXXXXXXXXX"
     },
 
     idNumberPlaceholder(idType) {
@@ -116,30 +115,30 @@ export default {
         SNR: "001234",
         PWD: "13-5416-000-0000001",
         VOUCHER: "Voucher Code",
-      };
-      return placeholoders[idType] ?? "";
+      }
+      return placeholoders[idType] ?? ""
     },
 
     idInputLengthRules(idType) {
-      let placeholderLength = this.idNumberPlaceholder(idType)?.length;
-      let minCharacterCount = placeholderLength;
+      let placeholderLength = this.idNumberPlaceholder(idType)?.length
+      let minCharacterCount = placeholderLength
 
       switch (idType) {
         case "SNR":
-          placeholderLength = 3;
-          minCharacterCount = 3;
-          break;
+          placeholderLength = 3
+          minCharacterCount = 3
+          break
         case "PWD":
-          minCharacterCount = 16;
-          break;
+          minCharacterCount = 16
+          break
       }
 
       const rule = {
         requiredLength: placeholderLength,
         errorMessage: `Min ${minCharacterCount} characters`,
-      };
+      }
 
-      return rule;
+      return rule
     },
   },
   computed: {
@@ -147,27 +146,27 @@ export default {
 
     rules() {
       if (!this.payload.discount || this.payload.discount === "VOUCHER")
-        return [];
+        return []
 
       const { requiredLength, errorMessage } = this.idInputLengthRules(
-        this.payload.discount
-      );
+        this.payload.discount,
+      )
       return [
         (v) =>
           (!!this.payload.discount && (v?.length >= requiredLength || !v)) ||
           errorMessage,
-      ];
+      ]
     },
   },
   watch: {
     fill(val) {
       if (!Object.values(val.discount).every((v) => !!v)) {
-        this.disabled = false;
-        return;
+        this.disabled = false
+        return
       }
 
-      this.payload = val.discount;
-      this.disabled = true;
+      this.payload = val.discount
+      this.disabled = true
     },
     payload: {
       deep: true,
@@ -176,23 +175,23 @@ export default {
           discount: null,
           idNumber: null,
           voucherCode: null,
-        };
+        }
 
         const finalPayload = {
           discount: v.discount,
           [this.secondParam[v.discount]]: v.idNumber,
-        };
+        }
 
-        const isVoucher = v.discount === "VOUCHER";
-        if (!isVoucher) finalPayload.voucherCode = null;
+        const isVoucher = v.discount === "VOUCHER"
+        if (!isVoucher) finalPayload.voucherCode = null
 
-        const isDefault = Object.values(v).every((v) => v);
+        const isDefault = Object.values(v).every((v) => v)
 
-        this.$emit("emit-transaction", isDefault ? finalPayload : nullPayload);
+        this.$emit("emit-transaction", isDefault ? finalPayload : nullPayload)
       },
     },
   },
-};
+}
 </script>
 
 <style scoped></style>

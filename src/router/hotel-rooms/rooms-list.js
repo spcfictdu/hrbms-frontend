@@ -1,15 +1,16 @@
 import Vue from "vue";
 import VueRouter from "vue-router";
-import HotelRoomsView from "../../views/hotel-rooms/HotelRoomsView";
-import AmenitiesView from "../../views/hotel-rooms/AmenitiesView";
-import RoomDetailsView from "../../views/hotel-rooms/categories/RoomDetailsView";
-import CategoriesView from "../../views/hotel-rooms/CategoriesView";
-import CategoryControlView from "../../views/hotel-rooms/categories/CategoryControlView.vue";
-import OccupiedRoomsView from "../../views/hotel-rooms/OccupiedRoomsView.vue";
-// import AvailabilityView from "../../views/hotel-rooms/AvailabilityView";
-import BookingView from "../../views/hotel-rooms/forms/BookingView";
-import ConfirmationView from "../../views/hotel-rooms/forms/ConfirmationView";
-import CheckInAndOutView from "../../views/hotel-rooms/forms/CheckInAndOutView.vue";
+import HotelRoomsView from "@/views/hotel-rooms/HotelRoomsView";
+import AmenitiesView from "@/views/hotel-rooms/AmenitiesView";
+import RoomDetailsView from "@/views/hotel-rooms/categories/RoomDetailsView";
+import VouchersView from '@/views/hotel-rooms/VouchersView.vue'
+import CategoriesView from "@/views/hotel-rooms/CategoriesView";
+import CategoryControlView from "@/views/hotel-rooms/categories/CategoryControlView.vue";
+import OccupiedRoomsView from "@/views/hotel-rooms/OccupiedRoomsView.vue";
+// import AvailabilityView from "@/views/hotel-rooms/AvailabilityView";
+import BookingView from "@/views/hotel-rooms/forms/BookingView";
+import ConfirmationView from "@/views/hotel-rooms/forms/ConfirmationView";
+import CheckInAndOutView from "@/views/hotel-rooms/forms/CheckInAndOutView.vue";
 
 Vue.use(VueRouter);
 
@@ -40,6 +41,17 @@ export default [
         component: OccupiedRoomsView,
         meta: {
           name: "Occupied Rooms",
+        },
+      },
+      
+      // Vouchers
+       {
+        path: "vouchers",
+        name: "Vouchers",
+        component: VouchersView,
+        meta: {
+          name: "Vouchers",
+          onlyAdmin: true,
         },
       },
 

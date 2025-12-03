@@ -154,14 +154,19 @@ export default {
         route: "Amenities",
       },
       {
-        name: "Occupied",
+        name: "Rooms",
         route: "Occupied Rooms",
+      },
+      {
+        name: "Vouchers",
+        route: "Vouchers",
       },
       {
         name: "Categories",
         route: "Room Categories",
       },
     ],
+    adminOnlyRoutes: ["Amenities", "Vouchers"],
     amenitiesTabs: ["Amenities", "Add-ons"],
   }),
   computed: {
@@ -170,7 +175,9 @@ export default {
     dynamicRoutes() {
       return this.$auth.user().role === "ADMIN"
         ? this.routes
-        : this.routes.slice(1);
+        : this.routes.filter(
+            ({ name }) => !this.adminOnlyRoutes.includes(name)
+          );
     },
     activeRouteButton: function () {
       return this.activeButton;
@@ -210,6 +217,14 @@ export default {
             name: "Add-on",
             action: () => {
               this.setDialogFn({ key: "amenity_dialog", value: true });
+            },
+          });
+          break;
+        case "Vouchers":
+          buttonsData.push({
+            name: "Voucher",
+            action: () => {
+              this.setDialogFn({ key: "voucher_dialog", value: true });
             },
           });
           break;

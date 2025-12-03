@@ -1,7 +1,7 @@
-import Vue from "vue";
-import Vuex from "vuex";
+import Vue from "vue"
+import Vuex from "vuex"
 
-Vue.use(Vuex);
+Vue.use(Vuex)
 
 export const dialogs = {
   namespaced: true,
@@ -13,26 +13,32 @@ export const dialogs = {
     room_dialog: false,
     room_confirm: false,
     room_delete: false,
+    voucher_dialog: false,
+    voucher_delete: false,
     category_delete: false,
     category_rate: false,
     dialog_message: null,
   }),
   mutations: {
-    SET_DIALOG: (state, { key, value }) => (state[key] = value),
-    SET_DIALOG_MESSAGE: (state, message) => (state.dialog_message = message),
+    SET_DIALOG: (state, { key, value }) => {
+      state[key] = value
+    },
+    SET_DIALOG_MESSAGE: (state, message) => {
+      state.dialog_message = message
+    },
   },
   actions: {
     async setDialogFn({ commit, dispatch }, { key, value }) {
-      await dispatch("resetDialogs");
-      commit("SET_DIALOG", { key, value });
+      await dispatch("resetDialogs")
+      commit("SET_DIALOG", { key, value })
     },
     setDialogMessage: ({ commit }, message) =>
       commit("SET_DIALOG_MESSAGE", message),
     resetDialogs: ({ state, commit }) => {
       for (const key in state) {
-        if (key === "dialog_message") continue;
-        commit("SET_DIALOG", { key, value: false });
+        if (key === "dialog_message") continue
+        commit("SET_DIALOG", { key, value: false })
       }
     },
   },
-};
+}
