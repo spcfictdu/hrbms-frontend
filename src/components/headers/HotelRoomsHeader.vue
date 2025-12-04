@@ -42,7 +42,7 @@
       v-if="!$route.meta.hideInputs"
       class="w-full d-flex flex-md-row align-md-center justify-md-space-between py-6"
     >
-      <!-- Amenities Tabs -->
+      <!-- Amenities Tabs  -->
       <div v-if="$route.name === 'Amenities'">
         <v-btn
           v-for="tab in amenitiesTabs"
@@ -134,8 +134,8 @@
 </template>
 
 <script>
-import { assignParams } from "@/mixins/FormattingFunctions";
 import { mapActions, mapMutations, mapState } from "vuex";
+import { assignParams } from "@/mixins/FormattingFunctions";
 
 mapActions;
 export default {
@@ -154,7 +154,7 @@ export default {
         route: "Amenities",
       },
       {
-        name: "Rooms",
+        name: "Occupied",
         route: "Occupied Rooms",
       },
       {
@@ -176,7 +176,7 @@ export default {
       return this.$auth.user().role === "ADMIN"
         ? this.routes
         : this.routes.filter(
-            ({ name }) => !this.adminOnlyRoutes.includes(name)
+            ({ name }) => !this.adminOnlyRoutes.includes(name),
           );
     },
     activeRouteButton: function () {
