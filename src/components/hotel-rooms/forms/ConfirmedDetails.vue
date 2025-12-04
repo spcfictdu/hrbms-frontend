@@ -295,30 +295,33 @@ export default {
 		headerData: function () {
 			const { transaction, guestName, priceSummary } = this.value;
 			const {
-				paymentStatus,
+				// paymentStatus,
 				checkInDate,
 				checkInTime,
 				checkOutDate,
 				checkOutTime,
 				status,
 			} = transaction;
-			const { fullAddons } = priceSummary;
+			const { fullAddons, finalRoomTotal } = priceSummary;
 			const checkInDateTime = `${checkInDate}T${checkInTime}`;
 			const checkOutDateTime = `${checkOutDate}T${checkOutTime}`;
-			const now = new Date();
+			// const now = new Date();
 
 			// Determine disabled state: false if confirmed and check-in has started, or checked-in and check-out has passed
 			// const isNotWithinDate = !(
 			//   (status === "CONFIRMED" && new Date(checkInDateTime) <= now) ||
 			//   (status === "CHECKED-IN" && new Date(checkOutDateTime) <= now)
 			// );
-			const disabled = status === "CHECKED-OUT";
+			const isCheckedOut = status === "CHECKED-OUT";
 			// const hasOutstanding =
-			//   paymentStatus === "PENDING" ||
-			//   paymentStatus === "PARTIAL" ||
-			//   fullAddons.some(
-			//     (a) => a.paymentStatus === "PENDING" || a.paymentStatus === "PARTIAL"
-			//   );
+			// 	paymentStatus === "PENDING" ||
+			// 	paymentStatus === "PARTIAL" ||
+			// 	fullAddons.some(
+			// 		(a) => a.paymentStatus === "PENDING" || a.paymentStatus === "PARTIAL",
+			// 	);
+			const hasOutstanding =
+				(finalRoomTotal - this.clientMeta?.amountReceived ?? 0) > 0;
+			const disabled = isCheckedOut || hasOutstanding;
 			// const disabled =
 			//   isNotWithinDate || (hasOutstanding && status === "CHECKED-IN");
 
