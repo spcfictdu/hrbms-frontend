@@ -204,7 +204,10 @@
       </div>
     </div>
 
-    <v-card-actions v-if="value.button" class="pa-0">
+    <v-card-actions
+      v-if="value.button"
+      class="pa-0 flex-column"
+    >
       <v-btn
         type="submit"
         :loading="loading"
@@ -212,34 +215,44 @@
         depressed
         :outlined="value.button.outlined"
         color="primary"
-        class="mt-4"
+        class="mt-4 mx-0"
         >{{ value.button.title }}</v-btn
       >
+      <v-btn
+        v-if="value.secondaryBtn"
+        block
+        depressed
+        color="primary"
+        class="mt-4 mx-0"
+        @click="value.secondaryBtn.action"
+      >
+        {{ value.secondaryBtn.text }}
+      </v-btn>
     </v-card-actions>
   </v-card>
 </template>
 
 <script>
-import { parseISO, format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 export default {
-  name: "TotalBillCard",
-  props: {
-    value: Object,
-    loading: Boolean,
-  },
-  data: () => ({}),
-  methods: {
-    isRefundedOrVoided(item) {
-      const status = item?.paymentStatus ?? item;
-      return status === "VOIDED" || status === "REFUNDED";
-    },
+	name: "TotalBillCard",
+	props: {
+		value: Object,
+		loading: Boolean,
+	},
+	data: () => ({}),
+	methods: {
+		isRefundedOrVoided(item) {
+			const status = item?.paymentStatus ?? item;
+			return status === "VOIDED" || status === "REFUNDED";
+		},
 
-    formatDate(isoString) {
-      const dateObject = parseISO(isoString);
-      const formattedDate = format(dateObject, "MMM dd, yyyy | h:mm a");
-      return formattedDate;
-    },
-  },
+		formatDate(isoString) {
+			const dateObject = parseISO(isoString);
+			const formattedDate = format(dateObject, "MMM dd, yyyy | h:mm a");
+			return formattedDate;
+		},
+	},
 };
 </script>

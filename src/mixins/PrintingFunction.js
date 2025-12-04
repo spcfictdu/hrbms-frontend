@@ -1,37 +1,37 @@
 import html2canvas from "html2canvas";
 export default {
-  methods: {
-    handlePrinting: function () {
-      const printContent = this.$refs.bookingSummary.$el;
-      const referenceNumber = this.value.transaction.referenceNumber;
+	methods: {
+		handlePrinting: function () {
+			const printContent = this.$refs.bookingSummary.$el;
+			const referenceNumber = this.value.transaction.referenceNumber;
 
-      const button = printContent.querySelector("button");
+			const buttons = printContent.querySelectorAll("button");
 
-      let originalDisplay = "";
-      if (button) {
-        originalDisplay = button.style.display;
-        button.style.display = "none";
-      }
+			const originalDisplays = [];
+			buttons.forEach((btn, index) => {
+				originalDisplays[index] = btn.style.display;
+				btn.style.display = "none";
+			});
 
-      // Temporarily set width to 600px for better capture
-      const originalWidth = printContent.style.width;
-      printContent.style.width = "600px";
+			// Temporarily set width to 600px for better capture
+			const originalWidth = printContent.style.width;
+			printContent.style.width = "600px";
 
-      const options = {
-        logging: false,
-        useCORS: true, // Enable CORS to handle cross-origin images
-        scale: 2, // Increase the scale to improve the quality of the screenshot
-      };
+			const options = {
+				logging: false,
+				useCORS: true, // Enable CORS to handle cross-origin images
+				scale: 2, // Increase the scale to improve the quality of the screenshot
+			};
 
-      html2canvas(printContent, options)
-        .then((canvas) => {
-          const imageData = canvas.toDataURL("image/png");
-          const printWindow = window.open("", "_blank");
-          const printDocument = printWindow.document;
+			html2canvas(printContent, options)
+				.then((canvas) => {
+					const imageData = canvas.toDataURL("image/png");
+					const printWindow = window.open("", "_blank");
+					const printDocument = printWindow.document;
 
-          const head = printDocument.head;
-          const style = printDocument.createElement("style");
-          style.innerHTML = `
+					const head = printDocument.head;
+					const style = printDocument.createElement("style");
+					style.innerHTML = `
         html, body {
           height: 100%;
           display: flex;
@@ -52,40 +52,40 @@ export default {
         }
       `;
 
-          head.appendChild(style);
+					head.appendChild(style);
 
-          // Create Image element and append to the print document
-          const img = printDocument.createElement("img");
-          img.className = "booking-summary";
-          img.src = imageData;
+					// Create Image element and append to the print document
+					const img = printDocument.createElement("img");
+					img.className = "booking-summary";
+					img.src = imageData;
 
-          printDocument.body.appendChild(img);
+					printDocument.body.appendChild(img);
 
-          // Footer
-          const footer = printDocument.createElement("footer");
-          const divFooter = printDocument.createElement("div");
-          divFooter.className = "div-footer";
-          divFooter.textContent = "Ref no. " + referenceNumber;
-          footer.appendChild(divFooter);
+					// Footer
+					const footer = printDocument.createElement("footer");
+					const divFooter = printDocument.createElement("div");
+					divFooter.className = "div-footer";
+					divFooter.textContent = "Ref no. " + referenceNumber;
+					footer.appendChild(divFooter);
 
-          printDocument.body.appendChild(footer);
+					printDocument.body.appendChild(footer);
 
-          // Add a slight delay before triggering print (optional)
-          setTimeout(() => {
-            // Print the document directly
-            printWindow.print();
+					// Add a slight delay before triggering print (optional)
+					setTimeout(() => {
+						// Print the document directly
+						printWindow.print();
 
-            // Close the print window (optional)
-            printWindow.close();
-          }, 1000); // Adjust the delay as needed
-        })
-        .finally(() => {
-          // Restore to original styles
-          printContent.style.width = originalWidth;
-          if (button) {
-            button.style.display = originalDisplay;
-          }
-        });
-    },
-  },
+						// Close the print window (optional)
+						printWindow.close();
+					}, 1000); // Adjust the delay as needed
+				})
+				.finally(() => {
+					// Restore to original styles
+					printContent.style.width = originalWidth;
+					buttons.forEach((btn, index) => {
+						btn.style.display = originalDisplays[index];
+					});
+				});
+		},
+	},
 };
