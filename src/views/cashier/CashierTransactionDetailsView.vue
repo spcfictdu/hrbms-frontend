@@ -211,7 +211,7 @@ export default {
             text:
               totalBalance > 0
                 ? formatPrice(totalBalance)
-                : `+${formatPrice(totalBalance)}`,
+                : `${formatPrice(totalBalance)}`,
             styles: totalBalance >= 0 ? "red--text" : "cash--text",
           },
         },
