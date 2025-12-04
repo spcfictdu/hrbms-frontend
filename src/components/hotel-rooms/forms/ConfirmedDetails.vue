@@ -163,7 +163,7 @@ export default {
     handleStatusUpdate() {
       const {
         transactionHistory: history,
-        transaction: { referenceNumber },
+        transaction: { referenceNumber, checkOutDate, checkOutTime },
       } = this.value;
       const now = new Date().toISOString();
       let payload = { referenceNumber, checkInOut: true };
@@ -177,8 +177,8 @@ export default {
       } else if (!history.checkOutDate && !history.checkOutTime) {
         payload = {
           ...payload,
-          checkOutDate: this.formatISODate(now),
-          checkOutTime: this.formatISOTime(now),
+          checkOutDate,
+          checkOutTime,
         };
       }
 
