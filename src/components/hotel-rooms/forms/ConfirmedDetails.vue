@@ -264,10 +264,19 @@ export default {
         0,
       );
 
-      const discountAmount = this.value?.priceSummary.discounted;
+      const discountAmount =
+        this.value?.priceSummary.finalRoomTotal > 0
+          ? this.value?.priceSummary.discounted
+          : 0;
 
       const grandTotal =
-        roomRate + extraGuestCharge - discountAmount + addonsTotal;
+        (transaction.paymentStatus === "REFUNDED" ||
+        transaction.paymentStatus === "VOIDED"
+          ? 0
+          : roomRate) +
+        extraGuestCharge -
+        discountAmount +
+        addonsTotal;
 
       const remainingBalance = grandTotal - paymentReceived;
       const balance = remainingBalance < 0 ? 0 : remainingBalance;

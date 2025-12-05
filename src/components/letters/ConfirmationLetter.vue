@@ -175,8 +175,27 @@
                 <small>
                   <table style="width: 100%">
                     <tr>
-                      <td>Room ({{ days }} night{{ days > 1 ? "s" : "" }})</td>
-                      <td style="text-align: end">
+                      <td
+                        :style="{
+                          'text-decoration': isRefundedOrVoided(
+                            transaction.paymentStatus,
+                          )
+                            ? 'line-through'
+                            : 'none',
+                        }"
+                      >
+                        Room ({{ days }} night{{ days > 1 ? "s" : "" }})
+                      </td>
+                      <td
+                        style="text-align: end"
+                        :style="{
+                          'text-decoration': isRefundedOrVoided(
+                            transaction.paymentStatus,
+                          )
+                            ? 'line-through'
+                            : 'none',
+                        }"
+                      >
                         {{ formatPrice(totalRoomRate) }}
                       </td>
                     </tr>
