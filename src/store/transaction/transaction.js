@@ -83,7 +83,7 @@ export const transaction = {
     },
     async createFlight(
       { commit, dispatch },
-      { transactionReferenceNumber, payload }
+      { transactionReferenceNumber, payload },
     ) {
       const url = `transaction/${transactionReferenceNumber}/flight`;
 
@@ -110,7 +110,7 @@ export const transaction = {
     },
     async updateFlight(
       { commit, dispatch },
-      { transactionReferenceNumber, payload }
+      { transactionReferenceNumber, payload },
     ) {
       const url = "transaction/flight/update";
 
@@ -138,7 +138,7 @@ export const transaction = {
     },
     async deleteFlight(
       { commit, dispatch },
-      { transactionReferenceNumber, payload }
+      { transactionReferenceNumber, payload },
     ) {
       const url = "transaction/flight/delete";
 
@@ -197,13 +197,13 @@ export const transaction = {
         commit("SET_TRANSACTION", null);
         console.error(
           "Error fetching transaction: ",
-          err.response.data.message
+          err.response.data.message,
         );
       } finally {
         commit("SET_LOADING", { key: "transaction", value: false });
       }
     },
-    createTransaction: async function ({ commit, dispatch }, payload) {
+    async createTransaction({ commit, dispatch }, payload) {
       const url = `transaction/create`;
 
       commit("SET_LOADING", { key: "dialog", value: true });
@@ -215,7 +215,7 @@ export const transaction = {
         });
         return response;
       } catch (err) {
-        console.error("Error creating transaction: ", err);
+        console.error("Error creating transaction:", err);
         dispatch("alerts/triggerError", err.response.data.message, {
           root: true,
         });
@@ -225,23 +225,31 @@ export const transaction = {
         commit("SET_LOADING", { key: "form", value: false });
       }
     },
-    deleteReservation: function (_, { status, transactionRefNum }) {
+    async deleteReservation(
+      { commit, dispatch },
+      { status, transactionRefNum },
+    ) {
       const url = `transaction/reservation/delete/${status}/${transactionRefNum}`;
 
-      return this.$axios
-        .delete(url)
-        .then((response) => {
-          this.$store.dispatch("alerts/triggerSuccess", response.data.message);
-          return response;
-        })
-        .catch((error) => {
-          console.error("Error deleting reservation: ", error);
-          this.$store.dispatch(
-            "alerts/triggerError",
-            error.response.data.message
-          );
-          throw error;
+      dispatch("alerts/requireAlertFn", 2, {
+        root: true,
+      });
+      commit("SET_LOADING", { key: "cancel", value: true });
+      try {
+        const { data } = await this.$axios.delete(url);
+        dispatch("alerts/triggerSuccess", data.message, {
+          root: true,
         });
+        return data;
+      } catch (err) {
+        console.error("Error deleting transaction:", err);
+        dispatch("alerts/triggerError", err.response.data.message, {
+          root: true,
+        });
+        return err.response.data;
+      } finally {
+        commit("SET_LOADING", { key: "cancel", value: false });
+      }
     },
     updateTransaction: function ({ commit }, payload) {
       const url = `transaction/update`;
@@ -258,7 +266,7 @@ export const transaction = {
           console.error("Error updating transaction: ", error);
           this.$store.dispatch(
             "alerts/triggerError",
-            error.response.data.message
+            error.response.data.message,
           );
           throw error;
         })

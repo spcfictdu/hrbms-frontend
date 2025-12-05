@@ -59,10 +59,8 @@ export default {
       "fetchTransaction",
       "deleteReservation",
       "updateTransaction",
-      "setLoading",
       "fetchFlights",
     ]),
-    ...mapActions("alerts", ["requireAlertFn"]),
     ...mapActions("cashier", ["fetchSessions"]),
     async fetch() {
       await Promise.all([
@@ -73,23 +71,19 @@ export default {
       if (this.userRole === "ADMIN" || this.userRole === "FRONT DESK")
         await this.fetchSessions();
     },
-    handleCancel(payload) {
-      // Prefetch the alert function: success, warning errors.
-      this.requireAlertFn(2);
-      this.setLoading({ key: "cancel", value: true });
-
-      this.deleteReservation({
-        status: payload.status,
-        transactionRefNum: payload.transactionRefNum,
-      })
-        .then(() => {
-          this.$router.replace({
-            name: this.cancelRoutes[this.userRole],
-          });
-        })
-        .finally(() => {
-          this.setLoading({ key: "cancel", value: false });
+    async handleCancel(payload) {
+      try {
+        await this.deleteReservation({
+          status: payload.status,
+          transactionRefNum: payload.transactionRefNum,
         });
+
+        this.$router.replace({
+          name: this.cancelRoutes[this.userRole],
+        });
+      } catch (err) {
+        console.error(err);
+      }
     },
 
     handlePrint() {

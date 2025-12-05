@@ -1,7 +1,7 @@
 <template>
   <div>
     <HeaderBookingSlot
-      @button-event="handleCancelButton"
+      @button-event="dialog.cancel = true"
       :headerData="headerData"
       :loading="loading.cancel"
     >
@@ -37,6 +37,15 @@
       :meta="confirmationMeta"
       @onProceed="$emit('confirmReservation')"
     />
+    <DeleteDialog
+      :opened="dialog.cancel"
+      :onClose="() => (dialog.cancel = false)"
+      message="reservation"
+      :loading="getLoading('cancel')"
+      action="Cancel"
+      headerAction="Cancel"
+      @onDelete="handleCancelButton"
+    />
   </div>
 </template>
 
@@ -45,7 +54,9 @@ import HeaderBookingSlot from "../../slots/HeaderBookingSlot.vue";
 import FlightDetails from "@/components/form-templates/FlightDetails.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
-import { mapState } from "vuex";
+import { mapState, mapGetters } from "vuex";
+import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
+
 export default {
   name: "ConfirmationForm",
   components: {
@@ -53,6 +64,7 @@ export default {
     FlightDetails,
     BookingSummary,
     ConfirmationDialog,
+    DeleteDialog,
   },
   props: {
     cashierUserId: Number,
@@ -74,6 +86,7 @@ export default {
     totalPayment: 0,
     dialog: {
       confirmation: false,
+      cancel: false,
     },
     confirmationMeta: {
       actionType: "No Cashier Session Open!",
@@ -82,7 +95,7 @@ export default {
     },
   }),
   methods: {
-    assignPayload: function (payload) {
+    assignPayload(payload) {
       for (const key in payload) {
         if (Object.hasOwnProperty.call(payload, key)) {
           this.$set(this.payload, key, payload[key]);
@@ -90,7 +103,7 @@ export default {
       }
     },
 
-    handleTransactionUpdate: function () {
+    handleTransactionUpdate() {
       if (this.$auth.user()?.role === "GUEST") {
         this.$emit("print");
         return;
@@ -114,8 +127,8 @@ export default {
         this.$emit("confirmReservation", payload);
       }
     },
-    handleCancelButton: function () {
-      let params = {
+    handleCancelButton() {
+      const params = {
         status: this.value.transaction.status,
         transactionRefNum: this.value.transaction.referenceNumber,
       };
@@ -124,7 +137,9 @@ export default {
   },
   computed: {
     ...mapState("transaction", ["loading"]),
-    headerData: function () {
+    ...mapGetters("transaction", ["getLoading"]),
+
+    headerData() {
       return {
         client: this.value.guestName,
         from: {
@@ -145,7 +160,7 @@ export default {
         },
       };
     },
-    receiptQuery: function () {
+    receiptQuery() {
       return {
         roomType: this.value.room.name,
         roomNumber: this.value.room.number,
@@ -157,23 +172,21 @@ export default {
         addons: this.value.priceSummary.fullAddons,
       };
     },
-    clientMeta: function () {
+    clientMeta() {
       return {
         status: this.value.transaction.status,
         clientName: this.value.guestName,
         amountReceived: this.payload.payment.amountReceived,
       };
     },
-    btnStyling: function () {
+    btnStyling() {
       const btnProps = this.$route.meta.formBtn;
       return btnProps;
     },
-    isStaff: function () {
+    isStaff() {
       const role = this.$auth.user()?.role;
       return role === "ADMIN" || role === "FRONT DESK";
     },
   },
 };
 </script>
-
-<style scoped></style>

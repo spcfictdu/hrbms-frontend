@@ -2,12 +2,12 @@
   <DialogTemplate
     :opened="opened"
     :onClose="onClose"
-    action="Delete"
+    :action="headerAction"
     title="Confirmation"
     maxWidth="450"
   >
     <p class="mb-4 text-caption text-sm-body-2 font-weight-regular">
-      Permanently delete {{ message }}? This action cannot be undone.
+      {{ action }} {{ message }}? This action cannot be undone.
     </p>
     <v-card-actions class="pa-0">
       <v-row dense>
@@ -42,6 +42,14 @@ export default {
     onClose: Function,
     message: String,
     loading: Boolean,
+    action: {
+      type: String,
+      default: "Permanently delete",
+    },
+    headerAction: {
+      type: String,
+      default: "Delete",
+    },
   },
   data: () => ({}),
   methods: {
@@ -54,5 +62,3 @@ export default {
   },
 };
 </script>
-
-<style scoped></style>
