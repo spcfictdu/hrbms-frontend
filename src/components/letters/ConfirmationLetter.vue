@@ -137,7 +137,7 @@
               >
                 <h4 style="margin: 0">Guest Details</h4>
                 <small>
-                  <div>{{ maskedGuestName }}</div>
+                  <div>{{ transaction?.guestName }}</div>
                   <div>{{ maskedEmail }}</div>
                 </small>
               </div>
