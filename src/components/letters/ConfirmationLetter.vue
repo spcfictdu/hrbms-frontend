@@ -180,12 +180,12 @@
                         {{ formatPrice(totalRoomRate) }}
                       </td>
                     </tr>
-                    <tr>
-                      <td>Extra Guest Charge</td>
-                      <td style="text-align: end">
-                        {{ formatPrice(extraGuestTotal) }}
-                      </td>
-                    </tr>
+                    <!-- <tr> -->
+                    <!--   <td>Extra Guest Charge</td> -->
+                    <!--   <td style="text-align: end"> -->
+                    <!--     {{ formatPrice(extraGuestTotal) }} -->
+                    <!--   </td> -->
+                    <!-- </tr> -->
                     <tr>
                       <td>Discounted</td>
                       <td style="text-align: end">
@@ -203,7 +203,7 @@
                         <td
                           :style="{
                             'text-decoration': isRefundedOrVoided(
-                              addon.paymentStatus
+                              addon.paymentStatus,
                             )
                               ? 'line-through'
                               : 'none',
@@ -215,7 +215,7 @@
                           style="text-align: end"
                           :style="{
                             'text-decoration': isRefundedOrVoided(
-                              addon.paymentStatus
+                              addon.paymentStatus,
                             )
                               ? 'line-through'
                               : 'none',

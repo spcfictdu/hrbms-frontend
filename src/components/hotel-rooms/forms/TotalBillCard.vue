@@ -40,7 +40,7 @@
         <div
           :class="{
             'text-decoration-line-through': isRefundedOrVoided(
-              value.receiptEnums.roomPaymentStatus
+              value.receiptEnums.roomPaymentStatus,
             ),
           }"
           class="ml-5 d-flex justify-space-between align-center"
@@ -58,22 +58,22 @@
           {{ value.receiptEnums.roomPaymentStatus }}
         </div>
 
-        <div v-if="value.receiptEnums.extraPersonTotal > 0">
-          Addt'l Persons Charge:
-          <div
-            :class="{
-              'text-decoration-line-through': isRefundedOrVoided(
-                value.receiptEnums.roomPaymentStatus
-              ),
-            }"
-            class="ml-5 d-flex justify-space-between align-center"
-            v-for="(i, index) in value.receiptEnums.roomRatesArray"
-            :key="'roomRates' + index"
-          >
-            <div>{{ i.date }}</div>
-            <div>₱ {{ i.extraPersonRate }}</div>
-          </div>
-        </div>
+        <!-- <div v-if="value.receiptEnums.extraPersonTotal > 0"> -->
+        <!--   Addt'l Persons Charge: -->
+        <!--   <div -->
+        <!--     :class="{ -->
+        <!--       'text-decoration-line-through': isRefundedOrVoided( -->
+        <!--         value.receiptEnums.roomPaymentStatus, -->
+        <!--       ), -->
+        <!--     }" -->
+        <!--     class="ml-5 d-flex justify-space-between align-center" -->
+        <!--     v-for="(i, index) in value.receiptEnums.roomRatesArray" -->
+        <!--     :key="'roomRates' + index" -->
+        <!--   > -->
+        <!--     <div>{{ i.date }}</div> -->
+        <!--     <div>₱ {{ i.extraPersonRate }}</div> -->
+        <!--   </div> -->
+        <!-- </div> -->
 
         <div
           v-if="
@@ -139,10 +139,10 @@
         <div>₱ {{ value.receiptEnums.roomTotal }}</div>
       </div>
 
-      <div class="d-flex justify-space-between align-center">
-        <div>Extra Person Total:</div>
-        <div>₱ {{ value.receiptEnums.extraPersonTotal }}</div>
-      </div>
+      <!-- <div class="d-flex justify-space-between align-center"> -->
+      <!--   <div>Extra Person Total:</div> -->
+      <!--   <div>₱ {{ value.receiptEnums.extraPersonTotal }}</div> -->
+      <!-- </div> -->
     </div>
 
     <v-divider />
@@ -204,10 +204,7 @@
       </div>
     </div>
 
-    <v-card-actions
-      v-if="value.button"
-      class="pa-0 flex-column"
-    >
+    <v-card-actions v-if="value.button" class="pa-0 flex-column">
       <v-btn
         type="submit"
         :loading="loading"
@@ -236,23 +233,23 @@
 import { format, parseISO } from "date-fns";
 
 export default {
-	name: "TotalBillCard",
-	props: {
-		value: Object,
-		loading: Boolean,
-	},
-	data: () => ({}),
-	methods: {
-		isRefundedOrVoided(item) {
-			const status = item?.paymentStatus ?? item;
-			return status === "VOIDED" || status === "REFUNDED";
-		},
+  name: "TotalBillCard",
+  props: {
+    value: Object,
+    loading: Boolean,
+  },
+  data: () => ({}),
+  methods: {
+    isRefundedOrVoided(item) {
+      const status = item?.paymentStatus ?? item;
+      return status === "VOIDED" || status === "REFUNDED";
+    },
 
-		formatDate(isoString) {
-			const dateObject = parseISO(isoString);
-			const formattedDate = format(dateObject, "MMM dd, yyyy | h:mm a");
-			return formattedDate;
-		},
-	},
+    formatDate(isoString) {
+      const dateObject = parseISO(isoString);
+      const formattedDate = format(dateObject, "MMM dd, yyyy | h:mm a");
+      return formattedDate;
+    },
+  },
 };
 </script>

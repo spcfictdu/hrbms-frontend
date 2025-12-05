@@ -450,7 +450,7 @@ export default {
 
       if (!room) return;
 
-      return room.roomTotalWithExtraPerson - room.addonsTotal;
+      return room.roomTotal - room.addonsTotal;
     },
 
     formDetails() {
