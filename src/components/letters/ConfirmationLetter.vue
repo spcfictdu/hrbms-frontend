@@ -138,7 +138,7 @@
                 <h4 style="margin: 0">Guest Details</h4>
                 <small>
                   <div>{{ transaction?.guestName }}</div>
-                  <div>{{ maskedEmail }}</div>
+                  <div>{{ guestEmail }}</div>
                 </small>
               </div>
               <div style="padding: 1rem">
@@ -312,6 +312,7 @@ export default {
     grandTotal: { type: Number, default: 0 },
     paymentReceived: { type: Number, default: 0 },
     balance: { type: Number, default: 0 },
+    guestEmail: String,
   },
   methods: {
     formatPrice,
@@ -340,25 +341,24 @@ export default {
       if (!this.transaction?.createdAt) return "";
       return format(new Date(this.transaction.createdAt), "dd MMM yyyy");
     },
-    maskedGuestName() {
-      const guestName = this.transaction?.guestName;
-      if (!guestName) return "";
-      const names = guestName.split(" ");
-      const mask = (text) =>
-        text.substring(0, 1) + "*".repeat(Math.max(text.length - 1, 0));
-      return names.map(mask).join(" ");
-    },
-    maskedEmail() {
-      const email = this.guest?.email;
-      if (!email) return "";
-      if (email.includes("@")) {
-        const [local, domain] = email.split("@");
-        const maskedLocal =
-          local.substring(0, 1) + "*".repeat(Math.max(local.length - 1, 0));
-        return `${maskedLocal}@${domain}`;
-      }
-      return email;
-    },
+    // maskedGuestName() {
+    //   const guestName = this.transaction?.guestName;
+    //   if (!guestName) return "";
+    //   const names = guestName.split(" ");
+    //   const mask = (text) =>
+    //     text.substring(0, 1) + "*".repeat(Math.max(text.length - 1, 0));
+    //   return names.map(mask).join(" ");
+    // },
+    // maskedEmail() {
+    //   if (!this.guestEmail) return "";
+    //   if (email.includes("@")) {
+    //     const [local, domain] = email.split("@");
+    //     const maskedLocal =
+    //       local.substring(0, 1) + "*".repeat(Math.max(local.length - 1, 0));
+    //     return `${maskedLocal}@${domain}`;
+    //   }
+    //   return email;
+    // },
   },
 };
 </script>

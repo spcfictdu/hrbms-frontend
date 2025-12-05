@@ -237,8 +237,13 @@ export default {
     },
     transactionForLetter() {
       if (!this.value || !this.room || !this.room.length) return null;
-      const { transaction, priceSummary, paymentSummary, guestName, guest } =
-        this.value;
+      const {
+        transaction,
+        priceSummary,
+        paymentSummary,
+        guestName,
+        guestEmail,
+      } = this.value;
       const roomData = this.room[0];
 
       const roomRate = roomData.roomRatesArray.reduce(
@@ -288,7 +293,7 @@ export default {
           checkIn: `${transaction.checkInDate}T${transaction.checkInTime}`,
           checkOut: `${transaction.checkOutDate}T${transaction.checkOutTime}`,
         },
-        guest,
+        guestEmail,
         days: priceSummary.days,
         addons: priceSummary.fullAddons,
         totalRoomRate: roomRate,
