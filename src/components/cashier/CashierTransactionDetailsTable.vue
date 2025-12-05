@@ -192,7 +192,7 @@ export default {
       try {
         await this.updateFolio(payload);
         this.fetchTransaction(
-          this.transactionDetails?.transaction.referenceNumber
+          this.transactionDetails?.transaction.referenceNumber,
         );
         this.chargedItem = null;
         this.existingCharges = null;
@@ -289,12 +289,12 @@ export default {
             this.itemAmount = parseFloat(item.totalPrice.replace(/,/g, ""));
             if (item.type === "room") {
               this.existingCharges = this.formatExistingCharges(
-                this.transactionDetails?.transaction?.roomCharges
+                this.transactionDetails?.transaction?.roomCharges,
               );
             } else if (item.type === "addon") {
               const addon =
                 this.transactionDetails?.priceSummary?.fullAddons?.find(
-                  (a) => a.addonId === item.addonId
+                  (a) => a.addonId === item.addonId,
                 );
               this.existingCharges = this.formatExistingCharges(addon?.charges);
             }
@@ -391,14 +391,14 @@ export default {
     },
 
     extraPersonTotal() {
-      const extraPersonTotal = this.isRefundedOrVoided(
-        this.transaction?.transaction.paymentStatus
-      )
-        ? 0
-        : this.room?.[0]?.roomRatesArray?.reduce(
-            (total, room) => total + room.extraPersonRate,
-            0
-          );
+      // const extraPersonTotal = this.isRefundedOrVoided(
+      //   this.transaction?.transaction.paymentStatus
+      // )
+      //   ? 0
+      //   : this.room?.[0]?.roomRatesArray?.reduce(
+      //       (total, room) => total + room.extraPersonRate,
+      //       0
+      //     );
 
       return extraPersonTotal || 0;
     },
@@ -409,14 +409,14 @@ export default {
         "Reference Number":
           this.transactionDetails?.transaction.referenceNumber,
         "Total Purchase": formatPrice(
-          this.transactionDetails?.priceSummary.finalRoomTotal
+          this.transactionDetails?.priceSummary.finalRoomTotal,
         ),
         "Extra Guests": this.transactionDetails?.transaction.extraPerson,
         Date:
           this.transactionDetails &&
           format(
             parseISO(this.transactionDetails.transaction.createdAt),
-            "MMMM dd, yyyy"
+            "MMMM dd, yyyy",
           ),
       };
     },
@@ -427,15 +427,15 @@ export default {
       const { transaction, room, priceSummary } = this.transactionDetails;
       const discountPercentage =
         (this.room?.[0]?.discount?.split("%")[0] || 0) * 0.01;
-      const { addonsTotal, roomTotalWithExtraPerson } = this.room?.[0];
+      const { addonsTotal, roomTotal } = this.room?.[0];
       return [
         {
           status: transaction.paymentStatus,
           product: room.name,
           price: formatPrice(priceSummary.baseRate),
           quantity: 1,
-          totalPrice: formatPrice(roomTotalWithExtraPerson),
-          discount: formatPrice(roomTotalWithExtraPerson * discountPercentage),
+          totalPrice: formatPrice(roomTotal),
+          discount: formatPrice(roomTotal * discountPercentage),
           time: format(parseISO(transaction.createdAt), "H:mm:ss"),
           type: "room",
         },
