@@ -259,12 +259,12 @@ export default {
   background-color: transparent !important;
 }
 
-.image-bg {
+.v-application.image-bg {
   background: linear-gradient(0deg, rgba(0, 0, 0, 0.8), rgba(0, 0, 0, 0.8)),
     url(./assets/bgImage.jpg) no-repeat center center/cover;
 }
 
-.image-bg-2 {
+.v-application.image-bg-2 {
   background: url(./assets/bgImage-2.jpg) no-repeat center/cover;
 }
 
