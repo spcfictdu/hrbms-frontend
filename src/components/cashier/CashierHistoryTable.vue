@@ -82,7 +82,7 @@ export default {
                 session.userId >= 1 && session.userId <= 4 ? " (ADMIN)" : ""
               }`,
               MOP: item.paymentType,
-              totalPayment: item.totalReceived,
+              totalPayment: item.amountReceived,
               guestName: item.guestName,
               discount: item.discount,
               refund: item.refunded,
