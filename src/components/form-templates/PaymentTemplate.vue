@@ -51,6 +51,9 @@
         :rules="rules.amountReceived"
         v-model.number="payload.payment.amountReceived"
         hide-spin-buttons
+        :min="0"
+        @keydown="blockNegativeInput"
+        @input="clampAmountReceived"
       ></v-text-field>
     </FormField>
 
@@ -125,6 +128,16 @@ export default {
         amountReceived: 0,
       };
     },
+    blockNegativeInput: function (e) {
+      if (["-", "+", "e", "E"].includes(e.key)) {
+        e.preventDefault();
+      }
+    },
+    clampAmountReceived: function (v) {
+      if (v !== "" && v !== null && v !== undefined && Number(v) < 0) {
+        this.payload.payment.amountReceived = 0;
+      }
+    },
   },
   computed: {
     rules: function () {
@@ -135,6 +148,7 @@ export default {
           (this.payload.payment.paymentType === "CASH" && (v === 0 || !!v)) ||
           !!v ||
           "Amount is required",
+        (v) => (!isNaN(v) && v >= 0) || "Minimum amount is 0",
       ];
       return errors;
     },
