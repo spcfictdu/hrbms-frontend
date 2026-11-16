@@ -53,14 +53,15 @@ export default {
   },
   data: () => ({
     show: false,
-    adminPasscode: "12345",
+    adminPasscode: process.env.VUE_APP_ADMIN_PASSCODE || "",
     passcodeInput: "",
   }),
   methods: {
     ...mapActions("alerts", ["requireAlertFn", "triggerError"]),
 
     handleProceed() {
-      const valid = this.passcodeInput === this.adminPasscode;
+      const valid =
+        !!this.adminPasscode && this.passcodeInput === this.adminPasscode;
 
       if (!valid) {
         this.requireAlertFn(2);

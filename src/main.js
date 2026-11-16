@@ -6,11 +6,10 @@ import vuetify from "./plugins/vuetify";
 import axios from "axios";
 import Vuex from "vuex";
 import { auth } from "./utils/auth";
-import getBackend from "./utils/urls";
 
 Vue.config.productionTip = false;
 
-const backendAPI = getBackend("local");
+const backendAPI = process.env.VUE_APP_BACKEND_URL;
 
 const axiosInstance = axios.create({ baseURL: `${backendAPI}/api` });
 
