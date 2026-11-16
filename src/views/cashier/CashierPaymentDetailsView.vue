@@ -101,7 +101,7 @@ export default {
 
       return [
         {
-          amount: `+${this.payment.totalPurchase}`,
+          amount: `+${this.payment.payment}`,
           paymentMethod: this.payment.paymentType,
         },
       ];
