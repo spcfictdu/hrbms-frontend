@@ -53,12 +53,14 @@
 import HeaderBookingSlot from "../../slots/HeaderBookingSlot.vue";
 import FlightDetails from "@/components/form-templates/FlightDetails.vue";
 import BookingSummary from "@/components/form-templates/BookingSummary.vue";
+import PrintingFunction from "@/mixins/PrintingFunction";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import { mapState, mapGetters } from "vuex";
 import DeleteDialog from "@/components/dialogs/DeleteDialog.vue";
 
 export default {
   name: "ConfirmationForm",
+  mixins: [PrintingFunction],
   components: {
     HeaderBookingSlot,
     FlightDetails,
