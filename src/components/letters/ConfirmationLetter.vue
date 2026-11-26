@@ -148,10 +148,7 @@
                 </p>
                 <h4 style="margin: 0">Personal Request</h4>
                 <p style="margin: 0">
-                  <small
-                    >Please leave a bottle of champagne on the bedside table.
-                    [Sample only]</small
-                  >
+                  <small>{{ remarks || "None" }}</small>
                 </p>
               </div>
             </div>
@@ -313,6 +310,7 @@ export default {
     paymentReceived: { type: Number, default: 0 },
     balance: { type: Number, default: 0 },
     guestEmail: String,
+    remarks: String,
   },
   methods: {
     formatPrice,

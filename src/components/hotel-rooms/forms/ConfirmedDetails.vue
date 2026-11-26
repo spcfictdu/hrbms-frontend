@@ -297,6 +297,7 @@ export default {
           checkIn: `${transaction.checkInDate}T${transaction.checkInTime}`,
           checkOut: `${transaction.checkOutDate}T${transaction.checkOutTime}`,
         },
+        remarks: transaction.remarks,
         guestEmail,
         days: priceSummary.days,
         addons: priceSummary.fullAddons,

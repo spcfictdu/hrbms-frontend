@@ -184,6 +184,10 @@ export default {
           folio,
         }));
       }
+
+      if (payload.remarks) {
+        value.remarks = payload.remarks;
+      }
       return value;
     },
     fetch: async function () {
@@ -239,6 +243,7 @@ export default {
             checkOutDate: this.temporaryData.checkOut.date,
             extraPerson: this.temporaryData.guest.extraPerson,
             addons: this.temporaryData.addons,
+            remarks: this.temporaryData.remarks,
             id: {
               type: this.temporaryData.guest.id.type,
               number: this.temporaryData.guest.id.number,

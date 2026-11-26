@@ -118,6 +118,22 @@
             />
           </div>
 
+          <!-- Remarks -->
+          <v-divider />
+          <FormSection>
+            <FormField label="Remarks (Optional)">
+              <v-textarea
+                v-model="payload.remarks"
+                dense
+                outlined
+                rows="2"
+                hide-details="auto"
+                :readonly="readonlyInputs"
+                @input="persistRemarks"
+              />
+            </FormField>
+          </FormSection>
+
           <!-- Payment -->
           <!-- <div v-if="showPayment" class="pb-8">
             <v-divider />
@@ -171,6 +187,8 @@ import PaymentTemplate from "@/components/form-templates/PaymentTemplate.vue";
 import AddOnsTemplate from "@/components/form-templates/AddOnsTemplate.vue";
 import DiscountTemplate from "@/components/form-templates/DiscountTemplate.vue";
 import ChargeDistribution from "@/components/form-templates/ChargeDistribution.vue";
+import FormSection from "@/components/sections/FormSection.vue";
+import FormField from "@/components/fields/FormField.vue";
 import ConfirmationDialog from "@/components/dialogs/ConfirmationDialog.vue";
 import WarningDialog from "@/components/dialogs/WarningDialog.vue";
 import { mapActions, mapMutations, mapState } from "vuex";
@@ -193,6 +211,8 @@ export default {
     AddOnsTemplate,
     DiscountTemplate,
     ChargeDistribution,
+    FormField,
+    FormSection,
   },
   props: {
     query: Object,
@@ -215,6 +235,7 @@ export default {
         date: null,
       },
       guests: 0,
+      remarks: null,
     },
     totalPayment: 0,
 
@@ -241,6 +262,8 @@ export default {
       extraPerson: this.formDetails.guests,
       addons: this.formDetails.addons,
     };
+
+    this.payload.remarks = this.formDetails.remarks ?? null;
   },
   methods: {
     ...mapActions("transaction", ["updateTransaction", "fetchTransaction"]),
@@ -274,6 +297,9 @@ export default {
         }
       }
 
+      sessionStorage.setItem("formDetails", JSON.stringify(this.payload));
+    },
+    persistRemarks: function () {
       sessionStorage.setItem("formDetails", JSON.stringify(this.payload));
     },
     handleWhichDialog: function () {
@@ -423,6 +449,7 @@ export default {
           date: null,
         },
         guests: 0,
+        remarks: null,
       };
 
       sessionStorage.removeItem("formDetails");
@@ -655,6 +682,10 @@ export default {
           ...this.fill,
           ...newVal,
         };
+
+        if (newVal?.remarks !== undefined) {
+          this.payload.remarks = newVal.remarks;
+        }
       },
     },
   },
