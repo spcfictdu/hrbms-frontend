@@ -11,7 +11,7 @@
       <div>
         <v-autocomplete
           :items="mappedCashiers"
-          placeholder="CASHIER"
+          placeholder="Search"
           item-text="name"
           item-value="id"
           v-model="cashierId"
@@ -79,8 +79,8 @@ export default {
     mappedCashiers() {
       if (!this.cashierReports.length) return [];
 
-      return this.cashierReports.map(({ cashierId }) => ({
-        name: `CASHIER ${cashierId.toString().toUpperCase()}`,
+      return this.cashierReports.map(({ cashierId, user }) => ({
+        name: user,
         id: cashierId,
       }));
     },
