@@ -199,7 +199,11 @@ export default {
   computed: {
     ...mapState("cashier", ["sessions"]),
     secondaryBtn() {
-      if (this.value.transaction.status === "CHECKED-OUT") return null;
+      if (
+        this.userRole === "GUEST" ||
+        this.value.transaction.status === "CHECKED-OUT"
+      )
+        return null;
       return {
         text: "Proceed to Cashier",
         action: () => {
