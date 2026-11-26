@@ -27,7 +27,7 @@
     <template>
       <div v-if="cashierId">
         <div class="font-weight-bold text-h6">
-          {{ cashier?.user }}{{ adminLabel(cashier?.userId) }}
+          {{ cashier?.user }}
         </div>
         <div class="longText--text">
           <span class="font-weight-bold">DATE:</span> {{ formattedQueryDate }}
@@ -144,21 +144,11 @@ export default {
     ...mapActions("reports", ["fetchCashierReports"]),
     ...mapMutations("reports", ["SET_CASHIER_REPORTS"]),
 
-    adminLabel(userId) {
-      return this.isAdmin(userId) ? " (ADMIN)" : "";
-    },
-
-    isAdmin(userId) {
-      return userId >= 1 && userId <= 4;
-    },
-
     handlePrint(table) {
       const options = {
         reportTitle: "Cashiers Report",
         headerText: this.cashier
-          ? `Cashier ${this.cashierId}: ${this.cashier?.user}${this.adminLabel(
-              this.cashier?.userId
-            )}`
+          ? `Cashier ${this.cashierId}: ${this.cashier?.user}`
           : "All Cashiers",
         user: this.getCurrentUser,
         queryDate: this.queryDate,
