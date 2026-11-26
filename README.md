@@ -32,11 +32,13 @@ A comprehensive Vue.js-based solution for hotel operations, providing seamless b
 
 #### ✅ Critical Configuration Checklist
 
-| Configuration            | File / Location | Action Required                                                  |
-| ------------------------ | --------------- | ---------------------------------------------------------------- |
-| **API Endpoint**         | `urls.js`       | ✅ Set the correct backend API endpoint                          |
-| **Backend URL**          | `main.js`       | 🌐 Set the correct backend hosting: **deployed, local, network** |
-| **Backend Connectivity** | `hrbms-backend` | 🔗 Ensure complete integration and successful communication      |
+| Configuration            | File / Location | Action Required                                                          |
+| ------------------------ | --------------- | ------------------------------------------------------------------------ |
+| **Backend URL**          | `.env.local`    | ✅ Set `VUE_APP_BACKEND_URL` to your backend base URL (no trailing slash) |
+| **Admin Passcode**       | `.env.local`    | 🔐 Set `VUE_APP_ADMIN_PASSCODE` used by the admin dialogs                 |
+| **Backend Connectivity** | `hrbms-backend` | 🔗 Run the backend and confirm CORS allows your frontend origin           |
+
+`src/main.js` reads these values at startup and appends `/api` to the backend URL for requests.
 
 #### ⚠️ Common Pitfalls
 
@@ -48,9 +50,9 @@ Misconfiguration can lead to:
 
 #### 💡 Best Practices
 
-- Double-check all endpoint URLs
+- Double-check `VUE_APP_BACKEND_URL`
 - Test all connections in a staging environment before production
-- Avoid hardcoding sensitive data; use the designated configuration files
+- Never commit `.env*` files; only `.env.example` is tracked
 
 ## 🏗️ Project Architecture
 
@@ -93,6 +95,23 @@ The application follows a modular architecture with clear separation of concerns
 
 ## 🚀 Project Setup
 
+### Environment Setup
+
+1. Copy the template to create your local config file:
+
+   ```bash
+   cp .env.example .env.local          # macOS / Linux / Git Bash
+   Copy-Item .env.example .env.local   # PowerShell
+   ```
+
+2. Edit `.env.local`:
+   - `VUE_APP_BACKEND_URL`: your backend base URL with no trailing slash. Point it at whichever host you run — local, network, or deployed. This app appends `/api`.
+   - `VUE_APP_ADMIN_PASSCODE`: passcode used by the admin dialogs (client-side check only).
+
+3. Restart the dev server after changing env files. Values are read at startup and baked into production builds at build time.
+
+Only variables prefixed with `VUE_APP_` are exposed to the browser. Do not store secrets there. `.env.local` overrides `.env`, and all `.env*` files are gitignored except `.env.example`.
+
 ### Install Dependencies
 
 ```bash
@@ -111,13 +130,14 @@ npm install  # 📦 Installs all required node modules
 
 ### API Connection Issues
 
-| Issue                       | Solution                                                     |
-| --------------------------- | ------------------------------------------------------------ |
-| API timeout errors          | Check network connectivity and backend server status         |
-| Authentication failures     | Verify correct API credentials in `urls.js`                  |
-| CORS errors                 | Ensure backend has proper CORS configuration for your domain |
-| Data synchronization issues | Check local storage quota and clear cache if necessary       |
-| Image loading issues        | Verify correct API endpoint in url `urls.js`                 |
+| Issue                       | Solution                                                                  |
+| --------------------------- | ------------------------------------------------------------------------- |
+| API timeout errors          | Check network connectivity and backend server status                      |
+| Authentication failures     | Verify `VUE_APP_BACKEND_URL` in `.env.local` and backend credentials      |
+| CORS errors                 | Ensure backend has proper CORS configuration for your domain              |
+| Data synchronization issues | Check local storage quota and clear cache if necessary                    |
+| Image loading issues        | Verify `VUE_APP_BACKEND_URL` in `.env.local`, then restart the dev server |
+| API returns 404 / empty URL | `.env.local` missing, trailing slash in URL, or dev server not restarted  |
 
 ## 📋 Commit Message Guidelines
 
@@ -170,3 +190,4 @@ Use the following emojis to indicate the nature of your commits:
 - 👨‍💻 **Gabriel Alfonso M. Gatbonton** - Senior Frontend Developer
 - 👨‍💻 **Prince Charles M. Clemente** - Senior Frontend Developer
 - 👨‍💻 **Rhymeses E. Cortez** - Junior Frontend Developer
+- 👨‍💻 **Vince Randall B. David** - Frontend Developer
