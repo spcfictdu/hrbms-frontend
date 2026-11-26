@@ -34,9 +34,9 @@ A comprehensive Vue.js-based solution for hotel operations, providing seamless b
 
 | Configuration            | File / Location | Action Required                                                          |
 | ------------------------ | --------------- | ------------------------------------------------------------------------ |
-| **Backend URL**          | `.env.local`    | ✅ Set `VUE_APP_BACKEND_URL` to your backend base URL (no trailing slash) |
-| **Admin Passcode**       | `.env.local`    | 🔐 Set `VUE_APP_ADMIN_PASSCODE` used by the admin dialogs                 |
-| **Backend Connectivity** | `hrbms-backend` | 🔗 Run the backend and confirm CORS allows your frontend origin           |
+| **Backend URL**          | `.env`          | ✅ Set `VUE_APP_BACKEND_URL` to your backend base URL (no trailing slash)|
+| **Admin Passcode**       | `.env`          | 🔐 Set `VUE_APP_ADMIN_PASSCODE` used by the admin dialogs                |
+| **Backend Connectivity** | `hrbms-backend` | 🔗 Run the backend and confirm CORS allows your frontend origin          |
 
 `src/main.js` reads these values at startup and appends `/api` to the backend URL for requests.
 
@@ -100,17 +100,17 @@ The application follows a modular architecture with clear separation of concerns
 1. Copy the template to create your local config file:
 
    ```bash
-   cp .env.example .env.local          # macOS / Linux / Git Bash
-   Copy-Item .env.example .env.local   # PowerShell
+   cp .env.example .env          # macOS / Linux / Git Bash
+   Copy-Item .env.example .env   # PowerShell
    ```
 
-2. Edit `.env.local`:
+2. Edit `.env`:
    - `VUE_APP_BACKEND_URL`: your backend base URL with no trailing slash. Point it at whichever host you run — local, network, or deployed. This app appends `/api`.
    - `VUE_APP_ADMIN_PASSCODE`: passcode used by the admin dialogs (client-side check only).
 
 3. Restart the dev server after changing env files. Values are read at startup and baked into production builds at build time.
 
-Only variables prefixed with `VUE_APP_` are exposed to the browser. Do not store secrets there. `.env.local` overrides `.env`, and all `.env*` files are gitignored except `.env.example`.
+Only variables prefixed with `VUE_APP_` are exposed to the browser. Do not store secrets there. All `.env*` files are gitignored except `.env.example`.
 
 ### Install Dependencies
 
@@ -130,14 +130,14 @@ npm install  # 📦 Installs all required node modules
 
 ### API Connection Issues
 
-| Issue                       | Solution                                                                  |
-| --------------------------- | ------------------------------------------------------------------------- |
-| API timeout errors          | Check network connectivity and backend server status                      |
-| Authentication failures     | Verify `VUE_APP_BACKEND_URL` in `.env.local` and backend credentials      |
-| CORS errors                 | Ensure backend has proper CORS configuration for your domain              |
-| Data synchronization issues | Check local storage quota and clear cache if necessary                    |
-| Image loading issues        | Verify `VUE_APP_BACKEND_URL` in `.env.local`, then restart the dev server |
-| API returns 404 / empty URL | `.env.local` missing, trailing slash in URL, or dev server not restarted  |
+| Issue                       | Solution                                                              |
+| --------------------------- | --------------------------------------------------------------------- |
+| API timeout errors          | Check network connectivity and backend server status                  |
+| Authentication failures     | Verify `VUE_APP_BACKEND_URL` in `.env` and backend credentials        |
+| CORS errors                 | Ensure backend has proper CORS configuration for your domain          |
+| Data synchronization issues | Check local storage quota and clear cache if necessary                |
+| Image loading issues        | Verify `VUE_APP_BACKEND_URL` in `.env`, then restart the dev server   |
+| API returns 404 / empty URL | `.env` missing, trailing slash in URL, or dev server not restarted    |
 
 ## 📋 Commit Message Guidelines
 
