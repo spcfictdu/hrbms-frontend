@@ -66,6 +66,7 @@
           hide-details="auto"
           dense
           outlined
+          clearable
           label="Room Category"
           :items="roomTypeEnum"
           item-text="roomType"
@@ -92,6 +93,7 @@
         filled
         hide-details="auto"
         dense
+        clearable
         background-color="lightBg"
         :items="roomTypeEnum"
         item-text="roomType"
@@ -132,6 +134,7 @@
       class="mt-4"
       v-model="queryParams.page"
       :length="paginationLength"
+      :total-visible="paginationVisible"
     ></v-pagination>
     <!-- Dialogs -->
     <RoomDialog
@@ -182,7 +185,7 @@ export default {
   },
   data: () => ({
     selectedStatus: "AVAILABLE",
-    selectedRoomType: "JUNIOR STANDARD",
+    selectedRoomType: null,
     payload: {
       requestType: null,
     },
@@ -204,8 +207,8 @@ export default {
     // Initial Params
     queryParams: {
       roomStatus: "AVAILABLE",
-      roomType: "JUNIOR STANDARD",
-      per_page: 5,
+      roomType: null,
+      perPage: 10,
       page: 1,
     },
   }),
@@ -317,6 +320,9 @@ export default {
     },
     paginationLength: function () {
       return this.roomStatuses ? this.roomStatuses.pagination.lastPage : 1;
+    },
+    paginationVisible: function () {
+      return this.$vuetify.breakpoint.xs ? 5 : 7;
     },
     noDataCardMeta: function () {
       return {

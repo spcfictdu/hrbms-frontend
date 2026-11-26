@@ -21,8 +21,7 @@ export default {
     // Default Params
     queryParams: {
       roomStatus: "AVAILABLE",
-      roomType: "JUNIOR STANDARD",
-      per_page: 5,
+      perPage: 10,
       page: 1,
     },
   }),
