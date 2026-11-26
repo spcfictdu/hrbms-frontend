@@ -102,7 +102,7 @@
             class="d-flex justify-space-between align-center primary--text font-weight-bold"
           >
             <div>Total:</div>
-            <div>₱ {{ roomTotalBill.roomTotalWithExtraPerson }}</div>
+            <div>₱ {{ roomTotalBill.roomTotal }}</div>
           </div>
         </div>
 
