@@ -1,6 +1,6 @@
 <template>
   <div>
-    <FormField label="Amenities">
+    <FormField label="Other Charges">
       <div class="d-flex flex-column" style="gap: 8px">
         <div
           class="d-flex align-start flex-nowrap"
