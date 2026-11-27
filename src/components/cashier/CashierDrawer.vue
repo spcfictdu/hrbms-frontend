@@ -17,8 +17,8 @@
             >First Floor Lobby</v-card-title
           >
           <v-card-text>
-            LAST OPENED BY |
-            <span class="font-weight-bold">S{{ sessionData.userId }}</span>
+            <!-- LAST OPENED BY | -->
+            <span class="font-weight-bold">{{ sessionData.fullName }}</span>
           </v-card-text>
         </div>
 
