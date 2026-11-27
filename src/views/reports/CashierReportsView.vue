@@ -105,12 +105,9 @@ export default {
           closingBalance,
         }) => {
           const date = format(parseISO(this.queryDate), "EEEE, MMMM dd, yyyy");
-          const parts = user.split(",");
-          const lastName = parts[0].trim();
-          const firstName = parts[1].trim().toUpperCase();
           const cashier = `Cashier ${cashierId
             .toString()
-            .toUpperCase()} - ${firstName} ${lastName}`;
+            .toUpperCase()} - ${user}`;
           const payments = transactions.filter((t) => t.type === "PAYMENT");
           const totalPayment = payments.reduce(
             (total, p) => total + Number(p.amount),
