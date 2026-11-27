@@ -20,18 +20,14 @@
           rounded
           auto-select-first
           clearable
+          hide-details
         />
       </div>
     </template>
 
     <template>
-      <div v-if="cashierId">
-        <div class="font-weight-bold text-h6">
-          {{ cashier?.user }}
-        </div>
-        <div class="longText--text">
-          <span class="font-weight-bold">DATE:</span> {{ formattedQueryDate }}
-        </div>
+      <div v-if="cashierId" class="font-weight-bold text-h6 mt-4">
+        {{ cashier?.user }}
       </div>
     </template>
   </Reports>
@@ -131,10 +127,6 @@ export default {
 
     queryDate() {
       return this.$route.query.date || format(new Date(), "yyyy-MM-dd");
-    },
-
-    formattedQueryDate() {
-      return format(parseISO(this.queryDate), "MMMM dd, yyyy");
     },
   },
   methods: {

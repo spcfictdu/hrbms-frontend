@@ -1,36 +1,86 @@
 <template>
   <div>
-    <div class="d-flex my-5" :style="{ gap: '12px' }">
-      <v-menu
-        v-model="dateMenu"
-        :close-on-content-click="false"
-        transition="scale-transition"
-        offset-y
-        min-width="auto"
-      >
-        <template v-slot:activator="{ on, attrs }">
-          <v-btn outlined icon color="primary" v-bind="attrs" v-on="on">
-            <v-icon>mdi-filter-variant</v-icon>
-          </v-btn>
-        </template>
-        <v-date-picker
-          v-model="selectedDate"
-          no-title
-          scrollable
-          @input="selectDate"
-        ></v-date-picker>
-      </v-menu>
+    <div
+      class="reports-toolbar d-flex align-center justify-space-between flex-wrap my-5"
+      :style="{ gap: '12px' }"
+    >
+      <div class="d-flex align-center" :style="{ gap: '12px', minHeight: '40px' }">
+        <v-menu
+          v-model="dateMenu"
+          :close-on-content-click="false"
+          transition="scale-transition"
+          offset-y
+          min-width="auto"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <div class="date-filter d-flex align-center" v-bind="attrs" v-on="on">
+              <v-btn
+                outlined
+                icon
+                color="primary"
+                aria-label="Filter reports by date"
+              >
+                <v-icon>mdi-filter-variant</v-icon>
+              </v-btn>
+              <v-icon small class="ml-3 mr-1">mdi-calendar</v-icon>
+              <span class="text-subtitle-1 font-weight-medium">
+                {{ formattedSelectedDate }}
+              </span>
+              <v-chip
+                v-if="isDefaultDate"
+                x-small
+                class="ml-2"
+                color="lightBg"
+                text-color="primary"
+                title="No date filter. Showing today's reports."
+              >
+                Default
+              </v-chip>
+              <v-chip
+                v-else
+                x-small
+                class="ml-2"
+                color="primary"
+                dark
+                title="Showing reports for the selected date."
+              >
+                Filtered
+              </v-chip>
+            </div>
+          </template>
+          <v-date-picker
+            v-model="selectedDate"
+            no-title
+            scrollable
+            @input="selectDate"
+          ></v-date-picker>
+        </v-menu>
 
-      <v-btn
-        icon
-        outlined
-        color="primary"
-        @click="$emit('print', $refs.printableTable.$el)"
-      >
-        <v-icon>mdi-printer</v-icon>
-      </v-btn>
+        <v-btn
+          v-if="!isDefaultDate"
+          text
+          small
+          color="primary"
+          @click="$emit('dateselect', today)"
+        >
+          <v-icon small left>mdi-restore</v-icon>
+          Reset
+        </v-btn>
+      </div>
 
-      <slot name="icon" />
+      <div class="d-flex align-center" :style="{ gap: '12px' }">
+        <slot name="icon" />
+
+        <v-btn
+          icon
+          outlined
+          color="primary"
+          @click="$emit('print', $refs.printableTable.$el)"
+        >
+          <v-icon>mdi-printer</v-icon>
+        </v-btn>
+
+      </div>
     </div>
 
     <v-row>
@@ -124,7 +174,7 @@
 
 <script>
 import DefaultTable from "../tables/DefaultTable.vue";
-import { format } from "date-fns";
+import { format, parseISO } from "date-fns";
 
 export default {
   name: "Reports",
@@ -153,6 +203,18 @@ export default {
         this.selectedDate = newDate || format(new Date(), "yyyy-MM-dd");
       },
       immediate: true,
+    },
+  },
+  computed: {
+    today() {
+      return format(new Date(), "yyyy-MM-dd");
+    },
+    isDefaultDate() {
+      return this.selectedDate === this.today;
+    },
+    formattedSelectedDate() {
+      if (!this.selectedDate) return "";
+      return format(parseISO(this.selectedDate), "MMMM d, yyyy");
     },
   },
   methods: {
