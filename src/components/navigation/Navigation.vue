@@ -185,6 +185,16 @@ export default {
           icon: "mdi-cash-register",
           childRouteNames: [],
         },
+        ...(this.isAdmin
+          ? [
+              {
+                name: "Users",
+                route: "User Management",
+                icon: "mdi-account-cog-outline",
+                childRouteNames: ["User Management"],
+              },
+            ]
+          : []),
         {
           name: "Reports",
           route: "GuestReports",

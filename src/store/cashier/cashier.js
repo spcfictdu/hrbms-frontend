@@ -22,6 +22,7 @@ export const cashier = {
       sessions: false,
       currUserHistory: false,
       dialog: false,
+      userPassword: false,
     },
     currentCashier: { session: null, drawerNumber: null },
     adjustment: "",
@@ -152,6 +153,27 @@ export const cashier = {
         return err.response.data;
       } finally {
         commit("SET_LOADING", { key: "dialog", value: false });
+      }
+    },
+
+    async changeCashierPassword({ commit, dispatch }, { userId, payload }) {
+      const url = `user/change-password/${userId}`;
+
+      commit("SET_LOADING", { key: "userPassword", value: true });
+      try {
+        const { data } = await this.$axios.put(url, payload);
+        dispatch("alerts/triggerSuccess", data.message, { root: true });
+        return true;
+      } catch (err) {
+        console.error(err);
+        dispatch(
+          "alerts/triggerError",
+          err.response?.data?.message || "Failed to change password",
+          { root: true }
+        );
+        return false;
+      } finally {
+        commit("SET_LOADING", { key: "userPassword", value: false });
       }
     },
   },

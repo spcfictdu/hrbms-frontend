@@ -11,6 +11,7 @@ import publicRoutes from "@/router/public-routes/public-routes";
 import dashboardRoutes from "./dashboard/dashboard";
 import guestUser from "./guest-user/guest-user";
 import cashier from "./cashier/cashier";
+import userManagement from "./user-management/user-management";
 import reports from "./reports/reports";
 
 Vue.use(VueRouter);
@@ -30,6 +31,7 @@ const mappedRoutes = {
       ...guestList.map(({ name }) => name),
       ...transaction.map(({ name }) => name),
       ...cashier.map(({ name }) => name),
+      ...userManagement.map(({ name }) => name),
       ...reports.map(({ name }) => name),
       ...reports[0].children.map(({ name }) => name),
     ],
@@ -54,6 +56,7 @@ const routes = [
   ...publicRoutes,
   ...guestUser,
   ...cashier,
+  ...userManagement,
   ...reports,
 ];
 
