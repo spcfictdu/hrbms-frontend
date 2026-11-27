@@ -296,7 +296,8 @@ export default {
         const paymentType = trans.paymentType;
         const balance = formatPrice(parseFloat(trans.balance));
         const status = trans.paymentStatus ?? "";
-        const user = trans.user;
+        // const user = trans.user;
+        const user = trans.user_full_name;
         items.push({
           date,
           item,
