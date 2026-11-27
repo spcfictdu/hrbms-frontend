@@ -71,12 +71,18 @@ export default {
 
   data: () => ({
     hasLoaded: false,
-    notAllowedRoutes: ["Sign In", "Register", "Guest Sign In"],
+    notAllowedRoutes: [
+      "Sign In",
+      "Register",
+      "Guest Sign In",
+      "Front Desk Register",
+    ],
     allowedFooterRoutes: ["Public Dashboard", "Guest Dashboard"],
     bgImages: {
       "Sign In": "image-bg",
       Register: "image-bg",
       "Guest Sign In": "image-bg-2",
+      "Front Desk Register": "image-bg",
     },
   }),
 

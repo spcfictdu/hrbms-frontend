@@ -12,7 +12,7 @@
           {{ institution.name }}
         </v-card-title>
         <v-card-subtitle class="text-subtitle-1 mt-2 font-weight-bold">
-          REGISTER
+          {{ pageTitle }}
         </v-card-subtitle>
       </div>
 
@@ -69,6 +69,17 @@
           {{ submitBtnText }}
         </v-btn>
       </v-form>
+
+      <p class="mt-4 mb-0 text-caption text-center">
+        Already have an account?
+        <span
+          @click="$router.push({ name: 'Sign In' })"
+          style="cursor: pointer"
+          class="primary--text font-weight-bold"
+        >
+          Sign In
+        </span>
+      </p>
     </v-card>
   </div>
 </template>
@@ -77,6 +88,16 @@
 import { mapActions, mapState } from "vuex";
 export default {
 	name: "RegisterView",
+	props: {
+		registerRole: {
+			type: String,
+			default: "FRONT DESK",
+		},
+		pageTitle: {
+			type: String,
+			default: "REGISTER",
+		},
+	},
 	data: () => ({
 		valid: true,
 		institution: {
@@ -125,7 +146,7 @@ export default {
 			try {
 				const response = await this.register({
 					...this.user,
-					role: "FRONT DESK",
+					role: this.registerRole,
 				});
 
 				if (response && response.data.code === 201) {

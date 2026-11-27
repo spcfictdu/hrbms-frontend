@@ -38,4 +38,17 @@ export default [
       isLogin: true,
     },
   },
+  {
+    path: "/register/frontdesk",
+    name: "Front Desk Register",
+    component: RegisterView,
+    props: {
+      registerRole: "FRONT DESK",
+      pageTitle: "FRONT DESK REGISTER",
+    },
+    meta: {
+      name: "Front Desk Register",
+      isLogin: true,
+    },
+  },
 ];

@@ -73,6 +73,18 @@
           {{ submitBtnText }}
         </v-btn>
       </v-form>
+
+      <p class="mt-4 mb-0 text-caption text-center">
+        Front desk staff?
+        <span
+          @click="$router.push({ name: 'Front Desk Register' })"
+          style="cursor: pointer"
+          class="primary--text font-weight-bold"
+        >
+          Register here
+        </span>
+      </p>
+
       <!-- <v-card-text class="text-center">
         {{ footerText.text }}
         <span
